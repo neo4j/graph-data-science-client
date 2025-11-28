@@ -7,12 +7,10 @@ from testcontainers.core.network import Network
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.tests.integrationV2.conftest import GdsSessionConnectionInfo, create_arrow_client, start_session
 from graphdatascience.tests.integrationV2.procedure_surface.conftest import (
-    GdsSessionConnectionInfo,
-    create_arrow_client,
     create_db_query_runner,
     start_database,
-    start_session,
 )
 
 
