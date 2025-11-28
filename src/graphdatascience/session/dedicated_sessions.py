@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
+from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -61,7 +62,6 @@ class DedicatedSessions:
         db_connection: DbmsConnectionInfo | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
-        aura_instance_id: str | None = None,
         timeout: int | None = None,
         neo4j_driver_options: dict[str, Any] | None = None,
         arrow_client_options: dict[str, Any] | None = None,
@@ -75,17 +75,21 @@ class DedicatedSessions:
         else:
             db_runner = self._create_db_runner(db_connection, neo4j_driver_options)
 
-            aura_instance_id = AuraApi.extract_id(db_connection.uri) if not aura_instance_id else aura_instance_id
+            aura_instance_id = (
+                db_connection.aura_instance_id
+                if db_connection.aura_instance_id
+                else AuraApi.extract_id(db_connection.uri)
+            )
+            if not aura_instance_id and DbEnvironmentResolver.hosted_in_aura(db_runner):
+                raise ValueError(
+                    f"Could not derive Aura instance id from the URI `{db_connection.uri}`. Please specify the `aura_instance_id` in the `db_connection` argument."
+                )
+
             aura_db_instance = self._aura_api.list_instance(aura_instance_id)
 
             if aura_db_instance is None:
                 if not cloud_location:
-                    if db_connection.hosted_in_aura():
-                        raise ValueError(
-                            f"Could not derive Aura instance id from the URI `{db_connection.uri}`. Please provide the instance id via the `aura_instance_id` argument, or specify a cloud location if the DBMS is self-managed."
-                        )
-                    else:
-                        raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
+                    raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
 
                 session_details = self._get_or_create_self_managed_session(
                     session_name, memory.value, cloud_location, ttl
