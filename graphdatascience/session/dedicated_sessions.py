@@ -80,13 +80,19 @@ class DedicatedSessions:
                 if db_connection.aura_instance_id
                 else AuraApi.extract_id(db_connection.uri)
             )
-            if not aura_instance_id and DbEnvironmentResolver.hosted_in_aura(db_runner):
-                raise ValueError(
-                    f"Could not derive Aura instance id from the URI `{db_connection.uri}`. Please specify the `aura_instance_id` in the `db_connection` argument."
-                )
 
             aura_db_instance = self._aura_api.list_instance(aura_instance_id)
 
+            if not aura_db_instance and DbEnvironmentResolver.hosted_in_aura(db_runner):
+                if db_connection.aura_instance_id:
+                    raise ValueError(
+                        f"Aura instance with id `{db_connection.aura_instance_id}` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance."
+                    )
+                else:
+                    raise ValueError(
+                        f"Could not derive Aura instance from the URI `{db_connection.uri}`."
+                        " Please specify the `aura_instance_id` in the `db_connection` argument."
+                    )
             if aura_db_instance is None:
                 if not cloud_location:
                     raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")

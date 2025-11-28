@@ -637,7 +637,8 @@ def test_get_or_create_for_non_derivable_aura_instance_id(mocker: MockerFixture,
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Could not derive Aura instance id from the URI `neo4j+s://06cba79f.databases.neo4j.io`. Please specify the `aura_instance_id` in the `db_connection` argument."
+            "Could not derive Aura instance from the URI `neo4j+s://06cba79f.databases.neo4j.io`. "
+            "Please specify the `aura_instance_id` in the `db_connection` argument."
         ),
     ):
         sessions.get_or_create(
@@ -645,6 +646,26 @@ def test_get_or_create_for_non_derivable_aura_instance_id(mocker: MockerFixture,
             SessionMemory.m_8GB,
             DbmsConnectionInfo(
                 "neo4j+s://06cba79f.databases.neo4j.io", "dbuser", "db_pw"
+            ),  # not part of list instances result
+            cloud_location=None,
+        )
+
+
+def test_get_or_create_for_non_accessible_aura_instance(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    sessions = DedicatedSessions(aura_api)
+    patch_neo4j_query_runner(mocker)
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "Aura instance with id `06cba79f` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance."
+        ),
+    ):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo(
+                "neo4j+s://foo.bar", "dbuser", "db_pw", aura_instance_id="06cba79f"
             ),  # not part of list instances result
             cloud_location=None,
         )
