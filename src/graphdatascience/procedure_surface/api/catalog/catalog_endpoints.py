@@ -17,6 +17,22 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 
 class CatalogEndpoints(ABC):
     @abstractmethod
+    def get(self, graph_name: str) -> GraphV2:
+        """Retrieve a handle to a graph from the graph catalog.
+
+        Parameters
+        ----------
+        graph_name
+            The name of the graph.
+
+        Returns
+        -------
+        GraphV2
+            A handle to the graph.
+        """
+        pass
+
+    @abstractmethod
     def construct(
         self,
         graph_name: str,

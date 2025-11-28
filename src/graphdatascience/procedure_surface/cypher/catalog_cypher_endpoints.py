@@ -39,6 +39,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         self._cypher_runner = cypher_runner
         self._arrow_client = arrow_client
 
+    def get(self, graph_name: str) -> GraphV2:
+        if not self.list(graph_name):
+            raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
+        return get_graph(graph_name, self.cypher_runner)
+
     def construct(
         self,
         graph_name: str,
