@@ -14,6 +14,7 @@ def test_remote_projection_configuration(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     g = gds.graph.project(
@@ -50,6 +51,7 @@ def test_remote_projection_defaults(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     g = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -78,6 +80,7 @@ def test_remote_algo_write(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -99,6 +102,7 @@ def test_remote_algo_write_configuration(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -125,6 +129,7 @@ def test_remote_graph_write(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -149,6 +154,7 @@ def test_remote_graph_write_configuration(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     G, _ = gds.graph.project("foo", "RETURN gds.graph.project(0, 1)")
@@ -176,6 +182,7 @@ def test_run_cypher_write(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.WRITE, database="bar", retryable=True)
@@ -193,6 +200,7 @@ def test_run_cypher_read(mocker: MockerFixture) -> None:
         delete_fn=lambda: True,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
+        authenticated_arrow_client=mocker.Mock(),
     )
 
     gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.READ, retryable=False)
