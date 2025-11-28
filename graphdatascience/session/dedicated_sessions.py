@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
+from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -74,9 +75,24 @@ class DedicatedSessions:
         else:
             db_runner = self._create_db_runner(db_connection, neo4j_driver_options)
 
-            dbid = AuraApi.extract_id(db_connection.uri)
-            aura_db_instance = self._aura_api.list_instance(dbid)
+            aura_instance_id = (
+                db_connection.aura_instance_id
+                if db_connection.aura_instance_id
+                else AuraApi.extract_id(db_connection.uri)
+            )
 
+            aura_db_instance = self._aura_api.list_instance(aura_instance_id)
+
+            if not aura_db_instance and DbEnvironmentResolver.hosted_in_aura(db_runner):
+                if db_connection.aura_instance_id:
+                    raise ValueError(
+                        f"Aura instance with id `{db_connection.aura_instance_id}` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance."
+                    )
+                else:
+                    raise ValueError(
+                        f"Could not derive Aura instance from the URI `{db_connection.uri}`."
+                        " Please specify the `aura_instance_id` in the `db_connection` argument."
+                    )
             if aura_db_instance is None:
                 if not cloud_location:
                     raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
@@ -88,7 +104,9 @@ class DedicatedSessions:
                 if cloud_location is not None:
                     raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
 
-                session_details = self._get_or_create_attached_session(session_name, memory.value, dbid, ttl)
+                session_details = self._get_or_create_attached_session(
+                    session_name, memory.value, aura_instance_id, ttl
+                )
 
         self._await_session_running(session_details, timeout)
 

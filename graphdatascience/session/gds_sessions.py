@@ -122,7 +122,7 @@ class GdsSessions:
             ttl: (timedelta | None): The sessions time to live after inactivity in seconds.
             cloud_location (CloudLocation | None): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
-           neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
+            neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client.
         Returns:
             AuraGraphDataScience: The session.
