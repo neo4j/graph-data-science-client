@@ -98,10 +98,9 @@ sessions.get_or_create(
 | Name                        | Type               | Optional | Default | Description
 | session_name                | str                | no       | -       | Name of the session. Must be unique within the project.
 | memory                      | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[SessionMemory]      | no       | -       | Amount of memory available to the session.
-| db_connection               |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/dbms_connection_info[DbmsConnectionInfo] | yes      | None    | Bolt server URL, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types. Alternatively to username and password, you can provide a `neo4j.Auth` https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods[object].
+| db_connection               |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/dbms_connection_info[DbmsConnectionInfo] | yes      | None    | Bolt server URI, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types. Alternatively to username and password, you can provide a `neo4j.Auth` https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods[object].
 | ttl                         | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
 | cloud_location              | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/cloud_location[CloudLocation]      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone types.
-| aura_instance_id            | str                | yes      | None    | Aura instance ID for the session. Required for the Attached type, if the id could not be derived from the DB connection.
 | timeout                     | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
 | neo4j_driver_options        | dict[str, any]     | yes      | None    | Additional options passed to the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified.
 | arrow_client_options        | dict[str, any]     | yes      | None    | Additional options passed to the Arrow Flight Client used to connect to the Session.
@@ -317,7 +316,13 @@ from graphdatascience.session import SessionMemory, DbmsConnectionInfo, GdsSessi
 
 sessions = GdsSessions(api_credentials=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
 
-db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
+# you can also use DbmsConnectionInfo.from_env() to load credentials from environment variables
+db_connection = DbmsConnectionInfo(
+    uri=os.environ["NEO4J_URI"],
+    username=os.environ["NEO4J_USERNAME"],
+    password=os.environ["NEO4J_PASSWORD"],
+    aura_instance_id=os.environ["AURA_INSTANCEID"]
+)
 gds = sessions.get_or_create(
     session_name="my-new-session",
     memory=SessionMemory.m_8GB,

@@ -431,7 +431,7 @@ def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> 
     sessions = DedicatedSessions(aura_api)
 
     patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker)
+    patch_neo4j_query_runner(mocker, hosted_in_aura=False)
 
     ttl = timedelta(hours=42)
 
@@ -526,6 +526,22 @@ def test_get_or_create(mocker: MockerFixture, aura_api: AuraApi) -> None:
     assert [i.name for i in sessions.list()] == ["my-session"]
 
 
+def test_get_or_create_with_explicit_aura_instance_id(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    db = _setup_db_instance(aura_api)
+    sessions = DedicatedSessions(aura_api)
+    patch_construct_client(mocker)
+    patch_neo4j_query_runner(mocker)
+
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo(
+            "neo4j+s://foo.bar", "dbuser", "db_pw", aura_instance_id=db.id
+        ),  # not part of list instances result
+        cloud_location=None,
+    )
+
+
 def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 
@@ -601,7 +617,7 @@ def test_get_or_create_for_auradb_with_cloud_location(mocker: MockerFixture, aur
 
 def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
-    patch_neo4j_query_runner(mocker)
+    patch_neo4j_query_runner(mocker, hosted_in_aura=False)
 
     with pytest.raises(
         ValueError, match=re.escape("cloud_location must be provided for sessions against a self-managed DB.")
@@ -621,7 +637,7 @@ def test_get_or_create_for_non_derivable_aura_instance_id(mocker: MockerFixture,
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Could not derive Aura instance id from the URI `neo4j+s://06cba79f.databases.neo4j.io`. Please provide the instance id via the `aura_instance_id` argument, or specify a cloud location if the DBMS is self-managed."
+            "Could not derive Aura instance id from the URI `neo4j+s://06cba79f.databases.neo4j.io`. Please specify the `aura_instance_id` in the `db_connection` argument."
         ),
     ):
         sessions.get_or_create(
@@ -808,12 +824,16 @@ def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
     return aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
 
 
-def patch_neo4j_query_runner(mocker: MockerFixture) -> None:
+def patch_neo4j_query_runner(mocker: MockerFixture, hosted_in_aura: bool = True) -> None:
     mocker.patch(
         "graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create_for_db",
         lambda *args, **kwargs: kwargs,
     )
     mocker.patch("graphdatascience.session.dedicated_sessions.DedicatedSessions._validate_db_connection")
+    mocker.patch(
+        "graphdatascience.query_runner.db_environment_resolver.DbEnvironmentResolver.hosted_in_aura",
+        lambda *args, **kwargs: hosted_in_aura,
+    )
 
 
 def patch_construct_client(mocker: MockerFixture) -> None:
