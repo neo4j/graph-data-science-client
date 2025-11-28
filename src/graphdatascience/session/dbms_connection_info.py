@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from urllib.parse import urlparse
 
 from neo4j import Auth, basic_auth
 
@@ -20,6 +19,7 @@ class DbmsConnectionInfo:
     database: str | None = None
     # Optional: typed authentication, used instead of username/password. Supports for example a token. See https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods
     auth: Auth | None = None
+    aura_instance_id: str | None = None
 
     def __post_init__(self) -> None:
         # Validate auth fields
@@ -39,14 +39,6 @@ class DbmsConnectionInfo:
             auth = basic_auth(self.username, self.password)
         return auth
 
-    def hosted_in_aura(self) -> bool:
-        """
-        Returns:
-            True if the DBMS is hosted in Aura, False otherwise.
-        """
-        host = urlparse(self.uri).hostname
-        return host is not None and host.endswith("databases.neo4j.io")
-
     @staticmethod
     def from_env() -> DbmsConnectionInfo:
         """
@@ -56,10 +48,12 @@ class DbmsConnectionInfo:
         - NEO4J_USERNAME
         - NEO4J_PASSWORD
         - NEO4J_DATABASE
+        - AURA_INSTANCEID
         """
         uri = os.environ["NEO4J_URI"]
         username = os.environ.get("NEO4J_USERNAME", "neo4j")
         password = os.environ["NEO4J_PASSWORD"]
         database = os.environ.get("NEO4J_DATABASE")
+        aura_instance_id = os.environ.get("AURA_INSTANCEID")
 
-        return DbmsConnectionInfo(uri, username, password, database)
+        return DbmsConnectionInfo(uri, username, password, database, aura_instance_id=aura_instance_id)

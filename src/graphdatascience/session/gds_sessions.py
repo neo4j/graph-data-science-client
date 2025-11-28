@@ -107,7 +107,6 @@ class GdsSessions:
         timeout: int | None = None,
         neo4j_driver_config: dict[str, Any] | None = None,
         arrow_client_options: dict[str, Any] | None = None,
-        aura_instance_id: str | None = None,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -125,7 +124,6 @@ class GdsSessions:
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client.
-            aura_instance_id (str | None): The Aura instance id. Required if the database is in Aura but its instance id cannot be inferred from the connection information.
         Returns:
             AuraGraphDataScience: The session.
         """
@@ -134,7 +132,6 @@ class GdsSessions:
             memory,
             db_connection=db_connection,
             ttl=ttl,
-            aura_instance_id=aura_instance_id,
             cloud_location=cloud_location,
             timeout=timeout,
             neo4j_driver_options=neo4j_driver_config,
