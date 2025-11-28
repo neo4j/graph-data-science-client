@@ -37,10 +37,10 @@ class JobStatus(ArrowBaseModel):
         return self.status == "Aborted"
 
     def succeeded(self) -> bool:
-        return self.status == "Done"
+        return self.status.lower() == "done"
 
     def running(self) -> bool:
-        return self.status == "Running"
+        return self.status.lower() == "running"
 
 
 class MutateResult(ArrowBaseModel):
