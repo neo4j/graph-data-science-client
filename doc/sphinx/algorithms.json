@@ -2744,6 +2744,70 @@
   },
   {
     "function": {
+      "name": "gds.maxFlow.minCost.mutate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.minCost.mutate.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.minCost.stats",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.minCost.stats.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.minCost.stream",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "DataFrame"
+    },
+    "description": "Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.minCost.stream.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.minCost.write",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph."
+  },
+  {
+    "function": {
+      "name": "gds.maxFlow.minCost.write.estimate",
+      "signature": "G: Graph, **config: Any",
+      "return_type": "Series[Any]"
+    },
+    "description": "Returns an estimation of the memory consumption for that procedure."
+  },
+  {
+    "function": {
       "name": "gds.maxkcut.mutate",
       "signature": "G: Graph, **config: Any",
       "return_type": "pandas.Series[Any]"

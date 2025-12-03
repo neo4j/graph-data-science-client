@@ -1486,6 +1486,38 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Returns an estimation of the memory consumption for that procedure.
 
+.. py:function:: gds.maxFlow.minCost.mutate(G: Graph, **config: Any) -> Series[Any]
+
+    Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph.
+
+.. py:function:: gds.maxFlow.minCost.mutate.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.maxFlow.minCost.stats(G: Graph, **config: Any) -> Series[Any]
+
+    Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph.
+
+.. py:function:: gds.maxFlow.minCost.stats.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.maxFlow.minCost.stream(G: Graph, **config: Any) -> DataFrame
+
+    Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph.
+
+.. py:function:: gds.maxFlow.minCost.stream.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
+.. py:function:: gds.maxFlow.minCost.write(G: Graph, **config: Any) -> Series[Any]
+
+    Computes the maximum flow of minimum cost between two nodes or sets of nodes in a graph.
+
+.. py:function:: gds.maxFlow.minCost.write.estimate(G: Graph, **config: Any) -> Series[Any]
+
+    Returns an estimation of the memory consumption for that procedure.
+
 .. py:function:: gds.maxFlow.mutate(G: Graph, **config: Any) -> pandas.Series[Any]
 
     Computes the maximum flow between two nodes or sets of nodes in a graph.
