@@ -90,7 +90,7 @@ class SessionQueryRunner(QueryRunner):
             terminationFlag = TerminationFlag.create()
             return self._remote_projection(endpoint, params, terminationFlag, yields, database, logging)
 
-        elif ".write" in endpoint and self.is_remote_projected_graph(params["graph_name"]):
+        elif endpoint.endswith(".write") and self.is_remote_projected_graph(params["graph_name"]):
             terminationFlag = TerminationFlag.create()
             return self._remote_write_back(endpoint, params, terminationFlag, yields, database, logging, custom_error)
 

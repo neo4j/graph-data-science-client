@@ -9,6 +9,7 @@
 ## Bug fixes
 
 - Fixed a bug where `GraphDataScience` object created via `GraphDataScience.from_neo4j_driver` would also close the Neo4j driver object on `close()`. As sole ownership of the driver cannot be expected in this case, the user should close the driver object on their own.
+- Fixed a bug where `gds.<algo>.write.estimate` would fail for Aura Graph Analytics / GDS Sessions.
 
 ## Improvements
 
