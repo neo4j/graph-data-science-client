@@ -171,6 +171,32 @@ def test_extracts_parameters_algo_write_v2() -> None:
     }
 
 
+def test_extracts_parameters_algo_write_estimate() -> None:
+    version = ServerVersion(2, 7, 0)
+    db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}, {"version": "v2"}]))
+    gds_query_runner = CollectingQueryRunner(version)
+    gds_query_runner.set__mock_result(DataFrame([{"databaseLocation": "remote"}]))
+    qr = SessionQueryRunner.create(
+        gds_query_runner,
+        db_query_runner,
+        FakeArrowClient(),  # type: ignore
+        True,
+    )
+
+    qr.call_procedure(
+        endpoint="gds.degree.write.estimate",
+        params=CallParameters(graph_name="g", config={"jobId": "my-job", "concurrency": 2}),
+    )
+
+    assert gds_query_runner.last_query() == "CALL gds.degree.write.estimate($graph_name, $config)"
+    assert gds_query_runner.last_params() == {
+        "graph_name": "g",
+        "config": {"jobId": "my-job", "concurrency": 2},
+    }
+    assert db_query_runner.last_query() == "CALL gds.session.dbms.protocol.version() YIELD version"
+    assert db_query_runner.last_params() == {}
+
+
 def test_arrow_and_write_configuration() -> None:
     version = ServerVersion(2, 7, 0)
     db_query_runner = CollectingQueryRunner(version, result_mock=DataFrame([{"version": "v1"}]))
