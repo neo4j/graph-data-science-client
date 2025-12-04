@@ -314,7 +314,9 @@ class AuraApi:
             "instance_type": "dsenterprise",
         }
 
-        response = self._request_session.post(f"{self._base_uri}/{AuraApi.API_VERSION}/instances/sizing", json=data)
+        response = self._request_session.post(
+            f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions/sizing", json=data
+        )
         self._check_resp(response)
 
         return EstimationDetails.from_json(response.json()["data"])
