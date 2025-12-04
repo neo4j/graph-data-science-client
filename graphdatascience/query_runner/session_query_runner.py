@@ -231,12 +231,6 @@ class SessionQueryRunner(QueryRunner):
             )
 
         try:
-            # Skipping progress for now as export has a different jobId
-            # if self._resolve_show_progress(logging):
-            #     database_write_result = self._progress_logger.run_with_progress_logging(
-            #         run_write_back, job_id, database
-            #     )
-            # else:
             database_write_result = run_write_back()
         except Exception as e:
             # catch the case nothing was needed to write-back (empty graph)
