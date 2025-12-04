@@ -16,6 +16,7 @@
 - Added retries to verifying connection and authentication of DB connection provided to `GdsSessions.getOrCreate`
 - AuraAPI `delete_instance` will no longer fail when receiving a code 410 (Already Exists)
 - It is no longer necessary to specify TLS certificates for Arrow when running on Windows
+- `GdsSessions.estimate` now recommends smaller sizes such as `2GB`. Also allows specifying property and label counts for better estimates.
 
 ## Other changes
 
