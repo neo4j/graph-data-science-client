@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from ..call_parameters import CallParameters
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..query_runner.session_query_runner import SessionQueryRunner
@@ -21,6 +23,7 @@ class GraphProjectRemoteRunner(IllegalAttrChecker):
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
+        query_parameters: dict[str, Any] = None,
     ) -> GraphCreateResult:
         if inverse_indexed_relationship_types is None:
             inverse_indexed_relationship_types = []
