@@ -49,7 +49,7 @@ class FakeAuraApi(AuraApi):
         self.id_counter = 0
         self.time = 0
         self._status_after_creating = status_after_creating
-        self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB", False)
+        self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB")
         self._console_user = console_user
         self._admin_user = admin_user
 
@@ -225,7 +225,13 @@ class FakeAuraApi(AuraApi):
         return ProjectDetails(id=self._project_id, cloud_locations={CloudLocation("aws", "leipzig-1")})
 
     def estimate_size(
-        self, node_count: int, relationship_count: int, algorithm_categories: list[AlgorithmCategory]
+        self,
+        node_count: int,
+        node_label_count: int,
+        node_property_count: int,
+        relationship_count: int,
+        relationship_property_count: int,
+        algorithm_categories: list[AlgorithmCategory],
     ) -> EstimationDetails:
         return self._size_estimation
 
@@ -893,14 +899,14 @@ def test_create_waiting_forever(
 
 
 def test_estimate_size() -> None:
-    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB", False))
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
 
 
 def test_estimate_size_exceeds() -> None:
-    aura_api = FakeAuraApi(size_estimation=EstimationDetails("16GB", "8GB", True))
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("16GB", "8GB"))
     sessions = DedicatedSessions(aura_api)
 
     with pytest.warns(
