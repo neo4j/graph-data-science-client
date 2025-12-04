@@ -15,10 +15,26 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 
 class CatalogEndpoints(ABC):
     @abstractmethod
+    def get(self, graph_name: str) -> GraphV2:
+        """Retrieve a handle to a graph from the graph catalog.
+
+        Parameters
+        ----------
+        graph_name
+            The name of the graph.
+
+        Returns
+        -------
+        GraphV2
+            A handle to the graph.
+        """
+        pass
+
+    @abstractmethod
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         """List graphs in the graph catalog.
 
-        Args:
+        Parameters:
             G (GraphV2 | str | None, optional): GraphV2 object or name to filter results.
                If None, list all graphs. Defaults to None.
 
@@ -32,7 +48,7 @@ class CatalogEndpoints(ABC):
     def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
         """Drop a graph from the graph catalog.
 
-        Args:
+        Parameters:
             G (GraphV2 | str): GraphV2 object or name to drop.
             fail_if_missing (bool): Whether to fail if the graph is missing. Defaults to True.
 
