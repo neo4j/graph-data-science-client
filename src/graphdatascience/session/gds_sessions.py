@@ -55,8 +55,10 @@ class GdsSessions:
         """
         Initializes a new instance of the GdsSessions class.
 
-        Args:
-            api_credentials (AuraAPICredentials): The Aura API credentials used for establishing a connection.
+        Parameters
+        ----------
+        api_credentials
+            The Aura API credentials used for establishing a connection.
         """
         aura_env = os.environ.get("AURA_ENV")
         aura_api = AuraApi(
@@ -71,7 +73,7 @@ class GdsSessions:
         self,
         node_count: int,
         relationship_count: int,
-        algorithm_categories: Optional[list[AlgorithmCategory]] = None,
+        algorithm_categories: list[AlgorithmCategory] | list[str] | None = None,
         node_label_count: int = 0,
         node_property_count: int = 0,
         relationship_property_count: int = 0,
@@ -79,15 +81,26 @@ class GdsSessions:
         """
         Estimates the memory required for a session with the given node and relationship counts.
 
-        Args:
-            node_count (int): The number of nodes.
-            relationship_count (int): The number of relationships.
-            algorithm_categories (Optional[list[AlgorithmCategory]]): The algorithm categories to consider.
-            node_label_count (int): The number of node labels.
-            node_property_count (int): The number of node properties.
-            relationship_property_count (int): The number of relationship properties.
-        Returns:
-            SessionMemory: The estimated memory required for the session.
+        Parameters
+        ----------
+        node_count
+            Number of nodes.
+        relationship_count
+            Number of relationships.
+        algorithm_categories
+            The algorithm categories to consider.
+        node_label_count
+            Number of node labels.
+        node_property_count
+            Number of node properties.
+        relationship_property_count
+            Number of relationship properties.
+
+
+        Returns
+        -------
+        SessionMemory
+            The estimated memory required for the session.
         """
         if algorithm_categories is None:
             algorithm_categories = []

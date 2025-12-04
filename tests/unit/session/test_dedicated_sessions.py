@@ -905,6 +905,13 @@ def test_estimate_size() -> None:
     assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
 
 
+def test_estimate_str_categories_size() -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
+    sessions = DedicatedSessions(aura_api)
+
+    assert sessions.estimate(1, 1, ["centrality"]) == SessionMemory.m_8GB
+
+
 def test_estimate_size_exceeds() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("16GB", "8GB"))
     sessions = DedicatedSessions(aura_api)
