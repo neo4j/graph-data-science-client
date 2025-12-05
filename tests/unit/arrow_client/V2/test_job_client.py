@@ -99,6 +99,35 @@ def test_wait_for_job_waits_for_completion(mocker: MockerFixture) -> None:
     assert mock_client.do_action_with_retry.call_count == 2
 
 
+def test_wait_for_job_waits_for_expected_status(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "test-job-waiting"
+    status_running = JobStatus(
+        jobId=job_id,
+        progress=0.5,
+        status="RUNNING",
+        description="",
+    )
+    status_done = JobStatus(
+        jobId=job_id,
+        progress=1.0,
+        status="RELATIONSHIP_LOADING",
+        description="",
+    )
+
+    do_action_with_retry = mocker.Mock()
+    do_action_with_retry.side_effect = [
+        iter([ArrowTestResult(status_running.dump_camel())]),
+        iter([ArrowTestResult(status_done.dump_camel())]),
+    ]
+
+    mock_client.do_action_with_retry = do_action_with_retry
+
+    JobClient().wait_for_job(mock_client, job_id, show_progress=False, expected_status="RELATIONSHIP_LOADING")
+
+    assert mock_client.do_action_with_retry.call_count == 2
+
+
 def test_wait_for_job_waits_for_aborted(mocker: MockerFixture) -> None:
     mock_client = mocker.Mock()
     job_id = "test-job-waiting"
