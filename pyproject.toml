@@ -1,9 +1,130 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
+requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "graphdatascience"
+description = "A Python client for the Neo4j Graph Data Science (GDS) library"
+dynamic = ["version"]
+authors = [{ name = "Neo4j", email = "team-gds@neo4j.org" }]
+readme = "README.md"
+license = "Apache-2.0"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "multimethod >= 1.0, < 3.0",
+    "neo4j >= 4.4.12, < 7.0",
+    "numpy < 2.4",
+    "pandas >= 1.0, < 3.0",
+    "pyarrow >= 17.0, < 23.0",
+    "textdistance >= 4.0, < 5.0",
+    "tqdm >= 4.0, < 5.0",
+    "typing-extensions >= 4.0, < 5.0",
+    "requests",
+    "tenacity >= 9.0",
+    "pydantic >= 2.11"
+]
+
+[project.urls]
+Homepage = "https://neo4j.com/product/graph-data-science/"
+Documentation = "https://neo4j.com/docs/graph-data-science-client/current/"
+Repository = "https://github.com/neo4j/graph-data-science-client"
+BugTracker = "https://github.com/neo4j/graph-data-science-client/issues"
+
+[project.optional-dependencies]
+networkx = ["networkx >= 2.0, < 4.0"]
+ogb = ["ogb >= 1.0, < 2.0"]
+rust-ext = ["neo4j-rust-ext >= 4.4.12, < 7.0"]
+
+
+[dependency-groups]
+# To install all development dependencies,
+# run `pip install --group dev -e .` inside repository root folder.#
+dev = [
+    {include-group = "dev-base"},
+    {include-group = "test"},
+    {include-group = "docs-ci"}
+]
+
+
+dev-base = [
+    "ruff == 0.11.7",
+    "mypy == 1.13.0",
+    "nbconvert == 7.16.4",
+    "pandas-stubs == 2.2.3.241009",
+    "tox == 4.30.2",
+    "types-setuptools == 75.8.0.20250110",
+    "enum-tools[sphinx] == 0.12.0",
+    "autodoc_pydantic",
+    "types-requests",
+    "types-tqdm",
+    "types-python-dateutil",
+    "python-dotenv==1.1.0"
+]
+test = [
+    "pytest == 8.3.3",
+    "requests_mock == 1.11.0",
+    "pytest_mock == 3.15.1",
+    "testcontainers >= 4.0, < 4.13.0",
+    "python-dateutil >= 2.9"
+]
+docs-ci = [
+    "sphinx == 7.3.7",
+    "enum-tools[sphinx] == 0.12.0",
+    "autodoc_pydantic"
+]
+notebook-base = [
+    "nbconvert==7.16.4",
+    "nbformat==5.10.4",
+    "nbclient==0.10.2",
+    "ipykernel==6.29.5",
+]
+notebook-aura-ci = [
+    {include-group = "notebook-base"},
+    "python-dotenv==1.1.0"
+]
+notebook-ci = [
+    {include-group = "notebook-base"},
+    "scipy == 1.14.0",
+    "torch==2.3.0",
+    "torch-scatter==2.1.1",
+    "torch-sparse==0.6.17",
+    "torch-geometric>=2.5.0"
+]
+
+publish = ["build", "twine"]
+
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = [
+    "graphdatascience*",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "graphdatascience.version.__version__" }
+
+[tool.setuptools.package-data]
+graphdatascience = ["py.typed", "resources/**/*.gzip"]
 
 [tool.ruff]
 line-length = 120
@@ -49,7 +170,9 @@ exclude = [
 
 [tool.ruff.lint]
 select = [
-    "E4", "E7", "E9", # default pycodestyle rules
-    "F", # flake8
-    "I" # isort
+    "E4",
+    "E7",
+    "E9", # default pycodestyle rules
+    "F",  # flake8
+    "I",  # isort
 ]
