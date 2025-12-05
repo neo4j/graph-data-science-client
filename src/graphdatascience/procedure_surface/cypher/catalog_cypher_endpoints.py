@@ -23,6 +23,7 @@ from graphdatascience.procedure_surface.cypher.catalog.utils import require_data
 from graphdatascience.query_runner.arrow_graph_constructor import ArrowGraphConstructor
 from graphdatascience.query_runner.cypher_graph_constructor import CypherGraphConstructor
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 from ...call_parameters import CallParameters
 from ..api.base_result import BaseResult
@@ -34,9 +35,8 @@ from .catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 
 
 class CatalogCypherEndpoints(CatalogEndpoints):
-    def __init__(self, cypher_runner: Neo4jQueryRunner, arrow_client: GdsArrowClient | None = None, arrow_client: GdsArrowClient | None = None):
-        self.cypher_runner = cypher_runner
-        self._arrow_client = arrow_client
+    def __init__(self, cypher_runner: Neo4jQueryRunner, arrow_client: GdsArrowClient | None = None):
+        self._cypher_runner = cypher_runner
         self._arrow_client = arrow_client
 
     def construct(
@@ -56,7 +56,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         graph_constructor: GraphConstructor
         if self._arrow_client is not None:
-            database = require_database(self._query_runner)
+            database = require_database(self._cypher_runner)
 
             graph_constructor = ArrowGraphConstructor(
                 database=database,
@@ -67,20 +67,20 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             )
         else:
             graph_constructor = CypherGraphConstructor(
-                query_runner=self._query_runner,
+                query_runner=self._cypher_runner,
                 graph_name=graph_name,
                 concurrency=concurrency,
                 undirected_relationship_types=undirected_relationship_types,
             )
 
         graph_constructor.run(node_dfs=nodes, relationship_dfs=relationships)
-        return GraphV2(name=graph_name, backend=CypherGraphBackend(graph_name, self._query_runner))
+        return GraphV2(name=graph_name, backend=CypherGraphBackend(graph_name, self._cypher_runner))
 
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
-        result = self.cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
+        result = self._cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
         return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
 
     def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
@@ -92,7 +92,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             else CallParameters(graphName=graph_name)
         )
 
-        result = self.cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
+        result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
         if len(result) > 0:
             return GraphInfo(**result.iloc[0].to_dict())
         else:
@@ -128,11 +128,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self.cypher_runner.call_procedure(
+        result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.project", params=params, logging=log_progress
         ).squeeze()
         project_result = GraphProjectResult(**result.to_dict())
-        return GraphWithProjectResult(get_graph(project_result.graph_name, self.cypher_runner), project_result)
+        return GraphWithProjectResult(get_graph(project_result.graph_name, self._cypher_runner), project_result)
 
     def filter(
         self,
@@ -158,10 +158,10 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self.cypher_runner.call_procedure(
+        result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.filter", params=params, logging=log_progress
         ).squeeze()
-        return GraphWithFilterResult(get_graph(graph_name, self.cypher_runner), GraphFilterResult(**result.to_dict()))
+        return GraphWithFilterResult(get_graph(graph_name, self._cypher_runner), GraphFilterResult(**result.to_dict()))
 
     def generate(
         self,
@@ -202,28 +202,28 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         params.ensure_job_id_in_config()
 
-        result = self.cypher_runner.call_procedure(
+        result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.generate", params=params, logging=log_progress
         ).squeeze()
         return GraphWithGenerationStats(
-            get_graph(graph_name, self.cypher_runner), GraphGenerationStats(**result.to_dict())
+            get_graph(graph_name, self._cypher_runner), GraphGenerationStats(**result.to_dict())
         )
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
-        return GraphSamplingCypherEndpoints(self.cypher_runner)
+        return GraphSamplingCypherEndpoints(self._cypher_runner)
 
     @property
     def node_labels(self) -> NodeLabelCypherEndpoints:
-        return NodeLabelCypherEndpoints(self.cypher_runner)
+        return NodeLabelCypherEndpoints(self._cypher_runner)
 
     @property
     def node_properties(self) -> NodePropertiesCypherEndpoints:
-        return NodePropertiesCypherEndpoints(self.cypher_runner, self._arrow_client)
+        return NodePropertiesCypherEndpoints(self._cypher_runner, self._arrow_client)
 
     @property
     def relationships(self) -> RelationshipCypherEndpoints:
-        return RelationshipCypherEndpoints(self.cypher_runner, self._arrow_client)
+        return RelationshipCypherEndpoints(self._cypher_runner, self._arrow_client)
 
 
 class GraphProjectResult(BaseResult):

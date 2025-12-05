@@ -11,6 +11,7 @@ from pyarrow import RecordBatch, flight
 
 from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 
 from ...procedure_surface.api.default_values import ALL_TYPES
 from ...procedure_surface.utils.config_converter import ConfigConverter
@@ -328,6 +329,7 @@ class GdsArrowClient:
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
         progress_callback: Callable[[int], None] = lambda x: None,
+        termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
         Uploads node data to the server for a given job.
@@ -342,8 +344,12 @@ class GdsArrowClient:
             The number of rows per batch
         progress_callback
             A callback function that is called with the number of rows uploaded after each batch
+        termination_flag
+            A termination flag to cancel the upload if requested
         """
-        self._upload_data("graph.project.fromTables.nodes", job_id, data, batch_size, progress_callback)
+        self._upload_data(
+            "graph.project.fromTables.nodes", job_id, data, batch_size, progress_callback, termination_flag
+        )
 
     def upload_relationships(
         self,
@@ -351,6 +357,7 @@ class GdsArrowClient:
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
         progress_callback: Callable[[int], None] = lambda x: None,
+        termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
         Uploads relationship data to the server for a given job.
@@ -365,8 +372,12 @@ class GdsArrowClient:
             The number of rows per batch
         progress_callback
             A callback function that is called with the number of rows uploaded after each batch
+        termination_flag
+            A termination flag to cancel the upload if requested
         """
-        self._upload_data("graph.project.fromTables.relationships", job_id, data, batch_size, progress_callback)
+        self._upload_data(
+            "graph.project.fromTables.relationships", job_id, data, batch_size, progress_callback, termination_flag
+        )
 
     def upload_triplets(
         self,
@@ -374,6 +385,7 @@ class GdsArrowClient:
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
         progress_callback: Callable[[int], None] = lambda x: None,
+        termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
         Uploads triplet data to the server for a given job.
@@ -388,8 +400,10 @@ class GdsArrowClient:
             The number of rows per batch
         progress_callback
             A callback function that is called with the number of rows uploaded after each batch
+        termination_flag
+            A termination flag to cancel the upload if requested
         """
-        self._upload_data("graph.project.fromTriplets", job_id, data, batch_size, progress_callback)
+        self._upload_data("graph.project.fromTriplets", job_id, data, batch_size, progress_callback, termination_flag)
 
     def abort_job(self, job_id: str) -> None:
         """
@@ -464,6 +478,7 @@ class GdsArrowClient:
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
         progress_callback: Callable[[int], None] = lambda x: None,
+        termination_flag: TerminationFlag | None = None,
     ) -> None:
         match data:
             case pyarrow.Table():
@@ -490,6 +505,10 @@ class GdsArrowClient:
 
         with put_stream:
             for partition in batches:
+                if termination_flag is not None and termination_flag.is_set():
+                    self.abort_job(job_id)  # closing the put_stream will raise an error
+                    break
+
                 upload_batch(partition)
                 ack_stream.read()
                 progress_callback(partition.num_rows)

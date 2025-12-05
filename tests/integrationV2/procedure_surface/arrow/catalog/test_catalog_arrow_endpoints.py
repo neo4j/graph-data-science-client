@@ -2,6 +2,7 @@ import datetime
 from typing import Generator
 
 import pytest
+from pandas import DataFrame
 from pyarrow import ArrowKeyError
 from pyarrow._flight import FlightServerError
 
@@ -96,6 +97,36 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
         assert len(endpoints.list("g")) == 1
     finally:
         endpoints.drop("g", fail_if_missing=False)
+
+
+def test_construct(arrow_client: AuthenticatedArrowClient) -> None:
+    nodes = DataFrame(
+        {
+            "nodeId": [0, 1],
+            "labels": [["A"], ["B"]],
+            "propA": [1337, 42.1],
+        }
+    )
+    relationships = DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 0],
+            "relationshipType": ["REL", "REL2"],
+            "relPropA": [1337.2, 42],
+        }
+    )
+
+    endpoints = CatalogArrowEndpoints(arrow_client)
+    with endpoints.construct(
+        graph_name="g",
+        nodes=nodes,
+        relationships=relationships,
+    ) as G:
+        assert G.name() == "g"
+        assert G.node_count() == 2
+        assert G.relationship_count() == 2
+
+        assert len(endpoints.list("g")) == 1
 
 
 def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
