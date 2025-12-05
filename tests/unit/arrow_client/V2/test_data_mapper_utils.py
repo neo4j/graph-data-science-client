@@ -1,7 +1,7 @@
 import pytest
 
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
-from graphdatascience.tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
+from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
 def test_deserialize_single_success() -> None:

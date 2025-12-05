@@ -6,7 +6,7 @@ from pytest_mock import MockerFixture
 from graphdatascience.arrow_client.v2.api_types import UNKNOWN_PROGRESS, JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.query_runner.termination_flag import TerminationFlag
-from graphdatascience.tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
+from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
 def test_run_job(mocker: MockerFixture) -> None:

@@ -6,8 +6,7 @@ from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
-
-from .conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 PIPE_NAME = "pipe"
 

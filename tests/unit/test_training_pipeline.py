@@ -4,8 +4,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
 from graphdatascience.pipeline.nr_training_pipeline import NRTrainingPipeline
-
-from .conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 PIPE_NAME = "pipe"
 

@@ -8,7 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNWriteResult
 from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )

@@ -9,8 +9,8 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider
 from graphdatascience.query_runner.query_mode import QueryMode
-from graphdatascience.tests.integration.conftest import AUTH, URI
 from graphdatascience.version import __version__
+from tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
 

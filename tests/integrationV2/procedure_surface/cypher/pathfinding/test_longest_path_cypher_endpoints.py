@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.cypher.pathfinding.longest_path_cypher_e
     LongestPathCypherEndpoints,
 )
 from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 # Create a DAG (Directed Acyclic Graph) for testing longest path
 dag_graph = """

@@ -8,11 +8,11 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.pathfinding.source_target_astar_endpoints import AStarWriteResult
 from graphdatascience.procedure_surface.arrow.pathfinding.source_target_astar_arrow_endpoints import AStarArrowEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
+from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
 
 graph = """
         CREATE

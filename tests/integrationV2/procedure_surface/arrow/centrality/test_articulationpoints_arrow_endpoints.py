@@ -14,7 +14,7 @@ from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoi
 from graphdatascience.procedure_surface.arrow.centrality.articulationpoints_arrow_endpoints import (
     ArticulationPointsArrowEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )

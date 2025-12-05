@@ -10,7 +10,7 @@ from graphdatascience.query_runner.progress.progress_provider import TaskWithPro
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.progress.query_progress_provider import QueryProgressProvider
 from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider, StaticProgressStore
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_call_through_functions() -> None:

@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.community.local_clustering_coefficient_cypher_endpoints import (
     LocalClusteringCoefficientCypherEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture

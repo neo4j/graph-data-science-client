@@ -1,7 +1,7 @@
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.v2.mutation_client import MutationClient
-from graphdatascience.tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
+from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
 def test_mutate_node_property_success(mocker: MockerFixture) -> None:

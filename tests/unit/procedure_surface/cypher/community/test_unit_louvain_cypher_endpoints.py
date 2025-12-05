@@ -8,8 +8,8 @@ from graphdatascience.procedure_surface.api.community.louvain_endpoints import (
     LouvainWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.community.louvain_cypher_endpoints import LouvainCypherEndpoints
-from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
+from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture

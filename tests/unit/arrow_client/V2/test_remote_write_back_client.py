@@ -4,7 +4,7 @@ from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
 @pytest.fixture

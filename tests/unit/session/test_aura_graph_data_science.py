@@ -3,7 +3,7 @@ from pytest_mock import MockerFixture
 from graphdatascience import ServerVersion
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_remote_projection_configuration(mocker: MockerFixture) -> None:

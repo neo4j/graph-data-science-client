@@ -8,7 +8,7 @@ from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.protocol.write_protocols import RemoteWriteBackV3
 from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_write_back_v3_progress_logging() -> None:

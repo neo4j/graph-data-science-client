@@ -7,8 +7,8 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.pathfinding.single_source_dijkstra_cypher_endpoints import (
     SingleSourceDijkstraCypherEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
-from graphdatascience.tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_name
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_name
 
 
 @pytest.fixture

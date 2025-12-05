@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints imp
     BetweennessWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.centrality.betweenness_arrow_endpoints import BetweennessArrowEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )

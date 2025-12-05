@@ -9,7 +9,7 @@ from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerC
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
     ScalePropertiesCypherEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 graph = """
         CREATE

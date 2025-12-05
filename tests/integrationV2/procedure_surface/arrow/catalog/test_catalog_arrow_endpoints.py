@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import Rel
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture

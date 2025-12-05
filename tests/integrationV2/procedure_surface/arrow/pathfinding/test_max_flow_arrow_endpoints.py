@@ -12,11 +12,11 @@ from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints impor
     MaxFlowWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_arrow_endpoints import MaxFlowArrowEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
+from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
 
 graph = """
         CREATE

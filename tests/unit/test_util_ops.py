@@ -3,7 +3,7 @@ from pandas import DataFrame
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_version(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:

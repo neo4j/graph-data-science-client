@@ -2,8 +2,7 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience.graph_data_science import GraphDataScience
-
-from .conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_graph_project_based_construct_without_arrow(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
