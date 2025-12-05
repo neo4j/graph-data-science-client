@@ -11,6 +11,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.api.catalog import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog import CatalogArrowEndpoints
+from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from tests.integrationV2.conftest import GdsSessionConnectionInfo, create_arrow_client, start_session
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
@@ -91,17 +92,19 @@ def test_project_from_triplets(arrow_client: AuthenticatedArrowClient, gds_arrow
         {"sourceNode": np.array([1, 2, 3], dtype=np.int64), "targetNode": np.array([4, 5, 6], dtype=np.int64)}
     )
 
-    job_id = gds_arrow_client.create_graph_from_triplets("triplets")
+    graph_name = "triplets"
+
+    job_id = gds_arrow_client.create_graph_from_triplets(graph_name)
     gds_arrow_client.upload_triplets(job_id, df)
     gds_arrow_client.triplet_load_done(job_id)
 
     while gds_arrow_client.job_status(job_id).status != "Done":
         pass
 
-    listing = CatalogArrowEndpoints(arrow_client).list("triplets")[0]
-    assert listing.node_count == 6
-    assert listing.relationship_count == 3
-    assert listing.graph_name == "triplets"
+    with get_graph(graph_name, arrow_client) as G:
+        assert G.node_count() == 6
+        assert G.relationship_count() == 3
+        assert G.name() == graph_name
 
 
 def test_project_from_triplets_interrupted(
