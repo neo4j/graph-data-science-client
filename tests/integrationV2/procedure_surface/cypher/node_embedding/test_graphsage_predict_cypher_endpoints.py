@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_train_cy
     GraphSageTrainCypherEndpoints,
 )
 from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture

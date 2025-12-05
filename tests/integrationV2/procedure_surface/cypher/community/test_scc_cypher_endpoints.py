@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.community.scc_endpoints import (
     SccWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.community.scc_cypher_endpoints import SccCypherEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture

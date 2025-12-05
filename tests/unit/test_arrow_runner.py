@@ -1,12 +1,11 @@
 import pytest
 from pyarrow.flight import FlightUnavailableError
 
+from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.retry_utils.retry_config import RetryConfigV2, StopConfig
-
-from ...arrow_client.arrow_endpoint_version import ArrowEndpointVersion
-from .conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_create(runner: CollectingQueryRunner) -> None:

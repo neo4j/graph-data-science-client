@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
 )
 

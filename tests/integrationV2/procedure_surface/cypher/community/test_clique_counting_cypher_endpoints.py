@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
 from graphdatascience.procedure_surface.cypher.community.clique_counting_cypher_endpoints import (
     CliqueCountingCypherEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ import pytest
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.simple_rel_embedding_model import SimpleRelEmbeddingModel
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 GRAPH_NAME = "g"
 NODE_PROP = "dummy_prop"

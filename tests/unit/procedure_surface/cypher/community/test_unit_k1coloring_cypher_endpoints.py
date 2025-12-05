@@ -9,8 +9,8 @@ from graphdatascience.procedure_surface.api.community.k1coloring_endpoints impor
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.cypher.community.k1coloring_cypher_endpoints import K1ColoringCypherEndpoints
-from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
+from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture

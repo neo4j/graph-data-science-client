@@ -10,11 +10,11 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endp
 from graphdatascience.procedure_surface.arrow.pathfinding.single_source_delta_arrow_endpoints import (
     DeltaSteppingArrowEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
+from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
 
 graph = """
         CREATE

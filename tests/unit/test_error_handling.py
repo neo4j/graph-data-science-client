@@ -10,7 +10,7 @@ from graphdatascience.server_version.compatible_with import (
     IncompatibleServerVersionError,
 )
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.unit.resources.example_server_endpoints import (
+from tests.unit.resources.example_server_endpoints import (
     EXAMPLE_SERVER_ENDPOINTS,
 )
 

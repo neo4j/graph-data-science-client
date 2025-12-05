@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.pathfinding.all_shortest_path_arrow_endpoints import (
     AllShortestPathArrowEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 graph = """
         CREATE

@@ -10,8 +10,8 @@ from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoi
 from graphdatascience.procedure_surface.cypher.centrality.articulationpoints_cypher_endpoints import (
     ArticulationPointsCypherEndpoints,
 )
-from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
+from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture

@@ -11,7 +11,7 @@ from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerC
 from graphdatascience.procedure_surface.arrow.catalog.scale_properties_arrow_endpoints import (
     ScalePropertiesArrowEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )

@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.plugin_v2_endpoints import PluginV2Endpoints
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.gds_api_spec import (
+from tests.integrationV2.procedure_surface.gds_api_spec import (
     EndpointSpec,
     EndpointWithModesSpec,
     Parameter,

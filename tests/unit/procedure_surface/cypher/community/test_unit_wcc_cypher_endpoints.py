@@ -9,8 +9,8 @@ from graphdatascience.procedure_surface.api.community.wcc_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
-from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
+from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture

@@ -4,8 +4,7 @@ from pandas import DataFrame
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
-
-from .conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_project_graph_native(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:

@@ -11,7 +11,7 @@ from graphdatascience.procedure_surface.api.community.local_clustering_coefficie
 from graphdatascience.procedure_surface.arrow.community.local_clustering_coefficient_arrow_endpoints import (
     LocalClusteringCoefficientArrowEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )

@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import (
     RelationshipArrowEndpoints,
 )
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
 )

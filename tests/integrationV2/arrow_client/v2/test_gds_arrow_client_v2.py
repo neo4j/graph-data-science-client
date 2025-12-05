@@ -10,8 +10,8 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.api.catalog import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog import CatalogArrowEndpoints
-from graphdatascience.tests.integrationV2.conftest import GdsSessionConnectionInfo, create_arrow_client, start_session
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+from tests.integrationV2.conftest import GdsSessionConnectionInfo, create_arrow_client, start_session
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture(scope="package")
@@ -38,7 +38,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
         (a: Node:Foo {prop1: 1, prop2: 42.0}),
         (b: Node {prop1: 2, prop2: 43.0}),
         (c: Node:Foo {prop1: 3, prop2: 44.0}),
-        
+
         (a)-[:REL {relX: 1, relY: 42}]->(b),
         (b)-[:REL {relX: 2, relY: 43}]->(c),
         (c)-[:REL2 {relX: 1, relY: 2}]->(a),

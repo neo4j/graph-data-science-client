@@ -6,7 +6,7 @@ from graphdatascience import QueryRunner
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansWriteResult
 from graphdatascience.procedure_surface.cypher.community.kmeans_cypher_endpoints import KMeansCypherEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture

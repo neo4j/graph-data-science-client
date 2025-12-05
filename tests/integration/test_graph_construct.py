@@ -7,7 +7,7 @@ from pandas import DataFrame
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, URI
+from tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
 

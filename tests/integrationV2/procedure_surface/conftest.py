@@ -15,8 +15,8 @@ from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.tests.integrationV2.conftest import inside_ci
-from graphdatascience.tests.integrationV2.procedure_surface.gds_api_spec import (
+from tests.integrationV2.conftest import inside_ci
+from tests.integrationV2.procedure_surface.gds_api_spec import (
     EndpointWithModesSpec,
     resolve_spec_from_file,
 )

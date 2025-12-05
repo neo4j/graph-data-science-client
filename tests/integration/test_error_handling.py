@@ -5,7 +5,7 @@ from neo4j import Driver, GraphDatabase
 
 from graphdatascience import GraphDataScience
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, URI, id_warning_pattern, is_neo4j_44
+from tests.integration.conftest import AUTH, URI, id_warning_pattern, is_neo4j_44
 
 GRAPH_NAME = "g"
 

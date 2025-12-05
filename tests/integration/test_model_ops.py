@@ -11,7 +11,7 @@ from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import is_neo4j_44
+from tests.integration.conftest import is_neo4j_44
 
 PIPE_NAME = "pipe"
 

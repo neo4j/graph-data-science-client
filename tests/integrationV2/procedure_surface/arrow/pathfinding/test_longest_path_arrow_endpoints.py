@@ -5,7 +5,7 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.pathfinding.longest_path_arrow_endpoints import LongestPathArrowEndpoints
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 # Create a DAG (Directed Acyclic Graph) for testing longest path
 dag_graph = """

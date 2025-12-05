@@ -6,7 +6,7 @@ from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.tests.integrationV2.procedure_surface.conftest import start_gds_plugin_database
+from tests.integrationV2.procedure_surface.conftest import start_gds_plugin_database
 
 
 @pytest.fixture(scope="package")

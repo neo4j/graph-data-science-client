@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpo
     RelationshipCypherEndpoints,
 )
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture

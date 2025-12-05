@@ -9,7 +9,7 @@ from graphdatascience.procedure_surface.arrow.pathfinding.k_spanning_tree_arrow_
     KSpanningTreeArrowEndpoints,
 )
 from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph_from_db,
 )
 

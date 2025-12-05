@@ -3,8 +3,7 @@ from pandas import DataFrame
 
 from graphdatascience.graph.graph_cypher_runner import GraphCypherRunner
 from graphdatascience.graph_data_science import GraphDataScience
-
-from .conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_simple(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:

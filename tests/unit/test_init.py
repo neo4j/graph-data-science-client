@@ -6,7 +6,7 @@ from pandas import DataFrame
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 GDS_INIT_VERSION_TESTDATA = [(2, 10, 0, "2.10.0"), (42, 1337, 99, "42.1337.99"), (4, 5, 6, "4.5.6-alpha2")]
 

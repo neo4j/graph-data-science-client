@@ -7,7 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Connection
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 class FakeArrowClient(GdsArrowClient):

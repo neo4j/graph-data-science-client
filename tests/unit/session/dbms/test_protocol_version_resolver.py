@@ -8,7 +8,7 @@ from graphdatascience.session.dbms.protocol_resolver import (
     UnsupportedProtocolVersion,
 )
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_protocol_versions() -> None:

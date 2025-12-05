@@ -4,7 +4,7 @@ import pytest
 
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
-from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
 @pytest.fixture

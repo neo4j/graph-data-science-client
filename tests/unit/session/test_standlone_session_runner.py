@@ -1,7 +1,7 @@
 import pytest
 
 from graphdatascience.query_runner.standalone_session_query_runner import StandaloneSessionQueryRunner
-from graphdatascience.tests.unit.conftest import CollectingQueryRunner
+from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_disallow_database_operations(runner: CollectingQueryRunner) -> None:

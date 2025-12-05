@@ -9,7 +9,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.tests.integration.conftest import AUTH, DB, URI, id_warning_pattern, is_neo4j_44
+from tests.integration.conftest import AUTH, DB, URI, id_warning_pattern, is_neo4j_44
 
 GRAPH_NAME = "g"
 

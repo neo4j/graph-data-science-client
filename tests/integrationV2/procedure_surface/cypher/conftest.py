@@ -10,7 +10,7 @@ from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.tests.integrationV2.procedure_surface.conftest import start_gds_plugin_database
+from tests.integrationV2.procedure_surface.conftest import start_gds_plugin_database
 
 
 @pytest.fixture(scope="package")

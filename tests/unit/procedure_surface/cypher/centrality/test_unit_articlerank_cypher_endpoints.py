@@ -8,8 +8,8 @@ from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints imp
     ArticleRankWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.centrality.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
-from graphdatascience.tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
-from graphdatascience.tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
+from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture
