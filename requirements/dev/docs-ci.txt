@@ -1,5 +1,0 @@
-sphinx == 7.2.6
-enum-tools[sphinx] == 0.12.0
-autodoc_pydantic
-
--r ../base/base.txt

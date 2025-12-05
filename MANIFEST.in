@@ -1,11 +1,3 @@
-include requirements/base/base.txt
-include requirements/base/ogb.txt
-include requirements/base/networkx.txt
-include requirements/base/rust-ext.txt
-include LICENSE
-prune scripts/
-prune tests/
-prune requirements/
 prune graphdatascience/resources/cora/serialize_cora.py
 prune graphdatascience/resources/imdb/serialize_imdb.py
 prune graphdatascience/resources/lastfm/serialize_lastfm.py
