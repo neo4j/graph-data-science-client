@@ -1,5 +1,0 @@
-nbconvert==7.16.4
-nbformat==5.10.4
-nbclient==0.10.2
-ipykernel==6.29.5
-python-dotenv==1.1.0
