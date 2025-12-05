@@ -5,7 +5,10 @@ from types import TracebackType
 from typing import Any, NamedTuple, Type
 from uuid import uuid4
 
+from pandas import DataFrame
+
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -29,6 +32,7 @@ from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endp
 )
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import RelationshipArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.progress.progress_bar import NoOpProgressBar, ProgressBar, TqdmProgressBar
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -51,15 +55,6 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
-
-    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
-        graph_name: str | None = None
-        if isinstance(G, GraphV2):
-            graph_name = G.name()
-        elif isinstance(G, str):
-            graph_name = G
-
-        return self._graph_backend.list(graph_name)
 
     def project(
         self,
@@ -137,6 +132,79 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
 
+    def construct(
+        self,
+        graph_name: str,
+        nodes: DataFrame | list[DataFrame],
+        relationships: DataFrame | list[DataFrame] | None = None,
+        concurrency: int | None = None,
+        undirected_relationship_types: list[str] | None = None,
+    ) -> GraphV2:
+        gds_arrow_client = GdsArrowClient(self._arrow_client)
+        job_client = JobClient()
+        termination_flag = TerminationFlag.create()
+
+        if self._show_progress:
+            progress_bar: ProgressBar = TqdmProgressBar(task_name="Constructing graph", relative_progress=0.0)
+        else:
+            progress_bar = NoOpProgressBar()
+
+        with progress_bar:
+            create_job_id: str = gds_arrow_client.create_graph(
+                graph_name=graph_name,
+                undirected_relationship_types=undirected_relationship_types or [],
+                concurrency=concurrency,
+            )
+            node_count = nodes.shape[0] if isinstance(nodes, DataFrame) else sum(df.shape[0] for df in nodes)
+            if isinstance(relationships, DataFrame):
+                rel_count = relationships.shape[0]
+            elif relationships is None:
+                rel_count = 0
+                relationships = []
+            else:
+                rel_count = sum(df.shape[0] for df in relationships)
+            total_count = node_count + rel_count
+
+            gds_arrow_client.upload_nodes(
+                create_job_id,
+                nodes,
+                progress_callback=lambda rows_imported: progress_bar.update(
+                    sub_tasks_description="Uploading nodes", progress=rows_imported / total_count, status="Running"
+                ),
+                termination_flag=termination_flag,
+            )
+
+            gds_arrow_client.node_load_done(create_job_id)
+
+            # skipping progress bar here as we have our own for the overall process
+            job_client.wait_for_job(
+                self._arrow_client,
+                create_job_id,
+                expected_status="RELATIONSHIP_LOADING",
+                termination_flag=termination_flag,
+                show_progress=False,
+            )
+
+            if rel_count > 0:
+                gds_arrow_client.upload_relationships(
+                    create_job_id,
+                    relationships,
+                    progress_callback=lambda rows_imported: progress_bar.update(
+                        sub_tasks_description="Uploading relationships",
+                        progress=rows_imported / total_count,
+                        status="Running",
+                    ),
+                    termination_flag=termination_flag,
+                )
+
+            gds_arrow_client.relationship_load_done(create_job_id)
+
+        # will produce a second progress bar to show graph construction on the server side
+        job_client.wait_for_job(
+            self._arrow_client, create_job_id, termination_flag=termination_flag, show_progress=True
+        )
+        return get_graph(graph_name, self._arrow_client)
+
     def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
         graph_name = G.name() if isinstance(G, GraphV2) else G
 
@@ -211,6 +279,15 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             get_graph(graph_name, self._arrow_client),
             GraphGenerationStats(**JobClient.get_summary(self._arrow_client, job_id)),
         )
+
+    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
+        graph_name: str | None = None
+        if isinstance(G, GraphV2):
+            graph_name = G.name()
+        elif isinstance(G, str):
+            graph_name = G
+
+        return self._graph_backend.list(graph_name)
 
     @property
     def sample(self) -> GraphSamplingEndpoints:

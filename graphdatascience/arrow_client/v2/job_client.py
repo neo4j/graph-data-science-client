@@ -39,20 +39,26 @@ class JobClient:
         client: AuthenticatedArrowClient,
         job_id: str,
         show_progress: bool,
+        expected_status: str | None = None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         progress_bar: TqdmProgressBar | None = None
 
+        def check_expected_status(status: JobStatus) -> bool:
+            return job_status.succeeded() if expected_status is None else status.status == expected_status
+
         if termination_flag is None:
             termination_flag = TerminationFlag.create()
 
-        for attempt in Retrying(retry=retry_if_result(lambda _: True), wait=wait_exponential(min=0.1, max=5)):
+        for attempt in Retrying(
+            retry=retry_if_result(lambda _: True), wait=wait_exponential(min=0.1, max=5), reraise=True
+        ):
             with attempt:
                 termination_flag.assert_running()
 
                 job_status = self.get_job_status(client, job_id)
 
-                if job_status.succeeded() or job_status.aborted():
+                if check_expected_status(job_status) or job_status.aborted():
                     if progress_bar:
                         progress_bar.finish(success=job_status.succeeded())
                     return

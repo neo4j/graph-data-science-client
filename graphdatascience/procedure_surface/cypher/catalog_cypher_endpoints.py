@@ -4,6 +4,8 @@ import builtins
 from types import TracebackType
 from typing import Any, NamedTuple, Type
 
+from pandas import DataFrame
+
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     CatalogEndpoints,
@@ -16,7 +18,11 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import CypherGraphBackend, get_graph
+from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
+from graphdatascience.query_runner.arrow_graph_constructor import ArrowGraphConstructor
+from graphdatascience.query_runner.cypher_graph_constructor import CypherGraphConstructor
+from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 from ...call_parameters import CallParameters
@@ -30,14 +36,51 @@ from .catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 
 class CatalogCypherEndpoints(CatalogEndpoints):
     def __init__(self, cypher_runner: Neo4jQueryRunner, arrow_client: GdsArrowClient | None = None):
-        self.cypher_runner = cypher_runner
+        self._cypher_runner = cypher_runner
         self._arrow_client = arrow_client
+
+    def construct(
+        self,
+        graph_name: str,
+        nodes: DataFrame | list[DataFrame],
+        relationships: DataFrame | list[DataFrame] | None = None,
+        concurrency: int | None = None,
+        undirected_relationship_types: list[str] | None = None,
+    ) -> GraphV2:
+        if isinstance(nodes, DataFrame):
+            nodes = [nodes]
+        if relationships is None:
+            relationships = []
+        elif isinstance(relationships, DataFrame):
+            relationships = [relationships]
+
+        graph_constructor: GraphConstructor
+        if self._arrow_client is not None:
+            database = require_database(self._cypher_runner)
+
+            graph_constructor = ArrowGraphConstructor(
+                database=database,
+                graph_name=graph_name,
+                flight_client=self._arrow_client,
+                concurrency=concurrency,
+                undirected_relationship_types=undirected_relationship_types,
+            )
+        else:
+            graph_constructor = CypherGraphConstructor(
+                query_runner=self._cypher_runner,
+                graph_name=graph_name,
+                concurrency=concurrency,
+                undirected_relationship_types=undirected_relationship_types,
+            )
+
+        graph_constructor.run(node_dfs=nodes, relationship_dfs=relationships)
+        return GraphV2(name=graph_name, backend=CypherGraphBackend(graph_name, self._cypher_runner))
 
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
-        result = self.cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
+        result = self._cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
         return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
 
     def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
@@ -49,7 +92,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             else CallParameters(graphName=graph_name)
         )
 
-        result = self.cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
+        result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
         if len(result) > 0:
             return GraphInfo(**result.iloc[0].to_dict())
         else:
@@ -85,11 +128,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self.cypher_runner.call_procedure(
+        result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.project", params=params, logging=log_progress
         ).squeeze()
         project_result = GraphProjectResult(**result.to_dict())
-        return GraphWithProjectResult(get_graph(project_result.graph_name, self.cypher_runner), project_result)
+        return GraphWithProjectResult(get_graph(project_result.graph_name, self._cypher_runner), project_result)
 
     def filter(
         self,
@@ -115,10 +158,10 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self.cypher_runner.call_procedure(
+        result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.filter", params=params, logging=log_progress
         ).squeeze()
-        return GraphWithFilterResult(get_graph(graph_name, self.cypher_runner), GraphFilterResult(**result.to_dict()))
+        return GraphWithFilterResult(get_graph(graph_name, self._cypher_runner), GraphFilterResult(**result.to_dict()))
 
     def generate(
         self,
@@ -159,28 +202,28 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         params.ensure_job_id_in_config()
 
-        result = self.cypher_runner.call_procedure(
+        result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.generate", params=params, logging=log_progress
         ).squeeze()
         return GraphWithGenerationStats(
-            get_graph(graph_name, self.cypher_runner), GraphGenerationStats(**result.to_dict())
+            get_graph(graph_name, self._cypher_runner), GraphGenerationStats(**result.to_dict())
         )
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
-        return GraphSamplingCypherEndpoints(self.cypher_runner)
+        return GraphSamplingCypherEndpoints(self._cypher_runner)
 
     @property
     def node_labels(self) -> NodeLabelCypherEndpoints:
-        return NodeLabelCypherEndpoints(self.cypher_runner)
+        return NodeLabelCypherEndpoints(self._cypher_runner)
 
     @property
     def node_properties(self) -> NodePropertiesCypherEndpoints:
-        return NodePropertiesCypherEndpoints(self.cypher_runner, self._arrow_client)
+        return NodePropertiesCypherEndpoints(self._cypher_runner, self._arrow_client)
 
     @property
     def relationships(self) -> RelationshipCypherEndpoints:
-        return RelationshipCypherEndpoints(self.cypher_runner, self._arrow_client)
+        return RelationshipCypherEndpoints(self._cypher_runner, self._arrow_client)
 
 
 class GraphProjectResult(BaseResult):
