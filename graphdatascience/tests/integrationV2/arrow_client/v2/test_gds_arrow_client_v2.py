@@ -4,12 +4,14 @@ from typing import Generator
 import numpy as np
 import pandas as pd
 import pytest
+from pyarrow.flight import FlightCancelledError
 from testcontainers.core.network import Network
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.api.catalog import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog import CatalogArrowEndpoints
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.tests.integrationV2.conftest import GdsSessionConnectionInfo, create_arrow_client, start_session
 from graphdatascience.tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -38,7 +40,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
         (a: Node:Foo {prop1: 1, prop2: 42.0}),
         (b: Node {prop1: 2, prop2: 43.0}),
         (c: Node:Foo {prop1: 3, prop2: 44.0}),
-        
+
         (a)-[:REL {relX: 1, relY: 42}]->(b),
         (b)-[:REL {relX: 2, relY: 43}]->(c),
         (c)-[:REL2 {relX: 1, relY: 2}]->(a),
@@ -100,6 +102,21 @@ def test_project_from_triplets(arrow_client: AuthenticatedArrowClient, gds_arrow
     assert listing.node_count == 6
     assert listing.relationship_count == 3
     assert listing.graph_name == "triplets"
+
+
+def test_project_from_triplets_interrupted(
+    arrow_client: AuthenticatedArrowClient, gds_arrow_client: GdsArrowClient
+) -> None:
+    df = pd.DataFrame(
+        {"sourceNode": np.array([1, 2, 3], dtype=np.int64), "targetNode": np.array([4, 5, 6], dtype=np.int64)}
+    )
+
+    termination_flag = TerminationFlag.create()
+    termination_flag.set()
+
+    job_id = gds_arrow_client.create_graph_from_triplets("triplets")
+    with pytest.raises(FlightCancelledError, match=".*Arrow process 'triplets' was aborted.*"):
+        gds_arrow_client.upload_triplets(job_id, df, termination_flag=termination_flag)
 
 
 def test_project_from_tables(arrow_client: AuthenticatedArrowClient, gds_arrow_client: GdsArrowClient) -> None:

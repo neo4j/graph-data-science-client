@@ -51,7 +51,7 @@ def catalog_endpoints(
 
 @pytest.fixture
 def catalog_endpoints_arrow(
-    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient
+    query_runner: Neo4jQueryRunner, gds_arrow_client: GdsArrowClient
 ) -> Generator[CatalogCypherEndpoints, None, None]:
     yield CatalogCypherEndpoints(query_runner, gds_arrow_client)
 
@@ -245,7 +245,7 @@ def test_graph_construct_arrow_v1(catalog_endpoints_arrow: CatalogCypherEndpoint
         }
     )
 
-    catalog_endpoints_arrow._query_runner.set_database("neo4j")
+    catalog_endpoints_arrow._cypher_runner.set_database("neo4j")
 
     with catalog_endpoints_arrow.construct(
         graph_name="constructed_graph",

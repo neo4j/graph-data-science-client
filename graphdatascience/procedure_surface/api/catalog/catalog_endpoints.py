@@ -22,7 +22,7 @@ class CatalogEndpoints(ABC):
         graph_name: str,
         nodes: DataFrame | list[DataFrame],
         relationships: DataFrame | list[DataFrame] | None = None,
-        concurrency: int = 4,
+        concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
     ) -> GraphV2:
         """Construct a graph from a list of node and relationship dataframes.

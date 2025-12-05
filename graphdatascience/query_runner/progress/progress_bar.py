@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Any, Type
 
@@ -8,7 +9,35 @@ from tqdm.auto import tqdm
 from graphdatascience.query_runner.progress.progress_provider import TaskWithProgress
 
 
-class TqdmProgressBar:
+class ProgressBar(ABC):
+    @abstractmethod
+    def __enter__(self) -> ProgressBar:
+        pass
+
+    @abstractmethod
+    def __exit__(
+        self,
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        pass
+
+    @abstractmethod
+    def update(
+        self,
+        status: str,
+        progress: float | None,
+        sub_tasks_description: str | None = None,
+    ) -> None:
+        pass
+
+    @abstractmethod
+    def finish(self, success: bool) -> None:
+        pass
+
+
+class TqdmProgressBar(ProgressBar):
     def __init__(self, task_name: str, relative_progress: float | None, bar_options: dict[str, Any] = {}):
         root_task_name = task_name
         if relative_progress is None:  # Qualitative progress report
@@ -68,3 +97,27 @@ class TqdmProgressBar:
             return float(task.progress_percent.removesuffix("%"))
         except ValueError:
             return None
+
+
+class NoOpProgressBar(ProgressBar):
+    def __enter__(self: NoOpProgressBar) -> NoOpProgressBar:
+        return self
+
+    def __exit__(
+        self,
+        exception_type: Type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        pass
+
+    def update(
+        self,
+        status: str,
+        progress: float | None,
+        sub_tasks_description: str | None = None,
+    ) -> None:
+        pass
+
+    def finish(self, success: bool) -> None:
+        pass
