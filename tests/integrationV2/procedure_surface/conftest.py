@@ -121,7 +121,7 @@ def start_gds_plugin_database(
 ) -> Generator[Neo4jContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
-    dotenv.load_dotenv("graphdatascience/tests/test.env", override=True)
+    dotenv.load_dotenv("tests/test.env", override=True)
     GDS_LICENSE_KEY = os.getenv("GDS_LICENSE_KEY")
 
     db_logs_dir = logs_dir / "cypher_surface" / "db_logs"
