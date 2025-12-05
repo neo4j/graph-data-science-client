@@ -1,4 +1,3 @@
-# graphdatascience/tests/test_authenticated_flight_client.py
 import pytest
 from pyarrow._flight import FlightInternalError, FlightTimedOutError, FlightUnavailableError
 
