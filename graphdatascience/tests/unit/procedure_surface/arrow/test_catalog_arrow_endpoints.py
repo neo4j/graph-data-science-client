@@ -7,7 +7,7 @@ from pytest_mock import MockerFixture
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import JobStatus
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
-from graphdatascience.tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
+from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
 def test_construct_with_no_rels(mocker: MockerFixture) -> None:
