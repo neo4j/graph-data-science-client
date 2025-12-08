@@ -506,8 +506,9 @@ class GdsArrowClient:
         with put_stream:
             for partition in batches:
                 if termination_flag is not None and termination_flag.is_set():
-                    self.abort_job(job_id)  # closing the put_stream will raise an error
-                    break
+                    self.abort_job(job_id)
+                    # closing the put_stream should raise an error. this is a safeguard to always signal the termination to the user.
+                    raise RuntimeError(f"Upload for job '{job_id}' was aborted via termination flag.")
 
                 upload_batch(partition)
                 ack_stream.read()
