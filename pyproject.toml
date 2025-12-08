@@ -37,7 +37,7 @@ dependencies = [
     "typing-extensions >= 4.0, < 5.0",
     "requests",
     "tenacity >= 9.0",
-    "pydantic >= 2.11"
+    "pydantic >= 2.11",
 ]
 
 [project.urls]
@@ -56,9 +56,10 @@ rust-ext = ["neo4j-rust-ext >= 4.4.12, < 7.0"]
 # To install all development dependencies,
 # run `pip install --group dev -e .` inside repository root folder.#
 dev = [
-    {include-group = "dev-base"},
-    {include-group = "test"},
-    {include-group = "docs-ci"}
+    "tox>4.24",
+    { include-group = "dev-base" },
+    { include-group = "test" },
+    { include-group = "docs-ci" },
 ]
 
 
@@ -74,19 +75,19 @@ dev-base = [
     "types-requests",
     "types-tqdm",
     "types-python-dateutil",
-    "python-dotenv==1.1.0"
+    "python-dotenv==1.1.0",
 ]
 test = [
     "pytest == 8.3.3",
     "requests_mock == 1.11.0",
     "pytest_mock == 3.15.1",
     "testcontainers >= 4.0, < 4.13.0",
-    "python-dateutil >= 2.9"
+    "python-dateutil >= 2.9",
 ]
 docs-ci = [
     "sphinx == 7.3.7",
     "enum-tools[sphinx] == 0.12.0",
-    "autodoc_pydantic"
+    "autodoc_pydantic",
 ]
 notebook-base = [
     "nbconvert==7.16.4",
@@ -94,17 +95,14 @@ notebook-base = [
     "nbclient==0.10.2",
     "ipykernel==6.29.5",
 ]
-notebook-aura-ci = [
-    {include-group = "notebook-base"},
-    "python-dotenv==1.1.0"
-]
+notebook-aura-ci = [{ include-group = "notebook-base" }, "python-dotenv==1.1.0"]
 notebook-ci = [
-    {include-group = "notebook-base"},
+    { include-group = "notebook-base" },
     "scipy == 1.14.0",
     "torch==2.3.0",
     "torch-scatter==2.1.1",
     "torch-sparse==0.6.17",
-    "torch-geometric>=2.5.0"
+    "torch-geometric>=2.5.0",
 ]
 
 publish = ["build", "twine"]
@@ -116,9 +114,7 @@ zip-safe = false
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = [
-    "graphdatascience*",
-]
+include = ["graphdatascience*"]
 
 [tool.setuptools.dynamic]
 version = { attr = "graphdatascience.version.__version__" }
