@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-from pathlib import Path
 import re
-import requests
+from pathlib import Path
+
 import colorama
+import requests
 
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -41,6 +42,7 @@ def latest_released_plugin_version() -> ServerVersion:
 
 def verify_installation_docs(repo_dir: Path, client_version: str, min_server_version: str) -> None:
     latest_server_version = latest_released_plugin_version()
+    print("Verifying installation.adoc...")
     print(f"Latest released GDS Plugin version: `{latest_server_version}`")
 
     installation_doc_path = repo_dir / "doc" / "modules" / "ROOT" / "pages" / "installation.adoc"
@@ -86,11 +88,15 @@ def verify_installation_docs(repo_dir: Path, client_version: str, min_server_ver
             f"Found entry:\n{latest_documented_server_compat}"
         )
 
+    print(
+        f"✅ installation.adoc is up to date with client version {stable_library_version} and server version {min_server_version}"
+    )
+
 
 def main() -> None:
-    print("Client Pre-Release Checker")
+    print(f"{colorama.Style.BRIGHT}Client Pre-Release Checker{colorama.Style.RESET_ALL}")
 
-    repo_dir = Path(__file__).parent.parent
+    repo_dir = Path(__file__).parent.parent.parent
     version = read_library_version(repo_dir)
     print(f"Version to be released: `{colorama.Fore.GREEN}{version}{colorama.Style.RESET_ALL}`")
 
