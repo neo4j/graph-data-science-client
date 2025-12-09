@@ -76,6 +76,7 @@ dev-base = [
     "types-tqdm",
     "types-python-dateutil",
     "python-dotenv==1.1.0",
+    "types-colorama",
 ]
 test = [
     "pytest == 8.3.3",
