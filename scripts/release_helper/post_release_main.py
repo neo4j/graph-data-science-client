@@ -97,12 +97,11 @@ def update_changelog(new_version: PythonLibraryVersion) -> None:
 
     changelog_file.write_text(new_changelog_body)
 
-    print(f"✅ Updated {changelog_file} for version {new_version}")
+    print(f"✅ Updated {changelog_file.relative_to(REPO_ROOT)} for version {new_version}")
 
 
-def update_publish_yml(repo_root: Path, released_version: PythonLibraryVersion) -> None:
-    """Add new release branch to publish.yml."""
-    publish_file = repo_root / "doc" / "publish.yml"
+def update_publish_yml(released_version: PythonLibraryVersion) -> None:
+    publish_file = REPO_ROOT / "doc" / "publish.yml"
     content = publish_file.read_text()
 
     # Extract major.minor from released version
@@ -110,34 +109,44 @@ def update_publish_yml(repo_root: Path, released_version: PythonLibraryVersion) 
 
     # Update branches list
     updated = re.sub(r"(branches:\s*\[)([^\]]*)", lambda m: f"{m.group(1)}{m.group(2)}, '{new_branch}'", content)
+    updated = re.sub(r"api-version: [^']*", f"version: {released_version.major_minor()}", updated)
 
     publish_file.write_text(updated)
-    print(f"✓ Updated {publish_file.relative_to(repo_root)} - added branch '{new_branch}'")
+    print(f"✓ Updated {publish_file.relative_to(REPO_ROOT)} - added branch '{new_branch}'")
 
 
-def update_antora_yml(repo_root: Path, new_version: str) -> None:
-    """Update version in antora.yml."""
-    antora_file = repo_root / "doc" / "antora.yml"
+def update_preview_yml(released_version: PythonLibraryVersion) -> None:
+    preview_file = REPO_ROOT / "doc" / "preview.yml"
+    content = preview_file.read_text()
+
+    updated = re.sub(r"api-version: [^']*", f"version: {released_version.major_minor()}", content)
+
+    preview_file.write_text(updated)
+    print(f"✓ Updated {preview_file.relative_to(REPO_ROOT)} to version {released_version}")
+
+
+def update_antora_yml(released_version: PythonLibraryVersion) -> None:
+    antora_file = REPO_ROOT / "doc" / "antora.yml"
     content = antora_file.read_text()
 
-    updated = re.sub(r"version: '[^']*'", f"version: '{new_version}'", content)
-    updated = re.sub(r"docs-version: '[^']*'", f"docs-version: '{new_version}'", updated)
+    updated = re.sub(r"version: '[^']*'", f"version: '{released_version}'", content)
+    updated = re.sub(r"docs-version: '[^']*'", f"docs-version: '{released_version}'", updated)
 
     antora_file.write_text(updated)
-    print(f"✓ Updated {antora_file.relative_to(repo_root)} to version {new_version}")
+    print(f"✓ Updated {antora_file.relative_to(REPO_ROOT)} to version {released_version}")
 
 
-def update_package_json(repo_root: Path, new_version: str) -> None:
+def update_package_json(new_version: PythonLibraryVersion) -> None:
     """Update version in package.json."""
-    package_file = repo_root / "doc" / "package.json"
+    package_file = REPO_ROOT / "doc" / "package.json"
     content = package_file.read_text()
 
     # Set to preview version
-    preview_version = f"{new_version}-preview"
+    preview_version = f"{new_version.major_minor()}-preview"
     updated = re.sub(r'"version":\s*"[^"]*"', f'"version": "{preview_version}"', content)
 
     package_file.write_text(updated)
-    print(f"✓ Updated {package_file.relative_to(repo_root)} to version {preview_version}")
+    print(f"✓ Updated {package_file.relative_to(REPO_ROOT)} to version {preview_version}")
 
 
 def main() -> None:
@@ -152,15 +161,16 @@ def main() -> None:
 
     print("\nStarting post-release tasks...")
 
-    update_version_py(next_version)
+    # update_version_py(next_version)
 
     if not current_version.is_alpha():
         update_changelog(next_version)
+        update_antora_yml(current_version)
         # update_publish_yml(current_version)
-        # update_antora_yml(next_version)
-        # TODO update preview.yml
-        # update_package_json(next_version)
+        # update_preview_yml(current_version)
+        update_package_json(next_version)
 
+        # TODO installation doc
         # update_installation_adoc(current_version, next_version)
 
     print("\n✅ Post-release tasks completed!")
