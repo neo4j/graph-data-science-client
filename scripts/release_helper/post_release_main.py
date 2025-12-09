@@ -100,7 +100,7 @@ def update_changelog(new_version: PythonLibraryVersion) -> None:
     print(f"✅ Updated {changelog_file.relative_to(REPO_ROOT)} for version {new_version}")
 
 
-def update_publish_yml(released_version: PythonLibraryVersion) -> None:
+def update_publish_yml(released_version: PythonLibraryVersion, next_version: PythonLibraryVersion) -> None:
     publish_file = REPO_ROOT / "doc" / "publish.yml"
     content = publish_file.read_text()
 
@@ -109,17 +109,20 @@ def update_publish_yml(released_version: PythonLibraryVersion) -> None:
 
     # Update branches list
     updated = re.sub(r"(branches:\s*\[)([^\]]*)", lambda m: f"{m.group(1)}{m.group(2)}, '{new_branch}'", content)
-    updated = re.sub(r"api-version: [^']*", f"version: {released_version.major_minor()}", updated)
+    # Update api-version to next version
+    updated = re.sub(r"api-version:\s*\d+\.\d+", f"api-version: {next_version.major_minor()}", updated)
 
     publish_file.write_text(updated)
-    print(f"✓ Updated {publish_file.relative_to(REPO_ROOT)} - added branch '{new_branch}'")
+    print(
+        f"✓ Updated {publish_file.relative_to(REPO_ROOT)} - added branch '{new_branch}' and set api-version to {next_version.major_minor()}"
+    )
 
 
 def update_preview_yml(released_version: PythonLibraryVersion) -> None:
     preview_file = REPO_ROOT / "doc" / "preview.yml"
     content = preview_file.read_text()
 
-    updated = re.sub(r"api-version: [^']*", f"version: {released_version.major_minor()}", content)
+    updated = re.sub(r"api-version: (\d+)\.(\d+)", f"api-version: {released_version.major_minor()}", content)
 
     preview_file.write_text(updated)
     print(f"✓ Updated {preview_file.relative_to(REPO_ROOT)} to version {released_version}")
@@ -149,6 +152,28 @@ def update_package_json(new_version: PythonLibraryVersion) -> None:
     print(f"✓ Updated {package_file.relative_to(REPO_ROOT)} to version {preview_version}")
 
 
+def update_installation_adoc(next_version: PythonLibraryVersion) -> None:
+    new_compat_table_entry = f"""
+.1+<.^| {next_version.major_minor()}
+.1+<.^| >= 2.6, < 2.24
+.1+<.^| >= 3.10, < 3.13
+.1+<.^| >= 4.4.12, < 7.0.0
+    """.strip()
+
+    installation_file = REPO_ROOT / "doc" / "modules" / "ROOT" / "pages" / "installation.adoc"
+    content = installation_file.read_text()
+
+    version_table_regex = r"(?s)(\| Python Client \| GDS version[^\n]*)(.*)(\|===)"
+    match = re.search(version_table_regex, content, re.MULTILINE)
+    if not match:
+        raise ValueError("Could not find installation table in installation.adoc")
+    version_table = match.group(2)
+    updated_version_table = f"\n{new_compat_table_entry}\n" + version_table
+    updated = content.replace(version_table, updated_version_table)
+    installation_file.write_text(updated)
+    print(f"✓ Updated {installation_file.relative_to(REPO_ROOT)} with new version {next_version}")
+
+
 def main() -> None:
     # Get current version
     current_version = read_library_version()
@@ -165,13 +190,14 @@ def main() -> None:
 
     if not current_version.is_alpha():
         update_changelog(next_version)
-        update_antora_yml(current_version)
-        # update_publish_yml(current_version)
-        # update_preview_yml(current_version)
+
         update_package_json(next_version)
 
-        # TODO installation doc
-        # update_installation_adoc(current_version, next_version)
+        update_antora_yml(current_version)
+        update_publish_yml(current_version, next_version)
+        update_preview_yml(current_version)
+
+        update_installation_adoc(next_version)
 
     print("\n✅ Post-release tasks completed!")
     print("\nNext steps:")
