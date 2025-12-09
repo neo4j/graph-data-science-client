@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+
+from pathlib import Path
+import re
+import requests
+import colorama
+
+from graphdatascience.server_version.server_version import ServerVersion
+
+
+def read_library_version(repo_dir: Path) -> str:
+    version_file = (repo_dir / "src" / "graphdatascience" / "version.py").read_text()
+    version_regex = r'^__version__\s*=\s*"([^"]*)"'
+
+    match = re.search(version_regex, version_file)
+    if not match:
+        raise ValueError("Could not find version string in version.py")
+
+    return match.group(1)
+
+
+def read_min_server_version(repo_dir: Path) -> str:
+    version_file = (repo_dir / "src" / "graphdatascience" / "version.py").read_text()
+    version_regex = r'__min_server_version__\s*=\s*"([^"]*)"'
+
+    match = re.search(version_regex, version_file)
+    if not match:
+        raise ValueError("Could not find version string in version.py")
+
+    return match.group(1)
+
+
+def latest_released_plugin_version() -> ServerVersion:
+    resp = requests.get("https://graphdatascience.ninja/versions.json")
+    resp.raise_for_status()
+    plugin_versions_json = resp.json()
+    versions = [ServerVersion.from_string(v["version"]) for v in plugin_versions_json]
+    latest_version = max(versions)
+    return latest_version
+
+
+def verify_installation_docs(repo_dir: Path, client_version: str, min_server_version: str) -> None:
+    latest_server_version = latest_released_plugin_version()
+    print(f"Latest released GDS Plugin version: `{latest_server_version}`")
+
+    installation_doc_path = repo_dir / "doc" / "modules" / "ROOT" / "pages" / "installation.adoc"
+    installation_doc = installation_doc_path.read_text()
+
+    version_table_regex = r"(?s)(\| Python Client \| GDS version[^\n]*)(.*)(\|===)"
+    match = re.search(version_table_regex, installation_doc, re.MULTILINE)
+    if not match:
+        raise ValueError("Could not find installation table in installation.adoc")
+    version_table = match.group(2)
+
+    latest_compat_entry = version_table.split("\n\n")[0]
+    latest_compat_entries = [i for i in latest_compat_entry.splitlines() if len(i.strip()) > 0]
+    latest_documented_client_version = latest_compat_entries[0]
+    latest_documented_server_compat = latest_compat_entries[1]
+
+    stable_library_version = client_version.split("a")[0]
+
+    # Verify that the latest library version is mentioned
+    if stable_library_version not in latest_documented_client_version:
+        raise ValueError(
+            f"Installation docs do not mention the latest python library version {stable_library_version}.\n"
+            f"Found entry:\n{latest_documented_client_version}"
+        )
+
+    # Verify that the minimum server version is mentioned
+    min_server_version_minor = ".".join(min_server_version.split(".")[:2])
+    if (
+        min_server_version not in latest_documented_server_compat
+        and min_server_version_minor not in latest_documented_server_compat
+    ):
+        raise ValueError(
+            f"Installation docs do not mention the minimum server version {min_server_version} or {min_server_version_minor}.\n"
+            f"Found entry:\n{latest_documented_server_compat}"
+        )
+
+    # Verify that the latest server version is mentioned
+    next_server_version = ServerVersion(latest_server_version.major, latest_server_version.minor + 1, 0)
+    expected_next_server_version_str = f"< {next_server_version.major}.{next_server_version.minor}"
+    if expected_next_server_version_str not in latest_documented_server_compat:
+        raise ValueError(
+            f"Installation docs do not mention the next upcoming plugin version {expected_next_server_version_str}.\n"
+            f"Found entry:\n{latest_documented_server_compat}"
+        )
+
+
+def main() -> None:
+    print("Client Pre-Release Checker")
+
+    repo_dir = Path(__file__).parent.parent
+    version = read_library_version(repo_dir)
+    print(f"Version to be released: `{colorama.Fore.GREEN}{version}{colorama.Style.RESET_ALL}`")
+
+    min_server_version = read_min_server_version(repo_dir)
+    print(f"Minimum GDS Plugin version required: `{min_server_version}`")
+
+    verify_installation_docs(repo_dir, version, min_server_version)
+
+
+if __name__ == "__main__":
+    main()
