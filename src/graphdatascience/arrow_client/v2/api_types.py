@@ -34,7 +34,7 @@ class JobStatus(ArrowBaseModel):
         return None
 
     def aborted(self) -> bool:
-        return self.status == "Aborted"
+        return self.status.lower() == "aborted"
 
     def succeeded(self) -> bool:
         return self.status.lower() == "done"
