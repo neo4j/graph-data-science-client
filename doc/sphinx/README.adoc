@@ -17,6 +17,10 @@ Configure stuff in `doc/sphinx/source/conf.py`.
 
 Add more or edit content in this file when you learn something new.
 
+== Sphinx Docker image
+
+If you run Sphinx from a Docker image (for example in a CI build), make sure that the included version of Python is supported.
+
 == Update `algorithms.rst`
 
 The `algorithms.json` file contains information on each algorithm-related function.
