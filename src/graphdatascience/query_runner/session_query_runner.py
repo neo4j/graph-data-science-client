@@ -13,8 +13,8 @@ from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.server_version.server_version import ServerVersion
 
-from ..arrow_client.error_handler import handle_flight_error
 from ..call_parameters import CallParameters
+from ..procedure_surface.arrow.error_handler import handle_flight_error
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 from .protocol.project_protocols import ProjectProtocol
 from .protocol.write_protocols import WriteProtocol

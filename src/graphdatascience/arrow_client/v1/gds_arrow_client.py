@@ -15,8 +15,8 @@ from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVe
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_single
 
+from ...procedure_surface.arrow.error_handler import handle_flight_error
 from ...semantic_version.semantic_version import SemanticVersion
-from ..error_handler import handle_flight_error
 
 
 class GdsArrowClient:

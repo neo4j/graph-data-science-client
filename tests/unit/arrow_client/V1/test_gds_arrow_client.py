@@ -15,8 +15,8 @@ from pyarrow.flight import (
 )
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.error_handler import handle_flight_error
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
+from graphdatascience.procedure_surface.arrow.error_handler import handle_flight_error
 from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 
