@@ -30,6 +30,7 @@ antora:
   extensions:
     - "@neo4j-antora/table-footnotes"
     - "@neo4j-antora/roles-labels"
+    - "@neo4j-antora/xref-hash-validator"
 
 asciidoc:
   extensions:
