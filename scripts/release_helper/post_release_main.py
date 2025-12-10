@@ -150,19 +150,19 @@ def update_preview_yml(released_version: PythonLibraryVersion) -> None:
     print(f"✅ Updated {preview_file.relative_to(REPO_ROOT)} to version {released_version}")
 
 
-def update_antora_yml(released_version: PythonLibraryVersion) -> None:
+def update_antora_yml(next_version: PythonLibraryVersion) -> None:
     antora_file = REPO_ROOT / "doc" / "antora.yml"
     content = antora_file.read_text()
 
-    updated = re.sub(r"version: '[^']*'", f"version: '{released_version}'", content)
-    updated = re.sub(r"docs-version: '[^']*'", f"docs-version: '{released_version}'", updated)
+    updated = re.sub(r"version: '[^']*'", f"version: '{next_version}'", content)
+    updated = re.sub(r"docs-version: '[^']*'", f"docs-version: '{next_version}'", updated)
 
     if updated == content:
         print(f"☑️ No changes needed for {antora_file.relative_to(REPO_ROOT)}")
         return
 
     antora_file.write_text(updated)
-    print(f"✅ Updated {antora_file.relative_to(REPO_ROOT)} to version {released_version}")
+    print(f"✅ Updated {antora_file.relative_to(REPO_ROOT)} to version {next_version}")
 
 
 def update_package_json(new_version: PythonLibraryVersion) -> None:
@@ -232,7 +232,7 @@ def main() -> None:
 
         update_package_json(next_version)
 
-        update_antora_yml(released_version)
+        update_antora_yml(next_version)
         update_publish_yml(released_version, next_version)
         update_preview_yml(released_version)
 
