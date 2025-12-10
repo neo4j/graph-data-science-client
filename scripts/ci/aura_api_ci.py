@@ -19,7 +19,7 @@ class AuraApiCI:
             self.token_type = json["token_type"]
 
         def is_expired(self) -> bool:
-            return self.expires_at >= int(time.time())
+            return self.expires_at <= int(time.time())
 
     def __init__(self, client_id: str, client_secret: str, project_id: str | None = None) -> None:
         self._token: AuraApiCI.AuraAuthToken | None = None
@@ -93,6 +93,7 @@ class AuraApiCI:
         while should_retry:
             sleep(wait_time)
             wait_time *= 2
+            wait_time = min(wait_time, 20)
 
             response = requests.get(
                 f"https://api-staging.neo4j.io/v1/instances/{db_id}",
