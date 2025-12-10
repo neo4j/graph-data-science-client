@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 from graphdatascience.semantic_version.semantic_version import SemanticVersion
@@ -85,8 +86,12 @@ def update_version_py(new_version: PythonLibraryVersion) -> None:
 
     updated = re.sub(VERSION_REGEX, f'__version__ = "{new_version.major_minor()}"', content)
 
+    if updated == content:
+        print(f"☑️ No changes needed for {VERSION_FILE}")
+        return
+
     VERSION_FILE.write_text(updated)
-    print(f"✅ Updated {VERSION_FILE} to version {new_version}")
+    print(f"✅ Updated {VERSION_FILE.relative_to(REPO_ROOT)} to version {new_version}")
 
 
 def update_changelog(new_version: PythonLibraryVersion) -> None:
@@ -95,8 +100,11 @@ def update_changelog(new_version: PythonLibraryVersion) -> None:
     template = Path(__file__).parent / "changelog.template"
     new_changelog_body = template.read_text().replace("<VERSION>", str(new_version))
 
-    changelog_file.write_text(new_changelog_body)
+    if changelog_file.read_text() == new_changelog_body:
+        print(f"☑️ No changes needed for {changelog_file.relative_to(REPO_ROOT)}")
+        return
 
+    changelog_file.write_text(new_changelog_body)
     print(f"✅ Updated {changelog_file.relative_to(REPO_ROOT)} for version {new_version}")
 
 
@@ -107,14 +115,24 @@ def update_publish_yml(released_version: PythonLibraryVersion, next_version: Pyt
     # Extract major.minor from released version
     new_branch = f"{released_version.major_minor()}"
 
+    def update_branches(branches: str) -> str:
+        if new_branch in branches:
+            return branches
+        else:
+            return f"{branches}, '{new_branch}'"
+
     # Update branches list
-    updated = re.sub(r"(branches:\s*\[)([^\]]*)", lambda m: f"{m.group(1)}{m.group(2)}, '{new_branch}'", content)
+    updated = re.sub(r"(branches:\s*\[)([^\]]*)", lambda m: f"{m.group(1)}{update_branches(m.group(2))}", content)
     # Update api-version to next version
     updated = re.sub(r"api-version:\s*\d+\.\d+", f"api-version: {next_version.major_minor()}", updated)
 
+    if updated == content:
+        print(f"☑️ No changes needed for {publish_file.relative_to(REPO_ROOT)}")
+        return
+
     publish_file.write_text(updated)
     print(
-        f"✓ Updated {publish_file.relative_to(REPO_ROOT)} - added branch '{new_branch}' and set api-version to {next_version.major_minor()}"
+        f"✅ Updated {publish_file.relative_to(REPO_ROOT)} - added branch '{new_branch}' and set api-version to {next_version.major_minor()}"
     )
 
 
@@ -124,8 +142,12 @@ def update_preview_yml(released_version: PythonLibraryVersion) -> None:
 
     updated = re.sub(r"api-version: (\d+)\.(\d+)", f"api-version: {released_version.major_minor()}", content)
 
+    if updated == content:
+        print(f"☑️ No changes needed for {preview_file.relative_to(REPO_ROOT)}")
+        return
+
     preview_file.write_text(updated)
-    print(f"✓ Updated {preview_file.relative_to(REPO_ROOT)} to version {released_version}")
+    print(f"✅ Updated {preview_file.relative_to(REPO_ROOT)} to version {released_version}")
 
 
 def update_antora_yml(released_version: PythonLibraryVersion) -> None:
@@ -135,8 +157,12 @@ def update_antora_yml(released_version: PythonLibraryVersion) -> None:
     updated = re.sub(r"version: '[^']*'", f"version: '{released_version}'", content)
     updated = re.sub(r"docs-version: '[^']*'", f"docs-version: '{released_version}'", updated)
 
+    if updated == content:
+        print(f"☑️ No changes needed for {antora_file.relative_to(REPO_ROOT)}")
+        return
+
     antora_file.write_text(updated)
-    print(f"✓ Updated {antora_file.relative_to(REPO_ROOT)} to version {released_version}")
+    print(f"✅ Updated {antora_file.relative_to(REPO_ROOT)} to version {released_version}")
 
 
 def update_package_json(new_version: PythonLibraryVersion) -> None:
@@ -148,8 +174,12 @@ def update_package_json(new_version: PythonLibraryVersion) -> None:
     preview_version = f"{new_version.major_minor()}-preview"
     updated = re.sub(r'"version":\s*"[^"]*"', f'"version": "{preview_version}"', content)
 
+    if updated == content:
+        print(f"☑️ No changes needed for {package_file.relative_to(REPO_ROOT)}")
+        return
+
     package_file.write_text(updated)
-    print(f"✓ Updated {package_file.relative_to(REPO_ROOT)} to version {preview_version}")
+    print(f"✅ Updated {package_file.relative_to(REPO_ROOT)} to version {preview_version}")
 
 
 def update_installation_adoc(next_version: PythonLibraryVersion) -> None:
@@ -168,41 +198,50 @@ def update_installation_adoc(next_version: PythonLibraryVersion) -> None:
     if not match:
         raise ValueError("Could not find installation table in installation.adoc")
     version_table = match.group(2)
+
+    if new_compat_table_entry in version_table:
+        print(f"☑️ No changes needed for {installation_file.relative_to(REPO_ROOT)}")
+        return
+
     updated_version_table = f"\n{new_compat_table_entry}\n" + version_table
     updated = content.replace(version_table, updated_version_table)
     installation_file.write_text(updated)
-    print(f"✓ Updated {installation_file.relative_to(REPO_ROOT)} with new version {next_version}")
+    print(f"✅ Updated {installation_file.relative_to(REPO_ROOT)} with new version {next_version}")
 
 
 def main() -> None:
     # Get current version
-    current_version = read_library_version()
+    released_version = read_library_version()
 
-    print(f"Current version: {current_version}")
+    # read new version from args
 
-    # Calculate next version
-    next_version = bump_version(current_version)
+    print(f"Released version: {released_version}")
+
+    # Calculate next version if not provided
+    next_version = (
+        PythonLibraryVersion.from_string(sys.argv[1]) if len(sys.argv) > 1 else bump_version(released_version)
+    )
     print(f"Next version: {next_version}")
 
     print("\nStarting post-release tasks...")
 
-    # update_version_py(next_version)
+    update_version_py(next_version)
 
-    if not current_version.is_alpha():
+    if not released_version.is_alpha():
         update_changelog(next_version)
 
         update_package_json(next_version)
 
-        update_antora_yml(current_version)
-        update_publish_yml(current_version, next_version)
-        update_preview_yml(current_version)
+        update_antora_yml(released_version)
+        update_publish_yml(released_version, next_version)
+        update_preview_yml(released_version)
 
         update_installation_adoc(next_version)
 
     print("\n✅ Post-release tasks completed!")
     print("\nNext steps:")
     print("* Review the changes")
-    if not current_version.is_alpha():
+    if not released_version.is_alpha():
         print("* Update installation.adoc")
     print(f"* Commit with message: 'Prepare for {next_version} development'")
     print("* Push to main branch")
