@@ -184,7 +184,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     def arrow_client(self) -> GdsArrowClient:
         """
         Returns a GdsArrowClient that is authenticated to communicate with the Aura Graph Analytics Session.
-        This client can be used to get direct access to the sessions Arrow Flight server.
+        This client can be used to get direct access to the specific session's Arrow Flight server.
 
         Returns:
             A GdsArrowClient
