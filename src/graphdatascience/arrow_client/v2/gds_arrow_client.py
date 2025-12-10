@@ -93,7 +93,7 @@ class GdsArrowClient:
         job_id: str | None = None,
     ) -> str:
         """
-        Start a new export process to stream the nodes with the specified label and filter from the graph.
+        Start a new export process to stream the nodes that match the filter from the graph.
 
         Parameters
         ----------

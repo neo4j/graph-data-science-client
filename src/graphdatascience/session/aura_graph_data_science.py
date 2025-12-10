@@ -5,7 +5,7 @@ from typing import Any, Callable
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
+from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import (
     AlphaRemoteEndpoints,
@@ -94,6 +94,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                 v2_endpoints=SessionV2Endpoints(
                     session_auth_arrow_client, db_bolt_query_runner, show_progress=show_progress
                 ),
+                authenticated_arrow_client=session_auth_arrow_client,
             )
         else:
             standalone_query_runner = StandaloneSessionQueryRunner(session_arrow_query_runner)
@@ -102,6 +103,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
                 delete_fn=delete_fn,
                 gds_version=gds_version,
                 v2_endpoints=SessionV2Endpoints(session_auth_arrow_client, None, show_progress=show_progress),
+                authenticated_arrow_client=session_auth_arrow_client,
             )
 
     def __init__(
@@ -110,11 +112,13 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         delete_fn: Callable[[], bool],
         gds_version: ServerVersion,
         v2_endpoints: SessionV2Endpoints,
+        authenticated_arrow_client: AuthenticatedArrowClient,
     ):
         self._query_runner = query_runner
         self._delete_fn = delete_fn
         self._server_version = gds_version
         self._v2_endpoints = v2_endpoints
+        self._authenticated_arrow_client = authenticated_arrow_client
 
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
 
@@ -176,6 +180,18 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
 
     def __getattr__(self, attr: str) -> IndirectCallBuilder:
         return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
+
+    def arrow_client(self) -> GdsArrowClient:
+        """
+        Returns a GdsArrowClient that is authenticated to communicate with the Aura Graph Analytics Session.
+        This client can be used to get direct access to the specific session's Arrow Flight server.
+
+        Returns:
+            A GdsArrowClient
+        -------
+
+        """
+        return GdsArrowClient(self._authenticated_arrow_client)
 
     def set_database(self, database: str) -> None:
         """

@@ -56,6 +56,11 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(protocol_version)
 
+    def get(self, graph_name: str) -> GraphV2:
+        if not self.list(graph_name):
+            raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
+        return get_graph(graph_name, self._arrow_client)
+
     def project(
         self,
         graph_name: str,

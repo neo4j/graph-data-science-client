@@ -2,13 +2,11 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 from types import TracebackType
 from typing import Any, Callable, Iterable, Type
 
 import pandas
 import pyarrow
-from neo4j.exceptions import ClientError
 from pyarrow import Array, ChunkedArray, DictionaryArray, RecordBatch, Table, chunked_array, flight
 from pyarrow.types import is_dictionary
 from pydantic import BaseModel
@@ -17,6 +15,7 @@ from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVe
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_single
 
+from ...procedure_surface.arrow.error_handler import handle_flight_error
 from ...semantic_version.semantic_version import SemanticVersion
 
 
@@ -515,7 +514,7 @@ class GdsArrowClient:
                     ack_stream.read()
                     progress_callback(partition.num_rows)
         except Exception as e:
-            GdsArrowClient.handle_flight_error(e)
+            handle_flight_error(e)
 
     def _get_data(
         self,
@@ -560,7 +559,7 @@ class GdsArrowClient:
         try:
             arrow_table = get.read_all()
         except Exception as e:
-            GdsArrowClient.handle_flight_error(e)
+            handle_flight_error(e)
         arrow_table = self._sanitize_arrow_table(arrow_table)
         if SemanticVersion.from_string(pandas.__version__) >= SemanticVersion(2, 0, 0):
             return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
@@ -614,26 +613,6 @@ class GdsArrowClient:
             return dictArr.dictionary_decode()
         else:
             return array
-
-    @staticmethod
-    def handle_flight_error(e: Exception) -> None:
-        if isinstance(e, flight.FlightServerError | flight.FlightInternalError | ClientError):
-            original_message = e.args[0] if len(e.args) > 0 else e.message
-            improved_message = original_message.replace(
-                "Flight RPC failed with message: org.apache.arrow.flight.FlightRuntimeException: ", ""
-            )
-            improved_message = improved_message.replace(
-                "Flight returned internal error, with message: org.apache.arrow.flight.FlightRuntimeException: ", ""
-            )
-            improved_message = improved_message.replace(
-                "Failed to invoke procedure `gds.arrow.project`: Caused by: org.apache.arrow.flight.FlightRuntimeException: ",
-                "",
-            )
-            improved_message = re.sub(r"(\. )?gRPC client debug context: .+$", "", improved_message)
-
-            raise flight.FlightServerError(improved_message)
-        else:
-            raise e
 
 
 class NodeLoadDoneResult(BaseModel):

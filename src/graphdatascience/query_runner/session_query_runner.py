@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from pandas import DataFrame
 
-from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
+from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -14,6 +14,7 @@ from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.server_version.server_version import ServerVersion
 
 from ..call_parameters import CallParameters
+from ..procedure_surface.arrow.error_handler import handle_flight_error
 from ..session.dbms.protocol_resolver import ProtocolVersionResolver
 from .protocol.project_protocols import ProjectProtocol
 from .protocol.write_protocols import WriteProtocol
@@ -183,7 +184,7 @@ class SessionQueryRunner(QueryRunner):
             else:
                 return run_projection()
         except Exception as e:
-            GdsArrowClient.handle_flight_error(e)
+            handle_flight_error(e)
             raise e  # above should already raise
 
     def _remote_write_back(
