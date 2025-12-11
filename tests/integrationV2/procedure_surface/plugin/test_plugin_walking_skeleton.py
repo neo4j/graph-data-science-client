@@ -9,7 +9,7 @@ from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 @pytest.fixture(scope="package")
 def gds(neo4j_connection: DbmsConnectionInfo) -> GraphDataScience:
     return GraphDataScience(
-        endpoint=neo4j_connection.uri,
+        endpoint=neo4j_connection.get_uri(),
         auth=(neo4j_connection.username, neo4j_connection.password),  # type: ignore
     )
 

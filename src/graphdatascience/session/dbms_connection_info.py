@@ -13,12 +13,15 @@ class DbmsConnectionInfo:
     Supports both username/password as well as the authentication options provided by the Neo4j Python driver.
     """
 
-    uri: str
+    # 'uri' or 'aura_instance_id' must be provided.
+    uri: str | None = None
+
     username: str | None = None
     password: str | None = None
     database: str | None = None
     # Optional: typed authentication, used instead of username/password. Supports for example a token. See https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods
     auth: Auth | None = None
+
     aura_instance_id: str | None = None
 
     def __post_init__(self) -> None:
@@ -29,6 +32,9 @@ class DbmsConnectionInfo:
                 "Please provide either a username/password or a token."
             )
 
+        if (self.aura_instance_id is None) and (self.uri is None):
+            raise ValueError("Either 'uri' or 'aura_instance_id' must be provided.")
+
     def get_auth(self) -> Auth | None:
         """
         Returns:
@@ -38,6 +44,14 @@ class DbmsConnectionInfo:
         if self.username and self.password:
             auth = basic_auth(self.username, self.password)
         return auth
+
+    def set_uri(self, uri: str) -> None:
+        self.uri = uri
+
+    def get_uri(self) -> str:
+        if not self.uri:
+            raise ValueError("'uri' is not provided.")
+        return self.uri
 
     @staticmethod
     def from_env() -> DbmsConnectionInfo:
@@ -50,10 +64,15 @@ class DbmsConnectionInfo:
         - NEO4J_DATABASE
         - AURA_INSTANCEID
         """
-        uri = os.environ["NEO4J_URI"]
         username = os.environ.get("NEO4J_USERNAME", "neo4j")
         password = os.environ["NEO4J_PASSWORD"]
         database = os.environ.get("NEO4J_DATABASE")
         aura_instance_id = os.environ.get("AURA_INSTANCEID")
+
+        # instance id takes precedence over uri
+        if not aura_instance_id:
+            uri = os.environ["NEO4J_URI"]
+        else:
+            uri = None
 
         return DbmsConnectionInfo(uri, username, password, database, aura_instance_id=aura_instance_id)

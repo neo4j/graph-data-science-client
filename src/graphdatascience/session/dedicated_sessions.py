@@ -67,46 +67,49 @@ class DedicatedSessions:
         arrow_client_options: dict[str, Any] | None = None,
     ) -> AuraGraphDataScience:
         if db_connection is None:
-            if not cloud_location:
-                raise ValueError("cloud_location must be provided for creating standalone sessions.")
-
-            session_details = self._get_or_create_standalone_session(session_name, memory.value, cloud_location, ttl)
             db_runner = None
+            aura_db_instance = None
         else:
-            db_runner = self._create_db_runner(db_connection, neo4j_driver_options)
+            if aura_instance_id := db_connection.aura_instance_id:
+                aura_db_instance = self._aura_api.list_instance(aura_instance_id)
 
-            aura_instance_id = (
-                db_connection.aura_instance_id
-                if db_connection.aura_instance_id
-                else AuraApi.extract_id(db_connection.uri)
-            )
-
-            aura_db_instance = self._aura_api.list_instance(aura_instance_id)
-
-            if not aura_db_instance and DbEnvironmentResolver.hosted_in_aura(db_runner):
-                if db_connection.aura_instance_id:
+                if not aura_db_instance:
                     raise ValueError(
-                        f"Aura instance with id `{db_connection.aura_instance_id}` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance."
+                        f"Aura instance with id `{aura_instance_id}` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance."
                     )
-                else:
-                    raise ValueError(
-                        f"Could not derive Aura instance from the URI `{db_connection.uri}`."
-                        " Please specify the `aura_instance_id` in the `db_connection` argument."
-                    )
-            if aura_db_instance is None:
-                if not cloud_location:
-                    raise ValueError("cloud_location must be provided for sessions against a self-managed DB.")
 
-                session_details = self._get_or_create_self_managed_session(
-                    session_name, memory.value, cloud_location, ttl
-                )
+                db_connection.set_uri(aura_db_instance.connection_url)
+
+                db_runner = self._create_db_runner(db_connection, neo4j_driver_options)
             else:
-                if cloud_location is not None:
-                    raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
+                db_runner = self._create_db_runner(db_connection, neo4j_driver_options)
 
-                session_details = self._get_or_create_attached_session(
-                    session_name, memory.value, aura_instance_id, ttl
-                )
+                if DbEnvironmentResolver.hosted_in_aura(db_runner):
+                    warnings.warn(
+                        DeprecationWarning(
+                            "Deriving the Aura instance from the database URI is deprecated and will be removed in a future release. "
+                            "Please specify the `aura_instance_id` in the `db_connection` argument."
+                        )
+                    )
+
+                    aura_instance_id = AuraApi.extract_id(db_connection.get_uri())
+                    aura_db_instance = self._aura_api.list_instance(aura_instance_id)
+                    if not aura_db_instance:
+                        raise ValueError(
+                            f"Aura instance with id `{aura_instance_id}` could not be found. Please specify the `aura_instance_id` in the `db_connection` argument."
+                        )
+                else:
+                    aura_db_instance = None
+
+        if aura_db_instance is None:
+            if not cloud_location:
+                raise ValueError("cloud_location must be provided for sessions not attached to an AuraDB.")
+
+            session_details = self._get_or_create_self_managed_session(session_name, memory.value, cloud_location, ttl)
+        else:
+            if cloud_location is not None:
+                raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
+            session_details = self._get_or_create_attached_session(session_name, memory.value, aura_db_instance.id, ttl)
 
         self._await_session_running(session_details, timeout)
 
@@ -130,7 +133,7 @@ class DedicatedSessions:
         self, db_connection: DbmsConnectionInfo, config: dict[str, Any] | None = None
     ) -> Neo4jQueryRunner:
         db_runner = Neo4jQueryRunner.create_for_db(
-            endpoint=db_connection.uri,
+            endpoint=db_connection.get_uri(),
             auth=db_connection.get_auth(),
             aura_ds=True,
             show_progress=False,
@@ -205,9 +208,9 @@ class DedicatedSessions:
         return self._aura_api.get_or_create_session(session_name, memory, ttl=ttl, cloud_location=cloud_location)
 
     def _get_or_create_attached_session(
-        self, session_name: str, memory: SessionMemoryValue, dbid: str, ttl: timedelta | None = None
+        self, session_name: str, memory: SessionMemoryValue, instance_id: str, ttl: timedelta | None = None
     ) -> SessionDetails:
-        return self._aura_api.get_or_create_session(name=session_name, dbid=dbid, memory=memory, ttl=ttl)
+        return self._aura_api.get_or_create_session(name=session_name, instance_id=instance_id, memory=memory, ttl=ttl)
 
     def _get_or_create_self_managed_session(
         self,

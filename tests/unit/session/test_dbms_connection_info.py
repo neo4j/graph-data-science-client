@@ -1,4 +1,5 @@
 import neo4j
+import pytest
 
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
@@ -24,6 +25,22 @@ def test_dbms_connection_info_advanced_auth() -> None:
     assert dci.get_auth() == advanced_auth
 
 
+def test_dbms_connection_info_aura_instance() -> None:
+    dci = DbmsConnectionInfo(
+        aura_instance_id="instance-id",
+        username="neo4j",
+        password="password",
+        database="neo4j",
+    )
+
+    with pytest.raises(ValueError, match="'uri' is not provided."):
+        dci.get_uri()
+
+    dci.set_uri("neo4j+s://instance-id.databases.neo4j.io")
+
+    assert dci.get_uri() == "neo4j+s://instance-id.databases.neo4j.io"
+
+
 def test_dbms_connection_info_fail_on_auth_and_username() -> None:
     try:
         DbmsConnectionInfo(
@@ -39,3 +56,11 @@ def test_dbms_connection_info_fail_on_auth_and_username() -> None:
         )
     else:
         assert False, "Expected ValueError was not raised"
+
+
+def test_dbms_connection_info_fail_on_missing_instance_uri() -> None:
+    with pytest.raises(ValueError, match="Either 'uri' or 'aura_instance_id' must be provided."):
+        DbmsConnectionInfo(
+            username="neo4j",
+            password="password",
+        )

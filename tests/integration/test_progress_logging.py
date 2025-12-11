@@ -5,7 +5,7 @@ from graphdatascience import ServerVersion
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
 from tests.unit.conftest import CollectingQueryRunner
-from tests.unit.test_session_query_runner import FakeArrowClient
+from tests.unit.session.test_session_query_runner import FakeArrowClient
 
 
 def test_disabled_progress_logging(neo4j_driver: Driver) -> None:
