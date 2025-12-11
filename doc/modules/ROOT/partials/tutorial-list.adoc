@@ -10,3 +10,4 @@
 * xref:tutorials/graph-analytics-serverless.adoc[]
 * xref:tutorials/graph-analytics-serverless-self-managed.adoc[]
 * xref:tutorials/graph-analytics-serverless-standalone.adoc[]
+* xref:tutorials/graph-analytics-serverless-spark.adoc[]
