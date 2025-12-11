@@ -7,8 +7,7 @@ Tests can be found in `graphdatascience/tests`. In each of the folders there, `u
 Please see the section [Specifically for this project](CONTRIBUTING.md#specifically-for-this-project) of our [contribution guidelines](CONTRIBUTING.md) for how to set up an environment for testing and style checking.
 
 > **_NOTE:_** This document does not cover documentation testing.
-Please see the [documentation README](doc/README.md#testing) for that.
-
+> Please see the [documentation README](doc/README.md#testing) for that.
 
 ## Unit testing
 
@@ -20,11 +19,13 @@ To run the unit tests (with default options), simply call:
 pytest graphdatascience/tests/unit
 ```
 
+or for just `just unit-tests`
 
 ## Integration testing
 
 In order to run the integration tests one must have a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with the Neo4j Graph Data Science library installed running.
 
+If you want to use just, you can use `just it`.
 
 ### V2 endpoints
 
@@ -32,11 +33,11 @@ The integration tests for the V2 endpoints are located in `graphdatascience/test
 In order to run the tests, you need to have Docker running.
 You also need to either bring two Docker images, or configure authenticated access to the GCP repository where the production Docker images are stored.
 
+If you want to use just, you can use `just it-v2`.
 
 ### Bringing your own Docker images
 
 Set the environment variables `NEO4J_DATABASE_IMAGE` and `GDS_SESSION_IMAGE` to the names of the Docker images you want to use.
-
 
 ### Configuring authenticated access to the GCP repository
 
@@ -44,20 +45,20 @@ Set the environment variables `NEO4J_DATABASE_IMAGE` and `GDS_SESSION_IMAGE` to 
 2. `gcloud auth login`
 3. `gcloud auth configure-docker europe-west1-docker.pkg.dev`
 
-
 ### Configuring
+
+If you do not want to use a custom neo4j db, you can use the test-envs under `scripts/test-envs`.
 
 The tests will through the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) connect to a Neo4j database based on the environment variables:
 
-* `NEO4J_URI` (defaulting to "bolt://localhost:7687" if unset),
-* `NEO4J_USER`,
-* `NEO4J_PASSWORD` (defaulting to "neo4j" if unset),
-* `NEO4J_DB` (defaulting to "neo4j" if unset).
+- `NEO4J_URI` (defaulting to "bolt://localhost:7687" if unset),
+- `NEO4J_USER`,
+- `NEO4J_PASSWORD` (defaulting to "neo4j" if unset),
+- `NEO4J_DB` (defaulting to "neo4j" if unset).
 
 However, if `NEO4J_USER` is not set the tests will try to connect without authentication.
 
 Once the driver connects successfully to the Neo4j DBMS the tests will go on to execute against the `NEO4J_DB` database.
-
 
 ### Running
 
@@ -74,7 +75,6 @@ To include tests that exercise storing and loading models, you must specify the 
 Note however that this also requires you to have specified a valid path for the `gds.model.store_location` configuration key of your database.
 
 If the database you are targeting is an AuraDS instance, you should use the option `--target-aura` which makes sure that tests of operations not supported on AuraDS are skipped.
-
 
 ### Running tests that require encrypted connections
 
@@ -99,13 +99,11 @@ To run only integration tests that are marked as `encrypted_only`, call:
 pytest graphdatascience/tests/integration --encrypted-only
 ```
 
-
 ### GDS library versions
 
 There are integration tests that are only compatible with certain versions of the GDS library.
 For example, a procedure (which does not follow the standard algorithm procedure pattern) introduced in version 2.1.0 of the library will not exist in version 2.0.3, and so any client side integration tests that call this procedure should not run when testing against server library version 2.0.3.
 For this reason only tests compatible with the GDS library server version you are running against will run.
-
 
 ## Style guide
 
@@ -115,7 +113,6 @@ There's also a `scripts/makestyle` to do formatting.
 Use `SKIP_NOTEBOOKS=true` to only format the code.
 
 See `pyproject.toml` for the configuration.
-
 
 ### Static typing
 
@@ -129,18 +126,16 @@ mypy .
 
 from the root. See `mypy.ini` for our custom mypy settings.
 
-
 ## Notebook examples
 
 The notebooks under `/examples` can be run using `scripts/run_notebooks`.
 
-
 ### Cell Tags
 
-*Verify version*
+_Verify version_
 If you only want to let CI run the notebook given a certain condition, tag a given cell in the notebook with `verify-version`.
 As the name suggests, the tag was introduced to only run for given GDS server versions.
 
-*Teardown*
+_Teardown_
 
 To make sure certain cells are always run even in case of failure, tag the cell with `teardown`.
