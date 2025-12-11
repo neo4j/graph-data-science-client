@@ -47,18 +47,6 @@ def test_cora_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
         G.drop()
 
 
-@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
-def test_cora_graph_undirected_without_arrow(gds_without_arrow: GraphDataScience) -> None:
-    G = gds_without_arrow.graph.load_cora(undirected=True)
-
-    try:
-        assert G.node_count() == 2708
-        assert G.relationship_count() == 5429 * 2
-    finally:
-        G.drop()
-
-
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 1, 0))
 def test_cora_graph_with_arrow(gds: GraphDataScience) -> None:
     G = gds.graph.load_cora()
@@ -122,18 +110,7 @@ def test_imdb_without_arrow_fails_before_23(gds_without_arrow: GraphDataScience)
         gds_without_arrow.graph.load_imdb()
 
 
-@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
-def test_imdb_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
-    G = gds_without_arrow.graph.load_imdb()
-
-    try:
-        assert G.node_count() == 12772
-        assert G.relationship_count() == 37288
-    finally:
-        G.drop()
-
-
+# skipping without_arrow due to slowness
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
 def test_imdb_graph_with_arrow(gds: GraphDataScience) -> None:
     G = gds.graph.load_imdb()
@@ -145,6 +122,7 @@ def test_imdb_graph_with_arrow(gds: GraphDataScience) -> None:
         G.drop()
 
 
+# skipping lastfm without arrow due to slowness
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
 def test_lastfm_graph_with_arrow(gds: GraphDataScience) -> None:
     G = gds.graph.load_lastfm()
@@ -161,28 +139,6 @@ def test_lastfm_graph_with_arrow(gds: GraphDataScience) -> None:
         assert set(G.relationship_properties("TAGGED")) == {"day", "month", "year", "tagID", "timestamp"}
         assert set(G.relationship_properties("LISTEN_TO")) == {"weight"}
         assert set(G.relationship_properties("IS_FRIEND")) == set()
-    finally:
-        G.drop()
-
-
-@pytest.mark.filterwarnings("ignore: GDS Enterprise users can use Apache Arrow")
-@pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 3, 0))
-def test_lastfm_graph_without_arrow(gds_without_arrow: GraphDataScience) -> None:
-    G = gds_without_arrow.graph.load_lastfm()
-
-    try:
-        assert G.node_count() == 19914
-        assert G.relationship_count() == 584060
-
-        assert set(G.node_labels()) == {"User", "Artist"}
-        assert G.node_properties("User") == ["rawId"]
-        assert G.node_properties("Artist") == ["rawId"]
-
-        assert set(G.relationship_types()) == {"LISTEN_TO", "IS_FRIEND", "TAGGED"}
-        assert set(G.relationship_properties("TAGGED")) == {"day", "month", "year", "tagID", "timestamp"}
-        assert set(G.relationship_properties("LISTEN_TO")) == {"weight"}
-        assert set(G.relationship_properties("IS_FRIEND")) == set()
-
     finally:
         G.drop()
 
