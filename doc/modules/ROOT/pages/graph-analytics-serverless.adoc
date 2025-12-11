@@ -98,7 +98,8 @@ sessions.get_or_create(
 | Name                        | Type               | Optional | Default | Description
 | session_name                | str                | no       | -       | Name of the session. Must be unique within the project.
 | memory                      | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[SessionMemory]      | no       | -       | Amount of memory available to the session.
-| db_connection               |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/dbms_connection_info[DbmsConnectionInfo] | yes      | None    | Bolt server URI, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types. Alternatively to username and password, you can provide a `neo4j.Auth` https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods[object].
+| db_connection               |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/dbms_connection_info[DbmsConnectionInfo] | yes      | None    | Aura instance-id, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types. For self-managed, provide the URI instead of the instance-id.
+Alternatively to username and password, you can provide a `neo4j.Auth` https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods[object].
 | ttl                         | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
 | cloud_location              | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/cloud_location[CloudLocation]      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. Required for the Self-managed and Standalone types.
 | timeout                     | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
@@ -124,9 +125,9 @@ gds = sessions.get_or_create(
     session_name="my-attached-session",
     memory=SessionMemory.m_4GB,
     db_connection=DbmsConnectionInfo(
-        "neo4j+s://mydbid.databases.neo4j.io",
-        "my-user",
-        "my-password"
+        aura_instance_id="mydbid",
+        username="my-user",
+        password="my-password"
     ),
 )
 ----
@@ -142,7 +143,11 @@ from graphdatascience.session import DbmsConnectionInfo, CloudLocation, SessionM
 gds = sessions.get_or_create(
     session_name="my-self-managed-session",
     memory=SessionMemory.m_4GB,
-    db_connection=DbmsConnectionInfo("neo4j://localhost", "my-user", "my-password"),
+    db_connection=DbmsConnectionInfo(
+        uri="neo4j://localhost",
+        username="my-user",
+        password="my-password"
+    ),
     cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
 )
 ----

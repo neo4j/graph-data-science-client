@@ -115,9 +115,9 @@ from graphdatascience.session import DbmsConnectionInfo
 # Identify the AuraDB instance
 # you can also use DbmsConnectionInfo.from_env() to load credentials from environment variables
 db_connection = DbmsConnectionInfo(
-    uri=os.environ["NEO4J_URI"],
     username=os.environ["NEO4J_USERNAME"],
     password=os.environ["NEO4J_PASSWORD"],
+    aura_instance_id=os.environ["AURA_INSTANCEID"],
 )
 
 # Create a GDS session!
