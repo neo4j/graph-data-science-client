@@ -55,8 +55,10 @@ class GdsSessions:
         """
         Initializes a new instance of the GdsSessions class.
 
-        Args:
-            api_credentials (AuraAPICredentials): The Aura API credentials used for establishing a connection.
+        Parameters
+        ----------
+        api_credentials
+            The Aura API credentials used for establishing a connection.
         """
         aura_env = os.environ.get("AURA_ENV")
         aura_api = AuraApi(
@@ -71,22 +73,45 @@ class GdsSessions:
         self,
         node_count: int,
         relationship_count: int,
-        algorithm_categories: list[AlgorithmCategory] | None = None,
+        algorithm_categories: list[AlgorithmCategory] | list[str] | None = None,
+        node_label_count: int = 0,
+        node_property_count: int = 0,
+        relationship_property_count: int = 0,
     ) -> SessionMemory:
         """
         Estimates the memory required for a session with the given node and relationship counts.
 
-        Args:
-            node_count (int): The number of nodes.
-            relationship_count (int): The number of relationships.
-            algorithm_categories (list[AlgorithmCategory] | None): The algorithm categories to consider.
+        Parameters
+        ----------
+        node_count
+            Number of nodes.
+        relationship_count
+            Number of relationships.
+        algorithm_categories
+            The algorithm categories to consider.
+        node_label_count
+            Number of node labels.
+        node_property_count
+            Number of node properties.
+        relationship_property_count
+            Number of relationship properties.
 
-        Returns:
-            SessionMemory: The estimated memory required for the session.
+
+        Returns
+        -------
+        SessionMemory
+            The estimated memory required for the session.
         """
         if algorithm_categories is None:
             algorithm_categories = []
-        return self._impl.estimate(node_count, relationship_count, algorithm_categories)
+        return self._impl.estimate(
+            node_count=node_count,
+            relationship_count=relationship_count,
+            algorithm_categories=algorithm_categories,
+            node_label_count=node_label_count,
+            node_property_count=node_property_count,
+            relationship_property_count=relationship_property_count,
+        )
 
     def available_cloud_locations(self) -> list[CloudLocation]:
         """
