@@ -23,6 +23,7 @@ from graphdatascience.procedure_surface.api.community.local_clustering_coefficie
 )
 from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainEndpoints
 from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
+from graphdatascience.procedure_surface.api.community.modularity_endpoints import ModularityEndpoints
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
     ModularityOptimizationEndpoints,
 )
@@ -81,6 +82,7 @@ from graphdatascience.procedure_surface.arrow.community.local_clustering_coeffic
 )
 from graphdatascience.procedure_surface.arrow.community.louvain_arrow_endpoints import LouvainArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.maxkcut_arrow_endpoints import MaxKCutArrowEndpoints
+from graphdatascience.procedure_surface.arrow.community.modularity_arrow_endpoints import ModularityArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.modularity_optimization_arrow_endpoints import (
     ModularityOptimizationArrowEndpoints,
 )
@@ -224,6 +226,13 @@ class SessionV2Endpoints:
         Return endpoints for the conductance algorithm.
         """
         return ConductanceArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
+
+    @property
+    def modularity(self) -> ModularityEndpoints:
+        """
+        Return endpoints for the modularity algorithm.
+        """
+        return ModularityArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     @property
     def closeness_centrality(self) -> ClosenessEndpoints:
