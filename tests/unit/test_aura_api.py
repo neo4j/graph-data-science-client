@@ -74,7 +74,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
     )
 
     result = api.get_or_create_session(
-        name="name-0", dbid="dbid-1", memory=SessionMemory.m_4GB.value, ttl=timedelta(seconds=42)
+        name="name-0", instance_id="dbid-1", memory=SessionMemory.m_4GB.value, ttl=timedelta(seconds=42)
     )
 
     assert result == SessionDetails(

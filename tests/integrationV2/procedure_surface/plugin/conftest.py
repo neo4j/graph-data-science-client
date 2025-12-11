@@ -31,7 +31,7 @@ def neo4j_connection(gds_plugin_container: Neo4jContainer) -> Generator[DbmsConn
 @pytest.fixture(scope="package")
 def query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
     query_runner = Neo4jQueryRunner.create_for_db(
-        neo4j_connection.uri,
+        neo4j_connection.get_uri(),
         (neo4j_connection.username, neo4j_connection.password),  # type: ignore
     )
 

@@ -121,14 +121,14 @@ class AuraApi:
         self,
         name: str,
         memory: SessionMemoryValue,
-        dbid: str | None = None,
+        instance_id: str | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
     ) -> SessionDetails:
         json = {"name": name, "memory": memory.value, "project_id": self._project_id}
 
-        if dbid:
-            json["instance_id"] = dbid
+        if instance_id:
+            json["instance_id"] = instance_id
 
         if ttl:
             json["ttl"] = f"{ttl.total_seconds()}s"
