@@ -247,7 +247,7 @@ def test_graph_type_check(gds: GraphDataScience) -> None:
 def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     G, _ = gds.graph.project(GRAPH_NAME, "*", "*")
 
-    MY_DB_NAME = "testdatabase"
+    MY_DB_NAME = "testgraphexportdatabase"
     result = gds.graph.export(G, dbName=MY_DB_NAME, batchSize=10000)
 
     assert result["graphName"] == GRAPH_NAME

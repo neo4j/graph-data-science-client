@@ -214,8 +214,9 @@ def test_no_db_explicitly_set() -> None:
 
 def test_warning_when_logging_fails(runner: Neo4jQueryRunner) -> None:
     with f.ThreadPoolExecutor(1) as pool:
-        future = pool.submit(lambda: time.sleep(2))
+        future = pool.submit(lambda: time.sleep(0.1))
         with pytest.warns(RuntimeWarning, match=r"^Unable to get progress:"):
+            runner._progress_logger._polling_interval = 0.01
             runner._progress_logger._log(future, "DUMMY", StaticProgressProvider(), "bad_database")
 
 

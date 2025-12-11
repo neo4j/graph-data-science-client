@@ -66,7 +66,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
             pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.addFeature("l2", nodeProperties=["rank"])
         pipe.configureSplit(trainFraction=0.7, testFraction=0.2, validationFolds=2)
-        pipe.addLogisticRegression(penalty=1)
+        pipe.addLogisticRegression(penalty=1, maxEpochs=1)
         if gds._server_version >= ServerVersion(2, 2, 0):
             lp_model, _ = pipe.train(
                 G,
@@ -99,7 +99,7 @@ def nc_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
             pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
-        pipe.addLogisticRegression(penalty=1)
+        pipe.addLogisticRegression(penalty=1, maxEpochs=1)
         if gds._server_version >= ServerVersion(2, 2, 0):
             nc_model, _ = pipe.train(
                 G,
@@ -132,7 +132,7 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
             pipe.addNodeProperty("degree", mutateProperty="rank")
         pipe.selectFeatures("rank")
         pipe.configureSplit(testFraction=0.3, validationFolds=2)
-        pipe.addLinearRegression(penalty=1)
+        pipe.addLinearRegression(penalty=1, maxEpochs=1)
         if gds._server_version >= ServerVersion(2, 2, 0):
             nr_model, _ = pipe.train(
                 G,
@@ -154,7 +154,7 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
 
 @pytest.fixture
 def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Generator[GraphSageModel, None, None]:
-    model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"])
+    model, _ = gds.beta.graphSage.train(G, modelName="gs-model", featureProperties=["age"], maxIterations=1)
 
     yield model
 
