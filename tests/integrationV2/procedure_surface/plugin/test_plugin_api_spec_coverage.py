@@ -35,8 +35,6 @@ MISSING_ENDPOINTS: set[str] = {
     "ml.kge.predict.mutate",
     "ml.kge.predict.stream",
     "ml.kge.predict.write",
-    "modularity.stats",
-    "modularity.stream",
     "random_walk.stats",
     "random_walk.stream",
     "random_walk.mutate",

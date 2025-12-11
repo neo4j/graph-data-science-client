@@ -22,6 +22,7 @@ from graphdatascience.procedure_surface.api.community.local_clustering_coefficie
 )
 from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainEndpoints
 from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
+from graphdatascience.procedure_surface.api.community.modularity_endpoints import ModularityEndpoints
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
     ModularityOptimizationEndpoints,
 )
@@ -82,6 +83,7 @@ from graphdatascience.procedure_surface.cypher.community.local_clustering_coeffi
 )
 from graphdatascience.procedure_surface.cypher.community.louvain_cypher_endpoints import LouvainCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.maxkcut_cypher_endpoints import MaxKCutCypherEndpoints
+from graphdatascience.procedure_surface.cypher.community.modularity_cypher_endpoints import ModularityCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.modularity_optimization_cypher_endpoints import (
     ModularityOptimizationCypherEndpoints,
 )
@@ -361,6 +363,13 @@ class PluginV2Endpoints:
         Return endpoints for the Max K-cut algorithm.
         """
         return MaxKCutCypherEndpoints(self._db_client)
+
+    @property
+    def modularity(self) -> ModularityEndpoints:
+        """
+        Return endpoints for the modularity algorithm.
+        """
+        return ModularityCypherEndpoints(self._db_client)
 
     @property
     def modularity_optimization(self) -> ModularityOptimizationEndpoints:
