@@ -132,10 +132,11 @@ def main(filter_func: Callable[[str], bool]) -> None:
 if __name__ == "__main__":
     notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
 
-    session_notebooks = ["graph-analytics-serverless.ipynb", "graph-analytics-serverless-spark.ipynb"]
+    session_notebooks = ["graph-analytics-serverless.ipynb"]
     session_self_managed_notebooks = [
         "graph-analytics-serverless-self-managed.ipynb",
         "graph-analytics-serverless-standalone.ipynb",
+        "graph-analytics-serverless-spark.ipynb",
     ]
 
     notebooks: list[str] | None = None
