@@ -65,7 +65,7 @@ def max_flow_endpoints(arrow_client: AuthenticatedArrowClient) -> MaxFlowArrowEn
 
 
 def test_max_flow_stats(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
-    result = max_flow_endpoints.stats(sample_graph, capacity_property="capacity")
+    result = max_flow_endpoints.stats(sample_graph, source_nodes=[0], target_nodes=[5], capacity_property="capacity")
 
     assert isinstance(result, MaxFlowStatsResult)
     assert result.total_flow >= 0
