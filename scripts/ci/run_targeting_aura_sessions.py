@@ -41,6 +41,7 @@ def main() -> None:
         uri = create_result["connection_url"]
         username = create_result["username"]
         password = create_result["password"]
+        instance_id = create_result["id"]
 
         if project_id:
             # Avoid the `None` literal as the value for the variable
@@ -48,7 +49,7 @@ def main() -> None:
         else:
             project_id_part = ""
 
-        cmd = f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
+        cmd = f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} AURA_INSTANCEID={instance_id} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
 
         if os.system(cmd) != 0:
             raise Exception("Failed to run notebooks")
