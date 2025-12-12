@@ -3,13 +3,14 @@ from typing import Any
 
 from pandas import ArrowDtype, DataFrame
 from pyarrow._flight import Ticket
-from tenacity import Retrying, retry_if_result, wait_exponential
+from tenacity import Retrying, retry_if_result
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.retry_utils.retry_utils import job_wait_strategy
 
 JOB_STATUS_ENDPOINT = "v2/jobs.status"
 RESULTS_SUMMARY_ENDPOINT = "v2/results.summary"
@@ -50,12 +51,9 @@ class JobClient:
         if termination_flag is None:
             termination_flag = TerminationFlag.create()
 
-        for attempt in Retrying(
-            retry=retry_if_result(lambda _: True), wait=wait_exponential(min=0.1, max=5), reraise=True
-        ):
+        for attempt in Retrying(retry=retry_if_result(lambda _: True), wait=job_wait_strategy(), reraise=True):
             with attempt:
                 termination_flag.assert_running()
-
                 job_status = self.get_job_status(client, job_id)
 
                 if check_expected_status(job_status) or job_status.aborted():
