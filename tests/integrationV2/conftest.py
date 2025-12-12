@@ -99,7 +99,7 @@ def start_session(
         session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
         try:
-            wait_for_logs(session_container, "Running GDS tasks: 0", timeout=20)
+            wait_for_logs(session_container, "Running GDS tasks: 0", timeout=30)
             yield GdsSessionConnectionInfo(
                 host=session_container.get_container_host_ip(),
                 arrow_port=session_container.get_exposed_port(8491),

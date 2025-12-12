@@ -27,3 +27,7 @@ it filter="" enterprise="true" extra_options="":
 # such as `just it-v2 wcc`
 it-v2 filter="" extra_options="":
     pytest tests/integrationV2 --include-integration-v2 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+
+
+update-session:
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
