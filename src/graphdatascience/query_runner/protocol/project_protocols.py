@@ -3,13 +3,13 @@ from logging import DEBUG, getLogger
 from typing import Any
 
 from pandas import DataFrame
-from tenacity import retry, retry_if_result, wait_incrementing
+from tenacity import retry, retry_if_result
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
-from graphdatascience.retry_utils.retry_utils import before_log
+from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
@@ -159,7 +159,7 @@ class ProjectProtocolV3(ProjectProtocol):
             reraise=True,
             before=before_log(f"Projection (graph: `{params['graph_name']}`)", logger, DEBUG),
             retry=retry_if_result(is_not_done),
-            wait=wait_incrementing(start=0.2, increment=0.2, max=2),
+            wait=job_wait_strategy(),
         )
         def project_fn() -> DataFrame:
             termination_flag.assert_running()

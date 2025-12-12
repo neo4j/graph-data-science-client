@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from pandas import DataFrame
-from tenacity import retry, retry_if_result, wait_incrementing
+from tenacity import retry, retry_if_result
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
@@ -11,7 +11,7 @@ from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
-from graphdatascience.retry_utils.retry_utils import before_log
+from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
@@ -157,7 +157,7 @@ class RemoteWriteBackV3(WriteProtocol):
         @retry(
             reraise=True,
             retry=retry_if_result(is_not_completed),
-            wait=wait_incrementing(start=0.2, increment=0.2, max=2),
+            wait=job_wait_strategy(),
             before=before_log(
                 f"Write-Back (graph: `{parameters['graphName']}`, jobId: `{parameters['jobId']}`)",
                 logger,

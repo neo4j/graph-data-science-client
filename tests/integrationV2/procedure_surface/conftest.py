@@ -81,7 +81,7 @@ def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnection
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
     db_logs_dir = logs_dir / "arrow_surface" / "db_logs"
-    db_logs_dir.mkdir(parents=True)
+    db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
     db_container = (
         DockerContainer(image=neo4j_image)
