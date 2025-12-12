@@ -7,16 +7,19 @@ import pytest
 from pyarrow._flight import GeneratorStream
 from pyarrow.flight import (
     Action,
+    FlightInternalError,
     FlightServerBase,
     FlightServerError,
     FlightTimedOutError,
     FlightUnavailableError,
     Ticket,
 )
+from tenacity import retry_any, retry_if_exception_type, stop_after_attempt, wait_none
 
 from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.gds_arrow_client import AuthMiddleware, GdsArrowClient
+from graphdatascience.retry_utils.retry_config import RetryConfig
 
 ActionParam: TypeAlias = str | tuple[str, Any] | Action
 
@@ -121,14 +124,33 @@ def flaky_flight_server() -> Generator[None, FlakyFlightServer, None]:
 
 
 @pytest.fixture()
-def flight_client(flight_server: FlightServer) -> Generator[GdsArrowClient, None, None]:
-    with GdsArrowClient.create(ArrowInfo(f"localhost:{flight_server.port}", True, True, ["v1"])) as client:
+def retry_config() -> RetryConfig:
+    return RetryConfig(
+        retry=retry_any(
+            retry_if_exception_type(FlightTimedOutError),
+            retry_if_exception_type(FlightUnavailableError),
+            retry_if_exception_type(FlightInternalError),
+        ),
+        stop=stop_after_attempt(5),
+        wait=wait_none(),  # make test go fast
+    )
+
+
+@pytest.fixture()
+def flight_client(flight_server: FlightServer, retry_config: RetryConfig) -> Generator[GdsArrowClient, None, None]:
+    with GdsArrowClient.create(
+        ArrowInfo(f"localhost:{flight_server.port}", True, True, ["v1"]), retry_config=retry_config
+    ) as client:
         yield client
 
 
 @pytest.fixture()
-def flaky_flight_client(flaky_flight_server: FlakyFlightServer) -> Generator[GdsArrowClient, None, None]:
-    with GdsArrowClient.create(ArrowInfo(f"localhost:{flaky_flight_server.port}", True, True, ["v1"])) as client:
+def flaky_flight_client(
+    flaky_flight_server: FlakyFlightServer, retry_config: RetryConfig
+) -> Generator[GdsArrowClient, None, None]:
+    with GdsArrowClient.create(
+        ArrowInfo(f"localhost:{flaky_flight_server.port}", True, True, ["v1"]), retry_config=retry_config
+    ) as client:
         yield client
 
 
