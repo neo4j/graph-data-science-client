@@ -1,28 +1,14 @@
 import pytest
-from pyarrow._flight import FlightInternalError, FlightTimedOutError, FlightUnavailableError
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
-from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2, StopConfig
+from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2
 
 
 @pytest.fixture
 def arrow_info() -> ArrowInfo:
     return ArrowInfo(listenAddress="localhost:8491", enabled=True, running=True, versions=["1.0.0"])
-
-
-@pytest.fixture
-def retry_config() -> RetryConfigV2:
-    return RetryConfigV2(
-        retryable_exceptions=[
-            FlightTimedOutError,
-            FlightUnavailableError,
-            FlightInternalError,
-        ],
-        stop_config=StopConfig(after_delay=10, after_attempt=5),
-        wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
-    )
 
 
 @pytest.fixture
@@ -42,14 +28,14 @@ def test_create_authenticated_arrow_client(arrow_info: ArrowInfo, mock_auth: Arr
     assert client.connection_info() == ConnectionInfo("localhost", 8491, encrypted=True)
 
 
-def test_connection_info(arrow_info: ArrowInfo, retry_config: RetryConfigV2) -> None:
-    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config)
+def test_connection_info(arrow_info: ArrowInfo, retry_config_v2: RetryConfigV2) -> None:
+    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
     connection_info = client.connection_info()
     assert connection_info == ConnectionInfo("localhost", 8491, encrypted=False)
 
 
-def test_pickle_roundtrip(arrow_info: ArrowInfo, retry_config: RetryConfigV2) -> None:
-    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config)
+def test_pickle_roundtrip(arrow_info: ArrowInfo, retry_config_v2: RetryConfigV2) -> None:
+    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
     import pickle
 
     pickled_client = pickle.dumps(client)

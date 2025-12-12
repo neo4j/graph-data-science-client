@@ -1,4 +1,5 @@
 import re
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
@@ -14,19 +15,27 @@ from tests.unit.conftest import CollectingQueryRunner
 
 
 def test_call_through_functions() -> None:
+    progress_fetched_event = threading.Event()
+    progress_called = []
+
     def fake_run_cypher(query: str, database: str | None = None) -> DataFrame:
+        progress_called.append(time.time())
+
         assert "CALL gds.listProgress('foo')" in query
         assert database == "database"
+
+        progress_fetched_event.set()
 
         return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
 
     def fake_query() -> DataFrame:
-        time.sleep(1)
+        progress_fetched_event.wait(5)
         return DataFrame([{"result": 42}])
 
     qpl = QueryProgressLogger(fake_run_cypher, lambda: ServerVersion(3, 0, 0))
     df = qpl.run_with_progress_logging(fake_query, "foo", "database")
 
+    assert len(progress_called) > 0
     assert df["result"][0] == 42
 
 
@@ -45,14 +54,18 @@ def test_skips_progress_logging_for_old_server_version() -> None:
 
 
 def test_uses_beta_endpoint() -> None:
+    progress_fetched_event = threading.Event()
+
     def fake_run_cypher(query: str, database: str | None = None) -> DataFrame:
         assert "CALL gds.beta.listProgress('foo')" in query
         assert database == "database"
 
+        progress_fetched_event.set()
+
         return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
 
     def fake_query() -> DataFrame:
-        time.sleep(1)
+        progress_fetched_event.wait(5)
         return DataFrame([{"result": 42}])
 
     qpl = QueryProgressLogger(fake_run_cypher, lambda: ServerVersion(2, 4, 0))
