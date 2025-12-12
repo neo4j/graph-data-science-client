@@ -12,6 +12,7 @@ class DbEnvironmentResolver:
         WITH name, v
         WHERE v ENDS WITH "aura"
         RETURN count(*) <> 0
-        """).squeeze()
-            is True
-        )
+        """)
+            .iloc[0]
+            .item()
+        ) is True

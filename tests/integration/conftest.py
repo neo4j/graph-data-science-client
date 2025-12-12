@@ -17,9 +17,9 @@ URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
 
 AUTH = ("neo4j", "password")
-if os.environ.get("NEO4J_USER"):
+if neo4j_user := os.environ.get("NEO4J_USER", os.environ.get("NEO4J_USERNAME", "neo4j")):
     AUTH = (
-        os.environ.get("NEO4J_USER", "DUMMY"),
+        neo4j_user,
         os.environ.get("NEO4J_PASSWORD", "neo4j"),
     )
 
