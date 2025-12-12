@@ -19,7 +19,7 @@ Add more or edit content in this file when you learn something new.
 
 == Sphinx Docker image
 
-If you run Sphinx from a Docker image (for example in a CI build), make sure that the included version of Python is supported.
+If you run Sphinx from a Docker image (for example in a CI build), make sure that the included version of Python is supported by the client.
 
 == Update `algorithms.rst`
 
