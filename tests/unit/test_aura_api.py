@@ -586,11 +586,11 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Session `id0` is not running after 0.2 seconds"
-            in api.wait_for_session_running("id0", sleep_time=0.05, max_wait_time=0.2).error
+            "Session `id0` is not running after 0.01 seconds"
+            in api.wait_for_session_running("id0", sleep_time=0.001, max_wait_time=0.01).error
         )
 
-    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.1" in caplog.text
+    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.001" in caplog.text
 
 
 def test_wait_for_session_running(requests_mock: Mocker) -> None:
@@ -1024,11 +1024,11 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Instance is not running after waiting for 0.7"
-            in api.wait_for_instance_running("id0", max_wait_time=0.7).error
+            "Instance is not running after waiting for 0.01"
+            in api.wait_for_instance_running("id0", max_wait_time=0.01, sleep_time=0.001).error
         )
 
-    assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.2 seconds..." in caplog.text
+    assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.001 seconds..." in caplog.text
 
 
 def test_wait_for_instance_running(requests_mock: Mocker) -> None:
@@ -1220,12 +1220,14 @@ def test_parse_session_info_without_optionals() -> None:
 
 
 def test_estimate_size_parsing() -> None:
-    assert EstimationDetails._parse_size("8GB") == 8589934592
-    assert EstimationDetails._parse_size("8G") == 8589934592
-    assert EstimationDetails._parse_size("512MB") == 536870912
-    assert EstimationDetails._parse_size("256KB") == 262144
-    assert EstimationDetails._parse_size("1024B") == 1024
-    assert EstimationDetails._parse_size("12345") == 12345
+    assert EstimationDetails._memory_in_bytes("8GB") == 8589934592
+    assert EstimationDetails._memory_in_bytes("8G") == 8589934592
+    assert EstimationDetails._memory_in_bytes("512MB") == 536870912
+    assert EstimationDetails._memory_in_bytes("256KB") == 262144
+    assert EstimationDetails._memory_in_bytes("1024B") == 1024
+    assert EstimationDetails._memory_in_bytes("12345") == 12345
+    assert EstimationDetails._memory_in_bytes("8Gi") == 8589934592
+    assert EstimationDetails._memory_in_bytes("8gb") == 8589934592
 
 
 def test_estimate_exceeds_maximum() -> None:

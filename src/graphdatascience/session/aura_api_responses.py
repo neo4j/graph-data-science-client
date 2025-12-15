@@ -181,12 +181,12 @@ class EstimationDetails:
         return cls(**{f.name: json[f.name] for f in fields})
 
     def exceeds_recommended(self) -> bool:
-        return EstimationDetails._parse_size(self.estimated_memory) > EstimationDetails._parse_size(
+        return EstimationDetails._memory_in_bytes(self.estimated_memory) > EstimationDetails._memory_in_bytes(
             self.recommended_size
         )
 
     @staticmethod
-    def _parse_size(size: str) -> float:
+    def _memory_in_bytes(size: str) -> float:
         size_str = size.upper().strip()
         # treat GB, Gi and G the same as its only used for comparing it internally
         size_str = size_str.removesuffix("B").removesuffix("I")

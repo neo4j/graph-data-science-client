@@ -4,8 +4,8 @@ style skip_notebooks="false":
 convert-notebooks:
     ./scripts/nb2doc/convert.sh
 
-unit-tests:
-    pytest tests/unit
+unit-tests extra_options="":
+    pytest tests/unit {{extra_options}}
 
 # just it test true "--durations=20"
 it filter="" enterprise="true" extra_options="":
