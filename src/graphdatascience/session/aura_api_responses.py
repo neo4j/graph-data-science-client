@@ -169,9 +169,8 @@ class InstanceCreateDetails:
 
 @dataclass(repr=True, frozen=True)
 class EstimationDetails:
-    min_required_memory: str
+    estimated_memory: str
     recommended_size: str
-    did_exceed_maximum: bool
 
     @classmethod
     def from_json(cls, json: dict[str, Any]) -> EstimationDetails:
@@ -180,6 +179,26 @@ class EstimationDetails:
             raise RuntimeError(f"Missing required field. Expected `{[f.name for f in fields]}` but got `{json}`")
 
         return cls(**{f.name: json[f.name] for f in fields})
+
+    def exceeds_recommended(self) -> bool:
+        return EstimationDetails._memory_in_bytes(self.estimated_memory) > EstimationDetails._memory_in_bytes(
+            self.recommended_size
+        )
+
+    @staticmethod
+    def _memory_in_bytes(size: str) -> float:
+        size_str = size.upper().strip()
+        # treat GB, Gi and G the same as its only used for comparing it internally
+        size_str = size_str.removesuffix("B").removesuffix("I")
+
+        if size_str.endswith("G"):
+            return float(size_str[:-1]) * 1024**3  # 1GB = 1024^3 bytes
+        elif size_str.endswith("M"):
+            return float(size_str[:-1]) * 1024**2  # 1MB = 1024^2 bytes
+        elif size_str.endswith("K"):
+            return float(size_str[:-1]) * 1024  # 1KB = 1024 bytes
+        else:
+            return float(size_str)  # assume bytes
 
 
 class WaitResult(NamedTuple):

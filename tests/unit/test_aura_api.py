@@ -586,11 +586,11 @@ def test_dont_wait_forever_for_session(requests_mock: Mocker, caplog: LogCapture
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Session `id0` is not running after 0.2 seconds"
-            in api.wait_for_session_running("id0", sleep_time=0.05, max_wait_time=0.2).error
+            "Session `id0` is not running after 0.01 seconds"
+            in api.wait_for_session_running("id0", sleep_time=0.001, max_wait_time=0.01).error
         )
 
-    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.1" in caplog.text
+    assert "Session `id0` is not yet running. Current status: Creating Host: foo.bar. Retrying in 0.001" in caplog.text
 
 
 def test_wait_for_session_running(requests_mock: Mocker) -> None:
@@ -1024,11 +1024,11 @@ def test_dont_wait_forever(requests_mock: Mocker, caplog: LogCaptureFixture) -> 
 
     with caplog.at_level(logging.DEBUG):
         assert (
-            "Instance is not running after waiting for 0.7"
-            in api.wait_for_instance_running("id0", max_wait_time=0.7).error
+            "Instance is not running after waiting for 0.01"
+            in api.wait_for_instance_running("id0", max_wait_time=0.01, sleep_time=0.001).error
         )
 
-    assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.2 seconds..." in caplog.text
+    assert "Instance `id0` is not yet running. Current status: creating. Retrying in 0.001 seconds..." in caplog.text
 
 
 def test_wait_for_instance_running(requests_mock: Mocker) -> None:
@@ -1099,12 +1099,14 @@ def test_wait_for_instance_deleting(requests_mock: Mocker) -> None:
 def test_estimate_size(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.post(
-        "https://api.neo4j.io/v1/instances/sizing",
-        json={"data": {"did_exceed_maximum": True, "min_required_memory": "307GB", "recommended_size": "96GB"}},
+        "https://api.neo4j.io/v1/graph-analytics/sessions/sizing",
+        json={"data": {"estimated_memory": "3070GB", "recommended_size": "512GB"}},
     )
 
     api = AuraApi("", "", project_id="some-tenant")
-    assert api.estimate_size(100, 10, [AlgorithmCategory.NODE_EMBEDDING]) == EstimationDetails("307GB", "96GB", True)
+    assert api.estimate_size(100, 1, 1, 10, 1, [AlgorithmCategory.NODE_EMBEDDING]) == EstimationDetails(
+        estimated_memory="3070GB", recommended_size="512GB"
+    )
 
 
 def test_extract_id() -> None:
@@ -1215,3 +1217,22 @@ def test_parse_session_info_without_optionals() -> None:
         project_id="tenant-1",
         user_id="user-1",
     )
+
+
+def test_estimate_size_parsing() -> None:
+    assert EstimationDetails._memory_in_bytes("8GB") == 8589934592
+    assert EstimationDetails._memory_in_bytes("8G") == 8589934592
+    assert EstimationDetails._memory_in_bytes("512MB") == 536870912
+    assert EstimationDetails._memory_in_bytes("256KB") == 262144
+    assert EstimationDetails._memory_in_bytes("1024B") == 1024
+    assert EstimationDetails._memory_in_bytes("12345") == 12345
+    assert EstimationDetails._memory_in_bytes("8Gi") == 8589934592
+    assert EstimationDetails._memory_in_bytes("8gb") == 8589934592
+
+
+def test_estimate_exceeds_maximum() -> None:
+    estimation = EstimationDetails(estimated_memory="16Gi", recommended_size="8Gi")
+    assert estimation.exceeds_recommended() is True
+
+    estimation = EstimationDetails(estimated_memory="8Gi", recommended_size="16Gi")
+    assert estimation.exceeds_recommended() is False
