@@ -29,5 +29,25 @@ it-v2 filter="" extra_options="":
     pytest tests/integrationV2 --include-integration-v2 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 
+# runs the
+session-v1-it-tests:
+    #!/usr/bin/env bash
+    set -e
+    ENV_DIR="scripts/test_envs/gds_session"
+    trap "cd $ENV_DIR && docker compose down" EXIT
+    cd $ENV_DIR && docker compose up -d
+    cd -
+    NEO4J_URI=bolt://localhost:7688 \
+    NEO4J_USER=neo4j \
+    NEO4J_PASSWORD=password \
+    NEO4J_DB=neo4j \
+    NEO4J_AURA_DB_URI=bolt://localhost:7687 \
+    pytest tests --include-cloud-architecture
+
+
+
+
+
 update-session:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
+
