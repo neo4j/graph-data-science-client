@@ -20,7 +20,7 @@ AUTH = ("neo4j", "password")
 if neo4j_user := os.environ.get("NEO4J_USER", os.environ.get("NEO4J_USERNAME", "neo4j")):
     AUTH = (
         neo4j_user,
-        os.environ.get("NEO4J_PASSWORD", "neo4j"),
+        os.environ.get("NEO4J_PASSWORD", "password"),
     )
 
 DB = os.environ.get("NEO4J_DB", "neo4j")
