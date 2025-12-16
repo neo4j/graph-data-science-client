@@ -220,7 +220,7 @@ class AuthenticatedArrowClient:
 
         # We need to specify the system root certificates on Windows
         if platform.system() == "Windows":
-            if not client_options["tls_root_certs"]:
+            if "tls_root_certs" not in client_options:
                 client_options["tls_root_certs"] = certifi.contents()
 
         if self._auth:
