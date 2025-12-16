@@ -1,4 +1,6 @@
+import certifi
 import pytest
+from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
@@ -43,3 +45,16 @@ def test_pickle_roundtrip(arrow_info: ArrowInfo, retry_config_v2: RetryConfigV2)
     assert isinstance(unpickled_client, AuthenticatedArrowClient)
     assert unpickled_client.connection_info() == client.connection_info()
     assert unpickled_client._retry_config == client._retry_config
+
+
+def test_create_windows(
+    arrow_info: ArrowInfo, retry_config_v2: RetryConfigV2, mock_auth: ArrowAuthentication, mocker: MockerFixture
+) -> None:
+    mocker.patch("platform.system", return_value="Windows")
+
+    spy = mocker.spy(certifi, "contents")
+
+    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
+
+    assert spy.call_count == 1
+    assert client.connection_info()
