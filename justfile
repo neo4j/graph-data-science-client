@@ -4,6 +4,12 @@ style skip_notebooks="false":
 convert-notebooks:
     ./scripts/nb2doc/convert.sh
 
+manual-docs:
+    ./scripts/render_docs.sh
+
+api-docs:
+   ./scripts/render_api_docs
+
 unit-tests extra_options="":
     pytest tests/unit {{extra_options}}
 

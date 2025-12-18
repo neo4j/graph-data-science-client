@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any
 
 from pandas import DataFrame
 
@@ -24,6 +24,7 @@ from graphdatascience.query_runner.session_query_runner import SessionQueryRunne
 from graphdatascience.query_runner.standalone_session_query_runner import StandaloneSessionQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
 
@@ -40,7 +41,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         session_bolt_connection_info: DbmsConnectionInfo,
         arrow_authentication: ArrowAuthentication | None,
         db_endpoint: Neo4jQueryRunner | DbmsConnectionInfo | None,
-        delete_fn: Callable[[], bool],
+        session_lifecycle_manager: SessionLifecycleManager,
         arrow_client_options: dict[str, Any] | None = None,
         bookmarks: Any | None = None,
         show_progress: bool = True,
@@ -89,7 +90,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             )
             return cls(
                 query_runner=session_query_runner,
-                delete_fn=delete_fn,
+                session_lifecycle_manager=session_lifecycle_manager,
                 gds_version=gds_version,
                 v2_endpoints=SessionV2Endpoints(
                     session_auth_arrow_client, db_bolt_query_runner, show_progress=show_progress
@@ -100,7 +101,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             standalone_query_runner = StandaloneSessionQueryRunner(session_arrow_query_runner)
             return cls(
                 query_runner=standalone_query_runner,
-                delete_fn=delete_fn,
+                session_lifecycle_manager=session_lifecycle_manager,
                 gds_version=gds_version,
                 v2_endpoints=SessionV2Endpoints(session_auth_arrow_client, None, show_progress=show_progress),
                 authenticated_arrow_client=session_auth_arrow_client,
@@ -109,18 +110,29 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
     def __init__(
         self,
         query_runner: QueryRunner,
-        delete_fn: Callable[[], bool],
+        session_lifecycle_manager: SessionLifecycleManager,
         gds_version: ServerVersion,
         v2_endpoints: SessionV2Endpoints,
         authenticated_arrow_client: AuthenticatedArrowClient,
     ):
         self._query_runner = query_runner
-        self._delete_fn = delete_fn
+        self._session_lifecycle_manager = session_lifecycle_manager
         self._server_version = gds_version
         self._v2_endpoints = v2_endpoints
         self._authenticated_arrow_client = authenticated_arrow_client
 
         super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
+
+    def verify_connectivity(self) -> None:
+        """
+        Verifies that Aura Graph Analytics Session is ready and the connection to the Aura Graph Analytics Session can be established.
+        Also verifies the connection to the Neo4j database, if specified.
+
+        :raises Exception: if the session is not running anymore, the session cannot be reached or the database driver cannot connect to the remote.
+        """
+        self._session_lifecycle_manager.verify_health()
+        self._v2_endpoints.verify_session_connectivity()
+        self._v2_endpoints.verify_db_connectivity()
 
     def run_cypher(
         self,
@@ -146,7 +158,9 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         mode: QueryMode
             the query mode to use (READ or WRITE). Set based on the operation performed in the query.
 
-        Returns:
+        Returns
+        -------
+        DataFrame
             The query result as a DataFrame
         """
         if retryable:
@@ -270,7 +284,7 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         Delete a GDS session.
         """
         self.close()
-        return self._delete_fn()
+        return self._session_lifecycle_manager.delete()
 
     def close(self) -> None:
         """

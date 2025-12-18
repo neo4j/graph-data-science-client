@@ -13,6 +13,7 @@ from graphdatascience.query_runner.arrow_authentication import UsernamePasswordA
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.topological_lp.topological_lp_runner import TopologicalLPRunner
 
+from .arrow_client.arrow_client_options_util import disable_server_verification, set_tls_root_certs
 from .call_builder import IndirectCallBuilder
 from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
 from .error.uncallable_namespace import UncallableNamespace
@@ -121,9 +122,9 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             if arrow_client_options is None:
                 arrow_client_options = {}
             if arrow_disable_server_verification:
-                arrow_client_options["disable_server_verification"] = True
+                disable_server_verification(arrow_client_options)
             if arrow_tls_root_certs is not None:
-                arrow_client_options["tls_root_certs"] = arrow_tls_root_certs
+                set_tls_root_certs(arrow_client_options, arrow_tls_root_certs)
             self._query_runner = ArrowQueryRunner.create(
                 self._query_runner,
                 arrow_info=arrow_info,

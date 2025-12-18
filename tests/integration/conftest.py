@@ -5,6 +5,7 @@ from typing import Any, Generator
 import neo4j.exceptions
 import pytest
 from neo4j import Driver, GraphDatabase
+from pytest_mock import MockerFixture
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
@@ -12,6 +13,7 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
@@ -91,12 +93,14 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 
 
 @pytest.fixture(scope="package", autouse=False)
-def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphDataScience, None, None]:
+def gds_with_cloud_setup(
+    request: pytest.FixtureRequest, mocker: MockerFixture
+) -> Generator[AuraGraphDataScience, None, None]:
     _gds = AuraGraphDataScience.create(
         session_bolt_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
         arrow_authentication=UsernamePasswordAuthentication(AUTH[0], AUTH[1]),
         db_endpoint=DbmsConnectionInfo(AURA_DB_URI, AURA_DB_AUTH[0], AURA_DB_AUTH[1]),
-        delete_fn=lambda: True,
+        session_lifecycle_manager=mocker.Mock(spec=SessionLifecycleManager),
     )
     _gds.set_database(DB)
 
@@ -106,12 +110,12 @@ def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphD
 
 
 @pytest.fixture(scope="package", autouse=False)
-def standalone_aura_gds() -> Generator[AuraGraphDataScience, None, None]:
+def standalone_aura_gds(mocker: MockerFixture) -> Generator[AuraGraphDataScience, None, None]:
     _gds = AuraGraphDataScience.create(
         session_bolt_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
         arrow_authentication=UsernamePasswordAuthentication(AUTH[0], AUTH[1]),
         db_endpoint=None,
-        delete_fn=lambda: True,
+        session_lifecycle_manager=mocker.Mock(spec=SessionLifecycleManager),
     )
 
     yield _gds
