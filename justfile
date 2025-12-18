@@ -36,7 +36,7 @@ it-v2 filter="" extra_options="":
 
 
 # runs the
-session-v1-it-tests:
+session-v1-it:
     #!/usr/bin/env bash
     set -e
     ENV_DIR="scripts/test_envs/gds_session"
