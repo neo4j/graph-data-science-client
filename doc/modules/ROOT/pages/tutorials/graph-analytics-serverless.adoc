@@ -130,6 +130,12 @@ gds = sessions.get_or_create(
 )
 ----
 
+[source, python, role=no-test]
+----
+# Verify the connectivity. Hints towards TLS or firewall issues if this fails directly after get_or_create
+gds.verify_connectivity()
+----
+
 == Listing sessions
 
 You can use `sessions.list()` to see the details for each created
