@@ -44,6 +44,9 @@ class PythonLibraryVersion:
     def major_minor(self) -> str:
         return f"{self.major}.{self.minor}"
 
+    def major_minor_suffix(self) -> str:
+        return f"{self.major}.{self.minor}{self.suffix}"
+
     def copy(self) -> PythonLibraryVersion:
         return PythonLibraryVersion(
             self.major,
@@ -84,7 +87,7 @@ def bump_version(current_version: PythonLibraryVersion) -> PythonLibraryVersion:
 def update_version_py(new_version: PythonLibraryVersion) -> None:
     content = VERSION_FILE.read_text()
 
-    updated = re.sub(VERSION_REGEX, f'__version__ = "{new_version.major_minor()}"', content)
+    updated = re.sub(VERSION_REGEX, f'__version__ = "{new_version.major_minor_suffix()}"', content)
 
     if updated == content:
         print(f"☑️ No changes needed for {VERSION_FILE}")

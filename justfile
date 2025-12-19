@@ -10,6 +10,9 @@ manual-docs:
 api-docs:
    ./scripts/render_api_docs
 
+post-release version="":
+    ./scripts/release_helper/post_release_main.py {{version}}
+
 unit-tests extra_options="":
     pytest tests/unit {{extra_options}}
 
