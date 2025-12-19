@@ -25,12 +25,17 @@ ui:
 urls:
   html_extension_style: indexify
 
+antora:
+  extensions:
+    - "@neo4j-antora/table-footnotes"
+    - "@neo4j-antora/roles-labels"
+    - "@neo4j-antora/xref-hash-validator"
+    
 asciidoc:
   extensions:
   - "@neo4j-documentation/remote-include"
   - "@neo4j-documentation/macros"
   - "@neo4j-antora/antora-page-roles"
-  - "@neo4j-antora/antora-table-footnotes"
   attributes:
     page-theme: docs
     page-type: Docs
