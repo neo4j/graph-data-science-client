@@ -54,6 +54,9 @@ class SessionDetails:
     def bolt_connection_url(self) -> str:
         return f"neo4j+s://{self.host}"
 
+    def is_ready(self) -> bool:
+        return self.status.lower() == "ready"
+
 
 @dataclass(repr=True, frozen=True)
 class SessionDetailsWithErrors(SessionDetails):

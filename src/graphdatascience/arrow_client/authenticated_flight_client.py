@@ -26,6 +26,7 @@ from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2, StopConfig
 
 from ..version import __version__
+from .arrow_client_options_util import TLS_ROOT_CERTS_OPTION, set_tls_root_certs
 from .middleware.auth_middleware import AuthFactory, AuthMiddleware
 from .middleware.user_agent_middleware import UserAgentFactory
 
@@ -220,8 +221,8 @@ class AuthenticatedArrowClient:
 
         # We need to specify the system root certificates on Windows
         if platform.system() == "Windows":
-            if "tls_root_certs" not in client_options:
-                client_options["tls_root_certs"] = certifi.contents()
+            if TLS_ROOT_CERTS_OPTION not in client_options:
+                set_tls_root_certs(client_options, certifi.contents())
 
         if self._auth:
             user_agent = f"neo4j-graphdatascience-v{__version__} pyarrow-v{arrow_version}"

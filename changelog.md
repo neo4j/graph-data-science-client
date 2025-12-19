@@ -4,6 +4,9 @@
 
 ## New features
 
+- `AuraGraphDataScience.verify_connectivity` to check the connection between client and Aura Graph Analytics session (created from `GdsSessions.get_or_create`).
+
+
 ## Bug fixes
 
 - Fixed bug where Windows users had to specify the tls_certificate to avoid a `KeyError`

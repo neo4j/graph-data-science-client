@@ -170,6 +170,53 @@ gds = sessions.get_or_create(
 
 =====
 
+=== Verifying the connection
+
+To check the connection setup between the client and the Aura Graph Analytics session, you can use:
+
+[source, python, role=no-test]
+----
+gds.verify_connectivity()
+----
+
+==== Providing custom TLS certificates
+
+If the connection fails, it might be due to the TLS certificate.
+First, verify if the connection issue is indeed related to TLS.
+
+.Temporarily skips server verification during TLS
+[source, python, role=no-test]
+----
+from graphdatascience.arrow_client.arrow_client_options_util import disable_server_verification
+
+arrow_client_options = {}
+disable_server_verification(arrow_client_options) # ONLY FOR TESTING
+gds = sessions.get_or_create(
+    ...,
+    arrow_client_options=arrow_client_options
+)
+gds.verify_connectivity()
+----
+
+If this setup works, you should now enable server verificaton again an pass custom TLS certificates
+
+.Pass TLS certificates explicitly
+[source, python, role=no-test]
+----
+from graphdatascience.arrow_client.arrow_client_options_util import set_tls_root_certs
+import certifi
+
+arrow_client_options = {}
+custom_tls = certifi.contents() # example certificates to use
+set_tls_root_certs(arrow_client_options, custom_tls)
+gds = sessions.get_or_create(
+    ...,
+    arrow_client_options=arrow_client_options
+)
+gds.verify_connectivity()
+----
+
+
 
 === Listing GDS Sessions
 

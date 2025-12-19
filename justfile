@@ -4,6 +4,12 @@ style skip_notebooks="false":
 convert-notebooks:
     ./scripts/nb2doc/convert.sh
 
+manual-docs:
+    ./scripts/render_docs.sh
+
+api-docs:
+   ./scripts/render_api_docs
+
 unit-tests extra_options="":
     pytest tests/unit {{extra_options}}
 
@@ -30,7 +36,7 @@ it-v2 filter="" extra_options="":
 
 
 # runs the
-session-v1-it-tests:
+session-v1-it:
     #!/usr/bin/env bash
     set -e
     ENV_DIR="scripts/test_envs/gds_session"

@@ -91,12 +91,12 @@ def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
 
 
 @pytest.fixture(scope="package", autouse=False)
-def gds_with_cloud_setup(request: pytest.FixtureRequest) -> Generator[AuraGraphDataScience, None, None]:
+def gds_with_cloud_setup() -> Generator[AuraGraphDataScience, None, None]:
     _gds = AuraGraphDataScience.create(
         session_bolt_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
         arrow_authentication=UsernamePasswordAuthentication(AUTH[0], AUTH[1]),
         db_endpoint=DbmsConnectionInfo(AURA_DB_URI, AURA_DB_AUTH[0], AURA_DB_AUTH[1]),
-        delete_fn=lambda: True,
+        session_lifecycle_manager=None,  # type: ignore
     )
     _gds.set_database(DB)
 
@@ -111,7 +111,7 @@ def standalone_aura_gds() -> Generator[AuraGraphDataScience, None, None]:
         session_bolt_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
         arrow_authentication=UsernamePasswordAuthentication(AUTH[0], AUTH[1]),
         db_endpoint=None,
-        delete_fn=lambda: True,
+        session_lifecycle_manager=None,  # type: ignore
     )
 
     yield _gds

@@ -115,6 +115,12 @@ gds = sessions.get_or_create(
 )
 ----
 
+[source, python, role=no-test]
+----
+# Verify the connectivity. Hints towards TLS or firewall issues if this fails directly after get_or_create
+gds.verify_connectivity()
+----
+
 == Adding a dataset
 
 As the next step we will setup a dataset in Spark. In this example we

@@ -16,6 +16,7 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_info import SessionInfo
+from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
 
@@ -162,7 +163,7 @@ class DedicatedSessions:
             until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
             if until_expiry < timedelta(days=1):
                 raise Warning(f"Session `{session_details.name}` is expiring in less than a day.")
-        if session_details.status != "Ready":
+        if not session_details.is_ready():
             max_wait_time = float(timeout) if timeout is not None else math.inf
             wait_result = self._aura_api.wait_for_session_running(session_details.id, max_wait_time=max_wait_time)
             if err := wait_result.error:
@@ -252,6 +253,6 @@ class DedicatedSessions:
             session_bolt_connection_info=session_bolt_connection_info,
             arrow_authentication=arrow_authentication,
             db_endpoint=db_runner,
-            delete_fn=lambda: self._aura_api.delete_session(session_id=session_id),
+            session_lifecycle_manager=SessionLifecycleManager(session_id, self._aura_api),
             arrow_client_options=arrow_client_options,
         )

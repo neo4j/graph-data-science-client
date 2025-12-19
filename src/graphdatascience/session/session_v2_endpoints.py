@@ -130,14 +130,14 @@ from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_e
     NodeSimilarityArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.system_arrow_endpoints import SystemArrowEndpoints
-from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
 class SessionV2Endpoints:
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        db_client: QueryRunner | None = None,
+        db_client: Neo4jQueryRunner | None = None,
         show_progress: bool = False,
     ):
         self._arrow_client = arrow_client
@@ -148,6 +148,21 @@ class SessionV2Endpoints:
 
     def set_show_progress(self, show_progress: bool) -> None:
         self._show_progress = show_progress
+
+    def verify_session_connectivity(self) -> None:
+        """
+        Verify connectivity to the Aura Graph Analytics session.
+
+        :raises Exception: If the Aura Graph Analytics Session is unreachable
+        """
+        self._arrow_client.request_token()
+
+    def verify_db_connectivity(self) -> None:
+        """
+        Verify connectivity to the Neo4j database.
+        """
+        if db_client := self._db_client:
+            db_client.verify_connectivity()
 
     @property
     def graph(self) -> CatalogArrowEndpoints:
