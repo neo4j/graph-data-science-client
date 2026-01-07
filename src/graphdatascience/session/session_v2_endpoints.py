@@ -32,6 +32,7 @@ from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEn
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
+from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
@@ -96,6 +97,9 @@ from graphdatascience.procedure_surface.arrow.community.triangle_count_arrow_end
 )
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.arrow.config_arrow_endpoints import ConfigArrowEndpoints
+from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import (
+    ModelCatalogArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.node_embedding.fastrp_arrow_endpoints import FastRPArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
@@ -174,6 +178,13 @@ class SessionV2Endpoints:
         Return graph-related endpoints for graph management.
         """
         return CatalogArrowEndpoints(self._arrow_client, self._db_client, show_progress=self._show_progress)
+
+    @property
+    def model(self) -> ModelCatalogEndpoints:
+        """
+        Return model-related endpoints for model management.
+        """
+        return ModelCatalogArrowEndpoints(self._arrow_client)
 
     @property
     def config(self) -> ConfigArrowEndpoints:
