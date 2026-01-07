@@ -149,6 +149,8 @@ div.code-block-caption:hover > a.headerlink {
     padding-left: 0;
 }
 
+/* Use CSS as template */
+
 {% for level in range(1, 4) %}
 .nav-menu li.toctree-l{{ level }} {
     list-style: none;
