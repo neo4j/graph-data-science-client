@@ -20,3 +20,4 @@
 ## Other changes
 
 - Deprecate deriving `aura_instance_id` from provided `uri` for `GdsSessions.get_or_create`.
+- Added new configuration `node_capacity_property` to MaxFlow endpoints.
