@@ -54,7 +54,7 @@ class ModelCatalogEndpoints(ABC):
         """
 
     @abstractmethod
-    def get(self, model_name: str) -> ModelDetails | None:
+    def get(self, model_name: str) -> ModelDetails:
         """Get a model catalog entry by name.
 
         Parameters
@@ -64,12 +64,12 @@ class ModelCatalogEndpoints(ABC):
 
         Returns
         -------
-        ModelDetails | None
-            The model details when found; otherwise None.
+        ModelDetails
+            The model details.
         """
 
     @abstractmethod
-    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails | None:
+    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails:
         """Drop a model from the in-memory catalog.
 
         Parameters
@@ -81,12 +81,12 @@ class ModelCatalogEndpoints(ABC):
 
         Returns
         -------
-        ModelDetails | None
-            The model details after the drop operation when applicable; otherwise None.
+        ModelDetails
+            The model details after the drop operation when applicable.
         """
 
     @abstractmethod
-    def delete(self, model_name: str) -> ModelDeleteResult | None:
+    def delete(self, model_name: str) -> ModelDeleteResult:
         """Delete a persisted model from storage.
 
         Parameters
@@ -96,12 +96,12 @@ class ModelCatalogEndpoints(ABC):
 
         Returns
         -------
-        ModelDeleteResult | None
-            The delete result when applicable.
+        ModelDeleteResult
+            The delete result.
         """
 
     @abstractmethod
-    def load(self, model_name: str) -> ModelLoadResult | None:
+    def load(self, model_name: str) -> ModelLoadResult:
         """Load a persisted model into the session/catalog.
 
         Parameters
@@ -111,12 +111,12 @@ class ModelCatalogEndpoints(ABC):
 
         Returns
         -------
-        ModelLoadResult | None
-            The load result when applicable.
+        ModelLoadResult
+            The load result.
         """
 
     @abstractmethod
-    def store(self, model_name: str, *, fail_if_unsupported: bool = False) -> ModelStoreResult | None:
+    def store(self, model_name: str, *, fail_if_unsupported: bool = False) -> ModelStoreResult:
         """Persist/store a model.
 
         Parameters
@@ -128,6 +128,6 @@ class ModelCatalogEndpoints(ABC):
 
         Returns
         -------
-        ModelStoreResult | None
-            The store result when applicable.
+        ModelStoreResult
+            The store result.
         """

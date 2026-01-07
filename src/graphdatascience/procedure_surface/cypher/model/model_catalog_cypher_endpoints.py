@@ -37,40 +37,40 @@ class ModelCatalogCypherEndpoints(ModelCatalogEndpoints):
             model_type = str(row["modelInfo"].get("modelType"))
         return ModelExistsResult(modelName=model_name, modelType=model_type or "", exists=True)
 
-    def get(self, model_name: str) -> ModelDetails | None:
+    def get(self, model_name: str) -> ModelDetails:
         params = CallParameters(name=model_name)
         df = self._query_runner.call_procedure("gds.model.list", params=params, custom_error=False)
         if df.empty:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return self._to_model_details(df.iloc[0].to_dict())
 
-    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails | None:
+    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails:
         params = CallParameters(model_name=model_name, fail_if_missing=fail_if_missing)
         df = self._query_runner.call_procedure("gds.model.drop", params=params, custom_error=False)
         if df.empty:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return self._to_model_details(df.iloc[0].to_dict())
 
-    def delete(self, model_name: str) -> ModelDeleteResult | None:
+    def delete(self, model_name: str) -> ModelDeleteResult:
         params = CallParameters(model_name=model_name)
         df = self._query_runner.call_procedure("gds.model.delete", params=params, custom_error=False)
         if df.empty:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return ModelDeleteResult(**df.iloc[0].to_dict())
 
-    def load(self, model_name: str) -> ModelLoadResult | None:
+    def load(self, model_name: str) -> ModelLoadResult:
         params = CallParameters(model_name=model_name)
         df = self._query_runner.call_procedure("gds.model.load", params=params, custom_error=False)
         if df.empty:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return ModelLoadResult(**df.iloc[0].to_dict())
 
-    def store(self, model_name: str, *, fail_if_unsupported: bool = False) -> ModelStoreResult | None:
+    def store(self, model_name: str, *, fail_if_unsupported: bool = False) -> ModelStoreResult:
         # Historical parameter name is 'fail_flag' in some versions
         params = CallParameters(model_name=model_name, fail_flag=fail_if_unsupported)
         df = self._query_runner.call_procedure("gds.model.store", params=params, custom_error=False)
         if df.empty:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return ModelStoreResult(**df.iloc[0].to_dict())
 
     def _to_model_details(self, result: dict[str, Any]) -> ModelDetails:
