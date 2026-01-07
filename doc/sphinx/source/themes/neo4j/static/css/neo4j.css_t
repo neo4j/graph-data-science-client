@@ -149,33 +149,34 @@ div.code-block-caption:hover > a.headerlink {
     padding-left: 0;
 }
 
-.nav-menu li.toctree-l1 {
+{% for level in range(1, 4) %}
+.nav-menu li.toctree-l{{ level }} {
     list-style: none;
     position: relative;
 }
 
-.nav-menu .toctree-l1>a,
-.nav-menu .toctree-l1>span {
-    padding-left: 1.5rem;
+.nav-menu .toctree-l{{ level }}>a,
+.nav-menu .toctree-l{{ level }}>span {
+    padding-left: {{ level }}.5rem;
 }
 
-.nav-menu .toctree-l1>a,
-.nav-menu .toctree-l1>span {
+.nav-menu .toctree-l{{ level }}>a,
+.nav-menu .toctree-l{{ level }}>span {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 }
 
-.nav-menu .toctree-l1 a:hover,
-.nav-menu .toctree-l1 span:hover {
+.nav-menu .toctree-l{{ level }} a:hover,
+.nav-menu .toctree-l{{ level }} span:hover {
     background-color: #e6e9ee;
 }
 
-.nav-menu .toctree-l1>a.current {
+.nav-menu .toctree-l{{ level }}>a.current {
     background-color: #e6f8ff;
     color: #0056b3;
 }
 
-.nav-menu .toctree-l1>a.current::before {
+.nav-menu .toctree-l{{ level }}>a.current::before {
     content: "";
     width: 4px;
     height: 100%;
@@ -186,14 +187,15 @@ div.code-block-caption:hover > a.headerlink {
     border-radius: 4px;
 }
 
+.toctree-l{{ level }}>a, .toctree-l{{ level }}>span {
+    position: relative;
+    padding-right: 2rem;
+}
+{% endfor %}
+
 .is-current-page>.nav-link,
 .is-current-page>.nav-text {
     font-weight: 400;
-}
-
-.toctree-l1>a, .toctree-l1>span {
-    position: relative;
-    padding-right: 2rem;
 }
 
 .nav-menu a, .nav-text {
