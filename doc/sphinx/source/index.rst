@@ -9,7 +9,7 @@ Neo4j Graph Data Science Python Client API Reference
 This API reference manual lists all available endpoints in the Neo4j Graph Data Science Python Client |api-version|.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents
 
    plugin/index
