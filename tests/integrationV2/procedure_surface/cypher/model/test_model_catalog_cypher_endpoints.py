@@ -65,7 +65,8 @@ def test_model_get(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> 
     assert model.creation_time.date() == datetime.date.today()
     assert not model.stored
 
-    assert model_catalog.get("nonexistent-model") is None
+    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+        model_catalog.get("nonexistent-model")
 
 
 def test_model_exists(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:
@@ -87,7 +88,8 @@ def test_model_drop(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     assert model_catalog.exists(gs_model_name) is None
 
     # Attempt to drop a non-existing model
-    assert model_catalog.drop("nonexistent-model", fail_if_missing=False) is None
+    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+        model_catalog.drop("nonexistent-model", fail_if_missing=False)
 
     with pytest.raises(Exception, match="Model with name `nonexistent-model` does not exist"):
         model_catalog.drop("nonexistent-model", fail_if_missing=True)
@@ -109,6 +111,9 @@ def test_store_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -
 
     model_catalog.delete(gs_model_name)
 
+    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+        model_catalog.store("nonexistent-model")
+
 
 def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:
     model_catalog.store(gs_model_name)
@@ -128,6 +133,9 @@ def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
 
     model_catalog.delete(gs_model_name)
 
+    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+        model_catalog.load("nonexistent-model")
+
 
 def test_delete_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:
     model_catalog.store(gs_model_name)
@@ -142,3 +150,6 @@ def test_delete_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) 
     assert deleted is not None
     assert not deleted.stored
     assert deleted.loaded
+
+    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+        model_catalog.delete("nonexistent-model")

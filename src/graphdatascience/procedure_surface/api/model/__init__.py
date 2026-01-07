@@ -1,4 +1,3 @@
-
 from .model_catalog_endpoints import (
     ModelCatalogEndpoints,
     ModelDeleteResult,

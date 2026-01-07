@@ -36,51 +36,51 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
         item = items[0]
         return ModelExistsResult(**item)
 
-    def get(self, model_name: str) -> ModelDetails | None:
+    def get(self, model_name: str) -> ModelDetails:
         raw = self._arrow_client.do_action_with_retry(
             "v2/model.get", payload=json.dumps({"modelName": model_name}).encode("utf-8")
         )
         items = deserialize(raw)
         if not items:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return self._to_model_details(items[0])
 
-    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails | None:
+    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails:
         raw = self._arrow_client.do_action_with_retry(
             "v2/model.drop",
             payload=json.dumps({"modelName": model_name, "failIfMissing": fail_if_missing}).encode("utf-8"),
         )
         items = deserialize(raw)
         if not items:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return self._to_model_details(items[0])
 
-    def delete(self, model_name: str) -> ModelDeleteResult | None:
+    def delete(self, model_name: str) -> ModelDeleteResult:
         raw = self._arrow_client.do_action_with_retry(
             "v2/model.delete", payload=json.dumps({"modelName": model_name}).encode("utf-8")
         )
         items = deserialize(raw)
         if not items:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return ModelDeleteResult(**items[0])
 
-    def load(self, model_name: str) -> ModelLoadResult | None:
+    def load(self, model_name: str) -> ModelLoadResult:
         raw = self._arrow_client.do_action_with_retry(
             "v2/model.load", payload=json.dumps({"modelName": model_name}).encode("utf-8")
         )
         items = deserialize(raw)
         if not items:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return ModelLoadResult(**items[0])
 
-    def store(self, model_name: str, *, fail_if_unsupported: bool = False) -> ModelStoreResult | None:
+    def store(self, model_name: str, *, fail_if_unsupported: bool = False) -> ModelStoreResult:
         raw = self._arrow_client.do_action_with_retry(
             "v2/model.store",
             payload=json.dumps({"modelName": model_name, "failIfUnsupported": fail_if_unsupported}).encode("utf-8"),
         )
         items = deserialize(raw)
         if not items:
-            return None
+            raise ValueError(f"Model with name `{model_name}` does not exist")
         return ModelStoreResult(**items[0])
 
     def _to_model_details(self, item: dict[str, Any]) -> ModelDetails:
