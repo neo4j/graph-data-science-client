@@ -37,6 +37,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         mutate_relationship_type: str,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -50,6 +51,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         config = self._relationship_endpoints.create_base_config(
             G,
             capacityProperty=capacity_property,
+            nodeCapacityProperty=node_capacity_property,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -75,6 +77,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         G: GraphV2,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -88,6 +91,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         config = self._relationship_endpoints.create_base_config(
             G,
             capacityProperty=capacity_property,
+            nodeCapacityProperty=node_capacity_property,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -108,6 +112,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         G: GraphV2,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -121,6 +126,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         config = self._relationship_endpoints.create_base_config(
             G,
             capacityProperty=capacity_property,
+            nodeCapacityProperty=node_capacity_property,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -143,6 +149,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         write_relationship_type: str,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -157,6 +164,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         config = self._relationship_endpoints.create_base_config(
             G,
             capacityProperty=capacity_property,
+            nodeCapacityProperty=node_capacity_property,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -185,6 +193,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         G: GraphV2 | dict[str, Any],
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
@@ -193,6 +202,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
     ) -> EstimationResult:
         config = self._relationship_endpoints.create_estimate_config(
             capacityProperty=capacity_property,
+            nodeCapacityProperty=node_capacity_property,
             concurrency=concurrency,
             nodeLabels=node_labels,
             relationshipTypes=relationship_types,
