@@ -20,6 +20,7 @@ class MaxFlowEndpoints(ABC):
         mutate_relationship_type: str,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -43,6 +44,8 @@ class MaxFlowEndpoints(ABC):
             Name of the relationship type to store the results in.
         capacity_property
             Name of the relationship property containing capacities.
+        node_capacity_property
+            Name of the node property containing capacities.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -75,6 +78,7 @@ class MaxFlowEndpoints(ABC):
         G: GraphV2,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -94,6 +98,8 @@ class MaxFlowEndpoints(ABC):
            Graph object to use
         capacity_property
             Name of the relationship property containing capacities.
+        node_capacity_property
+            Name of the node property containing capacities.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -126,6 +132,7 @@ class MaxFlowEndpoints(ABC):
         G: GraphV2,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -145,6 +152,8 @@ class MaxFlowEndpoints(ABC):
            Graph object to use
         capacity_property
             Name of the relationship property containing capacities.
+        node_capacity_property
+            Name of the node property containing capacities.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -179,6 +188,7 @@ class MaxFlowEndpoints(ABC):
         write_relationship_type: str,
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -203,6 +213,8 @@ class MaxFlowEndpoints(ABC):
             Name of the relationship type to store the results in.
         capacity_property
             Name of the relationship property containing capacities.
+        node_capacity_property
+            Name of the node property containing capacities.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -237,6 +249,7 @@ class MaxFlowEndpoints(ABC):
         G: GraphV2 | dict[str, Any],
         *,
         capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
@@ -252,6 +265,8 @@ class MaxFlowEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         capacity_property
             Name of the relationship property containing capacities.
+        node_capacity_property
+            Name of the node property containing capacities.
         concurrency
             Number of concurrent threads to use.
         node_labels
