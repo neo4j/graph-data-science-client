@@ -65,7 +65,7 @@ dev = [
 
 dev-base = [
     "ruff == 0.11.7",
-    "mypy == 1.13.0",
+    "mypy == 1.19.1",
     "nbconvert == 7.16.4",
     "pandas-stubs == 2.2.3.241009",
     "tox == 4.30.2",
