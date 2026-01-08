@@ -93,7 +93,7 @@ docs-ci = [
 notebook-base = [
     "nbconvert==7.16.4",
     "nbformat==5.10.4",
-    "nbclient==0.10.2",
+    "nbclient==0.10.4",
     "ipykernel==6.29.5",
 ]
 notebook-aura-ci = [{ include-group = "notebook-base" }, "python-dotenv==1.1.0"]
