@@ -80,7 +80,7 @@ dev-base = [
 ]
 test = [
     "pytest == 8.3.3",
-    "requests_mock == 1.11.0",
+    "requests_mock == 1.12.1",
     "pytest_mock == 3.15.1",
     "testcontainers >= 4.0, < 4.13.0",
     "python-dateutil >= 2.9",
