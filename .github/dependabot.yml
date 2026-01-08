@@ -6,10 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
-    directory: "/requirements/base"
+    directory: "/"
     schedule:
-      interval: "daily"
-  - package-ecosystem: "pip"
-    directory: "/requirements/dev"
-    schedule:
-      interval: "monthly"
+      interval: "weekly"
