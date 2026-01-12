@@ -53,6 +53,10 @@ autodoc_pydantic_field_show_default = False
 html_theme = "neo4j"
 html_theme_path = ["themes"]
 
+# Additional templates that should be rendered to pages, maps page names to
+# template names.
+html_additional_pages = {"gentree": "gentree.html"}
+
 
 # 01-nav.js is a copy of a js file of the same name that is included in the docs-ui bundle
 def setup(app):  # type: ignore
