@@ -3,6 +3,13 @@ Model procedures
 Listing of all model procedures in the Neo4j Graph Data Science Python Client API.
 These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
 
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+    :titlesonly:
+
+    ../model/index
+
 
 .. deprecated:: 2.5.0
    Since GDS server version 2.5.0 you should use the endpoint :func:`gds.backup` instead.
