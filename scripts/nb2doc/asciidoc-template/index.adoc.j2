@@ -85,7 +85,7 @@
 {% if 'colab_type' in cell.metadata %}
 {{ cell.source | convert_pandoc(from_format='html', to_format='asciidoc') }}
 {% else -%}
-{{- cell.source | markdown2asciidoc(extra_args=['--markdown-headings=atx', '--shift-heading-level-by=-1', '-s', '--ascii']) -}}
+{{- cell.source | convert_pandoc(from_format='markdown-smart', to_format='asciidoc', extra_args=['--markdown-headings=atx', '--shift-heading-level-by=-1', '-s', '--ascii']) -}}
 {% endif %}
 {% endblock markdowncell %}
 

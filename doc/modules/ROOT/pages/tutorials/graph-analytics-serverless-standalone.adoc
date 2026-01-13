@@ -14,7 +14,7 @@ in the Neo4j Graph Data Science Client Github repository.
 The notebook shows how to use the `graphdatascience` Python library to
 create, manage, and use an Aura Graph Analytics (AGA) Session.
 
-We consider a graph of people and fruits, which we’re using as a simple
+We consider a graph of people and fruits, which we're using as a simple
 example to show how to load data from Pandas `DataFrame` to an AGA
 Session, run algorithms, and inspect the results. We will cover all
 management operations: creation, listing, and deletion.

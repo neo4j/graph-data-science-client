@@ -369,7 +369,7 @@ The quality of the model can potentially be increased by adding more
 features or by using different features altogether. One way is to use
 algorithms such as FastRP that create embeddings based on both node
 properties and graph features, which can be added via the
-`addNodeProperty` pipeline method. Such properties are ``transient'', in
+`addNodeProperty` pipeline method. Such properties are "transient", in
 that they are automatically created and removed by the pipeline itself.
 
 In this example we also use the `contextNodeLabels` parameter to

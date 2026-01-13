@@ -122,7 +122,7 @@ print(f"Metadata for our loaded Cora graph `G`: {G}")
 print(f"Node labels present in `G`: {G.node_labels()}")
 ----
 
-It’s looks correct! Now let’s go ahead and sample the graph.
+It's looks correct! Now let's go ahead and sample the graph.
 
 [source, python, role=no-test]
 ----
@@ -255,7 +255,7 @@ would have been useful to keep some data for a validation set as well.
 
 == Training and evaluating a GCN
 
-Let’s now define and train the GCN using PyG and our sampled CORA as
+Let's now define and train the GCN using PyG and our sampled CORA as
 input. We adapt the CORA GCN example from the
 https://pytorch-geometric.readthedocs.io/en/latest/notes/introduction.html#learning-methods-on-graphs[PyG
 documentation].
