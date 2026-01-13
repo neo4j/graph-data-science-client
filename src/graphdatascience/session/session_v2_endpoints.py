@@ -37,6 +37,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints i
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.bfs_endpoints import BFSEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.dag_endpoints import DagEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
@@ -107,6 +108,7 @@ from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endp
 from graphdatascience.procedure_surface.arrow.pathfinding.all_shortest_path_arrow_endpoints import (
     AllShortestPathArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.pathfinding.bfs_arrow_endpoints import BFSArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pathfinding.dag_arrow_endpoints import DagArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pathfinding.k_spanning_tree_arrow_endpoints import (
     KSpanningTreeArrowEndpoints,
@@ -204,6 +206,13 @@ class SessionV2Endpoints:
         Return endpoints for the article rank algorithm.
         """
         return ArticleRankArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def bfs(self) -> BFSEndpoints:
+        """
+        Return endpoints for the Breadth First Search (BFS) algorithm.
+        """
+        return BFSArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def articulation_points(self) -> ArticulationPointsEndpoints:

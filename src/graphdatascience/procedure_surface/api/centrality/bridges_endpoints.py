@@ -26,9 +26,6 @@ class BridgesEndpoints(ABC):
         """
         Executes the Bridges algorithm and returns a stream of results.
 
-        The Bridges algorithm identifies bridge relationships in a graph.
-        A bridge is a relationship whose removal increases the number of connected components in the graph.
-
         Parameters
         ----------
         G
