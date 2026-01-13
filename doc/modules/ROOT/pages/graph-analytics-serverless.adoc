@@ -121,9 +121,8 @@ Alternatively to username and password, you can provide a `neo4j.Auth` https://n
 ----
 from graphdatascience.session import DbmsConnectionInfo, SessionMemory
 
-# The session name must be unique within the project
 gds = sessions.get_or_create(
-    session_name="my-attached-session",
+    session_name="my-attached-session", # Must be unique within the project
     memory=SessionMemory.m_4GB,
     db_connection=DbmsConnectionInfo(
         aura_instance_id="mydbid",
@@ -141,9 +140,8 @@ gds = sessions.get_or_create(
 ----
 from graphdatascience.session import DbmsConnectionInfo, CloudLocation, SessionMemory
 
-# The session name must be unique within the project
 gds = sessions.get_or_create(
-    session_name="my-self-managed-session",
+    session_name="my-self-managed-session", # Must be unique within the project
     memory=SessionMemory.m_4GB,
     db_connection=DbmsConnectionInfo(
         uri="neo4j://localhost",
@@ -162,9 +160,8 @@ gds = sessions.get_or_create(
 ----
 from graphdatascience.session import CloudLocation, SessionMemory
 
-# The session name must be unique within the project
 gds = sessions.get_or_create(
-    session_name="my-standalone-session",
+    session_name="my-standalone-session", # Must be unique within the project
     memory=SessionMemory.m_4GB,
     cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
 )
@@ -387,9 +384,8 @@ db_connection = DbmsConnectionInfo(
     aura_instance_id=os.environ["AURA_INSTANCEID"]
 )
 
-# The session name must be unique within the project
 gds = sessions.get_or_create(
-    session_name="my-new-session",
+    session_name="my-new-session", # Must be unique within the project
     memory=SessionMemory.m_8GB,
     db_connection=db_connection,
 )
@@ -446,9 +442,8 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(os.environ["CLIENT_ID"
 
 db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
 
-# The session name must be unique within the project
 gds = sessions.get_or_create(
-    session_name="my-new-session",
+    session_name="my-new-session", # Must be unique within the project
     memory=SessionMemory.m_8GB,
     db_connection=db_connection,
     cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
@@ -501,9 +496,8 @@ G, result = gds.graph.project(
 ----
 from graphdatascience.session import CloudLocation, SessionMemory
 
-# The session name must be unique within the project
 gds = sessions.get_or_create(
-    session_name="my-standalone-session",
+    session_name="my-standalone-session", # Must be unique within the project
     memory=SessionMemory.m_4GB,
     cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
 )
