@@ -121,6 +121,7 @@ Alternatively to username and password, you can provide a `neo4j.Auth` https://n
 ----
 from graphdatascience.session import DbmsConnectionInfo, SessionMemory
 
+# The session name must be unique within the project
 gds = sessions.get_or_create(
     session_name="my-attached-session",
     memory=SessionMemory.m_4GB,
@@ -140,6 +141,7 @@ gds = sessions.get_or_create(
 ----
 from graphdatascience.session import DbmsConnectionInfo, CloudLocation, SessionMemory
 
+# The session name must be unique within the project
 gds = sessions.get_or_create(
     session_name="my-self-managed-session",
     memory=SessionMemory.m_4GB,
@@ -160,6 +162,7 @@ gds = sessions.get_or_create(
 ----
 from graphdatascience.session import CloudLocation, SessionMemory
 
+# The session name must be unique within the project
 gds = sessions.get_or_create(
     session_name="my-standalone-session",
     memory=SessionMemory.m_4GB,
@@ -442,6 +445,8 @@ from graphdatascience.session import SessionMemory, DbmsConnectionInfo, GdsSessi
 sessions = GdsSessions(api_credentials=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
 
 db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
+
+# The session name must be unique within the project
 gds = sessions.get_or_create(
     session_name="my-new-session",
     memory=SessionMemory.m_8GB,
@@ -496,6 +501,7 @@ G, result = gds.graph.project(
 ----
 from graphdatascience.session import CloudLocation, SessionMemory
 
+# The session name must be unique within the project
 gds = sessions.get_or_create(
     session_name="my-standalone-session",
     memory=SessionMemory.m_4GB,
