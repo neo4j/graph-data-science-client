@@ -43,9 +43,9 @@ from graphdatascience import GraphDataScience
 
 When using a local Neo4j setup, the default connection URI is
 `bolt://localhost:7687`; when using AuraDS, instead, the connection URI
-is slightly different as it uses the `neo4j{plus}s` protocol. In this
-case, the client should also include the `aura++_++ds=True` flag to
-enable AuraDS-recommended settings. Check the
+is slightly different as it uses the `neo4j+s` protocol. In this case,
+the client should also include the `aura_ds=True` flag to enable
+AuraDS-recommended settings. Check the
 https://neo4j.com/docs/graph-data-science-client/current/getting-started/[Neo4j
 GDS Client docs] for more details.
 
@@ -270,7 +270,7 @@ also run a training estimate, to make sure there are enough resources to
 run the actual training afterwards.
 
 The Node Classification model supports several evaluation metrics. Here
-we use the global metric `F1++_++WEIGHTED`.
+we use the global metric `F1_WEIGHTED`.
 
 *NOTE:* The `concurrency` parameter is explicitly set to 4 (the default
 value) for demonstration purposes. The maximum concurrency in the
@@ -369,7 +369,7 @@ The quality of the model can potentially be increased by adding more
 features or by using different features altogether. One way is to use
 algorithms such as FastRP that create embeddings based on both node
 properties and graph features, which can be added via the
-`addNodeProperty` pipeline method. Such properties are "`transient`", in
+`addNodeProperty` pipeline method. Such properties are ``transient'', in
 that they are automatically created and removed by the pipeline itself.
 
 In this example we also use the `contextNodeLabels` parameter to
@@ -423,15 +423,14 @@ model_fastrp, stats_fastrp = node_pipeline_fastrp.train(
 )
 ----
 
-The `F1++_++WEIGHTED` metrics is better with embeddings:
+The `F1_WEIGHTED` metrics is better with embeddings:
 
 [source, python, role=no-test]
 ----
 print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
 ----
 
-The classification using `predict++_++stream` can be run in the same
-way:
+The classification using `predict_stream` can be run in the same way:
 
 [source, python, role=no-test]
 ----

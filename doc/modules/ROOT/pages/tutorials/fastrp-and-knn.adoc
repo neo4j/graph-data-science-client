@@ -33,8 +33,8 @@ one of the customers will be recommended to the other.
 == Prerequisites
 
 Running this notebook requires a Neo4j server with a recent version
-(2.0{plus}) of GDS installed. We recommend using Neo4j Desktop with GDS,
-or AuraDS.
+(2.0+) of GDS installed. We recommend using Neo4j Desktop with GDS, or
+AuraDS.
 
 The `graphdatascience` Python library needs to be installed as well. See
 the examples in the Setup section below and in the
@@ -276,21 +276,21 @@ gds.run_cypher(
 ----
 
 Our kNN results indicate among other things that the `Person` nodes
-named "`Annie`" and "`Matt`" are very similar. Looking at the `BUYS`
+named ``Annie'' and ``Matt'' are very similar. Looking at the `BUYS`
 relationships for these two nodes we can see that such a conclusion
 makes sense. They both buy three products, two of which are the same
-(`Product` nodes named "`Cucumber`" and "`Tomatoes`") for both people
+(`Product` nodes named ``Cucumber'' and ``Tomatoes'') for both people
 and with similar amounts. We can therefore have high confidence in our
 approach.
 
 == Making recommendations
 
-Using the information we derived that the `Person` nodes named "`Annie`"
-and "`Matt`" are similar, we can make product recommendations for each
+Using the information we derived that the `Person` nodes named ``Annie''
+and ``Matt'' are similar, we can make product recommendations for each
 of them. Since they are similar, we can assume that products purchased
 by only one of the people may be of interest to buy also for the other
 person not already buying the product. By this principle we can derive
-product recommendations for the `Person` named "`Matt`" using a simple
+product recommendations for the `Person` named ``Matt'' using a simple
 Cypher query.
 
 [source, python, role=no-test]
@@ -306,8 +306,8 @@ gds.run_cypher(
 )
 ----
 
-Indeed, "`Kale`" is the one product that the Person named "`Annie`" buys
-that is also not purchased by the Person named "`Matt`".
+Indeed, ``Kale'' is the one product that the Person named ``Annie'' buys
+that is also not purchased by the Person named ``Matt''.
 
 == Cleaning up
 

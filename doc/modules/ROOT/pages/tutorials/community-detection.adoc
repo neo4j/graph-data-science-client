@@ -77,8 +77,8 @@ df = df[df["TIMESTAMP"] < "2014-03-01 02:51:13"]
 df.head()
 ----
 
-The `LINK++_++SENTIMENT` column tells if there is a positive ({plus}1)
-or negative (-1) relationship from the source subreddit to destination
+The `LINK_SENTIMENT` column tells if there is a positive (+1) or
+negative (-1) relationship from the source subreddit to destination
 subreddit. We filter out the negative sentiment relationships as they
 won’t add to any meaningful communities. We also drop duplicate
 relationships.
@@ -176,8 +176,8 @@ G.node_properties()
 Next, we will see the size of each connected component and depending on
 that, we can pick the subgraph that needs further analysis.
 
-We use `run++_++cypher` here instead of the direct GDS client call since
-we want to see the size of the connected components.
+We use `run_cypher` here instead of the direct GDS client call since we
+want to see the size of the connected components.
 
 [source, python, role=no-test]
 ----

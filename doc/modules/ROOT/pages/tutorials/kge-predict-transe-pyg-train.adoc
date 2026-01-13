@@ -25,14 +25,14 @@ Embeddings functionality
 == Prerequisites
 
 To run this notebook, you’ll need a Neo4j server with a recent GDS
-version (2.5{plus} or later) installed.
+version (2.5+ or later) installed.
 
 Additionally, the following Python libraries are required:
 
 * `graphdatascience`,
 https://neo4j.com/docs/graph-data-science-client/current/installation/[see
 documentation for installation instructions]
-* `pytorch-geometric` version ++>++= 2.5.0,
+* `pytorch-geometric` version >= 2.5.0,
 https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html[see
 PyG documentation for installation instructions]
 
@@ -112,18 +112,17 @@ gds.run_cypher("CREATE CONSTRAINT entity_id FOR (e:Entity) REQUIRE e.id IS UNIQU
 
 *Creating Entity Nodes*: Create a node with the label `Entity`. This
 node should have properties `id` and `text`. - Syntax:
-`(:Entity ++{++id: int, text: str})`
+`(:Entity {id: int, text: str})`
 
 *Creating Relationships for Training with PyG*: Based on the training
 stage, create relationships of type `TRAIN`, `TEST`, or `VALID`. Each of
-these relationships should have a `rel++_++id` property. - Example
-Syntax: `++[++:TRAIN ++{++rel++_++id: int}++]++`
+these relationships should have a `rel_id` property. - Example Syntax:
+`[:TRAIN {rel_id: int}]`
 
 *Creating Relationships for Prediction with GDS*: For the prediction
-stage, create relationships of a specific type denoted as `REL++_++i`.
-Each of these relationships should have `rel++_++id` and `text`
-properties. - Example Syntax:
-`++[++:REL++_++7 ++{++rel++_++id: int, text: str}++]++`
+stage, create relationships of a specific type denoted as `REL_i`. Each
+of these relationships should have `rel_id` and `text` properties. -
+Example Syntax: `[:REL_7 {rel_id: int, text: str}]`
 
 [source, python, role=no-test]
 ----
