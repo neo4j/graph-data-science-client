@@ -32,8 +32,7 @@ CORA sample
 == Prerequisites
 
 Running this notebook requires a Neo4j server with a recent GDS version
-(2.5{plus}) installed. We recommend using Neo4j Desktop with GDS, or
-AuraDS.
+(2.5+) installed. We recommend using Neo4j Desktop with GDS, or AuraDS.
 
 Also required are of course the Python libraries:
 
@@ -181,7 +180,7 @@ print(len(sample_topology["CITES"][0]))
 ----
 
 Great, it looks like we have the format we need to create a PyG
-`edge++_++index` later.
+`edge_index` later.
 
 [source, python, role=no-test]
 ----
@@ -205,8 +204,8 @@ display(sample_node_properties)
 Now that we have all information we need client side, we can construct
 the PyG `Data` object we will use as training input. We will remap the
 node IDs to be consecutive and starting from zero. We use the ordering
-of node ids in `sample++_++node++_++properties` as our remapping so that
-the index is aligned with the node properties.
+of node ids in `sample_node_properties` as our remapping so that the
+index is aligned with the node properties.
 
 [source, python, role=no-test]
 ----

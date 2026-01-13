@@ -42,13 +42,13 @@ from dotenv import load_dotenv
 load_dotenv("sessions.env")
 ----
 
-=== Connecting to a Spark Session
+== Connecting to a Spark Session
 
 To interact with the Spark cluster we need to first instantiate a Spark
 session. In this example we will use a local Spark session, which will
 run Spark on the same machine. Working with a remote Spark cluster will
 work similarly. For more information about setting up pyspark visit
-https://spark.apache.org/docs/latest/api/python/getting++_++started/
+https://spark.apache.org/docs/latest/api/python/getting_started/
 
 [source, python, role=no-test]
 ----
@@ -85,11 +85,11 @@ sessions = GdsSessions(api_credentials=api_credentials)
 
 == Creating a new session
 
-A new session is created by calling `sessions.get++_++or++_++create()`
-with the following parameters:
+A new session is created by calling `sessions.get_or_create()` with the
+following parameters:
 
 * A session name, which lets you reconnect to an existing session by
-calling `get++_++or++_++create` again.
+calling `get_or_create` again.
 * The session memory.
 * The cloud location.
 * A time-to-live (TTL), which ensures that the session is automatically
@@ -164,14 +164,14 @@ session.
 
 Our input data already resembles triplets, where each row represents an
 edge from a source station to a target station. This allows us to use
-the Arrow Server’s "`graph import from triplets`" functionality, which
+the Arrow Server’s ``graph import from triplets'' functionality, which
 requires the following protocol:
 
 [arabic]
 . Send an action `v2/graph.project.fromTriplets` This will initialize
 the import process and allows us to specify the graph name, and settings
-like `undirected++_++relationship++_++types`. It returns a job id, that
-we need to reference the import job in the following steps.
+like `undirected_relationship_types`. It returns a job id, that we need
+to reference the import job in the following steps.
 . Send the data in batches to the Arrow server.
 . Send another action called `v2/graph.project.fromTriplets.done` to
 tell the import process that no more data will be sent. This will

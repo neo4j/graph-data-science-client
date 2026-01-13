@@ -71,11 +71,11 @@ sessions = GdsSessions(api_credentials=api_credentials)
 
 == Creating a new session
 
-A new session is created by calling `sessions.get++_++or++_++create()`
-with the following parameters:
+A new session is created by calling `sessions.get_or_create()` with the
+following parameters:
 
 * A session name, which lets you reconnect to an existing session by
-calling `get++_++or++_++create` again.
+calling `get_or_create` again.
 * The session memory.
 * The cloud location.
 * A time-to-live (TTL), which ensures that the session is automatically
