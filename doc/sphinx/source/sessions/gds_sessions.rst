@@ -1,6 +1,16 @@
 GDS Sessions
 ----------------
 
+.. toctree::
+   :hidden:
+
+   session_memory
+   algorithm_category
+   cloud_location
+   dbms_connection_info
+   aura_graphdatascience
+   session_v2_endpoints
+
 
 .. autoclass:: graphdatascience.session.gds_sessions.GdsSessions
     :members:

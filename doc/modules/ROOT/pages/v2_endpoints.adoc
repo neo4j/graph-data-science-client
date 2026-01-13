@@ -1,0 +1,75 @@
+= Version 2 API
+
+Version 2 (V2) of the client API improves the user experience and addresses common pitfalls in the GDS Python Client.
+The new endpoints provide a more modern, type-safe, and intuitive way to interact with the Neo4j Graph Data Science library with a few key features:
+
+* **Improved autocompletion**: Better IDE support for discovering available endpoints and their sub-commands.
+* **Explicit parameters**: Functions now use named, typed parameters instead of a generic `config` dictionary, making code more readable and self-documenting.
+* **Type-safe results**: Instead of generic Pandas `Series` objects, V2 endpoints return dedicated result types, enabling better static analysis and IDE integration.
+* **Pythonic naming**: Transitioning from CamelCase to snake_case for algorithm and parameter names, following Python's PEP 8 naming conventions.
+
+In the next major release (2.0), the V2 API will become the default way to call GDS algorithms.
+
+== Migrating to V2 API
+
+Migrating your existing code to use V2 endpoints involves a few straightforward changes:
+
+* **Update the namespace**: Change the endpoint prefix from `gds` to `gds.v2`.
+* **Standardize naming**: Convert algorithm and parameter names from CamelCase to snake_case (for example, replace `pageRank` with `page_rank`).
+* **Use typed results**: Access result fields directly as attributes on the returned object instead of using string keys on a `Series` (for example, replace `result["writeMillis"]` with `result.write_millis`).
+
+.Migration examples
+[opts=header,cols="1a,1a"]
+|===
+| Original | V2
+
+|
+[source, python]
+----
+# Returns a (Graph, Series) tuple
+G, result = gds.graph.project("g", "*", "*")
+----
+|
+[source, python]
+----
+# Returns a (GraphV2, GraphProjectResult) tuple
+G, result = gds.v2.graph.project("g", "*", "*")
+----
+
+|
+[source, python]
+----
+result: DataFrame = gds.pageRank.stream(G, dampingFactor=0.5)
+----
+|
+[source, python]
+----
+result: DataFrame = gds.v2.page_rank.stream(G, damping_factor=0.5)
+----
+
+|
+[source, python]
+----
+result: Series = gds.wcc.mutate(G, mutateProperty="wcc")
+count = result["componentCount"]
+----
+|
+[source, python]
+----
+result: WccMutateResult = gds.v2.wcc.mutate(G, mutate_property="wcc")
+count = result.component_count
+----
+
+|
+[source, python]
+----
+result: Series = gds.fastRP.write(G, writeProperty="fastRP", embeddingDimension=2)
+millis = result["writeMillis"]
+----
+|
+[source, python]
+----
+result: FastRPWriteResult = gds.v2.fast_rp.write(G, write_property="fastRP", embedding_dimension=2)
+millis = result.write_millis
+----
+|===

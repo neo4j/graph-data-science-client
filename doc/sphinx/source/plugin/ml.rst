@@ -4,6 +4,14 @@ Listing of all machine learning procedures in the Neo4j Graph Data Science Pytho
 This includes running embedding algorithms and creating various pipelines.
 These all assume that an object of :class:`.GraphDataScience` is available as `gds`.
 
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+    :titlesonly:
+
+    ../pipeline/index
+
+
 
 .. py:function:: gds.pipeline.get(pipeline_name: str) -> TrainingPipeline[PipelineModel]
 

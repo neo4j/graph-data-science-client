@@ -9,14 +9,9 @@ Neo4j Graph Data Science Python Client API Reference
 This API reference manual lists all available endpoints in the Neo4j Graph Data Science Python Client |api-version|.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :titlesonly:
    :caption: Contents
 
-   plugin/index
-   graph_object
-   graph_create_result
-   pipeline/index
-   model/index
-   server_version
-   sessions/index
-   v2_endpoints/index
+   plugin/graphdatascience
+   sessions/gds_sessions

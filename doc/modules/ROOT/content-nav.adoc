@@ -18,5 +18,6 @@ include::partial$tutorial-list.adoc[]
 --
 
 * xref:known-limitations.adoc[]
+* xref:v2_endpoints.adoc[]
 
 * link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/[API Reference]
