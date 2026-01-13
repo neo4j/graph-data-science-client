@@ -357,6 +357,11 @@ Users can know each other, and users can buy products.
 The Attached and Self-managed examples use a Cypher query to populate the database with the data.
 The Standalone example uses pandas DataFrames instead.
 
+[NOTE]
+====
+When you create a session, the session name must be unique within the project.
+====
+
 [.tabbed-example, caption = ]
 =====
 
@@ -378,6 +383,8 @@ db_connection = DbmsConnectionInfo(
     password=os.environ["NEO4J_PASSWORD"],
     aura_instance_id=os.environ["AURA_INSTANCEID"]
 )
+
+# The session name must be unique within the project
 gds = sessions.get_or_create(
     session_name="my-new-session",
     memory=SessionMemory.m_8GB,
