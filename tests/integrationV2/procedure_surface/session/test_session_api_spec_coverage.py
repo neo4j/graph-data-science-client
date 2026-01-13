@@ -23,7 +23,6 @@ MISSING_ENDPOINTS: set[str] = {
     "bfs.mutate",
     "bfs.stats",
     "bfs.write",
-    "bridges.stream",
     "dag.topological_sort.stream",
     "dfs.mutate",
     "dfs.stream",

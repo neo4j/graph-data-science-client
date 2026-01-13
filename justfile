@@ -53,10 +53,6 @@ session-v1-it:
     NEO4J_AURA_DB_URI=bolt://localhost:7687 \
     pytest tests --include-cloud-architecture
 
-
-
-
-
 update-session:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
 

@@ -4,6 +4,7 @@ from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints i
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
 from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints import BetweennessEndpoints
+from graphdatascience.procedure_surface.api.centrality.bridges_endpoints import BridgesEndpoints
 from graphdatascience.procedure_surface.api.centrality.celf_endpoints import CelfEndpoints
 from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import ClosenessEndpoints
 from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
@@ -57,6 +58,7 @@ from graphdatascience.procedure_surface.arrow.centrality.articulationpoints_arro
     ArticulationPointsArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.centrality.betweenness_arrow_endpoints import BetweennessArrowEndpoints
+from graphdatascience.procedure_surface.arrow.centrality.bridges_arrow_endpoints import BridgesArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.celf_arrow_endpoints import CelfArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.closeness_arrow_endpoints import ClosenessArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.closeness_harmonic_arrow_endpoints import (
@@ -218,6 +220,13 @@ class SessionV2Endpoints:
         Return endpoints for the betweenness centrality algorithm.
         """
         return BetweennessArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+
+    @property
+    def bridges(self) -> BridgesEndpoints:
+        """
+        Return endpoints for the bridges algorithm.
+        """
+        return BridgesArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def bellman_ford(self) -> SingleSourceBellmanFordEndpoints:
