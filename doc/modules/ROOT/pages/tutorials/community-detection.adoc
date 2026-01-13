@@ -80,7 +80,7 @@ df.head()
 The `LINK_SENTIMENT` column tells if there is a positive (+1) or
 negative (-1) relationship from the source subreddit to destination
 subreddit. We filter out the negative sentiment relationships as they
-won’t add to any meaningful communities. We also drop duplicate
+won't add to any meaningful communities. We also drop duplicate
 relationships.
 
 [source, python, role=no-test]
@@ -295,6 +295,6 @@ gds.run_cypher("MATCH (n:Subreddit) DETACH DELETE n")
 
 Srijan Kumar, William L. Hamilton, Jure Leskovec, and Dan Jurafsky.
 2018. Community Interaction and Conflict on the Web. In Proceedings of
-the 2018 World Wide Web Conference (WWW ’18). International World Wide
+the 2018 World Wide Web Conference (WWW '18). International World Wide
 Web Conferences Steering Committee, Republic and Canton of Geneva, CHE,
 933–943. https://doi.org/10.1145/3178876.3186141

@@ -15,7 +15,7 @@ The notebook shows how to use the `graphdatascience` Python library to
 create, manage, and use a GDS Session from within an Apache Spark
 cluster.
 
-We consider a graph of bicycle rentals, which we’re using as a simple
+We consider a graph of bicycle rentals, which we're using as a simple
 example to show how to project data from Spark to a GDS Session, run
 algorithms, and eventually return results back to Spark. In this
 notebook we will focus on the interaction with Apache Spark, and will
@@ -164,7 +164,7 @@ session.
 
 Our input data already resembles triplets, where each row represents an
 edge from a source station to a target station. This allows us to use
-the Arrow Server’s ``graph import from triplets'' functionality, which
+the Arrow Server's "graph import from triplets" functionality, which
 requires the following protocol:
 
 [arabic]
@@ -181,7 +181,7 @@ trigger the final graph creation inside the GDS session.
 The most complicated step here is to run the actual data upload on each
 spark worker. We will use the `mapInArrow` function to run custom code
 on each spark worker. Each worker will receive a number of arrow record
-batches that we can directly send to the GDS session’s Arrow server.
+batches that we can directly send to the GDS session's Arrow server.
 
 The user wants to add a 1-second delay (sleep) within the loop that
 waits for the import job to finish. This requires importing the `time`

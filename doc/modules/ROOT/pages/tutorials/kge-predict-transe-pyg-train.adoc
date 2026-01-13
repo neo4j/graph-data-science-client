@@ -24,7 +24,7 @@ Embeddings functionality
 
 == Prerequisites
 
-To run this notebook, you’ll need a Neo4j server with a recent GDS
+To run this notebook, you'll need a Neo4j server with a recent GDS
 version (2.5+ or later) installed.
 
 Additionally, the following Python libraries are required:
@@ -38,7 +38,7 @@ PyG documentation for installation instructions]
 
 == Setup
 
-We’ll begin by importing our dependencies and establishing a GDS client
+We'll begin by importing our dependencies and establishing a GDS client
 connection to the database.
 
 [source, python, role=no-test]

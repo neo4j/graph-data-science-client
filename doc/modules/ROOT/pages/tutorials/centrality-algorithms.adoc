@@ -322,12 +322,11 @@ gds.run_cypher("MATCH (n:City) DETACH DELETE n")
 
 == References
 
-* For the network: Brendan J. Frey and Delbert Dueck. ``Clustering by
-passing messages between data points.'' Science 315.5814 (2007):
-972-976.
+* For the network: Brendan J. Frey and Delbert Dueck. "Clustering by
+passing messages between data points." Science 315.5814 (2007): 972-976.
 * For the city metadata (metropolitan population, latitude, and
 longitude): Austin R. Benson, David F. Gleich, and Jure Leskovec.
-``Higher-order Organization of Complex Networks.'' Science, 353.6295
+"Higher-order Organization of Complex Networks." Science, 353.6295
 (2016): 163–166.
 * Link to the dataset: https://snap.stanford.edu/data/reachability.html
 * Notebook contributed by https://github.com/kedarghule[Kedar Ghule]

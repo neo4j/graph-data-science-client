@@ -133,7 +133,7 @@ nodes = pd.DataFrame().assign(
 )
 ----
 
-Let’s check the first 5 rows of the new `DataFrame`:
+Let's check the first 5 rows of the new `DataFrame`:
 
 [source, python, role=no-test]
 ----
@@ -152,7 +152,7 @@ inv_relationships = pd.DataFrame().assign(sourceNodeId=cites[1], targetNodeId=ci
 relationships = pd.concat([dir_relationships, inv_relationships]).drop_duplicates()
 ----
 
-Again, let’s check the first 5 rows of the new `DataFrame`:
+Again, let's check the first 5 rows of the new `DataFrame`:
 
 [source, python, role=no-test]
 ----
@@ -168,14 +168,14 @@ G = gds.graph.construct("cora-graph", nodes, relationships)
 
 == Use the graph
 
-Let’s check that the new graph has been created:
+Let's check that the new graph has been created:
 
 [source, python, role=no-test]
 ----
 gds.graph.list()
 ----
 
-Let’s also count the nodes in the graph:
+Let's also count the nodes in the graph:
 
 [source, python, role=no-test]
 ----
