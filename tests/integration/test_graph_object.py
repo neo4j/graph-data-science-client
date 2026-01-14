@@ -75,8 +75,8 @@ def test_graph_node_properties(G: Graph) -> None:
     node_properties = G.node_properties()
     assert isinstance(node_properties, Series)
     assert node_properties.size == 2
-    assert node_properties["Node"] == ["x"]
-    assert node_properties["Node2"] == ["s"]
+    assert list(node_properties["Node"]) == ["x"]
+    assert list(node_properties["Node2"]) == ["s"]
 
 
 def test_graph_relationship_properties(G: Graph) -> None:
@@ -87,7 +87,7 @@ def test_graph_relationship_properties(G: Graph) -> None:
     assert isinstance(rel_properties, Series)
     assert rel_properties.size == 2
     assert set(rel_properties["REL"]) == {"y", "z"}
-    assert rel_properties["REL2"] == ["q"]
+    assert set(rel_properties["REL2"]) == {"q"}
 
 
 def test_graph_degree_distribution(G: Graph) -> None:

@@ -62,41 +62,40 @@ dev = [
     { include-group = "docs-ci" },
 ]
 
-
 dev-base = [
-    "ruff == 0.11.7",
-    "mypy == 1.13.0",
-    "nbconvert == 7.16.4",
+    "ruff == 0.14.11",
+    "mypy == 1.19.1",
     "pandas-stubs == 2.2.3.241009",
-    "tox == 4.30.2",
+    "tox == 4.34.1",
     "types-setuptools == 75.8.0.20250110",
     "enum-tools[sphinx] == 0.12.0",
     "autodoc_pydantic",
     "types-requests",
     "types-tqdm",
     "types-python-dateutil",
-    "python-dotenv==1.1.0",
+    "python-dotenv==1.2.1",
     "types-colorama",
 ]
 test = [
-    "pytest == 8.3.3",
-    "requests_mock == 1.11.0",
+    "pytest == 9.0.2",
+    "requests_mock == 1.12.1",
     "pytest_mock == 3.15.1",
-    "testcontainers >= 4.0, < 4.13.0",
+    "testcontainers == 4.14.0",
     "python-dateutil >= 2.9",
 ]
+
 docs-ci = [
     "sphinx == 7.3.7",
     "enum-tools[sphinx] == 0.12.0",
     "autodoc_pydantic",
 ]
 notebook-base = [
-    "nbconvert==7.16.4",
+    "nbconvert==7.16.6",
     "nbformat==5.10.4",
-    "nbclient==0.10.2",
-    "ipykernel==6.29.5",
+    "nbclient==0.10.4",
+    "ipykernel==7.1.0",
 ]
-notebook-aura-ci = [{ include-group = "notebook-base" }, "python-dotenv==1.1.0"]
+notebook-aura-ci = [{ include-group = "notebook-base" }, "python-dotenv==1.2.1"]
 notebook-ci = [
     { include-group = "notebook-base" },
     "scipy == 1.14.0",
