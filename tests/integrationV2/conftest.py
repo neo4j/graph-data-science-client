@@ -7,7 +7,7 @@ from typing import Any, Generator
 import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
@@ -92,14 +92,14 @@ def start_session(
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
-        .with_exposed_ports(8491)
+        .with_exposed_ports(8491, 8080)
         .with_volume_mapping(password_dir, "/passwords")
+        .waiting_for(HttpWaitStrategy(8080, path="/available"))
     )
     if not inside_ci():
         session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
         try:
-            wait_for_logs(session_container, "Running GDS tasks: 0", timeout=30)
             yield GdsSessionConnectionInfo(
                 host=session_container.get_container_host_ip(),
                 arrow_port=session_container.get_exposed_port(8491),

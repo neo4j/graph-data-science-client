@@ -10,7 +10,7 @@ import pytest
 from dateutil.relativedelta import relativedelta
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -93,10 +93,10 @@ def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnection
         .with_network(network)
         .with_bind_ports(7687, 7687)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
+        .waiting_for(LogMessageWaitStrategy("Started."))
     )
     with db_container as db_container:
         try:
-            wait_for_logs(db_container, "Started.")
             yield DbmsConnectionInfo(
                 uri=f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}",
                 username="neo4j",
@@ -138,6 +138,7 @@ def start_gds_plugin_database(
         .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
         .with_exposed_ports(8491)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
+        .waiting_for(LogMessageWaitStrategy("Started."))
     )
 
     if GDS_LICENSE_KEY is not None:
@@ -155,7 +156,6 @@ def start_gds_plugin_database(
 
     with neo4j_container as neo4j_db:
         try:
-            wait_for_logs(neo4j_db, "Started.")
             yield neo4j_db
         finally:
             stdout, stderr = neo4j_db.get_logs()
