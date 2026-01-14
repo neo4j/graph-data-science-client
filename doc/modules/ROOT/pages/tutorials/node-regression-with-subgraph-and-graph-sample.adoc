@@ -23,7 +23,7 @@ contains many examples of using
 * Filtering graphs
 * Graph sample projection
 
-It is written in pure Python, to showcase the GDS Python Client’s
+It is written in pure Python, to showcase the GDS Python Client's
 ability to abstract away from Cypher queries.
 
 == The dataset
@@ -371,7 +371,7 @@ print("=" * 25)
 print(G_chameleon.degree_distribution().sort_index())
 ----
 
-== Now, let’s construct a training pipeline!
+== Now, let's construct a training pipeline!
 
 We will create a Node Regression pipeline, and then
 

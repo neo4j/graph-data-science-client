@@ -74,7 +74,7 @@ IMDB loader] to get data into our GDS server. This should give us a
 graph with `Movie`, `Actor` and `Director` nodes, connected by
 `ACTED++_++IN` and `DIRECTED++_++IN` relationships.
 
-Note that a "`real world scenario`", we would probably project our own
+Note that a "real world scenario", we would probably project our own
 data from a Neo4j database into GDS instead, or using
 `gds.graph.construct` to create a graph from our own client side data.
 
@@ -84,7 +84,7 @@ data from a Neo4j database into GDS instead, or using
 G = gds.graph.load_imdb()
 ----
 
-Let’s inspect our graph to see what it contains.
+Let's inspect our graph to see what it contains.
 
 [source, python, role=no-test]
 ----
@@ -95,7 +95,7 @@ print(f"Relationship types in G: {G.relationship_types()}")
 
 It looks as expected, though we notice that some nodes are of a
 `UnclassifiedMovie` label. Indeed, these are the nodes whose genre we
-wish to predict with a node classification model. Let’s look at the node
+wish to predict with a node classification model. Let's look at the node
 properties present on the various node labels to see this more clearly.
 
 [source, python, role=no-test]
@@ -109,7 +109,7 @@ that we can use these nodes when training our model later. The
 property, which is exactly what we want to predict.
 
 Additionally, we notice that all nodes have a `plot++_++keywords`
-property. This is a binary "`bag-of-words`" type feature vector
+property. This is a binary "bag-of-words" type feature vector
 representing which out of 1256 plot keywords describe a certain node.
 These feature vectors will be used as input to our HashGNN node
 embedding algorithm later.
@@ -171,7 +171,7 @@ training.
 We will give hashGNN the `plot++_++keywords` node properties as input,
 and it will output new feature vectors for each node that has been
 enriched by message passing over relationships. Since the
-`plot++_++keywords` vectors are already binary we don’t have to do any
+`plot++_++keywords` vectors are already binary we don't have to do any
 https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/hashgnn/#_feature_binarization_2[binarization]
 of the input.
 
@@ -268,7 +268,7 @@ model, _ = pipe.train(
 )
 ----
 
-Let’s inspect the model that was created by the training pipeline.
+Let's inspect the model that was created by the training pipeline.
 
 [source, python, role=no-test]
 ----

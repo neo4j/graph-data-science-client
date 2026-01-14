@@ -1,6 +1,9 @@
 style skip_notebooks="false":
      SKIP_NOTEBOOKS={{skip_notebooks}} ./scripts/makestyle && ./scripts/checkstyle
 
+check-notebooks:
+    ./scripts/nb2doc/check.sh
+
 convert-notebooks:
     ./scripts/nb2doc/convert.sh
 
