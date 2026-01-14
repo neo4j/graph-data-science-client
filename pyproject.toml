@@ -8,7 +8,7 @@ description = "A Python client for the Neo4j Graph Data Science (GDS) library"
 dynamic = ["version"]
 authors = [{ name = "Neo4j", email = "team-gds@neo4j.org" }]
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
