@@ -8,7 +8,7 @@ description = "A Python client for the Neo4j Graph Data Science (GDS) library"
 dynamic = ["version"]
 authors = [{ name = "Neo4j", email = "team-gds@neo4j.org" }]
 readme = "README.md"
-license = "Apache-2.0"
+license = { file = "LICENSE" }
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -68,7 +68,7 @@ dev-base = [
     "pandas-stubs == 2.2.3.241009",
     "tox == 4.34.1",
     "types-setuptools == 75.8.0.20250110",
-    "enum-tools[sphinx] == 0.12.0",
+    "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
     "types-requests",
     "types-tqdm",
@@ -86,7 +86,7 @@ test = [
 
 docs-ci = [
     "sphinx == 7.3.7",
-    "enum-tools[sphinx] == 0.12.0",
+    "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
 ]
 notebook-base = [
@@ -95,7 +95,10 @@ notebook-base = [
     "nbclient==0.10.4",
     "ipykernel==7.1.0",
 ]
-notebook-aura-ci = [{ include-group = "notebook-base" }, "python-dotenv==1.2.1"]
+notebook-aura-ci = [
+    { include-group = "notebook-base" },
+    "python-dotenv==1.2.1"
+]
 notebook-ci = [
     { include-group = "notebook-base" },
     "scipy == 1.14.0",
@@ -106,7 +109,6 @@ notebook-ci = [
 ]
 
 publish = ["build", "twine"]
-
 
 [tool.setuptools]
 include-package-data = true
