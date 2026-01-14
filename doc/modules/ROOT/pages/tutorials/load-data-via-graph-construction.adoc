@@ -12,7 +12,7 @@ https://github.com/neo4j/graph-data-science-client/blob/main/examples/load-data-
 in the Neo4j Graph Data Science Client Github repository.
 
 The notebook shows the usage of the `gds.graph.construct` method
-(available only in GDS 2.1+) to build a graph directly in memory.
+(available only in GDS 2.1{plus}) to build a graph directly in memory.
 
 NOTE: If you are using AuraDS, it is currently not possible to export
 the projected graph back to Neo4j.
@@ -59,8 +59,8 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
 When using AuraDS, the connection URI is slightly different as it uses
-the `neo4j+s` protocol. The client should also include the
-`aura_ds=True` flag to enable AuraDS-recommended settings.
+the `neo4j{plus}s` protocol. The client should also include the
+`aura++_++ds=True` flag to enable AuraDS-recommended settings.
 
 [source, python, role=no-test]
 ----
@@ -120,8 +120,8 @@ SUBJECT_TO_ID = {
 
 We can now create a new `DataFrame` with a `nodeId` field, a list of
 node labels, and the additional node properties `subject` (using the
-`SUBJECT_TO_ID` mapping) and `features` (converting all the feature
-columns to a single array column).
+`SUBJECT++_++TO++_++ID` mapping) and `features` (converting all the
+feature columns to a single array column).
 
 [source, python, role=no-test]
 ----

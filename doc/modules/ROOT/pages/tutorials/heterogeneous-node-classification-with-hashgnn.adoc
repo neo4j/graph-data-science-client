@@ -72,7 +72,7 @@ Next we use the `graphdatascience`
 https://neo4j.com/docs/graph-data-science-client/current/common-datasets/#_imdb[built-in
 IMDB loader] to get data into our GDS server. This should give us a
 graph with `Movie`, `Actor` and `Director` nodes, connected by
-`ACTED_IN` and `DIRECTED_IN` relationships.
+`ACTED++_++IN` and `DIRECTED++_++IN` relationships.
 
 Note that a "real world scenario", we would probably project our own
 data from a Neo4j database into GDS instead, or using
@@ -108,10 +108,11 @@ that we can use these nodes when training our model later. The
 `UnclassifiedMovie` nodes as expected does not have the `genre`
 property, which is exactly what we want to predict.
 
-Additionally, we notice that all nodes have a `plot_keywords` property.
-This is a binary "bag-of-words" type feature vector representing which
-out of 1256 plot keywords describe a certain node. These feature vectors
-will be used as input to our HashGNN node embedding algorithm later.
+Additionally, we notice that all nodes have a `plot++_++keywords`
+property. This is a binary "bag-of-words" type feature vector
+representing which out of 1256 plot keywords describe a certain node.
+These feature vectors will be used as input to our HashGNN node
+embedding algorithm later.
 
 == Configuring the training pipeline
 
@@ -149,12 +150,12 @@ the way to go for real use cases.
 == The HashGNN node embedding algorithm
 
 As the last part of the training pipeline, there will be an ML training
-algorithm. If we use the `plot_keywords` directly as our feature input
-to the ML algorithm, we will not utilize any of the relationship data we
-have in our graph. Since relationships would likely enrich our features
-with more valuable information, we will use a node embedding algorithm
-which takes relationships into account, and use its output as input to
-the ML training algorithm.
+algorithm. If we use the `plot++_++keywords` directly as our feature
+input to the ML algorithm, we will not utilize any of the relationship
+data we have in our graph. Since relationships would likely enrich our
+features with more valuable information, we will use a node embedding
+algorithm which takes relationships into account, and use its output as
+input to the ML training algorithm.
 
 In this case we will use the HashGNN node embedding algorithm which is
 new in GDS 2.3. Contrary to what the name suggests, HashGNN is not a
@@ -167,10 +168,10 @@ done by locality sensitive min-hashing. Since the hash functions used
 are randomly chosen independent of the input data, there is no need for
 training.
 
-We will give hashGNN the `plot_keywords` node properties as input, and
-it will output new feature vectors for each node that has been enriched
-by message passing over relationships. Since the `plot_keywords` vectors
-are already binary we don't have to do any
+We will give hashGNN the `plot++_++keywords` node properties as input,
+and it will output new feature vectors for each node that has been
+enriched by message passing over relationships. Since the
+`plot++_++keywords` vectors are already binary we don't have to do any
 https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/hashgnn/#_feature_binarization_2[binarization]
 of the input.
 
@@ -302,7 +303,7 @@ print(f"First predictions of unclassified movie nodes:\n{predictions.head()}")
 
 In this case we streamed the prediction results back to our client
 application, but we could for example also have mutated our GDS graph
-represented by `G` by calling `model.predict_mutate` instead.
+represented by `G` by calling `model.predict++_++mutate` instead.
 
 == Cleaning up
 
@@ -343,7 +344,7 @@ part with something like a
 https://neo4j.com/docs/graph-data-science-client/current/graph-object/#_projecting_a_graph_object[projection
 from a Neo4j database] to create a more realistic production workflow.
 
-== Comparison with other methods
+=== Comparison with other methods
 
 As mentioned we tried to mimic the setup of the benchmarks in the
 NeurIPS paper
@@ -354,7 +355,7 @@ train-test set split, whereas we just generate a split (with the same
 size) uniformly at random within our training pipeline. However, we have
 no reason to think that the predefined split in the paper was not also
 generated uniformly at random. Additionally, they use length 64 float
-embeddings (64 * 32 = 2048 bits), whereas we use length 1256 bit
+embeddings (64 ++*++ 32 = 2048 bits), whereas we use length 1256 bit
 embeddings with HashGNN.
 
 The scores they observe are the following:
@@ -378,7 +379,7 @@ descent compared to the deep learning models above - HashGNN is an
 unsupervised algorithm - HashGNN runs a lot faster (even without a GPU)
 and requires a lot less memory
 
-== Further learning
+=== Further learning
 
 To learn more about the topics covered in this notebook, please check
 out the following pages of the GDS manual:
