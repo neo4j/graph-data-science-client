@@ -128,6 +128,9 @@ def start_gds_plugin_database(
     db_logs_dir.mkdir(parents=True)
     db_logs_dir.chmod(0o777)
 
+    models_dir = tmp_path_factory.mktemp("models")
+    models_dir.chmod(0o777)
+
     neo4j_container = (
         Neo4jContainer(
             image=neo4j_image,
@@ -136,8 +139,10 @@ def start_gds_plugin_database(
         .with_env("NEO4J_PLUGINS", '["graph-data-science"]')
         .with_env("NEO4J_gds_arrow_enabled", "true")
         .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
+        .with_env("NEO4J_gds_model_store__location", "/models")
         .with_exposed_ports(8491)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
+        .with_volume_mapping(models_dir, "/models", mode="rw")
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
 

@@ -32,6 +32,7 @@ from graphdatascience.procedure_surface.api.community.sllpa_endpoints import Sll
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.config_endpoints import ConfigEndpoints
+from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
@@ -97,6 +98,9 @@ from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_e
 )
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
+from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import (
+    ModelCatalogCypherEndpoints,
+)
 from graphdatascience.procedure_surface.cypher.node_embedding.fastrp_cypher_endpoints import FastRPCypherEndpoints
 from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_predict_cypher_endpoints import (
     GraphSagePredictCypherEndpoints,
@@ -152,6 +156,13 @@ class PluginV2Endpoints:
         Return endpoints for graph management.
         """
         return CatalogCypherEndpoints(self._db_client, self._arrow_client)
+
+    @property
+    def model(self) -> ModelCatalogEndpoints:
+        """
+        Return model-related endpoints for model management.
+        """
+        return ModelCatalogCypherEndpoints(self._db_client)
 
     @property
     def config(self) -> ConfigEndpoints:
