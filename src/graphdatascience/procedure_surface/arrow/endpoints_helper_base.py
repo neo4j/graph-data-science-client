@@ -30,8 +30,8 @@ class EndpointsHelperBase:
 
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
         result = JobClient.get_summary(self._arrow_client, job_id)
-        if config := result.get("configuration", None):
-            self._drop_write_internals(config)
+        if nested_config := result.get("configuration", None):
+            self._drop_write_internals(nested_config)
         return result
 
     def _run_job_and_mutate(
@@ -64,11 +64,11 @@ class EndpointsHelperBase:
         if mutate_relationship_type:
             computation_result["relationshipsWritten"] = mutate_result.relationships_written
 
-        if (config := computation_result.get("configuration", None)) is not None:
-            config["mutateProperty"] = mutate_property
+        if (nested_config := computation_result.get("configuration", None)) is not None:
+            nested_config["mutateProperty"] = mutate_property
             if mutate_relationship_type is not None:
-                config["mutateRelationshipType"] = mutate_relationship_type
-            self._drop_write_internals(config)
+                nested_config["mutateRelationshipType"] = mutate_relationship_type
+            self._drop_write_internals(nested_config)
 
         return computation_result
 

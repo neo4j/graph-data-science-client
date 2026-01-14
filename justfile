@@ -10,6 +10,9 @@ manual-docs:
 api-docs:
    ./scripts/render_api_docs
 
+install:
+    uv pip install --group dev -e .
+
 post-release version="":
     ./scripts/release_helper/post_release_main.py {{version}}
 
