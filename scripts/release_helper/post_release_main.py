@@ -189,7 +189,7 @@ def update_installation_adoc(next_version: PythonLibraryVersion) -> None:
     new_compat_table_entry = f"""
 .1+<.^| {next_version.major_minor()}
 .1+<.^| >= 2.6, < 2.24
-.1+<.^| >= 3.10, < 3.13
+.1+<.^| >= 3.10, < 3.14
 .1+<.^| >= 4.4.12, < 7.0.0
     """.strip()
 

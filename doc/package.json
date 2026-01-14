@@ -1,6 +1,6 @@
 {
   "name": "graph-data-science-client",
-  "version": "1.19-preview",
+  "version": "1.20-preview",
   "description": "Neo4j Graph Data Science Client",
   "main": "server.js",
   "scripts": {

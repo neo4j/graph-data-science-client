@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o xtrace
+
+if [ -z "${VERSION:-}" ]; then
+  echo "No version specified"
+  exit 1
+else
+  echo "Creating release branch for ${VERSION}"
+fi
+
+git switch -c "$VERSION"
+rm doc/publish.yml
+git add doc/publish.yml
+git commit -m "Prepare release branch"
+git push --set-upstream origin "$VERSION"
+
+ echo "Published branch"
+
+ git checkout -
+
