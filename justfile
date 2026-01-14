@@ -1,6 +1,9 @@
 style skip_notebooks="false":
      SKIP_NOTEBOOKS={{skip_notebooks}} ./scripts/makestyle && ./scripts/checkstyle
 
+check-notebooks:
+    ./scripts/nb2doc/check.sh
+
 convert-notebooks:
     ./scripts/nb2doc/convert.sh
 
@@ -52,10 +55,6 @@ session-v1-it:
     NEO4J_DB=neo4j \
     NEO4J_AURA_DB_URI=bolt://localhost:7687 \
     pytest tests --include-cloud-architecture
-
-
-
-
 
 update-session:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest

@@ -3,6 +3,7 @@ from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints i
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
 from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints import BetweennessEndpoints
+from graphdatascience.procedure_surface.api.centrality.bridges_endpoints import BridgesEndpoints
 from graphdatascience.procedure_surface.api.centrality.celf_endpoints import CelfEndpoints
 from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import ClosenessEndpoints
 from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
@@ -36,6 +37,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints i
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.bfs_endpoints import BFSEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.dag_endpoints import DagEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
@@ -58,6 +60,7 @@ from graphdatascience.procedure_surface.cypher.centrality.articulationpoints_cyp
     ArticulationPointsCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.centrality.betweenness_cypher_endpoints import BetweennessCypherEndpoints
+from graphdatascience.procedure_surface.cypher.centrality.bridges_cypher_endpoints import BridgesCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.celf_cypher_endpoints import CelfCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.closeness_cypher_endpoints import ClosenessCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.closeness_harmonic_cypher_endpoints import (
@@ -106,6 +109,7 @@ from graphdatascience.procedure_surface.cypher.node_embedding.node2vec_cypher_en
 from graphdatascience.procedure_surface.cypher.pathfinding.all_shortest_path_cypher_endpoints import (
     AllShortestPathCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.pathfinding.bfs_cypher_endpoints import BFSCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pathfinding.dag_cypher_endpoints import DagCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pathfinding.k_spanning_tree_cypher_endpoints import (
     KSpanningTreeCypherEndpoints,
@@ -180,6 +184,13 @@ class PluginV2Endpoints:
         return ArticleRankCypherEndpoints(self._db_client)
 
     @property
+    def bfs(self) -> BFSEndpoints:
+        """
+        Return endpoints for the Breadth First Search (BFS) algorithm.
+        """
+        return BFSCypherEndpoints(self._db_client)
+
+    @property
     def articulation_points(self) -> ArticulationPointsEndpoints:
         """
         Return endpoints for the articulation points algorithm.
@@ -192,6 +203,13 @@ class PluginV2Endpoints:
         Return endpoints for the betweenness centrality algorithm.
         """
         return BetweennessCypherEndpoints(self._db_client)
+
+    @property
+    def bridges(self) -> BridgesEndpoints:
+        """
+        Return endpoints for the bridges algorithm.
+        """
+        return BridgesCypherEndpoints(self._db_client)
 
     @property
     def bellman_ford(self) -> SingleSourceBellmanFordEndpoints:

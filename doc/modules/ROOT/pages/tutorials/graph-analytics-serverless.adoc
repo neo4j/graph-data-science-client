@@ -73,11 +73,11 @@ sessions = GdsSessions(api_credentials=api_credentials)
 
 == Creating a new session
 
-A new session is created by calling `sessions.get_or_create()` with the
-following parameters:
+A new session is created by calling `sessions.get++_++or++_++create()`
+with the following parameters:
 
 * A session name, which lets you reconnect to an existing session by
-calling `get_or_create` again.
+calling `get++_++or++_++create` again.
 * The `DbmsConnectionInfo` containing the address, user name and
 password to an AuraDB instance
 * The session memory.
@@ -321,9 +321,9 @@ write mode to show:
 gds.louvain.write(G, writeProperty="louvain")
 ----
 
-We can now use the `gds.run_cypher()` method to query the updated graph.
-Note that the `run_cypher()` method will run the query on the AuraDB
-instance.
+We can now use the `gds.run++_++cypher()` method to query the updated
+graph. Note that the `run++_++cypher()` method will run the query on the
+AuraDB instance.
 
 [source, python, role=no-test]
 ----
