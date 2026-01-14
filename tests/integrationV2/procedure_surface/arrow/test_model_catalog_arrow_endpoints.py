@@ -120,7 +120,7 @@ def test_store_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -
 
     model_catalog.delete(gs_model_name)
 
-    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.store("nonexistent-model")
 
 
@@ -140,7 +140,7 @@ def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
 
     model_catalog.delete(gs_model_name)
 
-    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.load("nonexistent-model")
 
 
@@ -156,5 +156,5 @@ def test_delete_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) 
     assert not deleted.stored
     assert deleted.loaded
 
-    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.delete("nonexistent-model")

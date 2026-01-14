@@ -2,6 +2,7 @@ import datetime
 from typing import Generator
 
 import pytest
+from neo4j.exceptions import ClientError
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
@@ -111,7 +112,7 @@ def test_store_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -
 
     model_catalog.delete(gs_model_name)
 
-    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+    with pytest.raises(ClientError, match="Model with name `nonexistent-model` does not exist"):
         model_catalog.store("nonexistent-model")
 
 
@@ -133,7 +134,7 @@ def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
 
     model_catalog.delete(gs_model_name)
 
-    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+    with pytest.raises(ClientError, match="Model with name `nonexistent-model` does not exist"):
         model_catalog.load("nonexistent-model")
 
 
@@ -151,5 +152,5 @@ def test_delete_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) 
     assert not deleted.stored
     assert deleted.loaded
 
-    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
+    with pytest.raises(ClientError, match="Model with name `nonexistent-model` does not exist"):
         model_catalog.delete("nonexistent-model")
