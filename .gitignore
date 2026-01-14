@@ -1,5 +1,6 @@
 # PyCharm / IntelliJ
 .idea
+/graph-data-science-client.iml
 
 # VSCode
 .vscode/

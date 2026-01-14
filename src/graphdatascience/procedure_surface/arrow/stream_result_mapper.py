@@ -36,6 +36,20 @@ def map_all_shortest_path_stream_result(result: DataFrame) -> None:
     result.drop(columns=["relationshipType"], inplace=True)
 
 
+def aggregate_traversal_rels(result: DataFrame, source_node: int) -> DataFrame:
+    result.drop(columns=["sourceNodeId", "relationshipType"], inplace=True)
+
+    # Aggregate targetNodes + index column into a list
+    node_ids = result.sort_values("index")["targetNodeId"].values
+
+    return DataFrame(
+        data={
+            "sourceNode": [source_node],
+            "nodeIds": [node_ids],  # Wrap the list in a list to keep it as a single value
+        }
+    )
+
+
 def map_steiner_tree_stream_result(result: DataFrame) -> None:
     result.rename(
         columns={

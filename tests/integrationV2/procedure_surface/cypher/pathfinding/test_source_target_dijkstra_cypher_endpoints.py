@@ -3,12 +3,12 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.error.cypher_warning_handler import filter_id_func_deprecation_warning
 from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.pathfinding.shortest_path_cypher_endpoints import (
     ShortestPathCypherEndpoints,
 )
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
+from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_name
 
 
 @pytest.fixture
@@ -48,16 +48,6 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
 @pytest.fixture
 def shortest_path_endpoints(query_runner: QueryRunner) -> Generator[ShortestPathCypherEndpoints, None, None]:
     yield ShortestPathCypherEndpoints(query_runner)
-
-
-@filter_id_func_deprecation_warning()
-def find_node_by_name(query_runner: QueryRunner, name: str) -> int:
-    return int(
-        query_runner.run_cypher(  # type: ignore
-            "MATCH (n:Node {name: $name}) RETURN id(n) AS node",
-            params={"name": name},
-        ).iloc[0]["node"]
-    )
 
 
 def test_dijkstra_stream(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: GraphV2) -> None:

@@ -20,11 +20,6 @@ from tests.integrationV2.procedure_surface.gds_api_spec import (
 )
 
 MISSING_ENDPOINTS: set[str] = {
-    "bfs.stream",
-    "bfs.mutate",
-    "bfs.stats",
-    "bfs.write",
-    "bridges.stream",
     "dag.topological_sort.stream",
     "dfs.mutate",
     "dfs.stream",
