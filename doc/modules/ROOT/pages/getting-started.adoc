@@ -16,134 +16,108 @@ As a convention we recommend always calling the instantiated `GraphDataScience` 
 
 == Import and setup
 
-The simplest way to instantiate the `GraphDataScience` object is from a Neo4j server URI and corresponding credentials:
+Use the Neo4j URI and credentials according to your setup.
 
-[source,python]
+[.tabbed-example]
+====
+[.include-with-Neo4j-server]
+=====
+[source, python, role=no-test]
 ----
 from graphdatascience import GraphDataScience
 
-# Use Neo4j URI and credentials according to your setup
-# NEO4J_URI could look similar to "bolt://my-server.neo4j.io:7687"
+# For example, in a local setup `NEO4J_URI` would be "neo4j://127.0.0.1:7687".
 gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
-
-# Check the installed GDS version on the server
-print(gds.server_version())
-assert gds.server_version()
 ----
 
-[source,python,role=no-test]
-.Results:
-[source]
-----
-"2.1.9"
-----
+The `GraphDataScience` object needs the Neo4j database to be available upon construction, and uses the default `neo4j` database by default.
+If the `neo4j` database does not exist or you want to use a different database, use the `database` keyword parameter:
 
-Please note that the `GraphDataScience` object needs to communicate with a Neo4j database upon construction, and uses the default "neo4j" database by default.
-If there is no such database, you will need to <<specifying-targeted-database, provide a valid database using the `database` keyword parameter>>.
-
-
-=== Aura Graph Analytics
-
-The GDS Python Client has dedicated support for the xref:graph-analytics-serverless.adoc[Aura Graph Analytics] offering.
-
-This example shows how to instantiate the `GraphDataScience` object using an Aura API key pair and AuraDB connection information.
-
-[source,python,role=no-test]
-----
-from graphdatascience.session import DbmsConnectionInfo, GdsSessions, AuraAPICredentials, SessionMemory
-
-sessions = GdsSessions(api_credentials=AuraAPICredentials("<clientId>", "<clientSecret>"))
-gds = sessions.get_or_create(
-    session_name="my-session",
-    memory=SessionMemory.m_4GB,
-    db_connection=DbmsConnectionInfo("neo4j+s://mydbid.databases.neo4j.io", "neo4j", "<password>"),
-)
-----
-
-
-=== AuraDS
-
-If you are connecting the client to an https://neo4j.com/cloud/graph-data-science/[AuraDS instance], you can get recommended non-default configuration settings of the Python Driver applied automatically.
-To achieve this, set the constructor argument `aura_ds=True`:
-
-[source,python,role=no-test]
-----
-from graphdatascience import GraphDataScience
-
-# Configures the driver with AuraDS-recommended settings
-gds = GraphDataScience(
-    "neo4j+s://my-aura-ds.databases.neo4j.io:7687",
-    auth=("neo4j", "my-password"),
-    aura_ds=True
-)
-----
-
-
-=== Instantiating from a Neo4j driver
-
-For some use cases, direct access and control of the Neo4j driver is required.
-For example if one needs to configure the Neo4j driver that is used in a certain way.
-In this case, one can use the method `GraphDataScience.from_neo4j_driver` for instantiating a `GraphDataScience` object.
-It takes the same arguments as the regular `GraphDataScience` constructor, except for the `aura_ds` keyword parameter which is only relevant when the Neo4j driver under the hood used is instantiated internally.
-
-
-=== Checking license status
-
-To check if the GDS server library we're running against is has an enterprise license we can make the following call:
-
-[source,python]
-----
-using_enterprise = gds.is_licensed()
-----
-
-
-[[specifying-targeted-database]]
-=== Specifying targeted database
-
-If we don't want to use the default database of our DBMS we can provide the `GraphDataScience` constructor with the keyword parameter `database`:
-
-[source,python,role=no-test]
+[source, python, role=no-test]
 ----
 gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD), database="my-db")
 ----
 
-Or we could change the database we are targeting later:
+You can also change the database after creating the `GraphDataScience` object:
 
-[source,python,role=no-test]
+[source, python, role=no-test]
 ----
 gds.set_database("my-db")
 ----
+=====
 
-=== Configure Apache Arrow parameters
+[.include-with-Aura-Graph-Analytics]
+=====
+The Python client has dedicated support for link:{aura-docs-base-uri}/graph-analytics[Aura Graph Analytics].
 
-If Apache Arrow is available on the https://neo4j.com/docs/graph-data-science/current/installation/configure-apache-arrow-server/[server], we can provide the `GraphDataScience` constructor with several keyword parameters to configure the connection:
+This example shows how to instantiate the `GraphDataScience` object using an Aura API key pair and AuraDB connection information.
 
-* `arrow_disable_server_verification`: A flag that indicates that, if the flight client is connecting with
-        TLS, that it skips server verification. If this is enabled, all other TLS settings are overridden.
-* `arrow_tls_root_certs`: PEM-encoded certificates that are used for the connecting to the Apache Arrow Flight server.
-
-[source,python,role=no-test]
+[source, python, role=no-test]
 ----
-gds = GraphDataScience(
-  NEO4J_URI,
-  auth=(NEO4J_USER, NEO4J_PASSWORD),
-  arrow=True,
-  arrow_disable_server_verification=False,
-  arrow_tls_root_certs=CERT
+from graphdatascience.session import DbmsConnectionInfo, GdsSessions, AuraAPICredentials, SessionMemory
+
+sessions = GdsSessions(api_credentials=AuraAPICredentials(AURA_API_CLIENT_ID, AURA_API_CLIENT_SECRET))
+
+# `NEO4J_URI` has the format "neo4j+s://xxxxxxxx.databases.neo4j.io".
+# The credentials are for the AuraDB instance.
+gds = sessions.get_or_create(
+    session_name="my-session",
+    memory=SessionMemory.m_4GB,
+    db_connection=DbmsConnectionInfo(NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD),
 )
 ----
+=====
 
+[.include-with-AuraDS]
+=====
+If you are connecting the client to an link:https://neo4j.com/cloud/graph-data-science/[AuraDS instance], you can get recommended non-default configuration settings of the Python driver applied automatically with `aura_ds=True`:
+
+[source, python, role=no-test]
+----
+from graphdatascience import GraphDataScience
+
+# Configures the driver with AuraDS-recommended settings.
+# `NEO4J_URI` has the format "neo4j+s://xxxxxxxx.databases.neo4j.io:7687".
+gds = GraphDataScience(
+    NEO4J_URI,
+    auth=(NEO4J_USER, NEO4J_PASSWORD),
+    aura_ds=True
+)
+----
+=====
+====
+
+=== Additional checks
+
+Check the version of GDS library running on the server:
+
+[source, python]
+----
+print(gds.server_version())
+----
+
+Check if the GDS library running on the server has an enterprise license:
+
+[source, python]
+----
+print(gds.is_licensed())
+----
 
 
 [[getting-started-minimal-example]]
-== Minimal example
+== Usage example
 
-In the following example we illustrate the Python client to run a Cypher query, project a graph into GDS, run an algorithm and inspect the result via the client-side graph object.
-We suppose that we have already created a `GraphDataScience` object stored in the variable `gds`.
+The following example shows how to use the `GraphDataScience` object to:
 
-[source,python]
+. Run a Cypher query to populate the Neo4j database.
+. Create a graph projection.
+. Run an algorithm on the graph.
+. Inspect the updated graph.
+
+[source, python]
 ----
-# Create a minimal example graph
+# Create a minimal example graph.
+# The method returns a Pandas `DataFrame`.
 gds.run_cypher(
   """
   CREATE
@@ -157,15 +131,15 @@ gds.run_cypher(
   """
 )
 
-# Project the graph into the GDS Graph Catalog
-# We call the object representing the projected graph `G_office`
+# Create an in-memory graph called `neo4j-offices` and
+# a `G_office` object representing the projected graph.
 G_office, project_result = gds.graph.project("neo4j-offices", "City", "FLY_TO")
 
-# Run the mutate mode of the PageRank algorithm
+# Run the `mutate` mode of the PageRank algorithm.
 mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")
 
-# We can inspect the node properties of our projected graph directly
-# via the graph object and see that indeed the new property exists
+# Inspect the node properties of the projected graph
+# via the graph object to confirm that a new property has been created.
 assert G_office.node_properties("City") == ["rank"]
 ----
 
@@ -176,17 +150,10 @@ See the xref:common-datasets.adoc[] chapter for more on this.
 [NOTE]
 ====
 The client library is designed so that most methods are inferred under the hood as you type them via a string building scheme and overloading the magic `\\__getattr__` method.
-Therefore most methods, such as `pageRank`, will not appear when calling `dir(gds)`.
+Therefore, most methods such as `pageRank` will not appear when calling `dir(gds)`.
 Similarly, IDEs and language servers will not be able to detect these automatically inferred methods, meaning that the auto-completion support they provide will be limited.
-Rest assured however that despite the lack of this type of discoverability the inferred methods, such as `gds.pageRank.stream`, will still be called correctly.
+Despite the lack of this type of discoverability, the inferred methods such as `gds.pageRank.stream` will still be called correctly.
 ====
-
-
-== Running Cypher
-
-As we saw in the <<getting-started-minimal-example, example above>>, the `GraphDataScience` object has a method `run_cypher` for conveniently running Cypher queries.
-This method takes as parameters a query string `query: str`, an optional Cypher parameters dictionary `params: Optional[Dict[str, Any]]` as well as an optional string `database: Optional[str]` to override which database to target.
-It returns the result of the query in the format of a pandas `DataFrame`.
 
 
 == Close open connections
@@ -199,4 +166,4 @@ Similarly to how the Neo4j Python driver supports closing all open connections t
 gds.close()
 ----
 
-`close` is also called automatically when the `GraphDataScience` object is deleted.
+The `close` method is also called automatically when the `GraphDataScience` object is deleted.
