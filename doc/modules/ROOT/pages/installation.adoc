@@ -1,22 +1,24 @@
 = Installation
 
-To install the latest deployed version of the Python client, run:
+The Neo4j Graph Data Science Python client is available as the `graphdatascience` package link:https://pypi.org/project/graphdatascience/[on PyPI].
+
+Use `pip` to install the latest released version:
 
 [source,bash]
 ----
 pip install graphdatascience
 ----
 
-
 [[python-client-system-requirements]]
-== System requirements
+== Requirements
 
-The GDS Python client depends on Python, the Neo4j Python Driver, and a server-side installation of the GDS library (see https://neo4j.com/docs/graph-data-science/current/installation/[installation instruction for the GDS library]).
-The Python client supports the following versions of the other three components:
+The Python client requires the Neo4j Graph Data Science (GDS) library to be available on a link:{gds-docs-base-uri}/installation[server] or in a link:{aura-docs-base-uri}/graph-analytics[cloud environment].
+
+The compatibility table shows compatibility among different versions of the GDS library, the Python interpreter, and the Neo4j Python Driver.
 
 [opts=header, cols="m,m,m,m"]
 |===
-| Python Client | GDS version  | Python version | Neo4j Python Driver version
+| Python client | GDS version  | Python version | Neo4j Python Driver version
 .1+<.^| 1.20
 .1+<.^| >= 2.6, < 2.24
 .1+<.^| >= 3.10, < 3.14
@@ -97,55 +99,44 @@ The Python client supports the following versions of the other three components:
 
 == Versioning
 
-To make things easy for users of the Python client, our aim is that running `pip install --upgrade graphdatascience` should give you a version of the client that supports all https://neo4j.com/docs/graph-data-science/current/installation/supported-neo4j-versions/[currently supported GDS library versions], starting with 2.0.
+The package releases follow link:https://semver.org/[semantic versioning].
 
-The Python client follows https://semver.org/[semantic versioning].
-
-Python client versions do not map identically to versions of the GDS library.
-Eg. Python client version X.Y must not necessarily be compatible with GDS library version X.Y.
-Instead, the Python client may be released independently and one has to consult xref:installation.adoc#python-client-system-requirements[System requirements] above to figure out whether one's client version is compatible with the GDS library on the server.
+Running `pip install --upgrade graphdatascience` will update the package to support all the link:{gds-docs-base-uri}/installation/supported-neo4j-versions/[currently supported GDS library versions], starting with 2.0.
 
 
 == Optional dependencies
 
-Some functionality of the `graphdatascience` library requires extra dependencies.
-These dependencies are not installed by default since
+Some features of the Python client require extra dependencies, which are not installed by default as they are either targeted to specific use cases or may require additional setup.
 
-* They may be somewhat sizeable, and the functionality they enable is not necessarily something every user of the library needs, or
-* They may require additional system specific installation steps in addition to `pip install`.
+=== Neo4j Python driver speedup extension
 
-Instructions on how to install these extra dependencies and what they enable is outlined in this section.
-
-
-=== Neo4j python driver speedup extension
-
-The `graphdatascience` library utilizes the Neo4j Python Driver under the hood to communicate with Neo4j DBMSs.
-In order to enable the driver speedup given by the https://github.com/neo4j/neo4j-python-driver-rust-ext[Neo4j python driver rust extension], one has to install the optional `rust_ext` dependency:
+The `graphdatascience` package uses the Neo4j Python driver to communicate with a Neo4j database.
+The link:https://github.com/neo4j/neo4j-python-driver-rust-ext[Neo4j Python driver Rust extension] can provide a driver speedup, and you can install it with the `rust_ext` dependency:
 
 [source,bash]
 ----
-pip install graphdatascience[rust_ext]
+pip install "graphdatascience[rust_ext]"
 ----
 
-Though unlikely, depending on your system, additional steps may be required.
-If this is the case, those steps are outlined in the https://github.com/neo4j/neo4j-python-driver-rust-ext?tab=readme-ov-file#requirements[Neo4j python driver rust extension README].
+Depending on your system, additional steps may be required.
+See the link:https://github.com/neo4j/neo4j-python-driver-rust-ext?tab=readme-ov-file#requirements[Rust extension README] for more details.
 
 
 === OGB dataset loading
 
-In order to use the xref:common-datasets#ogb[convenience OGB dataset loading functionality] of `graphdatascience`, one has to install the optional `ogb` dependency:
+Install the optional `ogb` dependency to use the xref:common-datasets#ogb[OGB dataset loader]:
 
 [source,bash]
 ----
-pip install graphdatascience[ogb]
+pip install "graphdatascience[ogb]"
 ----
 
 
 === NetworkX graph loading
 
-In order to use the xref:graph-object#networkx[convenience NetworkX graph loading functionality] of `graphdatascience`, one has to install the optional `networkx` dependency:
+Install the `networkx` dependency to use the xref:graph-object#networkx[NetworkX graph loader]:
 
 [source,bash]
 ----
-pip install graphdatascience[networkx]
+pip install "graphdatascience[networkx]"
 ----
