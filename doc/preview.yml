@@ -54,6 +54,8 @@ asciidoc:
     common-license-page-uri: https://neo4j.com/docs/license/
     operations-manual-base-uri: https://neo4j.com/docs/operations-manual/
     neo4j-docs-base-uri: https://neo4j.com/docs
+    gds-docs-base-uri: '{neo4j-docs-base-uri}/graph-data-science/current'
+    aura-docs-base-uri: '{neo4j-docs-base-uri}/aura'
     api-version: 1.19
     # User research promo
     page-ad-overline-link: https://p.consentkit.com/baf41f1b-7816-4e04-82a7-b4c6d93ddf19/?ref=gds-docs
