@@ -4,7 +4,7 @@
 * xref:installation.adoc[]
 * xref:getting-started.adoc[]
 * xref:graph-analytics-serverless.adoc[]
-* xref:tutorials/tutorials.adoc[]
+* xref:tutorials/index.adoc[]
 // https://docs.antora.org/antora/latest/navigation/include-lists/
 +
 --

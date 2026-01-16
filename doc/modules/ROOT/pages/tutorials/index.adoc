@@ -1,0 +1,10 @@
+= Tutorials
+
+:page-aliases: tutorials.adoc
+
+The `graphdatascience` library includes several ready-to-run Jupyter notebooks to showcase its features.
+The notebooks are full end-to-end examples outlining realistic use-cases.
+
+The following notebooks are included:
+
+include::ROOT:partial$tutorial-list.adoc[]
