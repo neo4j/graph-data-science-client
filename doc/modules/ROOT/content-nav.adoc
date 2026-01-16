@@ -1,21 +1,29 @@
 * xref:index.adoc[Introduction]
+
+* *Getting started*
 * xref:installation.adoc[]
 * xref:getting-started.adoc[]
 * xref:graph-analytics-serverless.adoc[]
-* xref:graph-object.adoc[]
-* xref:algorithms.adoc[]
-* xref:pipelines.adoc[]
-* xref:model-object.adoc[]
-* xref:common-datasets.adoc[]
-* xref:rel-embedding-models.adoc[]
-* xref:bookmarks.adoc[]
-* xref:visualization.adoc[]
 * xref:tutorials/tutorials.adoc[]
 // https://docs.antora.org/antora/latest/navigation/include-lists/
 +
 --
 include::partial$tutorial-list.adoc[]
 --
+
+* *Graph algorithms*
+* xref:graph-object.adoc[]
+* xref:algorithms.adoc[]
+
+* *Machine learning*
+* xref:pipelines.adoc[]
+* xref:model-object.adoc[]
+* xref:common-datasets.adoc[]
+* xref:rel-embedding-models.adoc[]
+* xref:bookmarks.adoc[]
+
+* *Reference*
+* xref:visualization.adoc[]
 
 * xref:known-limitations.adoc[]
 * xref:v2_endpoints.adoc[]

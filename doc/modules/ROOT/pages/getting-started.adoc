@@ -1,4 +1,4 @@
-= Getting started
+= Quickstart
 
 The design philosophy of the Python client is to mimic the GDS Cypher API in Python code.
 The Python client will translate the Python code written by the user to a corresponding Cypher query which it will then run on the Neo4j server using a Neo4j Python driver connection.
