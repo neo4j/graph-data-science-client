@@ -31,8 +31,12 @@ class EndpointsHelperBase:
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
         result = JobClient.get_summary(self._arrow_client, job_id)
         if nested_config := result.get("configuration", None):
-            self._drop_write_internals(nested_config)
+            self.drop_write_internals(nested_config)
         return result
+
+    def run_job(self, endpoint: str, config: dict[str, Any]) -> str:
+        """Run a job and return the job id."""
+        return JobClient().run_job(self._arrow_client, endpoint, config)
 
     def _run_job_and_mutate(
         self,
@@ -68,7 +72,7 @@ class EndpointsHelperBase:
             nested_config["mutateProperty"] = mutate_property
             if mutate_relationship_type is not None:
                 nested_config["mutateRelationshipType"] = mutate_relationship_type
-            self._drop_write_internals(nested_config)
+            self.drop_write_internals(nested_config)
 
         return computation_result
 
@@ -96,10 +100,6 @@ class EndpointsHelperBase:
 
         if self._write_back_client is None:
             raise Exception("Write back client is not initialized")
-
-        if isinstance(property_overwrites, str):
-            # The remote write back procedure allows specifying a single overwrite. The key is ignored.
-            property_overwrites = {property_overwrites: property_overwrites}
 
         write_result = self._write_back_client.write(
             G.name(),
@@ -148,7 +148,8 @@ class EndpointsHelperBase:
 
         return EstimationResult(**deserialize_single(res))
 
-    def _drop_write_internals(self, config: dict[str, Any]) -> None:
+    @staticmethod
+    def drop_write_internals(config: dict[str, Any]) -> None:
         config.pop("writeConcurrency", None)
         config.pop("writeToResultStore", None)
         config.pop("writeProperty", None)

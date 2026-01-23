@@ -114,3 +114,21 @@ def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_wcc_compute_and_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+    job = wcc_endpoints.compute(
+        G=sample_graph,
+    )
+
+    assert job.progress() >= 0
+
+    job.wait()
+
+    summary = job.result()
+
+    assert summary.component_count == 2
+    assert "p10" in summary.component_distribution
+    assert summary.pre_processing_millis >= 0
+    assert summary.compute_millis >= 0
+    assert summary.post_processing_millis >= 0
