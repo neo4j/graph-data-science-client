@@ -1,0 +1,21 @@
+= Mapping to Cypher API
+
+There are some general principles for how the Cypher API maps to the Python client API:
+
+* Method calls corresponding to Cypher procedures (preceded by `CALL` in the docs) return:
++
+--
+* A table as a pandas `DataFrame`, if the procedure returns several rows (eg. stream mode algorithm calls).
+* A row as a pandas `Series`, if the procedure returns exactly one row (eg. stats mode algorithm calls).
+--
++
+Some notable exceptions to this are:
+
+** Procedures instantiating xref:graph-object.adoc[graph objects] and xref:model-object.adoc[model objects] have two return values: a graph or model object, and a row of metadata (typically a pandas `Series`) from the underlying procedure call.
+** Any methods on xref:pipelines.adoc[pipeline], xref:graph-object.adoc[graph] or xref:model-object.adoc[model] objects (native to the Python client) mapping to Cypher procedures.
+** `gds.version()` which returns a string.
+* Method calls corresponding to Cypher functions (preceded by `RETURN` in the docs) will simply return the value the function returns.
+* The Python client also contains specific functionality for inspecting graphs from the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS Graph Catalog], using a client-side xref:graph-object.adoc[graph object].
+Similarly, models from the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] can be inspected using a client-side xref:model-object.adoc[model object].
+* Cypher functions and procedures of GDS that take references to graphs and/or models as strings for input typically instead take xref:graph-object.adoc[graph objects] and/or xref:model-object.adoc[model objects] as input in the Python client API.
+* To configure and use https://neo4j.com/docs/graph-data-science/current/machine-learning/machine-learning/[machine learning pipelines] in GDS, specific xref:pipelines.adoc[pipeline objects] are used in the Python client.
