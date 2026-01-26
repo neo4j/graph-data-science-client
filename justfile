@@ -13,8 +13,8 @@ manual-docs:
 api-docs:
    ./scripts/render_api_docs
 
-install:
-    uv pip install --group dev -e .
+update-env:
+    uv pip install --group dev -e . --upgrade
 
 post-release version="":
     ./scripts/release_helper/post_release_main.py {{version}}
@@ -59,6 +59,12 @@ session-v1-it:
     NEO4J_AURA_DB_URI=bolt://localhost:7687 \
     pytest tests --include-cloud-architecture
 
-update-session:
+
+update-session-image:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
 
+update-neo4j-image:
+    docker pull neo4j:enterprise
+
+update neo4j-aura-image:
+    docker pull europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise
