@@ -59,6 +59,7 @@ def test_maxflow_stats(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: 
     result = maxflow_endpoints.stats(
         sample_graph,
         source_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "A")],
+        target_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "F")],
         capacity_property="capacity",
     )
 
@@ -102,6 +103,7 @@ def test_maxflow_estimate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_grap
     result = maxflow_endpoints.estimate(
         G=sample_graph,
         source_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "A")],
+        target_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "F")],
         capacity_property="capacity",
     )
 

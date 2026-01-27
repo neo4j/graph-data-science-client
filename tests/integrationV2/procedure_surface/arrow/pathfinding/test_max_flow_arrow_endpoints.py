@@ -83,11 +83,11 @@ def test_max_flow_stream(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph
 def test_max_flow_mutate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
     result = max_flow_endpoints.mutate(
         sample_graph,
+        [0],
+        [5],
         mutate_property="flow",
         mutate_relationship_type="FLOW",
         capacity_property="capacity",
-        source_nodes=[0],
-        target_nodes=[5],
     )
 
     assert isinstance(result, MaxFlowMutateResult)
@@ -102,12 +102,12 @@ def test_max_flow_mutate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph
 def test_max_flow_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     endpoints = MaxFlowArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
     result = endpoints.write(
-        G=db_graph,
+        db_graph,
+        [find_node_by_id(query_runner, 0)],
+        [find_node_by_id(query_runner, 5)],
         write_property="flow",
         write_relationship_type="FLOW",
         capacity_property="capacity",
-        source_nodes=[find_node_by_id(query_runner, 0)],
-        target_nodes=[find_node_by_id(query_runner, 5)],
     )
 
     assert isinstance(result, MaxFlowWriteResult)
