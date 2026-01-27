@@ -208,3 +208,4 @@ examples/dev/*
 
 # Datasets from loaders such as OGBLoader
 dataset/
+/graph-data-science-client.iml

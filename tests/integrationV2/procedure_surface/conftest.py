@@ -70,12 +70,17 @@ def download_gds_api_spec(destination: Path) -> None:
 def latest_neo4j_version() -> str:
     today = datetime.now()
     previous_month = today - relativedelta(months=1)
-    return previous_month.strftime("%Y.%m.0")
+
+    overrides = {"2025.12.0": "2025.12.1-1", "2026.01.0": "2026.01.2"}
+
+    cal_ver = previous_month.strftime("%Y.%m.0")
+
+    return overrides.get(cal_ver, cal_ver)
 
 
 def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
     default_neo4j_image = (
-        f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura/neo4j-enterprise:{latest_neo4j_version()}"
+        f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
     )
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", default_neo4j_image)
     if neo4j_image is None:

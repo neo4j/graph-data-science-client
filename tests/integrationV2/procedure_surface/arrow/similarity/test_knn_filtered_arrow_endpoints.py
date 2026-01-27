@@ -76,6 +76,8 @@ def test_knn_filtered_stream(knn_filtered_endpoints: KnnFilteredArrowEndpoints, 
         top_k=2,
         source_node_filter="SourceNode",
         target_node_filter="TargetNode",
+        concurrency=1,
+        random_seed=42,
     )
 
     assert set(result_df.columns) == {"node1", "node2", "similarity"}
