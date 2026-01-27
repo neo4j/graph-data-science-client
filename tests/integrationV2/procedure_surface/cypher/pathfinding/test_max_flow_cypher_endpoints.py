@@ -56,7 +56,11 @@ def maxflow_endpoints(query_runner: QueryRunner) -> MaxFlowCypherEndpoints:
 
 
 def test_maxflow_stats(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: GraphV2) -> None:
-    result = maxflow_endpoints.stats(sample_graph, capacity_property="capacity")
+    result = maxflow_endpoints.stats(
+        sample_graph,
+        source_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "A")],
+        capacity_property="capacity",
+    )
 
     assert isinstance(result, MaxFlowStatsResult)
     assert result.total_flow >= 0
@@ -95,7 +99,11 @@ def test_maxflow_mutate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph:
 
 
 def test_maxflow_estimate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: GraphV2) -> None:
-    result = maxflow_endpoints.estimate(G=sample_graph, capacity_property="capacity")
+    result = maxflow_endpoints.estimate(
+        G=sample_graph,
+        source_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "A")],
+        capacity_property="capacity",
+    )
 
     assert result.node_count == 6
     assert result.relationship_count == 8

@@ -16,6 +16,7 @@ class MaxFlowEndpoints(ABC):
     def mutate(
         self,
         G: GraphV2,
+        source_nodes: list[int],
         mutate_property: str,
         mutate_relationship_type: str,
         *,
@@ -26,7 +27,6 @@ class MaxFlowEndpoints(ABC):
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        source_nodes: list[int] | None = None,
         sudo: bool = False,
         target_nodes: list[int] | None = None,
         username: str | None = None,
@@ -38,6 +38,8 @@ class MaxFlowEndpoints(ABC):
         ----------
         G
            Graph object to use
+        source_nodes
+            List of source node IDs.
         mutate_property
             Name of the node property to store the results in.
         mutate_relationship_type
@@ -56,8 +58,7 @@ class MaxFlowEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        source_nodes
-            List of source node IDs.
+
         sudo
             Disable the memory guard.
         target_nodes
@@ -76,6 +77,7 @@ class MaxFlowEndpoints(ABC):
     def stats(
         self,
         G: GraphV2,
+        source_nodes: list[int],
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
@@ -84,45 +86,44 @@ class MaxFlowEndpoints(ABC):
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        source_nodes: list[int] | None = None,
         sudo: bool = False,
         target_nodes: list[int] | None = None,
         username: str | None = None,
     ) -> MaxFlowStatsResult:
         """
-        Runs the Max Flow algorithm and returns statistics.
+         Runs the Max Flow algorithm and returns statistics.
 
-        Parameters
-        ----------
-        G
-           Graph object to use
-        capacity_property
-            Name of the relationship property containing capacities.
-        node_capacity_property
-            Name of the node property containing capacities.
-        concurrency
-            Number of concurrent threads to use.
-        job_id
-            Identifier for the computation.
-        log_progress
-            Display progress logging.
-        node_labels
-            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        relationship_types
-            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+         Parameters
+         ----------
+         G
+            Graph object to use
         source_nodes
-            List of source node IDs.
-        sudo
-            Disable the memory guard.
-        target_nodes
-            List of target node IDs.
-        username
-            As an administrator, impersonate a different user for accessing their graphs.
+             List of source node IDs.
+         capacity_property
+             Name of the relationship property containing capacities.
+         node_capacity_property
+             Name of the node property containing capacities.
+         concurrency
+             Number of concurrent threads to use.
+         job_id
+             Identifier for the computation.
+         log_progress
+             Display progress logging.
+         node_labels
+             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+         relationship_types
+             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+         sudo
+             Disable the memory guard.
+         target_nodes
+             List of target node IDs.
+         username
+             As an administrator, impersonate a different user for accessing their graphs.
 
-        Returns
-        -------
-        MaxFlowStatsResult
-            Algorithm metrics and statistics
+         Returns
+         -------
+         MaxFlowStatsResult
+             Algorithm metrics and statistics
         """
         pass
 
@@ -130,6 +131,7 @@ class MaxFlowEndpoints(ABC):
     def stream(
         self,
         G: GraphV2,
+        source_nodes: list[int],
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
@@ -138,7 +140,6 @@ class MaxFlowEndpoints(ABC):
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        source_nodes: list[int] | None = None,
         sudo: bool = False,
         target_nodes: list[int] | None = None,
         username: str | None = None,
@@ -150,6 +151,8 @@ class MaxFlowEndpoints(ABC):
         ----------
         G
            Graph object to use
+        source_nodes
+            List of source node IDs.
         capacity_property
             Name of the relationship property containing capacities.
         node_capacity_property
@@ -164,8 +167,6 @@ class MaxFlowEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        source_nodes
-            List of source node IDs.
         sudo
             Disable the memory guard.
         target_nodes
@@ -184,6 +185,7 @@ class MaxFlowEndpoints(ABC):
     def write(
         self,
         G: GraphV2,
+        source_nodes: list[int],
         write_property: str,
         write_relationship_type: str,
         *,
@@ -194,7 +196,6 @@ class MaxFlowEndpoints(ABC):
         log_progress: bool = True,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        source_nodes: list[int] | None = None,
         sudo: bool = False,
         target_nodes: list[int] | None = None,
         username: str | None = None,
@@ -207,6 +208,8 @@ class MaxFlowEndpoints(ABC):
         ----------
         G
            Graph object to use
+        source_nodes
+            List of source node IDs.
         write_property
             Name of the node property to store the results in.
         write_relationship_type
@@ -225,8 +228,6 @@ class MaxFlowEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        source_nodes
-            List of source node IDs.
         sudo
             Disable the memory guard.
         target_nodes
@@ -247,13 +248,13 @@ class MaxFlowEndpoints(ABC):
     def estimate(
         self,
         G: GraphV2 | dict[str, Any],
+        source_nodes: list[int],
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
-        source_nodes: list[int] | None = None,
         target_nodes: list[int] | None = None,
     ) -> EstimationResult:
         """
@@ -263,6 +264,8 @@ class MaxFlowEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
+        source_nodes
+            List of source node IDs.
         capacity_property
             Name of the relationship property containing capacities.
         node_capacity_property
@@ -273,8 +276,6 @@ class MaxFlowEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        source_nodes
-            List of source node IDs.
         target_nodes
             List of target node IDs.
 

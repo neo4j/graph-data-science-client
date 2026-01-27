@@ -79,7 +79,9 @@ def latest_neo4j_version() -> str:
 
 
 def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
-    default_neo4j_image = f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
+    default_neo4j_image = (
+        f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
+    )
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", default_neo4j_image)
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")

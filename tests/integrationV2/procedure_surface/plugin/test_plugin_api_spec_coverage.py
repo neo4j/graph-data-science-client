@@ -202,7 +202,8 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
     for endpoint_pattern, ignored_params in IGNORED_PARAMETERS.items():
         if re.match(endpoint_pattern, py_endpoint):
             for param in ignored_params:
-                expected_configuration.pop(param)
+                if param in expected_configuration:
+                    expected_configuration.pop(param)
 
     method_signature: Any | inspect.Signature = inspect.signature(callable_object)
 
