@@ -68,10 +68,12 @@ def test_knn_filtered_stream(knn_filtered_endpoints: KnnFilteredCypherEndpoints,
         top_k=2,
         source_node_filter="SourceNode",
         target_node_filter="TargetNode",
+        concurrency=1,
+        random_seed=42,
     )
 
     assert set(result.columns) == {"node1", "node2", "similarity"}
-    assert len(result) >= 4
+    assert len(result) == 4
 
 
 def test_knn_filtered_mutate(knn_filtered_endpoints: KnnFilteredCypherEndpoints, sample_graph: GraphV2) -> None:
