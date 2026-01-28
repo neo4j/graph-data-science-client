@@ -11,7 +11,7 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
-class BFSEndpoints(ABC):
+class DFSEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
@@ -28,7 +28,7 @@ class BFSEndpoints(ABC):
         job_id: str | None = None,
     ) -> DataFrame:
         """
-        Runs the Breadth First Search (BFS) algorithm and returns a stream of results.
+        Runs the Depth First Search (DFS) algorithm and returns a stream of results.
 
         Parameters
         ----------
@@ -37,7 +37,7 @@ class BFSEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes : int | list[int], default=[]
-            A single target node or a list of target nodes for the BFS computation.
+            A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.
         relationship_types
@@ -77,9 +77,9 @@ class BFSEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> BFSMutateResult:
+    ) -> DFSMutateResult:
         """
-        Runs the Breadth First Search (BFS) algorithm and stores the results as new relationships in the graph catalog.
+        Runs the Depth First Search (DFS) algorithm and stores the results as new relationships in the graph catalog.
 
         Parameters
         ----------
@@ -90,7 +90,7 @@ class BFSEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes : int | list[int], default=[]
-            A single target node or a list of target nodes for the BFS computation.
+            A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.
         relationship_types
@@ -110,7 +110,7 @@ class BFSEndpoints(ABC):
 
         Returns
         -------
-        BFSMutateResult
+        DFSMutateResult
             Algorithm metrics and statistics
         """
         pass
@@ -129,9 +129,9 @@ class BFSEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> BFSStatsResult:
+    ) -> DFSStatsResult:
         """
-        Runs the Breadth First Search (BFS) algorithm and returns result statistics without storing the results.
+        Runs the Depth First Search (DFS) algorithm and returns result statistics without storing the results.
 
         Parameters
         ----------
@@ -140,7 +140,7 @@ class BFSEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes : int | list[int], default=[]
-            A single target node or a list of target nodes for the BFS computation.
+            A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.
         relationship_types
@@ -160,7 +160,7 @@ class BFSEndpoints(ABC):
 
         Returns
         -------
-        BFSStatsResult
+        DFSStatsResult
             Algorithm statistics
         """
         pass
@@ -186,7 +186,7 @@ class BFSEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes : int | list[int], default=[]
-            A single target node or a list of target nodes for the BFS computation.
+            A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.
         relationship_types
@@ -204,7 +204,7 @@ class BFSEndpoints(ABC):
         pass
 
 
-class BFSMutateResult(BaseResult):
+class DFSMutateResult(BaseResult):
     relationships_written: int
     pre_processing_millis: int
     compute_millis: int
@@ -213,7 +213,7 @@ class BFSMutateResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class BFSStatsResult(BaseResult):
+class DFSStatsResult(BaseResult):
     pre_processing_millis: int
     compute_millis: int
     post_processing_millis: int

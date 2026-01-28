@@ -21,8 +21,6 @@ from tests.integrationV2.procedure_surface.gds_api_spec import (
 
 MISSING_ENDPOINTS: set[str] = {
     "dag.topological_sort.stream",
-    "dfs.mutate",
-    "dfs.stream",
     "hits.mutate",
     "hits.stream",
     "hits.stats",

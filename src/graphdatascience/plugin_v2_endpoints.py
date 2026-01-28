@@ -40,6 +40,7 @@ from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints im
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.bfs_endpoints import BFSEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.dag_endpoints import DagEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.dfs_endpoints import DFSEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
@@ -115,6 +116,7 @@ from graphdatascience.procedure_surface.cypher.pathfinding.all_shortest_path_cyp
 )
 from graphdatascience.procedure_surface.cypher.pathfinding.bfs_cypher_endpoints import BFSCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pathfinding.dag_cypher_endpoints import DagCypherEndpoints
+from graphdatascience.procedure_surface.cypher.pathfinding.dfs_cypher_endpoints import DFSCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pathfinding.k_spanning_tree_cypher_endpoints import (
     KSpanningTreeCypherEndpoints,
 )
@@ -200,6 +202,13 @@ class PluginV2Endpoints:
         Return endpoints for the Breadth First Search (BFS) algorithm.
         """
         return BFSCypherEndpoints(self._db_client)
+
+    @property
+    def dfs(self) -> DFSEndpoints:
+        """
+        Return endpoints for the Depth First Search (DFS) algorithm.
+        """
+        return DFSCypherEndpoints(self._db_client)
 
     @property
     def articulation_points(self) -> ArticulationPointsEndpoints:
