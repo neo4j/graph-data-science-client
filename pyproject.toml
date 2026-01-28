@@ -68,7 +68,7 @@ dev-base = [
     "mypy == 1.19.1",
     "pandas-stubs == 2.2.3.241009",
     "tox == 4.34.1",
-    "types-setuptools == 80.9.0.20251223",
+    "types-setuptools == 80.10.0.20260124",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
     "types-requests",
