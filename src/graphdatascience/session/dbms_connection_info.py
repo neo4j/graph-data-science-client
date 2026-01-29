@@ -23,6 +23,7 @@ class DbmsConnectionInfo:
     auth: Auth | None = None
 
     aura_instance_id: str | None = None
+    aura_database_id: str | None = None  # Required if the aura_instance is a multi-db instance
 
     def __post_init__(self) -> None:
         # Validate auth fields

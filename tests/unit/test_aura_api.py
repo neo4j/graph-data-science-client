@@ -48,7 +48,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
         assert request.json() == {
             "name": "name-0",
             "memory": "4GB",
-            "instance_id": "dbid-1",
+            "instance_id": "instance-1",
             "ttl": "42.0s",
             "project_id": "some-tenant",
         }
@@ -61,7 +61,7 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
                 "id": "id0",
                 "name": "name-0",
                 "status": "Creating",
-                "instance_id": "dbid-1",
+                "instance_id": "instance-1",
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "1.2.3.4",
                 "memory": "4Gi",
@@ -74,14 +74,72 @@ def test_create_attached_session(requests_mock: Mocker) -> None:
     )
 
     result = api.get_or_create_session(
-        name="name-0", instance_id="dbid-1", memory=SessionMemory.m_4GB.value, ttl=timedelta(seconds=42)
+        name="name-0", instance_id="instance-1", memory=SessionMemory.m_4GB.value, ttl=timedelta(seconds=42)
     )
 
     assert result == SessionDetails(
         id="id0",
         name="name-0",
         status="Creating",
-        instance_id="dbid-1",
+        instance_id="instance-1",
+        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        host="1.2.3.4",
+        memory=SessionMemory.m_4GB.value,
+        expiry_date=None,
+        ttl=timedelta(seconds=42),
+        project_id="some-tenant",
+        user_id="user-0",
+    )
+
+
+def test_create_attached_multidb_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    def assert_body(request: _RequestObjectProxy) -> bool:
+        assert request.json() == {
+            "name": "name-0",
+            "memory": "4GB",
+            "instance_id": "instance-1",
+            "database_id": "dbid-1",
+            "ttl": "42.0s",
+            "project_id": "some-tenant",
+        }
+        return True
+
+    requests_mock.post(
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Creating",
+                "instance_id": "instance-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "project_id": "some-tenant",
+                "user_id": "user-0",
+                "ttl": "42s",
+            }
+        },
+        additional_matcher=assert_body,
+    )
+
+    result = api.get_or_create_session(
+        name="name-0",
+        instance_id="instance-1",
+        database_id="dbid-1",
+        memory=SessionMemory.m_4GB.value,
+        ttl=timedelta(seconds=42),
+    )
+
+    assert result == SessionDetails(
+        id="id0",
+        name="name-0",
+        status="Creating",
+        instance_id="instance-1",
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
         memory=SessionMemory.m_4GB.value,
