@@ -58,6 +58,7 @@ class FakeAuraApi(AuraApi):
         name: str,
         memory: SessionMemoryValue,
         instance_id: str | None = None,
+        database_id: str | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
     ) -> SessionDetails:
@@ -598,6 +599,22 @@ def test_get_or_create_with_explicit_aura_instance_id(mocker: MockerFixture, aur
         SessionMemory.m_8GB,
         DbmsConnectionInfo(
             username="dbuser", password="db_pw", aura_instance_id=db.id
+        ),  # not part of list instances result
+        cloud_location=None,
+    )
+
+
+def test_get_or_create_with_multidb_aura_instance(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    instance = _setup_db_instance(aura_api)
+    sessions = DedicatedSessions(aura_api)
+    patch_construct_client(mocker)
+    patch_neo4j_query_runner(mocker)
+
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo(
+            username="dbuser", password="db_pw", aura_instance_id=instance.id, aura_database_id="db-id-1"
         ),  # not part of list instances result
         cloud_location=None,
     )
