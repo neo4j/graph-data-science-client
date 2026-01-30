@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from types import TracebackType
-from typing import Any, Callable, Type
+from typing import Any, Type
 
 import pandas
 import pyarrow
@@ -15,6 +15,7 @@ from graphdatascience.query_runner.termination_flag import TerminationFlag
 
 from ...procedure_surface.api.default_values import ALL_TYPES
 from ...procedure_surface.utils.config_converter import ConfigConverter
+from ..progress_callback import ProgressCallback
 from .api_types import JobStatus
 from .job_client import JobClient
 
@@ -328,7 +329,7 @@ class GdsArrowClient:
         job_id: str,
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_rows: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
@@ -356,7 +357,7 @@ class GdsArrowClient:
         job_id: str,
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_rows: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
@@ -384,7 +385,7 @@ class GdsArrowClient:
         job_id: str,
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_triplets: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
@@ -477,7 +478,7 @@ class GdsArrowClient:
         job_id: str,
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_rows: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         match data:

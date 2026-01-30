@@ -6,8 +6,9 @@ from typing import NamedTuple, Type
 
 from pandas import DataFrame
 
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.catalog.dataset_endpoints import DatasetEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
@@ -70,6 +71,13 @@ class CatalogEndpoints(ABC):
         GraphV2
             Constructed graph object.
         """
+
+    @abstractmethod
+    def datasets(self) -> DatasetEndpoints:
+        """
+        Endpoints for loading predefined datasets into the graph catalog.
+        """
+        pass
 
     @abstractmethod
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
