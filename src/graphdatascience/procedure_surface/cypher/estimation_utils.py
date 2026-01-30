@@ -2,7 +2,7 @@ from collections import OrderedDict
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.query_runner.query_runner import QueryRunner
 

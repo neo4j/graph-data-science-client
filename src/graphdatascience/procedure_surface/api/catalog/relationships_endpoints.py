@@ -7,8 +7,8 @@ from typing import Any
 from pandas import DataFrame
 from pydantic import AliasChoices, Field, field_validator
 
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 
 

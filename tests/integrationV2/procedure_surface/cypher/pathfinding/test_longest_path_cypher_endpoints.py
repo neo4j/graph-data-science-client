@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.pathfinding.longest_path_cypher_endpoints import (
     LongestPathCypherEndpoints,
 )

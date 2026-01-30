@@ -72,12 +72,12 @@ class CatalogEndpoints(ABC):
             Constructed graph object.
         """
 
-    @abstractmethod
+    @property
     def datasets(self) -> DatasetEndpoints:
         """
         Endpoints for loading predefined datasets into the graph catalog.
         """
-        pass
+        return DatasetEndpoints(self.construct)
 
     @abstractmethod
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
