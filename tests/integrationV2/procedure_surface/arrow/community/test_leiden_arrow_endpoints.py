@@ -5,7 +5,7 @@ import pytest
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenWriteResult
 from graphdatascience.procedure_surface.arrow.community.leiden_arrow_endpoints import LeidenArrowEndpoints
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (

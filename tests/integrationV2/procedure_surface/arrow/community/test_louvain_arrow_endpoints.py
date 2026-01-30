@@ -5,7 +5,7 @@ import pytest
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainWriteResult
 from graphdatascience.procedure_surface.arrow.community.louvain_arrow_endpoints import LouvainArrowEndpoints
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (

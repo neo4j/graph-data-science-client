@@ -5,7 +5,7 @@ import pytest
 from pyarrow.flight import FlightServerError
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arrow_endpoints import (
     GraphSageTrainArrowEndpoints,

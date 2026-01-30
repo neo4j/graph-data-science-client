@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 
 

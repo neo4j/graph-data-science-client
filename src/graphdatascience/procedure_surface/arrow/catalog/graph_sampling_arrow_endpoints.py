@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,

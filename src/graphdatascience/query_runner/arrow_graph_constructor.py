@@ -98,8 +98,8 @@ class ArrowGraphConstructor(GraphConstructor):
         with ThreadPoolExecutor(self._concurrency) as executor:
 
             def run_upload(df: DataFrame) -> None:
-                def progress_callback(rows: int) -> None:
-                    pbar.update(rows)  # pbar would
+                def progress_callback(num_rows: int) -> None:
+                    pbar.update(num_rows)
 
                 if entity_type == "node":
                     self._client.upload_nodes(

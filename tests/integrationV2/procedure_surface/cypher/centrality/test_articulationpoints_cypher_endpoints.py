@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,

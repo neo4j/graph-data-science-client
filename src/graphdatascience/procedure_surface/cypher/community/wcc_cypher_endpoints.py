@@ -2,7 +2,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import (
     WccEndpoints,
     WccMutateResult,

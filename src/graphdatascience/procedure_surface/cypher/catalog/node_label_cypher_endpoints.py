@@ -1,5 +1,5 @@
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import (
     NodeLabelEndpoints,
     NodeLabelMutateResult,

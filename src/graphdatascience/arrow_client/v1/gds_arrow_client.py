@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from types import TracebackType
-from typing import Any, Callable, Iterable, Type
+from typing import Any, Iterable, Type
 
 import pandas
 import pyarrow
@@ -17,6 +17,7 @@ from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_singl
 
 from ...procedure_surface.arrow.error_handler import handle_flight_error
 from ...semantic_version.semantic_version import SemanticVersion
+from ..progress_callback import ProgressCallback
 
 
 class GdsArrowClient:
@@ -386,7 +387,7 @@ class GdsArrowClient:
         graph_name: str,
         node_data: pyarrow.Table | Iterable[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10_000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda x: None,
     ) -> None:
         """
         Uploads node data to the server.
@@ -399,7 +400,7 @@ class GdsArrowClient:
             The node data to upload
         batch_size : int
             The number of rows per batch
-        progress_callback : Callable[[int], None]
+        progress_callback : ProgressCallback
             A callback function that is called with the number of rows uploaded after each batch
         """
         self._upload_data(graph_name, "node", node_data, batch_size, progress_callback)
@@ -409,20 +410,20 @@ class GdsArrowClient:
         graph_name: str,
         relationship_data: pyarrow.Table | Iterable[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10_000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_rows: None,
     ) -> None:
         """
         Uploads relationship data to the server.
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the import process
-        relationship_data : pyarrow.Table | Iterable[pyarrow.RecordBatch] | DataFrame
+        relationship_data
             The relationship data to upload
-        batch_size : int
+        batch_size
             The number of rows per batch
-        progress_callback : Callable[[int], None]
+        progress_callback
             A callback function that is called with the number of rows uploaded after each batch
         """
         self._upload_data(graph_name, "relationship", relationship_data, batch_size, progress_callback)
@@ -432,20 +433,20 @@ class GdsArrowClient:
         graph_name: str,
         triplet_data: pyarrow.Table | Iterable[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10_000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_triplets: None,
     ) -> None:
         """
         Uploads triplet data to the server.
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the import process
         triplet_data : pyarrow.Table | Iterable[pyarrow.RecordBatch] | DataFrame
             The triplet data to upload
-        batch_size : int
+        batch_size
             The number of rows per batch
-        progress_callback : Callable[[int], None]
+        progress_callback
             A callback function that is called with the number of rows uploaded after each batch
         """
         self._upload_data(graph_name, "triplet", triplet_data, batch_size, progress_callback)
@@ -484,7 +485,7 @@ class GdsArrowClient:
         entity_type: str,
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int,
-        progress_callback: Callable[[int], None],
+        progress_callback: ProgressCallback,
     ) -> None:
         match data:
             case pyarrow.Table():

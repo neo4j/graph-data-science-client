@@ -4,7 +4,7 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
     LocalClusteringCoefficientWriteResult,
 )

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import (
     KSpanningTreeEndpoints,
