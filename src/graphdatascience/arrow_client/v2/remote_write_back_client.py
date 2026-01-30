@@ -25,10 +25,14 @@ class RemoteWriteBackClient:
         graph_name: str,
         job_id: str,
         concurrency: int | None = None,
-        property_overwrites: dict[str, str] | None = None,
+        property_overwrites: str | dict[str, str] | None = None,
         relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
     ) -> WriteBackResult:
+        if isinstance(property_overwrites, str):
+            # The remote write back procedure allows specifying a single overwrite. The key is ignored.
+            property_overwrites = {property_overwrites: property_overwrites}
+
         arrow_config = self._arrow_configuration()
 
         configuration: dict[str, Any] = {}
