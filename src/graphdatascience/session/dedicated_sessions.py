@@ -73,7 +73,7 @@ class DedicatedSessions:
     def get_or_create(
         self,
         session_name: str,
-        memory: SessionMemory,
+        memory: SessionMemory | SessionMemoryValue | str,
         db_connection: DbmsConnectionInfo | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
@@ -81,6 +81,9 @@ class DedicatedSessions:
         neo4j_driver_options: dict[str, Any] | None = None,
         arrow_client_options: dict[str, Any] | None = None,
     ) -> AuraGraphDataScience:
+        if isinstance(memory, str) or isinstance(memory, SessionMemoryValue):
+            memory = SessionMemory.of(memory)
+
         if db_connection is None:
             db_runner = None
             aura_db_instance = None

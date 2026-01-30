@@ -135,7 +135,7 @@ class InstanceDetails:
 class InstanceSpecificDetails(InstanceDetails):
     status: str
     connection_url: str
-    memory: SessionMemoryValue
+    memory: str
     type: str | None
     region: str
 
@@ -148,7 +148,7 @@ class InstanceSpecificDetails(InstanceDetails):
             cloud_provider=json["cloud_provider"],
             status=json["status"],
             connection_url=json.get("connection_url", ""),
-            memory=SessionMemoryValue.fromInstanceSize(json.get("memory")),
+            memory=json.get("memory", ""),
             type=json.get("type"),  # business-critical instances did not set the type
             region=json["region"],
         )

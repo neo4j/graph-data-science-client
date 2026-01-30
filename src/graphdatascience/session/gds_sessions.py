@@ -125,7 +125,7 @@ class GdsSessions:
     def get_or_create(
         self,
         session_name: str,
-        memory: SessionMemory,
+        memory: SessionMemory | str,
         db_connection: DbmsConnectionInfo | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
@@ -142,7 +142,7 @@ class GdsSessions:
 
         Args:
             session_name (str): The name of the session.
-            memory (SessionMemory): The size of the session specified by memory.
+            memory (SessionMemory | SessionMemoryValue | str): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo | None): The database connection information.
             ttl: (timedelta | None): The sessions time to live after inactivity in seconds.
             cloud_location (CloudLocation | None): The cloud location. Required if the GDS session is for a self-managed database.

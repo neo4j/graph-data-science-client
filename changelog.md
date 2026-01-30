@@ -11,6 +11,7 @@
 
 ## Improvements
 
+* Support passing memory value as `str` in `GdsSessions::get_or_create`. Allow passing memory value from `GdsSessions::list`.
 
 ## Other changes
 
