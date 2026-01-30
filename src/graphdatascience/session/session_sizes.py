@@ -66,6 +66,8 @@ class SessionMemory(Enum):
             memory = SessionMemoryValue(memory)
 
         if memory not in SessionMemory.all_values():
-            raise ValueError(f"Unsupported memory configuration: {memory}. Valid values are: {[str(v) for v in SessionMemory.all_values()]}.")
+            raise ValueError(
+                f"Unsupported memory configuration: {memory}. Valid values are: {[str(v) for v in SessionMemory.all_values()]}."
+            )
 
         return SessionMemory(memory)

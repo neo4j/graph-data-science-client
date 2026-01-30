@@ -81,7 +81,7 @@ class DedicatedSessions:
         neo4j_driver_options: dict[str, Any] | None = None,
         arrow_client_options: dict[str, Any] | None = None,
     ) -> AuraGraphDataScience:
-        if isinstance(memory, str) | isinstance(memory, SessionMemoryValue):
+        if isinstance(memory, str) or isinstance(memory, SessionMemoryValue):
             memory = SessionMemory.of(memory)
 
         if db_connection is None:

@@ -693,7 +693,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
                 "connection_url": "",
                 "tenant_id": "",
                 "cloud_provider": "",
-                "memory": "4Gi",
+                "memory": "4GB",
                 "region": "",
                 "type": "",
             }
