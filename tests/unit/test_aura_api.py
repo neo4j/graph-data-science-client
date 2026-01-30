@@ -23,7 +23,6 @@ from graphdatascience.session.aura_api_responses import (
     WaitResult,
 )
 from graphdatascience.session.cloud_location import CloudLocation
-from graphdatascience.session.session_sizes import SESSION_MEMORY_VALUE_UNKNOWN
 
 
 def mock_auth_token(requests_mock: Mocker) -> None:
@@ -710,7 +709,7 @@ def test_delete_instance(requests_mock: Mocker) -> None:
         cloud_provider="",
         status="deleting",
         connection_url="",
-        memory=SessionMemory.m_4GB.value,
+        memory="4GB",
         region="",
         type="",
     )
@@ -946,7 +945,7 @@ def test_list_instance_missing_memory_field(requests_mock: Mocker) -> None:
     result = api.list_instance("id0")
 
     assert result and result.id == "a10fb995"
-    assert result.memory == SESSION_MEMORY_VALUE_UNKNOWN
+    assert result.memory == ""
 
 
 def test_list_missing_instance(requests_mock: Mocker) -> None:

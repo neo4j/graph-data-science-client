@@ -28,16 +28,6 @@ class SessionMemoryValue:
 
         return SessionMemoryValue(value.replace("Gi", "GB"))
 
-    @staticmethod
-    def fromInstanceSize(value: str | None) -> SessionMemoryValue:
-        if not value:
-            return SESSION_MEMORY_VALUE_UNKNOWN
-
-        return SessionMemoryValue(value.replace("Gi", "GB"))
-
-
-SESSION_MEMORY_VALUE_UNKNOWN = SessionMemoryValue("")
-
 
 class SessionMemory(Enum):
     """
@@ -69,3 +59,13 @@ class SessionMemory(Enum):
 
         """
         return [e.value for e in cls]
+
+    @staticmethod
+    def of(memory: str | SessionMemoryValue) -> SessionMemory:
+        if isinstance(memory, str):
+            memory = SessionMemoryValue(memory)
+
+        if memory not in SessionMemory.all_values():
+            raise ValueError(f"Unsupported memory configuration: {memory}. Valid values are: {[str(v) for v in SessionMemory.all_values()]}.")
+
+        return SessionMemory(memory)

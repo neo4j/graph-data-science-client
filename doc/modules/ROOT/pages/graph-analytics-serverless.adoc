@@ -81,7 +81,7 @@ This is a hard limit and cannot be changed.
 ----
 sessions.get_or_create(
     session_name: str,
-    memory: SessionMemory,
+    memory: SessionMemory | SessionMemoryValue | str,
     db_connection: Optional[DbmsConnectionInfo] = None,
     ttl: Optional[timedelta] = None,
     cloud_location: Optional[CloudLocation] = None,
