@@ -1,5 +1,6 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.procedure_surface.api import ConfigEndpoints, SystemEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
@@ -189,14 +190,14 @@ class SessionV2Endpoints:
         return ModelCatalogArrowEndpoints(self._arrow_client)
 
     @property
-    def config(self) -> ConfigArrowEndpoints:
+    def config(self) -> ConfigEndpoints:
         """
         Return configuration-related endpoints.
         """
         return ConfigArrowEndpoints(self._arrow_client)
 
     @property
-    def system(self) -> SystemArrowEndpoints:
+    def system(self) -> SystemEndpoints:
         """
         Return system-related endpoints.
         """

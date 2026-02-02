@@ -11,6 +11,11 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog import (
+    NodeLabelEndpoints,
+    NodePropertiesEndpoints,
+    RelationshipsEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
@@ -222,15 +227,15 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         return GraphSamplingCypherEndpoints(self._cypher_runner)
 
     @property
-    def node_labels(self) -> NodeLabelCypherEndpoints:
+    def node_labels(self) -> NodeLabelEndpoints:
         return NodeLabelCypherEndpoints(self._cypher_runner)
 
     @property
-    def node_properties(self) -> NodePropertiesCypherEndpoints:
+    def node_properties(self) -> NodePropertiesEndpoints:
         return NodePropertiesCypherEndpoints(self._cypher_runner, self._arrow_client)
 
     @property
-    def relationships(self) -> RelationshipCypherEndpoints:
+    def relationships(self) -> RelationshipsEndpoints:
         return RelationshipCypherEndpoints(self._cypher_runner, self._arrow_client)
 
 

@@ -14,7 +14,7 @@ api-docs:
    ./scripts/render_api_docs
 
 update-env:
-    uv pip install --group dev -e . --upgrade
+    uv pip install --group dev -e .[networkx,ogb,rust-ext] --upgrade
 
 post-release version="":
     ./scripts/release_helper/post_release_main.py {{version}}

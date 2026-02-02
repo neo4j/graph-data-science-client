@@ -54,7 +54,6 @@ __all__ = [
     "GraphInfo",
     "GraphSamplingEndpoints",
     "GraphSamplingResult",
-    "GraphV2",
     "GraphWithFilterResult",
     "GraphWithGenerationStats",
     "GraphWithSamplingResult",

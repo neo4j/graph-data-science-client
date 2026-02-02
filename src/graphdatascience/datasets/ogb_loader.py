@@ -193,8 +193,25 @@ class OGBNLoader(OGBLoader):
         dataset_name: str,
         dataset_root_path: str = "dataset",
         graph_name: str | None = None,
-        concurrency: int = 4,
+        concurrency: int | None = None,
     ) -> GraphV2:
+        """
+        Parameters
+        ----------
+        dataset_name
+            Name of the dataset to load.
+        dataset_root_path
+            Path to the root directory of the dataset.
+        graph_name
+            Name of the graph to create.
+        concurrency
+            Number of concurrent threads to use.
+
+        Returns
+        -------
+        GraphV2
+            A handle to the graph.
+        """
         try:
             from ogb.nodeproppred import NodePropPredDataset
         except ModuleNotFoundError:
@@ -308,8 +325,25 @@ class OGBLLoader(OGBLoader):
         dataset_name: str,
         dataset_root_path: str = "dataset",
         graph_name: str | None = None,
-        concurrency: int = 4,
+        concurrency: int | None = None,
     ) -> GraphV2:
+        """
+        Parameters
+        ----------
+        dataset_name
+            Name of the dataset to load.
+        dataset_root_path
+            Path to the root directory of the dataset.
+        graph_name
+            Name of the graph to create.
+        concurrency
+            Number of concurrent threads to use.
+
+        Returns
+        -------
+        GraphV2
+            A handle to the graph.
+        """
         try:
             from ogb.linkproppred import LinkPropPredDataset
         except ModuleNotFoundError:

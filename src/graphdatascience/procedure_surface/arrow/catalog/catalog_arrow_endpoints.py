@@ -13,6 +13,11 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog import (
+    NodeLabelEndpoints,
+    NodePropertiesEndpoints,
+    RelationshipsEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
@@ -299,17 +304,17 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         return GraphSamplingArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     @property
-    def node_labels(self) -> NodeLabelArrowEndpoints:
+    def node_labels(self) -> NodeLabelEndpoints:
         write_client = RemoteWriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None
 
         return NodeLabelArrowEndpoints(self._arrow_client, write_client, show_progress=self._show_progress)
 
     @property
-    def node_properties(self) -> NodePropertiesArrowEndpoints:
+    def node_properties(self) -> NodePropertiesEndpoints:
         return NodePropertiesArrowEndpoints(self._arrow_client, self._query_runner)
 
     @property
-    def relationships(self) -> RelationshipArrowEndpoints:
+    def relationships(self) -> RelationshipsEndpoints:
         return RelationshipArrowEndpoints(
             self._arrow_client,
             RemoteWriteBackClient(self._arrow_client, self._query_runner) if self._query_runner else None,

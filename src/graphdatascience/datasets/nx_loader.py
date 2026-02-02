@@ -13,6 +13,21 @@ class NXLoader:
         self._construct = graph_constructor
 
     def load(self, nx_G: nx.Graph, graph_name: str, concurrency: int | None = None) -> GraphV2:
+        """
+        Parameters
+        ----------
+        nx_G
+            The networkx graph to load.
+        graph_name
+            Name of the graph to create.
+        concurrency
+            Number of concurrent threads to use.
+
+        Returns
+        -------
+        GraphV2
+            A handle to the graph.
+        """
         nodes, rels = self._parse(nx_G)
 
         undirected_rel_types = []
