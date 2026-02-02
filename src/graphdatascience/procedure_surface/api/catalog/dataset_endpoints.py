@@ -1,5 +1,4 @@
 from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
-from graphdatascience.datasets.nx_loader import NXLoader
 from graphdatascience.datasets.ogb_loader import OGBLLoader, OGBNLoader
 from graphdatascience.datasets.simple_file_loader import SimpleDatasetLoader
 from graphdatascience.graph.v2 import GraphV2
@@ -125,8 +124,20 @@ class DatasetEndpoints:
         return OGBLLoader(self.construct)
 
     @property
-    def networkx(self) -> NXLoader:
+    def networkx(self):  # type:ignore
         """
         Convenience wrapper to load networkx graphs into the graph catalog.
+
+        Returns
+        -------
+        NXLoader
         """
+        try:
+            from graphdatascience.datasets.nx_loader import NXLoader
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "This feature requires NetworkX support. "
+                "You can add NetworkX support by running `pip install graphdatascience[networkx]`"
+            )
+
         return NXLoader(self.construct)

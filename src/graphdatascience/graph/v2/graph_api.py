@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC
 from datetime import datetime
 from types import TracebackType
 from typing import Any, Type
@@ -9,7 +8,7 @@ from graphdatascience.graph.v2.graph_backend import GraphBackend
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
 
 
-class GraphV2(ABC):
+class GraphV2:
     """
     A graph object that represents a graph in the graph catalog.
     It can be passed into algorithm endpoints to compute over the corresponding graph.

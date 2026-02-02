@@ -12,7 +12,7 @@ class NXLoader:
     def __init__(self, graph_constructor: GraphConstructorFunc) -> None:
         self._construct = graph_constructor
 
-    def load(self, nx_G: nx.Graph, graph_name: str, concurrency: int = 4) -> GraphV2:
+    def load(self, nx_G: nx.Graph, graph_name: str, concurrency: int | None = None) -> GraphV2:
         nodes, rels = self._parse(nx_G)
 
         undirected_rel_types = []
