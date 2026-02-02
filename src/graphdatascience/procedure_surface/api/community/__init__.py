@@ -54,6 +54,10 @@ from graphdatascience.procedure_surface.api.community.louvain_endpoints import (
     LouvainWriteResult,
 )
 from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints, MaxKCutMutateResult
+from graphdatascience.procedure_surface.api.community.modularity_endpoints import (
+    ModularityEndpoints,
+    ModularityStatsResult,
+)
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
     ModularityOptimizationEndpoints,
     ModularityOptimizationMutateResult,
@@ -125,6 +129,8 @@ __all__ = [
     "LouvainWriteResult",
     "MaxKCutEndpoints",
     "MaxKCutMutateResult",
+    "ModularityEndpoints",
+    "ModularityStatsResult",
     "ModularityOptimizationEndpoints",
     "ModularityOptimizationMutateResult",
     "ModularityOptimizationStatsResult",

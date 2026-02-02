@@ -3,12 +3,14 @@ import re
 import pytest
 from pandas import DataFrame, concat
 from pandas._testing import assert_frame_equal
+
 from tests.unit.datasets.collecting_graph_constructor import CollectingGraphConstructor
 
 pytest.importorskip("networkx", reason="networkx is not installed")
 
-from graphdatascience.datasets.nx_loader import NXLoader
 import networkx as nx
+
+from graphdatascience.datasets.nx_loader import NXLoader
 
 
 def test_undirected_nx() -> None:

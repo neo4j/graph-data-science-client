@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
+from graphdatascience.graph.v2.graph_backend_cypher import get_graph
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
