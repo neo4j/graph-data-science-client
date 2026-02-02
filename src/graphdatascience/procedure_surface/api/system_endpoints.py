@@ -18,7 +18,7 @@ class SystemEndpoints(ABC):
         Parameters
         ----------
         job_id
-            Filter by job ID, by default None
+            Identifier for the computation.
         show_completed
             Include completed jobs, by default False
 
