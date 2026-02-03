@@ -18,6 +18,7 @@ class SessionDetails:
     id: str
     name: str
     instance_id: str | None
+    database_id: str | None
     memory: SessionMemoryValue
     status: str
     host: str
@@ -34,12 +35,14 @@ class SessionDetails:
         expiry_date = data.get("expiry_date")
         ttl: Any | None = data.get("ttl")
         instance_id = data.get("instance_id")
+        database_id = data.get("database_id")
         cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
         return cls(
             id=id,
             name=data["name"],
             instance_id=instance_id if instance_id else None,
+            database_id=database_id if database_id else None,
             memory=SessionMemoryValue.fromApiResponse(data["memory"]),
             status=data["status"],
             host=data["host"],
@@ -70,12 +73,14 @@ class SessionDetailsWithErrors(SessionDetails):
         expiry_date = data.get("expiry_date")
         ttl: Any | None = data.get("ttl")
         instance_id = data.get("instance_id")
+        database_id = data.get("database_id")
         cloud_location = CloudLocation(data["cloud_provider"], data["region"]) if data.get("cloud_provider") else None
 
         return cls(
             id=id,
             name=data["name"],
             instance_id=instance_id if instance_id else None,
+            database_id=database_id if database_id else None,
             memory=SessionMemoryValue.fromApiResponse(data["memory"]),
             status=data["status"],
             host=data["host"],

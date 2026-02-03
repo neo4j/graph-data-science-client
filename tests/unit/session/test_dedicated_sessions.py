@@ -88,6 +88,7 @@ class FakeAuraApi(AuraApi):
             id=f"{id_prefix}-ffff{self.id_counter}",
             name=name,
             instance_id=instance_id,
+            database_id=database_id,
             memory=memory,
             status="Creating",
             created_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
@@ -290,6 +291,7 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
         name="name-0",
         status="Failed",
         instance_id="",
+        database_id=None,
         created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
         memory=SessionMemory.m_4GB.value,
@@ -618,6 +620,9 @@ def test_get_or_create_with_multidb_aura_instance(mocker: MockerFixture, aura_ap
         ),  # not part of list instances result
         cloud_location=None,
     )
+    session = [i for i in aura_api.list_sessions() if i.name == "my-session"][0]
+
+    assert session.database_id == "db-id-1"
 
 
 def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
@@ -631,6 +636,7 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
             id="ffff0-ffff1",
             name="one",
             instance_id=db.id,
+            database_id=None,
             memory=SessionMemory.m_8GB.value,
             status="Expired",
             created_at=datetime.now(),
@@ -663,6 +669,7 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
             id="ffff0-ffff1",
             name="one",
             instance_id=db.id,
+            database_id=None,
             memory=SessionMemory.m_8GB.value,
             status="Ready",
             created_at=datetime.now(),
@@ -770,6 +777,7 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
             id="ffff0-ffff1",
             name="one",
             instance_id=None,
+            database_id=None,
             memory=SessionMemory.m_8GB.value,
             status="Failed",
             created_at=datetime.now(),
@@ -812,6 +820,7 @@ def test_delete_session_by_name_admin() -> None:
             id="ffff0-ffff1",
             name="one",
             instance_id="1234",
+            database_id=None,
             memory=SessionMemory.m_8GB.value,
             status="Ready",
             created_at=datetime.now(),
@@ -829,6 +838,7 @@ def test_delete_session_by_name_admin() -> None:
             id="ffff0-ffff2",
             name="one",
             instance_id="1234",
+            database_id=None,
             memory=SessionMemory.m_8GB.value,
             status="Ready",
             created_at=datetime.now(),
