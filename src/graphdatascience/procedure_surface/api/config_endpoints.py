@@ -8,11 +8,13 @@ class ConfigEndpoints(ABC):
     @property
     @abstractmethod
     def defaults(self) -> DefaultsEndpoints:
+        """Endpoints for default configuration values."""
         pass
 
     @property
     @abstractmethod
     def limits(self) -> LimitsEndpoints:
+        """Endpoints for configuration limits."""
         pass
 
 

@@ -2,8 +2,8 @@ from contextlib import contextmanager
 from typing import Any, Generator
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
+from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_backend_cypher import get_graph
 
 
 @contextmanager

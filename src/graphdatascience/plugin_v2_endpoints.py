@@ -1,4 +1,5 @@
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
+from graphdatascience.procedure_surface.api import SystemEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
@@ -52,11 +53,10 @@ from graphdatascience.procedure_surface.api.pathfinding.spanning_tree_endpoints 
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
-from graphdatascience.procedure_surface.api.system_endpoints import SystemEndpoints
+from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
     ScalePropertiesCypherEndpoints,
 )
-from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.articlerank_cypher_endpoints import ArticleRankCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.articulationpoints_cypher_endpoints import (
     ArticulationPointsCypherEndpoints,

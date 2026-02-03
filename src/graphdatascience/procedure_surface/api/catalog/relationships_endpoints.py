@@ -7,8 +7,8 @@ from typing import Any
 from pandas import DataFrame
 from pydantic import AliasChoices, Field, field_validator
 
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 
 
@@ -184,7 +184,7 @@ class RelationshipsEndpoints(ABC):
         relationship_type: str,
             The input relationship type
         mutate_relationship_type: str,
-            The name of the undirected relationship type to create
+            Name of the relationship type to store the results in.
         aggregation: Aggregation | dict[str, Aggregation] | None = None,
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
@@ -232,7 +232,7 @@ class RelationshipsEndpoints(ABC):
         path_templates : list[list[str]]
             A path template is an ordered list of relationship types used for the traversal. The same relationship type can be added multiple times, in order to traverse them as indicated. And, you may specify several path templates to process in one go.
         mutate_relationship_type : str
-            The name of the new relationship type to be created.
+            Name of the relationship type to store the results in.
         allow_self_loops : bool, default=False
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency

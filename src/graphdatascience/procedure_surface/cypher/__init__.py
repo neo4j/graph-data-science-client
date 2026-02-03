@@ -1,7 +1,3 @@
-from graphdatascience.procedure_surface.cypher.catalog_cypher_endpoints import (
-    CatalogCypherEndpoints,
-    GraphProjectResult,
-    GraphWithProjectResult,
-)
+from graphdatascience.procedure_surface.cypher.system_cypher_endpoints import SystemCypherEndpoints
 
-__all__ = ["CatalogCypherEndpoints", "GraphWithProjectResult", "GraphProjectResult"]
+__all__ = ["SystemCypherEndpoints"]

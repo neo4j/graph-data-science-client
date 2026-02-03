@@ -4,7 +4,7 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import (
     RelationshipCypherEndpoints,

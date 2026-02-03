@@ -7,8 +7,8 @@ from pyarrow import ArrowKeyError
 from pyarrow._flight import FlightServerError
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
@@ -127,6 +127,13 @@ def test_construct(arrow_client: AuthenticatedArrowClient) -> None:
         assert G.relationship_count() == 2
 
         assert len(endpoints.list("g")) == 1
+
+
+def test_load_dataset(catalog_endpoints: CatalogArrowEndpoints) -> None:
+    with catalog_endpoints.datasets.load_karate_club() as G:
+        assert G.name() == "karate_club"
+        assert G.node_count() == 34
+        assert G.relationship_count() == 78
 
 
 def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:

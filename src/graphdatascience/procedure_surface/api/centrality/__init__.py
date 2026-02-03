@@ -16,6 +16,7 @@ from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints imp
     BetweennessStatsResult,
     BetweennessWriteResult,
 )
+from graphdatascience.procedure_surface.api.centrality.bridges_endpoints import BridgesEndpoints
 from graphdatascience.procedure_surface.api.centrality.celf_endpoints import (
     CelfEndpoints,
     CelfMutateResult,
@@ -66,6 +67,7 @@ __all__ = [
     "BetweennessMutateResult",
     "BetweennessStatsResult",
     "BetweennessWriteResult",
+    "BridgesEndpoints",
     "CelfEndpoints",
     "CelfMutateResult",
     "CelfStatsResult",

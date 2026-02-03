@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pandas import DataFrame
 
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.model.v2.model import Model
 from graphdatascience.model.v2.model_api import ModelApi
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (

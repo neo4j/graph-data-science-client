@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience import QueryRunner
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.pathfinding.bfs_cypher_endpoints import BFSCypherEndpoints
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id

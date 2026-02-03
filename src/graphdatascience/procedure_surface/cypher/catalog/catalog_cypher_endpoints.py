@@ -7,6 +7,15 @@ from typing import Any, NamedTuple, Type
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
+from graphdatascience.call_parameters import CallParameters
+from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog import (
+    NodeLabelEndpoints,
+    NodePropertiesEndpoints,
+    RelationshipsEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     CatalogEndpoints,
     GraphFilterResult,
@@ -15,23 +24,22 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
-from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import CypherGraphBackend, get_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
+    GraphSamplingCypherEndpoints,
+)
+from graphdatascience.procedure_surface.cypher.catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
+from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
+    NodePropertiesCypherEndpoints,
+)
+from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.arrow_graph_constructor import ArrowGraphConstructor
 from graphdatascience.query_runner.cypher_graph_constructor import CypherGraphConstructor
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-
-from ...call_parameters import CallParameters
-from ..api.base_result import BaseResult
-from ..utils.config_converter import ConfigConverter
-from .catalog.graph_sampling_cypher_endpoints import GraphSamplingCypherEndpoints
-from .catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
-from .catalog.node_properties_cypher_endpoints import NodePropertiesCypherEndpoints
-from .catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 
 
 class CatalogCypherEndpoints(CatalogEndpoints):
@@ -79,7 +87,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             )
 
         graph_constructor.run(node_dfs=nodes, relationship_dfs=relationships)
-        return GraphV2(name=graph_name, backend=CypherGraphBackend(graph_name, self._cypher_runner))
+        return get_graph(graph_name, self._cypher_runner)
 
     def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
@@ -219,15 +227,15 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         return GraphSamplingCypherEndpoints(self._cypher_runner)
 
     @property
-    def node_labels(self) -> NodeLabelCypherEndpoints:
+    def node_labels(self) -> NodeLabelEndpoints:
         return NodeLabelCypherEndpoints(self._cypher_runner)
 
     @property
-    def node_properties(self) -> NodePropertiesCypherEndpoints:
+    def node_properties(self) -> NodePropertiesEndpoints:
         return NodePropertiesCypherEndpoints(self._cypher_runner, self._arrow_client)
 
     @property
-    def relationships(self) -> RelationshipCypherEndpoints:
+    def relationships(self) -> RelationshipsEndpoints:
         return RelationshipCypherEndpoints(self._cypher_runner, self._arrow_client)
 
 

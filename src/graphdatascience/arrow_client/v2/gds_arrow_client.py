@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from types import TracebackType
-from typing import Any, Callable, Type
+from typing import Any, Type
 
 import pandas
 import pyarrow
@@ -15,6 +15,7 @@ from graphdatascience.query_runner.termination_flag import TerminationFlag
 
 from ...procedure_surface.api.default_values import ALL_TYPES
 from ...procedure_surface.utils.config_converter import ConfigConverter
+from ..progress_callback import ProgressCallback
 from .api_types import JobStatus
 from .job_client import JobClient
 
@@ -326,9 +327,9 @@ class GdsArrowClient:
     def upload_nodes(
         self,
         job_id: str,
-        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame | list[pandas.DataFrame],
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_rows: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
@@ -354,9 +355,9 @@ class GdsArrowClient:
     def upload_relationships(
         self,
         job_id: str,
-        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame | list[pandas.DataFrame],
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_rows: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
@@ -384,7 +385,7 @@ class GdsArrowClient:
         job_id: str,
         data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_triplets: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
         """
@@ -475,18 +476,27 @@ class GdsArrowClient:
         self,
         endpoint: str,
         job_id: str,
-        data: pyarrow.Table | list[pyarrow.RecordBatch] | pandas.DataFrame,
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | list[pandas.DataFrame],
         batch_size: int = 10000,
-        progress_callback: Callable[[int], None] = lambda x: None,
+        progress_callback: ProgressCallback = lambda num_rows: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
+        if isinstance(data, pandas.DataFrame):
+            data = [data]
+
+        def map_list_entry_to_batches(e: pyarrow.RecordBatch | pandas.DataFrame) -> list[pyarrow.RecordBatch]:
+            return [e] if isinstance(e, pyarrow.RecordBatch) else pyarrow.Table.from_pandas(e).to_batches(batch_size)
+
+        batches: list[pyarrow.RecordBatch] = []
         match data:
+            case list():
+                for entry in data:
+                    partial_batches = map_list_entry_to_batches(entry)
+                    batches.extend(partial_batches)
             case pyarrow.Table():
                 batches = data.to_batches(batch_size)
-            case pandas.DataFrame():
-                batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
             case _:
-                batches = data
+                raise ValueError(f"Unsupported data type: {type(data)}")
 
         flight_descriptor = {
             "name": endpoint,

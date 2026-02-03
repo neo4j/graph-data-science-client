@@ -12,6 +12,21 @@ class SystemEndpoints(ABC):
         job_id: str | None = None,
         show_completed: bool = False,
     ) -> list[ProgressResult]:
+        """
+        List progress of jobs.
+
+        Parameters
+        ----------
+        job_id
+            Identifier for the computation.
+        show_completed
+            Include completed jobs, by default False
+
+        Returns
+        --------
+        list[ProgressResult]
+            Progress of the requested job(s).
+        """
         pass
 
 

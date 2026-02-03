@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 set -o xtrace
 
-python -m ruff check . --fix
+python -m ruff check . --fix --unsafe-fixes
 python -m ruff format .
 
 if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then

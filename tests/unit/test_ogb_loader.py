@@ -1,18 +1,21 @@
 from typing import Any
+from unittest import mock
 
 import numpy as np
 import numpy.typing as npt
 from pandas import Series
 
-from graphdatascience.graph.ogb_loader import (
+from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
+from graphdatascience.datasets.ogb_loader import (
     HeterogeneousOGBGraph,
     HeterogeneousOGBLDataset,
     HeterogeneousOGBNDataset,
     HomogeneousOGBGraph,
     HomogeneousOGBLDataset,
     HomogeneousOGBNDataset,
+    OGBLLoader,
+    OGBNLoader,
 )
-from graphdatascience.graph_data_science import GraphDataScience
 
 HOMOGENEOUS_EDGE_INDEX = [[0, 1], [2, 1]]
 HOMOGENEOUS_NODE_FEAT = [[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]
@@ -90,8 +93,10 @@ class HeteroOBGLTestDataset(HeterogeneousOGBLDataset):
         }
 
 
-def test_ogbn_parse_homogeneous(gds: GraphDataScience) -> None:
-    nodes, rels = gds.graph.ogbn._parse_homogeneous(HomoOBGNTestDataset())
+def test_ogbn_parse_homogeneous() -> None:
+    nodes, rels = OGBNLoader(graph_constructor=mock.Mock(spec=GraphConstructorFunc))._parse_homogeneous(
+        HomoOBGNTestDataset()
+    )
 
     assert len(nodes) == 1
     assert nodes[0]["nodeId"].tolist() == HOMOGENEOUS_EXPECTED_NODES
@@ -105,8 +110,10 @@ def test_ogbn_parse_homogeneous(gds: GraphDataScience) -> None:
     assert rels[0]["relationshipType"].tolist() == ["R"] * len(HOMOGENEOUS_EDGE_INDEX[0])
 
 
-def test_ogbl_parse_homogeneous(gds: GraphDataScience) -> None:
-    nodes, rels = gds.graph.ogbl._parse_homogeneous(HomoOBGLTestDataset())
+def test_ogbl_parse_homogeneous() -> None:
+    nodes, rels = OGBLLoader(graph_constructor=mock.Mock(spec=GraphConstructorFunc))._parse_homogeneous(
+        HomoOBGLTestDataset()
+    )
 
     assert len(nodes) == 1
     assert nodes[0]["nodeId"].tolist() == HOMOGENEOUS_EXPECTED_NODES
@@ -119,8 +126,10 @@ def test_ogbl_parse_homogeneous(gds: GraphDataScience) -> None:
     assert rels[0]["relationshipType"].tolist() == ["TRAIN_POS", "TRAIN_NEG", "VALID_POS", "VALID_NEG", "TEST_NEG"]
 
 
-def test_ogbn_parse_heterogeneous(gds: GraphDataScience) -> None:
-    nodes, rels = gds.graph.ogbn._parse_heterogeneous(HeteroOBGNTestDataset())
+def test_ogbn_parse_heterogeneous() -> None:
+    nodes, rels = OGBNLoader(graph_constructor=mock.Mock(spec=GraphConstructorFunc))._parse_heterogeneous(
+        HeteroOBGNTestDataset()
+    )
 
     assert len(nodes) == 3
 
@@ -150,8 +159,10 @@ def test_ogbn_parse_heterogeneous(gds: GraphDataScience) -> None:
     assert rels[1]["relationshipType"].tolist() == ["R2"] * len(HETEROGENEOUS_EDGE_INDEX[("B", "R2", "C")][0])
 
 
-def test_ogbl_parse_heterogeneous(gds: GraphDataScience) -> None:
-    nodes, rels = gds.graph.ogbl._parse_heterogeneous(HeteroOBGLTestDataset())
+def test_ogbl_parse_heterogeneous() -> None:
+    nodes, rels = OGBLLoader(graph_constructor=mock.Mock(spec=GraphConstructorFunc))._parse_heterogeneous(
+        HeteroOBGLTestDataset()
+    )
 
     assert len(nodes) == 3
 
