@@ -87,6 +87,7 @@ class DedicatedSessions:
         if db_connection is None:
             db_runner = None
             aura_db_instance = None
+            aura_database_id = None
         else:
             if aura_instance_id := db_connection.aura_instance_id:
                 aura_db_instance = self._aura_api.list_instance(aura_instance_id)
@@ -118,6 +119,7 @@ class DedicatedSessions:
                         )
                 else:
                     aura_db_instance = None
+            aura_database_id = db_connection.aura_database_id
 
         if aura_db_instance is None:
             if not cloud_location:
@@ -127,7 +129,9 @@ class DedicatedSessions:
         else:
             if cloud_location is not None:
                 raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
-            session_details = self._get_or_create_attached_session(session_name, memory.value, aura_db_instance.id, ttl)
+            session_details = self._get_or_create_attached_session(
+                session_name, memory.value, aura_db_instance.id, aura_database_id, ttl
+            )
 
         self._await_session_running(session_details, timeout)
 
@@ -226,9 +230,16 @@ class DedicatedSessions:
         return self._aura_api.get_or_create_session(session_name, memory, ttl=ttl, cloud_location=cloud_location)
 
     def _get_or_create_attached_session(
-        self, session_name: str, memory: SessionMemoryValue, instance_id: str, ttl: timedelta | None = None
+        self,
+        session_name: str,
+        memory: SessionMemoryValue,
+        instance_id: str,
+        database_id: str | None = None,
+        ttl: timedelta | None = None,
     ) -> SessionDetails:
-        return self._aura_api.get_or_create_session(name=session_name, instance_id=instance_id, memory=memory, ttl=ttl)
+        return self._aura_api.get_or_create_session(
+            name=session_name, instance_id=instance_id, database_id=database_id, memory=memory, ttl=ttl
+        )
 
     def _get_or_create_self_managed_session(
         self,
