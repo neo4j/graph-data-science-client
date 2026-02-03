@@ -1,4 +1,3 @@
-from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend import GraphBackend
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     CatalogEndpoints,
