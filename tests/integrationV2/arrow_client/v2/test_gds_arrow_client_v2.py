@@ -8,7 +8,7 @@ from testcontainers.core.network import Network
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
-from graphdatascience.procedure_surface.api.catalog import GraphV2
+from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.query_runner.termination_flag import TerminationFlag
