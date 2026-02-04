@@ -16,7 +16,10 @@ api-docs:
 update-env:
     uv pip install --group dev -e .[networkx,ogb,rust-ext] --upgrade
 
-post-release version="":
+pre-release:
+    ./scripts/release_helper/pre_release.py
+
+post-release-main version="":
     ./scripts/release_helper/post_release_main.py {{version}}
 
 unit-tests extra_options="":
@@ -68,3 +71,6 @@ update-neo4j-image:
 
 update neo4j-aura-image:
     docker pull europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise
+
+prs:
+    gh pr list --author "@me"
