@@ -1,26 +1,22 @@
-= Neo4j Graph Data Science Python Client
+= Overview
 :description: This manual documents how to use the dedicated Python Client v{docs-version} for the Neo4j Graph Data Science library.
 
-:toc: left
-:experimental:
-:sectid:
-:sectlinks:
-:toclevels: 2
-:env-docs: true
+The Neo4j Graph Data Science Python client is the official Neo4j Python library to run algorithms and machine learning pipelines on graphs.
+The library wraps the https://neo4j.com/docs/python-manual/current/[Neo4j Python driver] to offer a Python interface to the link:{gds-docs-base-uri}[Neo4j Graph Data Science] (GDS) Cypher API.
 
+You can use the client-specific graph, model, and pipeline objects form a Python program to:
 
-To help users of https://neo4j.com/docs/graph-data-science/current/[Neo4j Graph Data Science] who work with Python as their primary language and environment, we offer the official Graph Data Science (GDS) Python Client package called `graphdatascience`.
-It enables users to write pure Python code to project graphs, run algorithms, use machine learning pipelines, and train machine learning models with GDS.
-To avoid naming confusion with the server-side GDS library, we will here refer to the Neo4j Graph Data Science client as the _Python client_.
+* Create and manage graph projections.
+* Run graph algorithms.
+* Train and use machine learning pipelines.
 
-The Python client API is designed to mimic the GDS Cypher procedure API in Python code.
-It wraps and abstracts the necessary operations of the https://neo4j.com/docs/python-manual/current/[Neo4j Python driver] to offer a simpler surface.
-For a high level explanation of how the Cypher API maps to the Python client API please see xref:getting-started.adoc#getting-started-mapping[Mapping between Cypher and Python].
+For more details on how the Python client objects and functions map to the Cypher API, see the xref:cypher-mapping.adoc[] page.
 
-Additionally, the client-specific graph, model, and pipeline objects offer convenient functions that heavily reduce the need to use Cypher to access and operate these GDS resources.
+== Development
 
-The source code of the GDS Python client is available at https://github.com/neo4j/graph-data-science-client[GitHub].
-If you have a suggestion on how we can improve the library or want to report a problem, you can create a https://github.com/neo4j/graph-data-science-client/issues/new[new issue].
+The source code of the Python client is available on https://github.com/neo4j/graph-data-science-client[GitHub].
+
+If you have any suggestions or want to report a problem, you can create a https://github.com/neo4j/graph-data-science-client/issues/new[new issue].
 
 // Make this depending on the backend if PDF needs to be generated
 (C) {copyright}
