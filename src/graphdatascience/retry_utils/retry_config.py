@@ -87,7 +87,7 @@ class RetryConfigV2(
         if logger is not None:
             kwargs["before"] = before_log(operation_name, logger, log_level)
 
-        return retry(**kwargs, reraise=True)
+        return retry(**kwargs, reraise=True)  # type: ignore
 
     def tenacity_wait(self) -> wait_base | None:
         if self.wait_config is None:
