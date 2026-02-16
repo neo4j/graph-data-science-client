@@ -682,7 +682,7 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
         )
     )
 
-    with pytest.raises(Warning, match=re.escape("Session `one` is expiring in less than a day.")):
+    with pytest.raises(Warning, match=re.escape("Session `one` is expiring in 59 minutes.")):
         sessions = DedicatedSessions(aura_api)
         sessions.get_or_create(
             "one",
