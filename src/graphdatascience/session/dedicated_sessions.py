@@ -168,8 +168,10 @@ class DedicatedSessions:
     def _await_session_running(self, session_details: SessionDetails, timeout: int | None = None) -> None:
         if session_details.expiry_date:
             until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
-            if until_expiry < timedelta(days=1):
-                raise Warning(f"Session `{session_details.name}` is expiring in less than a day.")
+            if until_expiry < timedelta(hours=1):
+                raise Warning(
+                    f"Session `{session_details.name}` is expiring in {math.floor(until_expiry.seconds / 60)} minutes."
+                )
         if not session_details.is_ready():
             max_wait_time = float(timeout) if timeout is not None else math.inf
             wait_result = self._aura_api.wait_for_session_running(session_details.id, max_wait_time=max_wait_time)

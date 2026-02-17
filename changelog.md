@@ -12,6 +12,8 @@
 ## Improvements
 
 * Support passing memory value as `str` in `GdsSessions::get_or_create`. Allow passing memory value from `GdsSessions::list`.
+* Warn about expiring sessions only if remaining time is < 1h instead of < 1day.
+
 
 ## Other changes
 
