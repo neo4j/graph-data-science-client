@@ -27,6 +27,12 @@ from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints impor
     MaxFlowStatsResult,
     MaxFlowWriteResult,
 )
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoints import (
+    MaxFlowMinCostEndpoints,
+    MaxFlowMinCostMutateResult,
+    MaxFlowMinCostStatsResult,
+    MaxFlowMinCostWriteResult,
+)
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import (
     PrizeSteinerTreeEndpoints,
     PrizeSteinerTreeMutateResult,
@@ -105,6 +111,10 @@ __all__ = [
     "MaxFlowWriteResult",
     "MaxFlowStatsResult",
     "MaxFlowMutateResult",
+    "MaxFlowMinCostEndpoints",
+    "MaxFlowMinCostWriteResult",
+    "MaxFlowMinCostStatsResult",
+    "MaxFlowMinCostMutateResult",
     "PrizeSteinerTreeEndpoints",
     "PrizeSteinerTreeMutateResult",
     "PrizeSteinerTreeStatsResult",

@@ -2,44 +2,24 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.pathfinding import MaxFlowMinCostEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import (
-    MaxFlowEndpoints,
-    MaxFlowMutateResult,
-    MaxFlowStatsResult,
-    MaxFlowWriteResult,
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoints import (
+    MaxFlowMinCostEndpoints,
+    MaxFlowMinCostMutateResult,
+    MaxFlowMinCostStatsResult,
+    MaxFlowMinCostWriteResult,
 )
-from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_min_cost_arrow_endpoints import (
-    MaxFlowMinCostArrowEndpoints,
-)
-from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import (
-    map_max_flow_stream_result,
-)
+from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
-class MaxFlowArrowEndpoints(MaxFlowEndpoints):
-    def __init__(
-        self,
-        arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None = None,
-        show_progress: bool = True,
-    ):
-        self._min_cost_endpoints = MaxFlowMinCostArrowEndpoints(
-            arrow_client, write_back_client, show_progress=show_progress
-        )
-        self._relationship_endpoints = RelationshipEndpointsHelper(
-            arrow_client, write_back_client, show_progress=show_progress
-        )
-
-    @property
-    def min_cost(self) -> MaxFlowMinCostEndpoints:
-        return self._min_cost_endpoints
+class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
+    def __init__(self, query_runner: QueryRunner):
+        self._query_runner = query_runner
 
     def mutate(
         self,
@@ -51,6 +31,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -58,11 +40,14 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         sudo: bool = False,
         username: str | None = None,
-    ) -> MaxFlowMutateResult:
-        config = self._relationship_endpoints.create_base_config(
-            G,
+    ) -> MaxFlowMinCostMutateResult:
+        config = ConfigConverter.convert_to_gds_config(
+            mutateProperty=mutate_property,
+            mutateRelationshipType=mutate_relationship_type,
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -74,14 +59,14 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             username=username,
         )
 
-        result = self._relationship_endpoints.run_job_and_mutate(
-            "v2/pathfinding.maxFlow",
-            config,
-            mutate_property,
-            mutate_relationship_type,
-        )
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
 
-        return MaxFlowMutateResult(**result)
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.maxFlow.minCost.mutate", params=params, logging=log_progress
+        ).squeeze()
+
+        return MaxFlowMinCostMutateResult(**cypher_result.to_dict())
 
     def stats(
         self,
@@ -91,6 +76,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -98,11 +85,12 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         sudo: bool = False,
         username: str | None = None,
-    ) -> MaxFlowStatsResult:
-        config = self._relationship_endpoints.create_base_config(
-            G,
+    ) -> MaxFlowMinCostStatsResult:
+        config = ConfigConverter.convert_to_gds_config(
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -114,9 +102,14 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             username=username,
         )
 
-        computation_result = self._relationship_endpoints.run_job_and_get_summary("v2/pathfinding.maxFlow", config)
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
 
-        return MaxFlowStatsResult(**computation_result)
+        cypher_result = self._query_runner.call_procedure(
+            endpoint="gds.maxFlow.minCost.stats", params=params, logging=log_progress
+        ).squeeze()
+
+        return MaxFlowMinCostStatsResult(**cypher_result.to_dict())
 
     def stream(
         self,
@@ -126,6 +119,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -134,10 +129,11 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         sudo: bool = False,
         username: str | None = None,
     ) -> DataFrame:
-        config = self._relationship_endpoints.create_base_config(
-            G,
+        config = ConfigConverter.convert_to_gds_config(
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -149,9 +145,12 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             username=username,
         )
 
-        result = self._relationship_endpoints.run_job_and_stream("v2/pathfinding.maxFlow", G, config)
-        map_max_flow_stream_result(result)
-        return result
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
+
+        return self._query_runner.call_procedure(
+            endpoint="gds.maxFlow.minCost.stream", params=params, logging=log_progress
+        )
 
     def write(
         self,
@@ -163,6 +162,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -171,11 +172,14 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         sudo: bool = False,
         username: str | None = None,
         write_concurrency: int | None = None,
-    ) -> MaxFlowWriteResult:
-        config = self._relationship_endpoints.create_base_config(
-            G,
+    ) -> MaxFlowMinCostWriteResult:
+        config = ConfigConverter.convert_to_gds_config(
+            writeProperty=write_property,
+            writeRelationshipType=write_relationship_type,
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -185,19 +189,17 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             sudo=sudo,
             targetNodes=target_nodes,
             username=username,
+            writeConcurrency=write_concurrency,
         )
 
-        result = self._relationship_endpoints.run_job_and_write(
-            "v2/pathfinding.maxFlow",
-            G,
-            config,
-            relationship_type_overwrite=write_relationship_type,
-            property_overwrites=write_property,
-            write_concurrency=write_concurrency,
-            concurrency=concurrency,
-        )
+        params = CallParameters(graph_name=G.name(), config=config)
+        params.ensure_job_id_in_config()
 
-        return MaxFlowWriteResult(**result)
+        result = self._query_runner.call_procedure(
+            endpoint="gds.maxFlow.minCost.write", params=params, logging=log_progress
+        ).squeeze()
+
+        return MaxFlowMinCostWriteResult(**result.to_dict())
 
     def estimate(
         self,
@@ -207,18 +209,23 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
     ) -> EstimationResult:
-        config = self._relationship_endpoints.create_estimate_config(
+        algo_config = ConfigConverter.convert_to_gds_config(
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
-            nodeLabels=node_labels,
-            relationshipTypes=relationship_types,
             sourceNodes=source_nodes,
             targetNodes=target_nodes,
         )
-
-        return self._relationship_endpoints.estimate("v2/pathfinding.maxFlow.estimate", G, config)
+        return estimate_algorithm(
+            endpoint="gds.maxFlow.minCost.stats.estimate", query_runner=self._query_runner, G=G, algo_config=algo_config
+        )

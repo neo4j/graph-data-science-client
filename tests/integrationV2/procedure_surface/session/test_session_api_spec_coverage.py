@@ -31,10 +31,6 @@ MISSING_ENDPOINTS: set[str] = {
     "random_walk.stream",
     "random_walk.mutate",
     "split_relationships.mutate",
-    "max_flow.min_cost.stream",
-    "max_flow.min_cost.stats",
-    "max_flow.min_cost.mutate",
-    "max_flow.min_cost.write",
 }
 
 
@@ -62,6 +58,7 @@ ENDPOINT_MAPPINGS = OrderedDict(
         ("prizesteiner_tree", "prize_steiner_tree"),
         ("spanning_tree", "spanning_tree"),
         ("steiner_tree", "steiner_tree"),
+        ("maxFlow.minCost", "max_flow.min_cost"),
     ]
 )
 
