@@ -31,7 +31,7 @@ MISSING_ENDPOINTS: set[str] = {
     "random_walk.stats",
     "random_walk.stream",
     "random_walk.mutate",
-    "split_relationships.mutate"
+    "split_relationships.mutate",
 }
 
 
