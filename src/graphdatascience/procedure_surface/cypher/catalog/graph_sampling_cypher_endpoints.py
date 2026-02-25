@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
-
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
@@ -11,11 +10,9 @@ from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints imp
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-
-from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):

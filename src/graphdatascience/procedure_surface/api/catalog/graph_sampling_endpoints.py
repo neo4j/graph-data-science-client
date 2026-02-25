@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import Any, NamedTuple, Type
+from typing import NamedTuple, Type
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -166,7 +166,7 @@ class GraphSamplingEndpoints(ABC):
         Parameters
         ----------
         G
-            Graph object to use.
+            Graph object to use
         start_nodes : list of int, optional
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
             By default, a single node is chosen uniformly at random.

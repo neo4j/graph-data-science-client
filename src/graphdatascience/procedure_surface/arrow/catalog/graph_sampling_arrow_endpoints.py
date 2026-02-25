@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
