@@ -6,12 +6,13 @@ from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 def test_mutate_node_property_success(mocker: MockerFixture) -> None:
     job_id = "test-job-123"
+    process_job_id = "test-process-job-456"
     arrow_mutation_result = {"nodePropertiesWritten": 42, "relationshipsWritten": 1337}
 
     mock_client = mocker.Mock()
     mock_client.do_action_with_retry.return_value = iter([ArrowTestResult(arrow_mutation_result)])
 
-    result = MutationClient.mutate_node_property(mock_client, job_id, "propertyName")
+    result = MutationClient.mutate_node_property(mock_client, job_id, "propertyName", process_job_id)
 
     assert result.node_properties_written == 42
     assert result.relationships_written == 1337
@@ -20,4 +21,8 @@ def test_mutate_node_property_success(mocker: MockerFixture) -> None:
     args, _ = mock_client.do_action_with_retry.call_args
 
     assert args[0] == MutationClient.MUTATE_ENDPOINT
-    assert args[1] == {"jobId": "test-job-123", "mutateProperty": "propertyName"}
+    assert args[1] == {
+        "jobId": "test-job-123",
+        "processJobId": "test-process-job-456",
+        "mutateProperty": "propertyName",
+    }
