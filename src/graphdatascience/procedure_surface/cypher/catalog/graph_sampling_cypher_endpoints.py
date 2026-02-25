@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
@@ -8,10 +9,10 @@ from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints imp
     GraphWithSamplingResult,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-
-from ....call_parameters import CallParameters
-from ....query_runner.query_runner import QueryRunner
-from ...utils.config_converter import ConfigConverter
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
@@ -110,4 +111,30 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         return GraphWithSamplingResult(
             get_graph(graph_name, self._query_runner),
             GraphSamplingResult(**result.to_dict()),
+        )
+
+    def estimate(
+        self,
+        G: GraphV2,
+        start_nodes: list[int] | None = None,
+        restart_probability: float = 0.1,
+        sampling_ratio: float = 0.15,
+        node_label_stratification: bool = False,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        concurrency: int | None = None,
+    ) -> EstimationResult:
+        algo_config = ConfigConverter.convert_to_gds_config(
+            start_nodes=start_nodes,
+            restart_probability=restart_probability,
+            sampling_ratio=sampling_ratio,
+            node_label_stratification=node_label_stratification,
+            relationship_weight_property=relationship_weight_property,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+        )
+        return estimate_algorithm(
+            endpoint="gds.graph.sample.cnarw.estimate", query_runner=self._query_runner, G=G, algo_config=algo_config
         )

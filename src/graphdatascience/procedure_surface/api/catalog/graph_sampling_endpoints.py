@@ -7,6 +7,7 @@ from typing import NamedTuple, Type
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class GraphSamplingEndpoints(ABC):
@@ -143,6 +144,54 @@ class GraphSamplingEndpoints(ABC):
         -------
         GraphSamplingResult
             tuple of the graph object and the result of the Common Neighbour Aware Random Walk (CNARW), including the dimensions of the sampled graph.
+        """
+        pass
+
+    @abstractmethod
+    def estimate(
+        self,
+        G: GraphV2,
+        start_nodes: list[int] | None = None,
+        restart_probability: float = 0.1,
+        sampling_ratio: float = 0.15,
+        node_label_stratification: bool = False,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        concurrency: int | None = None,
+    ) -> EstimationResult:
+        """
+        Estimate the memory consumption of a CNARW algorithm run.
+
+        Parameters
+        ----------
+        G
+            Graph object to use
+        start_nodes : list of int, optional
+            IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
+            By default, a single node is chosen uniformly at random.
+        restart_probability : float, optional
+            The probability that a sampling random walk restarts from one of the start nodes.
+            Default is 0.1.
+        sampling_ratio : float, optional
+            The fraction of nodes in the original graph to be sampled.
+            Default is 0.15.
+        node_label_stratification : bool, optional
+            If true, preserves the node label distribution of the original graph.
+            Default is False.
+        relationship_weight_property
+            Name of the property to be used as weights.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        concurrency
+            Number of concurrent threads to use.
+
+        Returns
+        -------
+        EstimationResult
+            Memory estimation details
         """
         pass
 
