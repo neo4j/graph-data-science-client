@@ -21,4 +21,8 @@ def test_mutate_node_property_success(mocker: MockerFixture) -> None:
     args, _ = mock_client.do_action_with_retry.call_args
 
     assert args[0] == MutationClient.MUTATE_ENDPOINT
-    assert args[1] == {"jobId": "test-job-123", "processJobId": "test-process-job-456", "mutateProperty": "propertyName"}
+    assert args[1] == {
+        "jobId": "test-job-123",
+        "processJobId": "test-process-job-456",
+        "mutateProperty": "propertyName",
+    }

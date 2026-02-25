@@ -10,10 +10,15 @@ class MutationClient:
     MUTATE_ENDPOINT = "v2/results.mutate"
 
     @staticmethod
-    def mutate_node_property(client: AuthenticatedArrowClient, job_id: str, mutate_property: str, process_job_id: str | None = None) -> MutateResult:
+    def mutate_node_property(
+        client: AuthenticatedArrowClient,
+        result_store_job_id: str,
+        mutate_property: str,
+        process_job_id: str | None = None,
+    ) -> MutateResult:
         return MutationClient._mutate(
             client=client,
-            job_id=job_id,
+            result_store_job_id=result_store_job_id,
             mutate_property=mutate_property,
             process_job_id=process_job_id,
         )
@@ -27,7 +32,7 @@ class MutationClient:
     ) -> MutateResult:
         return MutationClient._mutate(
             client=client,
-            job_id=job_id,
+            result_store_job_id=job_id,
             mutate_property=mutate_property,
             mutate_relationship_type=mutate_relationship_type,
         )
@@ -35,13 +40,13 @@ class MutationClient:
     @staticmethod
     def _mutate(
         client: AuthenticatedArrowClient,
-        job_id: str,
+        result_store_job_id: str,
         process_job_id: str | None = None,
         mutate_property: str | None = None,
         mutate_relationship_type: str | None = None,
     ) -> MutateResult:
         mutate_config = {
-            "jobId": job_id,
+            "jobId": result_store_job_id,
         }
         if process_job_id:
             mutate_config["processJobId"] = process_job_id
