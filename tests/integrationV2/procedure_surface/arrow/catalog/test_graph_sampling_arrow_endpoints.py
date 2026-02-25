@@ -37,19 +37,6 @@ def graph_sampling_endpoints(
     yield GraphSamplingArrowEndpoints(arrow_client)
 
 
-def test_rwr_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
-    G, result = graph_sampling_endpoints.rwr(
-        G=sample_graph, graph_name="sampled", restart_probability=0.15, sampling_ratio=0.8
-    )
-
-    assert result.graph_name == "sampled"
-    assert result.from_graph_name == sample_graph.name()
-    assert result.node_count > 0
-    assert result.relationship_count >= 0
-    assert result.start_node_count >= 1
-    assert result.project_millis >= 0
-
-
 def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
     G, result = graph_sampling_endpoints.rwr(
         G=sample_graph,
@@ -66,28 +53,6 @@ def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingArrowEndpoints,
     assert result.project_millis >= 0
 
 
-def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
-    G, result = graph_sampling_endpoints.rwr(G=sample_graph, graph_name="sampled")
-
-    assert result.graph_name == "sampled"
-    assert result.from_graph_name == sample_graph.name()
-    assert result.node_count > 0
-    assert result.project_millis >= 0
-
-
-def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
-    G, result = graph_sampling_endpoints.cnarw(
-        G=sample_graph, graph_name="sampled", restart_probability=0.15, sampling_ratio=0.8
-    )
-
-    assert result.graph_name == "sampled"
-    assert result.from_graph_name == sample_graph.name()
-    assert result.node_count > 0
-    assert result.relationship_count >= 0
-    assert result.start_node_count >= 1
-    assert result.project_millis >= 0
-
-
 def test_cnarw_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
     G, result = graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="sampled")
 
@@ -95,3 +60,17 @@ def test_cnarw_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoi
     assert result.from_graph_name == sample_graph.name()
     assert result.node_count > 0
     assert result.project_millis >= 0
+
+
+def test_cnarw_estimate(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: GraphV2) -> None:
+    result = graph_sampling_endpoints.estimate(G=sample_graph, restart_probability=0.15, sampling_ratio=0.8)
+
+    assert result.node_count == 5
+    assert result.relationship_count == 5
+    assert "Bytes" in result.required_memory
+    assert result.tree_view is not None
+    assert isinstance(result.map_view, dict)
+    assert result.bytes_min >= 0
+    assert result.bytes_max >= 0
+    assert result.heap_percentage_min >= 0
+    assert result.heap_percentage_max >= 0

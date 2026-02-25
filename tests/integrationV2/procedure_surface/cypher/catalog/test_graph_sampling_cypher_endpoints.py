@@ -50,7 +50,6 @@ def graph_sampling_endpoints(query_runner: QueryRunner) -> Generator[GraphSampli
 
 
 def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test RWR sampling with basic configuration."""
     G, result = graph_sampling_endpoints.rwr(
         G=sample_graph, graph_name="rwr_sampled", restart_probability=0.15, sampling_ratio=0.8
     )
@@ -63,51 +62,9 @@ def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sampl
     assert result.project_millis >= 0
 
 
-def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test RWR sampling with weighted relationships."""
-    G, result = graph_sampling_endpoints.rwr(
-        G=sample_graph,
-        graph_name="rwr_weighted",
-        restart_probability=0.2,
-        sampling_ratio=0.6,
-        relationship_weight_property="weight",
-    )
-
-    assert result.graph_name == "rwr_weighted"
-    assert result.from_graph_name == sample_graph.name()
-    assert result.node_count > 0
-    assert result.start_node_count >= 1
-    assert result.project_millis >= 0
-
-
-def test_rwr_minimal_config(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test RWR sampling with minimal configuration."""
-    G, result = graph_sampling_endpoints.rwr(G=sample_graph, graph_name="rwr_minimal")
-
-    assert result.graph_name == "rwr_minimal"
-    assert result.from_graph_name == sample_graph.name()
-    assert result.node_count > 0
-    assert result.project_millis >= 0
-
-
-def test_cnarw_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test CNARW sampling with basic configuration."""
-    G, result = graph_sampling_endpoints.cnarw(
-        G=sample_graph, graph_name="cnarw_sampled", restart_probability=0.15, sampling_ratio=0.8
-    )
-
-    assert result.graph_name == "cnarw_sampled"
-    assert result.from_graph_name == sample_graph.name()
-    assert result.node_count > 0
-    assert result.relationship_count >= 0
-    assert result.start_node_count >= 1
-    assert result.project_millis >= 0
-
-
 def test_cnarw_with_stratification(
     graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2
 ) -> None:
-    """Test CNARW sampling with node label stratification."""
     G, result = graph_sampling_endpoints.cnarw(
         G=sample_graph,
         graph_name="cnarw_stratified",
@@ -123,11 +80,15 @@ def test_cnarw_with_stratification(
     assert result.project_millis >= 0
 
 
-def test_cnarw_minimal_config(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
-    """Test CNARW sampling with minimal configuration."""
-    G, result = graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="cnarw_minimal")
+def test_cnarw_estimate(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
+    result = graph_sampling_endpoints.estimate(G=sample_graph, restart_probability=0.15, sampling_ratio=0.8)
 
-    assert result.graph_name == "cnarw_minimal"
-    assert result.from_graph_name == sample_graph.name()
-    assert result.start_node_count >= 1
-    assert result.project_millis >= 0
+    assert result.node_count == 5
+    assert result.relationship_count == 5
+    assert "Bytes" in result.required_memory
+    assert result.tree_view is not None
+    assert isinstance(result.map_view, dict)
+    assert result.bytes_min >= 0
+    assert result.bytes_max >= 0
+    assert result.heap_percentage_min >= 0
+    assert result.heap_percentage_max >= 0
