@@ -7,15 +7,11 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.pathfinding import MaxFlowMinCostEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import (
-    MaxFlowEndpoints,
-    MaxFlowMutateResult,
-    MaxFlowStatsResult,
-    MaxFlowWriteResult,
-)
-from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_min_cost_arrow_endpoints import (
-    MaxFlowMinCostArrowEndpoints,
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoints import (
+    MaxFlowMinCostEndpoints,
+    MaxFlowMinCostMutateResult,
+    MaxFlowMinCostStatsResult,
+    MaxFlowMinCostWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import (
@@ -23,23 +19,16 @@ from graphdatascience.procedure_surface.arrow.stream_result_mapper import (
 )
 
 
-class MaxFlowArrowEndpoints(MaxFlowEndpoints):
+class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
         write_back_client: RemoteWriteBackClient | None = None,
         show_progress: bool = True,
     ):
-        self._min_cost_endpoints = MaxFlowMinCostArrowEndpoints(
-            arrow_client, write_back_client, show_progress=show_progress
-        )
         self._relationship_endpoints = RelationshipEndpointsHelper(
             arrow_client, write_back_client, show_progress=show_progress
         )
-
-    @property
-    def min_cost(self) -> MaxFlowMinCostEndpoints:
-        return self._min_cost_endpoints
 
     def mutate(
         self,
@@ -51,6 +40,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -58,11 +49,13 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         sudo: bool = False,
         username: str | None = None,
-    ) -> MaxFlowMutateResult:
+    ) -> MaxFlowMinCostMutateResult:
         config = self._relationship_endpoints.create_base_config(
             G,
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -75,13 +68,13 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         )
 
         result = self._relationship_endpoints.run_job_and_mutate(
-            "v2/pathfinding.maxFlow",
+            "v2/pathfinding.maxFlow.minCost",
             config,
             mutate_property,
             mutate_relationship_type,
         )
 
-        return MaxFlowMutateResult(**result)
+        return MaxFlowMinCostMutateResult(**result)
 
     def stats(
         self,
@@ -91,6 +84,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -98,11 +93,13 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         sudo: bool = False,
         username: str | None = None,
-    ) -> MaxFlowStatsResult:
+    ) -> MaxFlowMinCostStatsResult:
         config = self._relationship_endpoints.create_base_config(
             G,
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -114,9 +111,11 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             username=username,
         )
 
-        computation_result = self._relationship_endpoints.run_job_and_get_summary("v2/pathfinding.maxFlow", config)
+        computation_result = self._relationship_endpoints.run_job_and_get_summary(
+            "v2/pathfinding.maxFlow.minCost", config
+        )
 
-        return MaxFlowStatsResult(**computation_result)
+        return MaxFlowMinCostStatsResult(**computation_result)
 
     def stream(
         self,
@@ -126,6 +125,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -138,6 +139,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             G,
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -149,7 +152,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             username=username,
         )
 
-        result = self._relationship_endpoints.run_job_and_stream("v2/pathfinding.maxFlow", G, config)
+        result = self._relationship_endpoints.run_job_and_stream("v2/pathfinding.maxFlow.minCost", G, config)
         map_max_flow_stream_result(result)
         return result
 
@@ -163,6 +166,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -171,11 +176,13 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         sudo: bool = False,
         username: str | None = None,
         write_concurrency: int | None = None,
-    ) -> MaxFlowWriteResult:
+    ) -> MaxFlowMinCostWriteResult:
         config = self._relationship_endpoints.create_base_config(
             G,
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             jobId=job_id,
             logProgress=log_progress,
@@ -188,7 +195,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         )
 
         result = self._relationship_endpoints.run_job_and_write(
-            "v2/pathfinding.maxFlow",
+            "v2/pathfinding.maxFlow.minCost",
             G,
             config,
             relationship_type_overwrite=write_relationship_type,
@@ -197,7 +204,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             concurrency=concurrency,
         )
 
-        return MaxFlowWriteResult(**result)
+        return MaxFlowMinCostWriteResult(**result)
 
     def estimate(
         self,
@@ -207,6 +214,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         *,
         capacity_property: str | None = None,
         node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
@@ -214,6 +223,8 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         config = self._relationship_endpoints.create_estimate_config(
             capacityProperty=capacity_property,
             nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
             concurrency=concurrency,
             nodeLabels=node_labels,
             relationshipTypes=relationship_types,
@@ -221,4 +232,4 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             targetNodes=target_nodes,
         )
 
-        return self._relationship_endpoints.estimate("v2/pathfinding.maxFlow.estimate", G, config)
+        return self._relationship_endpoints.estimate("v2/pathfinding.maxFlow.minCost.estimate", G, config)

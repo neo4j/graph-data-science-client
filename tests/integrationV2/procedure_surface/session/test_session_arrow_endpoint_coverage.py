@@ -31,6 +31,7 @@ ENDPOINT_MAPPINGS = {
     "kspanning_tree": "k_spanning_tree",
     "prizesteiner_tree": "prize_steiner_tree",
     "longestPath": "dag.longest_path",
+    "maxFlow.minCost": "max_flow.min_cost",
 }
 
 

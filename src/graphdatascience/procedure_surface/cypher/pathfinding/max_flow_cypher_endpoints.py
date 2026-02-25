@@ -6,6 +6,7 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.pathfinding import MaxFlowMinCostEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import (
     MaxFlowEndpoints,
     MaxFlowMutateResult,
@@ -13,6 +14,9 @@ from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints impor
     MaxFlowWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.cypher.pathfinding.max_flow_min_cost_cypher_endpoints import (
+    MaxFlowMinCostCypherEndpoints,
+)
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -20,6 +24,10 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 class MaxFlowCypherEndpoints(MaxFlowEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
+
+    @property
+    def min_cost(self) -> MaxFlowMinCostEndpoints:
+        return MaxFlowMinCostCypherEndpoints(self._query_runner)
 
     def mutate(
         self,
