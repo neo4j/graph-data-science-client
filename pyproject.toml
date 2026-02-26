@@ -89,6 +89,7 @@ docs-ci = [
     "sphinx == 7.3.7",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
+    "networkx >= 2.0, < 4.0"
 ]
 notebook-base = [
     "nbconvert==7.16.6",
