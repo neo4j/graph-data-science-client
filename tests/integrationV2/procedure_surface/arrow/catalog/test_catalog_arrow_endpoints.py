@@ -50,7 +50,7 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
     assert result.creation_time < datetime.datetime.now(datetime.timezone.utc)
     assert result.database == "neo4j"
     assert result.database_location == "local"
-    assert "KiB" in result.memory_usage
+    assert result.memory_usage and result.memory_usage.endswith("KiB")
     assert result.size_in_bytes > 20000
     assert result.modification_time < datetime.datetime.now(datetime.timezone.utc)
     assert "p50" in result.degree_distribution  # type: ignore

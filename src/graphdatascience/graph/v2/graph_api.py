@@ -106,7 +106,7 @@ class GraphV2:
         """
         return self._backend.graph_info().density
 
-    def memory_usage(self) -> str:
+    def memory_usage(self) -> str | None:
         """
         Returns:
             the memory usage of the graph

@@ -15,7 +15,7 @@ class GraphInfo(BaseResult):
     database: str
     database_location: str
     configuration: dict[str, Any]
-    memory_usage: str | None # can be none if there was an error computing the usage
+    memory_usage: str | None  # can be none if there was an error computing the usage
     size_in_bytes: int
     node_count: int
     relationship_count: int
