@@ -66,7 +66,7 @@ dev = [
 dev-base = [
     "ruff == 0.14.11",
     "mypy == 1.19.1",
-    "pandas-stubs == 2.2.3.241009",
+    "pandas-stubs == 2.3.3.260113",
     "tox == 4.34.1",
     "types-setuptools == 80.9.0.20251223",
     "enum-tools[sphinx]==0.13.0",
