@@ -4,7 +4,7 @@ import logging
 import re
 import time
 import warnings
-from typing import Any, NamedTuple
+from typing import Any, LiteralString, NamedTuple
 
 import neo4j
 from pandas import DataFrame
@@ -186,7 +186,7 @@ class Neo4jQueryRunner(QueryRunner):
             default_access_mode=mode.neo4j_access_mode(),
         ) as session:
             try:
-                result = session.run(query, params)
+                result = session.run(self._wrap_query(query), params)
             except Exception as e:
                 if custom_error:
                     self.handle_driver_exception(session, e)
@@ -232,7 +232,7 @@ class Neo4jQueryRunner(QueryRunner):
             bookmark_manager = neo4j.GraphDatabase.bookmark_manager(self.bookmarks())
 
             result = self._driver.execute_query(
-                query_=query,
+                query_=self._wrap_query(query),
                 parameters_=params,
                 database_=database,
                 result_transformer_=neo4j.Result.to_df,
@@ -500,6 +500,10 @@ class Neo4jQueryRunner(QueryRunner):
         # neo4j driver 6.0
         warnings.filterwarnings("ignore", message=r".*returned by the procedure.* is deprecated.*")
         warnings.filterwarnings("ignore", message=r".*procedure field deprecated..*")
+
+    def _wrap_query(self, query: str) -> neo4j.Query:
+        literal_query: LiteralString = str(query)  # type: ignore[assignment]
+        return neo4j.Query(text=literal_query, metadata={"app": f"gds-v{__version__}"})
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600
