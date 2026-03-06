@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerC
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
     ScalePropertiesCypherEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 graph = """
@@ -95,7 +96,12 @@ def test_scale_properties_write(
     assert result.node_properties_written == 3
     assert "prop1" in result.scaler_statistics
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.scaledProp IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 3
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.scaledProp IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0]
+        == 3
+    )
 
 
 def test_scale_properties_estimate(

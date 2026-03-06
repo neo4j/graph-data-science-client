@@ -22,7 +22,6 @@ class QueryProgressLogger:
         polling_interval: float = 0.5,
         progress_bar_options: dict[str, Any] = {},
     ):
-        self._run_cypher_func = run_cypher_func
         self._server_version_func = server_version_func
         self._static_progress_provider = StaticProgressProvider()
         self._query_progress_provider = QueryProgressProvider(run_cypher_func, server_version_func)

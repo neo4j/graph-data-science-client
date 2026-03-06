@@ -3,6 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_type import QueryType
 
 from ..call_parameters import CallParameters
 from ..caller_base import CallerBase
@@ -50,7 +51,9 @@ class DirectUtilEndpoints(CallerBase):
         else:
             query = "MATCH (n) RETURN id(n) AS id"
 
-        node_match = self._query_runner.run_retryable_cypher(query, custom_error=False, mode=QueryMode.READ)
+        node_match = self._query_runner.run_retryable_cypher(
+            query, QueryType.USER_TRANSPILED, custom_error=False, mode=QueryMode.READ
+        )
 
         if len(node_match) != 1:
             raise ValueError(f"Filter did not match with exactly one node: {node_match}")
@@ -107,6 +110,6 @@ class IndirectUtilAlphaEndpoints(CallerBase):
             selected_values=selected_values,
         )
         query = f"RETURN {namespace}($available_values, $selected_values) AS encoded"
-        result = self._query_runner.run_cypher(query=query, params=params)
+        result = self._query_runner.run_cypher(query=query, query_type=QueryType.USER_TRANSPILED, params=params)
 
         return result.iat[0, 0]  # type: ignore

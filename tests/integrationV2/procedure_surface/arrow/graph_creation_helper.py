@@ -8,6 +8,7 @@ from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
 
 
 @contextmanager
@@ -50,7 +51,7 @@ def create_graph_from_db(
     undirected_relationship_types: list[str] | None = None,
 ) -> Generator[GraphV2, Any, None]:
     try:
-        query_runner.run_cypher(graph_data)
+        query_runner.run_cypher(graph_data, QueryType.USER_ACTION)
         result = CatalogArrowEndpoints(arrow_client, query_runner).project(
             graph_name=graph_name,
             query=query,
@@ -60,4 +61,4 @@ def create_graph_from_db(
         yield result.graph
     finally:
         CatalogArrowEndpoints(arrow_client).drop(graph_name, fail_if_missing=False)
-        query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)

@@ -8,6 +8,7 @@ import pandas as pd
 from pandas import DataFrame, Series
 
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_type import QueryType
 
 from ..call_parameters import CallParameters
 from ..error.cypher_warning_handler import (
@@ -169,6 +170,7 @@ class GraphNodePropertiesRunner(GraphEntityOpsBaseRunner):
 
             db_properties_df = query_runner.run_retryable_cypher(
                 GraphNodePropertiesRunner._build_query(db_node_properties),
+                QueryType.USER_TRANSPILED,
                 params={"ids": unique_node_ids},
                 mode=QueryMode.READ,
             )

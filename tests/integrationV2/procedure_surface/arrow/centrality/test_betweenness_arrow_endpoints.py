@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints imp
     BetweennessWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.centrality.betweenness_arrow_endpoints import BetweennessArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -105,7 +106,12 @@ def test_betweenness_write(
     assert result.write_millis >= 0
     assert result.node_properties_written == 3
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.betweenness IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 3
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.betweenness IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).squeeze()
+        == 3
+    )
 
 
 def test_betweenness_write_without_write_back_client(

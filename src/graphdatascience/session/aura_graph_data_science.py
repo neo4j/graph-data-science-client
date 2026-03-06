@@ -20,6 +20,7 @@ from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.session_query_runner import SessionQueryRunner
 from graphdatascience.query_runner.standalone_session_query_runner import StandaloneSessionQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
@@ -164,9 +165,13 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
             The query result as a DataFrame
         """
         if retryable:
-            return self._query_runner.run_retryable_cypher(query, params, database, custom_error=False, mode=mode)
+            return self._query_runner.run_retryable_cypher(
+                query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode
+            )
         else:
-            return self._query_runner.run_cypher(query, params, database, custom_error=False, mode=mode)
+            return self._query_runner.run_cypher(
+                query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode
+            )
 
     @property
     def graph(self) -> GraphRemoteProcRunner:

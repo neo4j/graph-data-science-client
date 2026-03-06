@@ -6,6 +6,7 @@ from graphdatascience import QueryRunner
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansWriteResult
 from graphdatascience.procedure_surface.cypher.community.kmeans_cypher_endpoints import KMeansCypherEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -102,7 +103,12 @@ def test_kmeans_write(
     assert len(result.centroids) == 3
     assert isinstance(result.community_distribution, dict)
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.community IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 4
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.community IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).squeeze()
+        == 4
+    )
 
 
 def test_kmeans_estimate(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: GraphV2) -> None:

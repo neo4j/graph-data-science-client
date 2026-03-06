@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.community.scc_endpoints import (
     SccWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.community.scc_arrow_endpoints import SccArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -115,7 +116,12 @@ def test_scc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     assert result.node_properties_written == 9
     assert "p10" in result.component_distribution
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.componentId IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 9
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.componentId IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0]
+        == 9
+    )
 
 
 def test_scc_estimate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:

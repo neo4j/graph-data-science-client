@@ -5,6 +5,7 @@ from pandas import Series
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 GRAPH_NAME = "g"
@@ -23,12 +24,13 @@ def setup_module(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (a)-[:REL {y: 13.37}]->(c),
         (b)-[:REL {z: 7.9}]->(c),
         (b)-[:REL2 {q: 7.9}]->(d)
-        """
+        """,
+        QueryType.USER_ACTION,
     )
 
     yield
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
 
 
 @pytest.fixture

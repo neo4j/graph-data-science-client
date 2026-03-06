@@ -5,9 +5,8 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.query_runner import QueryMode, QueryRunner, QueryType
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
-from graphdatascience.query_runner.query_mode import QueryMode
-from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
 
@@ -18,6 +17,7 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def call_procedure(
         self,
         endpoint: str,
+        query_type: QueryType = QueryType.USER_TRANSPILED,
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
@@ -30,11 +30,20 @@ class StandaloneSessionQueryRunner(QueryRunner):
             raise NotImplementedError("write procedures are not supported on standalone sessions")
 
         return self._query_runner.call_procedure(
-            endpoint, params, yields, database, logging=logging, retryable=retryable, custom_error=custom_error
+            endpoint,
+            query_type,
+            params,
+            yields,
+            database,
+            logging=logging,
+            retryable=retryable,
+            custom_error=custom_error,
         )
 
-    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
-        return self._query_runner.call_function(endpoint, params)
+    def call_function(
+        self, endpoint: str, query_type: QueryType = QueryType.USER_TRANSPILED, params: CallParameters | None = None
+    ) -> Any:
+        return self._query_runner.call_function(endpoint, query_type, params)
 
     def server_version(self) -> ServerVersion:
         return self._query_runner.server_version()
@@ -59,6 +68,7 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
@@ -69,6 +79,7 @@ class StandaloneSessionQueryRunner(QueryRunner):
     def run_retryable_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,

@@ -9,6 +9,7 @@ from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
 from graphdatascience.model.pipeline_model import MetricScores
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -36,7 +37,8 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:CONTEXTREL]->(i1),
         (d)-[:CONTEXTREL]->(i1),
         (e)-[:CONTEXTREL]->(i2)
-        """
+        """,
+        QueryType.USER_ACTION,
     )
     G, _ = gds.graph.project(
         "g",
@@ -46,7 +48,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
     yield G
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
     G.drop()
 
 
@@ -83,7 +85,7 @@ def lp_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": lp_model.name()}
-    runner.run_cypher(query, params)
+    runner.run_cypher(query, QueryType.USER_ACTION, params)
 
 
 @pytest.fixture
@@ -152,7 +154,7 @@ def nr_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": nr_model.name()}
-    runner.run_cypher(query, params)
+    runner.run_cypher(query, QueryType.USER_ACTION, params)
 
 
 def test_predict_stream_lp_model(lp_model: LPModel, G: Graph) -> None:

@@ -4,6 +4,7 @@ import pytest
 
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -44,12 +45,12 @@ def G(gds: GraphDataScience) -> Generator[Graph, None, None]:
 
 def test_find_node_id(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     id = gds.find_node_id(["Location"], {"name": "A"})
-    res = runner.run_cypher(f"MATCH(n) WHERE id(n) = {id} RETURN n")
+    res = runner.run_cypher(f"MATCH(n) WHERE id(n) = {id} RETURN n", QueryType.USER_ACTION)
     assert len(res) == 1
     assert res["n"][0]["name"] == "A"
 
     id = gds.find_node_id(["Location"], {"name": 2})
-    res = runner.run_cypher(f"MATCH(n) WHERE id(n) = {id} RETURN n")
+    res = runner.run_cypher(f"MATCH(n) WHERE id(n) = {id} RETURN n", QueryType.USER_ACTION)
     assert len(res) == 1
     assert res["n"][0]["name"] == 2
 

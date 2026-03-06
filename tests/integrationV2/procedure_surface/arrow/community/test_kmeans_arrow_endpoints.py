@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansWriteResult
 from graphdatascience.procedure_surface.arrow.community.kmeans_arrow_endpoints import KMeansArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -112,7 +113,12 @@ def test_kmeans_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2,
     assert len(result.centroids) == 3
     assert isinstance(result.community_distribution, dict)
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.community IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 4
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.community IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).squeeze()
+        == 4
+    )
 
 
 def test_kmeans_estimate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: GraphV2) -> None:

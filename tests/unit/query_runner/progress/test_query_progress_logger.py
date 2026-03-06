@@ -7,6 +7,7 @@ from io import StringIO
 from pandas import DataFrame
 
 from graphdatascience import ServerVersion
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.progress.progress_provider import TaskWithProgress
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.progress.query_progress_provider import QueryProgressProvider
@@ -79,7 +80,7 @@ def test_uses_query_provider() -> None:
     query_runner = CollectingQueryRunner(server_version)
 
     def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
-        return query_runner.run_cypher(query, db=database)
+        return query_runner.run_cypher(query, QueryType.USER_ACTION, db=database)
 
     qpl = QueryProgressLogger(simple_run_cypher, lambda: server_version)
     progress_provider = qpl._select_progress_provider("test-job")
@@ -101,7 +102,7 @@ def test_uses_query_provider_with_task_description() -> None:
     query_runner = CollectingQueryRunner(server_version, result_mock={"gds.listProgress": detailed_progress})
 
     def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
-        return query_runner.run_cypher(query, db=database)
+        return query_runner.run_cypher(query, QueryType.USER_ACTION, db=database)
 
     qpl = QueryProgressLogger(simple_run_cypher, lambda: server_version)
     progress_provider = qpl._select_progress_provider("test-job")

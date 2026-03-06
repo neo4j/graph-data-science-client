@@ -22,6 +22,7 @@ from .query_runner.arrow_info import ArrowInfo
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
+from .query_runner.query_type import QueryType
 from .server_version.server_version import ServerVersion
 from .utils.util_proc_runner import UtilProcRunner
 from .version import __min_server_version__
@@ -258,15 +259,16 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             The query result as a DataFrame
         """
         qr = self._query_runner
+        query_type = QueryType.USER_DIRECTED
 
         # The Arrow query runner should not be used to execute arbitrary Cypher
         if isinstance(self._query_runner, ArrowQueryRunner):
             qr = self._query_runner.fallback_query_runner()
 
         if retryable:
-            return qr.run_retryable_cypher(query, params, database, custom_error=False, mode=mode)
+            return qr.run_retryable_cypher(query, query_type, params, database, custom_error=False, mode=mode)
         else:
-            return qr.run_cypher(query, params, database, custom_error=False, mode=mode)
+            return qr.run_cypher(query, query_type, params, database, custom_error=False, mode=mode)
 
     def driver_config(self) -> dict[str, Any]:
         """

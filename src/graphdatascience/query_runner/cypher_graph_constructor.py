@@ -12,6 +12,7 @@ from graphdatascience.query_runner.query_mode import QueryMode
 from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
 from .query_runner import QueryRunner
+from .query_type import QueryType
 
 
 class CypherProjectionApi:
@@ -107,6 +108,7 @@ class CypherGraphConstructor(GraphConstructor):
         try:
             license: str = self._query_runner.run_retryable_cypher(
                 "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value",
+                QueryType.SYSTEM,
                 custom_error=False,
                 mode=QueryMode.READ,
             ).squeeze()
@@ -215,6 +217,7 @@ class CypherGraphConstructor(GraphConstructor):
             # not using retryable here as gds.graph.project adds a graph to the gds graph catalog
             self._query_runner.run_cypher(
                 query,
+                QueryType.USER_TRANSPILED,
                 {
                     "data": combined_df.values.tolist(),
                     "graph_name": self._graph_name,
@@ -377,6 +380,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             self._query_runner.run_cypher(
                 query,
+                QueryType.USER_TRANSPILED,
                 {
                     "graph_name": self._graph_name,
                     "node_query": node_query,

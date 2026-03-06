@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.pagerank_arrow_endpoints import PageRankArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -115,7 +116,12 @@ def test_pagerank_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
     assert result.write_millis >= 0
     assert result.node_properties_written == 3
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.pagerank IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 3
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.pagerank IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).squeeze()
+        == 3
+    )
 
 
 def test_pagerank_estimate(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:

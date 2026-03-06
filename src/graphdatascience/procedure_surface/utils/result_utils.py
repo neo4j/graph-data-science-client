@@ -4,6 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
 
 
 def transpose_property_columns(result: DataFrame, list_node_labels: bool) -> DataFrame:
@@ -25,6 +26,7 @@ def join_db_node_properties(result: DataFrame, db_node_properties: list[str], qu
     query = _build_query(db_node_properties)
     db_properties_df = query_runner.run_retryable_cypher(
         query,
+        QueryType.USER_TRANSPILED,
         params={"ids": (result["nodeId"].tolist())},
         mode=QueryMode.READ,
     )

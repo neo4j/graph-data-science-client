@@ -6,9 +6,9 @@ import pytest
 from neo4j import Driver
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner import QueryMode, QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider
-from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.version import __version__
 from tests.integration.conftest import AUTH, URI
 
@@ -20,36 +20,56 @@ def test_init_without_neo4j_db(runner: Neo4jQueryRunner) -> None:
     default_database = runner.database()
 
     MY_DB_NAME = "bananas"
-    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME}, database=default_database)
+    runner.run_cypher(
+        "CREATE DATABASE $dbName WAIT",
+        QueryType.USER_ACTION,
+        {"dbName": MY_DB_NAME},
+        database=default_database,
+    )
 
-    runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": default_database}, database=MY_DB_NAME)
+    runner.run_cypher(
+        "DROP DATABASE $dbName WAIT",
+        QueryType.USER_ACTION,
+        {"dbName": default_database},
+        database=MY_DB_NAME,
+    )
 
     try:
         gds = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
         gds.close()
     finally:
-        runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": default_database}, database=MY_DB_NAME)
-        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME}, database=default_database)
+        runner.run_cypher(
+            "CREATE DATABASE $dbName WAIT",
+            QueryType.USER_ACTION,
+            {"dbName": default_database},
+            database=MY_DB_NAME,
+        )
+        runner.run_cypher(
+            "DROP DATABASE $dbName WAIT",
+            QueryType.USER_ACTION,
+            {"dbName": MY_DB_NAME},
+            database=default_database,
+        )
 
 
 @pytest.mark.skip_on_aura
 def test_switching_db(runner: Neo4jQueryRunner) -> None:
     default_database = runner.database()
-    runner.run_cypher("CREATE (a: Node)")
+    runner.run_cypher("CREATE (a: Node)", query_type=QueryType.USER_ACTION)
 
-    pre_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c").squeeze()
+    pre_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c", query_type=QueryType.USER_ACTION).squeeze()
     assert pre_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    runner.run_cypher("CREATE DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
     try:
         runner.set_database(MY_DB_NAME)
-        post_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c").squeeze()
+        post_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c", query_type=QueryType.USER_ACTION).squeeze()
         assert post_count == 0
     finally:
         runner.set_database(default_database)  # type: ignore
-        runner.run_cypher("MATCH (n) DETACH DELETE n")
-        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.run_cypher("MATCH (n) DETACH DELETE n", query_type=QueryType.USER_ACTION)
+        runner.run_cypher("DROP DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
@@ -78,31 +98,37 @@ def test_switching_db_and_use_graph(gds: GraphDataScience) -> None:
 
 @pytest.mark.skip_on_aura
 def test_run_query_with_db(runner: Neo4jQueryRunner) -> None:
-    runner.run_cypher("CREATE (a: Node)")
+    runner.run_cypher("CREATE (a: Node)", query_type=QueryType.USER_ACTION)
 
-    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c").squeeze()
+    default_db_count = runner.run_cypher(
+        "MATCH (n: Node) RETURN COUNT(n) AS c", query_type=QueryType.USER_ACTION
+    ).squeeze()
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    runner.run_cypher("CREATE DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
 
     try:
-        specified_db_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c", database=MY_DB_NAME).squeeze()
+        specified_db_count = runner.run_cypher(
+            "MATCH (n) RETURN COUNT(n) AS c", database=MY_DB_NAME, query_type=QueryType.USER_ACTION
+        ).squeeze()
         assert specified_db_count == 0
     finally:
-        runner.run_cypher("MATCH (n) DETACH DELETE n")
-        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.run_cypher("MATCH (n) DETACH DELETE n", query_type=QueryType.USER_ACTION)
+        runner.run_cypher("DROP DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
 def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
-    runner.run_cypher("CREATE (a: Node)")
+    runner.run_cypher("CREATE (a: Node)", query_type=QueryType.USER_ACTION)
 
-    default_db_count = runner.run_cypher("MATCH (n: Node) RETURN COUNT(n) AS c").squeeze()
+    default_db_count = runner.run_cypher(
+        "MATCH (n: Node) RETURN COUNT(n) AS c", query_type=QueryType.USER_ACTION
+    ).squeeze()
     assert default_db_count == 1
 
     MY_DB_NAME = "my-db"
-    runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+    runner.run_cypher("CREATE DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
 
     gds_with_specified_db = GraphDataScience(URI, AUTH, database=MY_DB_NAME)
 
@@ -112,8 +138,8 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
         ).squeeze()
         assert specified_db_count == 0
     finally:
-        runner.run_cypher("MATCH (n) DETACH DELETE n")
-        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        gds_with_specified_db.run_cypher("MATCH (n) DETACH DELETE n")
+        gds_with_specified_db.run_cypher("DROP DATABASE $dbName WAIT", params={"dbName": MY_DB_NAME})
         gds_with_specified_db.close()
 
 
@@ -224,14 +250,14 @@ def test_bookmarks(runner: Neo4jQueryRunner) -> None:
     runner.set_bookmarks(None)
     assert runner.bookmarks() is None
 
-    _ = runner.run_cypher("CREATE (a: Node)")
+    _ = runner.run_cypher("CREATE (a: Node)", QueryType.USER_ACTION)
     assert runner.last_bookmarks() is not None
 
     runner.set_bookmarks(runner.last_bookmarks())
     assert runner.bookmarks() == runner.last_bookmarks()
 
-    _ = runner.run_cypher("CREATE (b: Node)")
+    _ = runner.run_cypher("CREATE (b: Node)", QueryType.USER_ACTION)
     assert runner.bookmarks() != runner.last_bookmarks()
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
     runner.set_bookmarks(None)

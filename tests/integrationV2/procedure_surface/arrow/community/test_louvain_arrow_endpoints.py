@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainWriteResult
 from graphdatascience.procedure_surface.arrow.community.louvain_arrow_endpoints import LouvainArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -168,7 +169,12 @@ def test_louvain_write(arrow_client: AuthenticatedArrowClient, query_runner: Que
     assert result.write_millis >= 0
     assert result.node_properties_written == 6
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.communityId IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 6
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.communityId IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0]
+        == 6
+    )
 
 
 def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:

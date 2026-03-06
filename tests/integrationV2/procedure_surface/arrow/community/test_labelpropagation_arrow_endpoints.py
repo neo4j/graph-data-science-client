@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints
 from graphdatascience.procedure_surface.arrow.community.labelpropagation_arrow_endpoints import (
     LabelPropagationArrowEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -127,7 +128,12 @@ def test_labelpropagation_write(
     assert isinstance(result.did_converge, bool)
     assert isinstance(result.community_distribution, dict)
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.lp_community IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 4
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.lp_community IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).squeeze()
+        == 4
+    )
 
 
 def test_labelpropagation_estimate(

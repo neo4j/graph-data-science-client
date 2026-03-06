@@ -3,6 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -21,12 +22,13 @@ def create_graph(runner: Neo4jQueryRunner) -> Generator[None, None, None]:
         (b)-[:REL]->(a),
         (c)-[:REL]->(a),
         (c)-[:REL]->(b)
-        """
+        """,
+        QueryType.USER_ACTION,
     )
 
     yield
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
 
 
 @pytest.fixture

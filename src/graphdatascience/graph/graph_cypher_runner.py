@@ -6,13 +6,13 @@ from typing import Any
 
 from pandas import Series
 
+from graphdatascience.caller_base import CallerBase
+from graphdatascience.graph.graph_create_result import GraphCreateResult
+from graphdatascience.graph.graph_object import Graph
 from graphdatascience.query_runner.query_mode import QueryMode
-
-from ..caller_base import CallerBase
-from ..query_runner.query_runner import QueryRunner
-from ..server_version.server_version import ServerVersion
-from .graph_create_result import GraphCreateResult
-from .graph_object import Graph
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class GraphCypherRunner(CallerBase):
@@ -48,7 +48,7 @@ class GraphCypherRunner(CallerBase):
         GraphCypherRunner._verify_query_ends_with_return_clause(self._namespace, query)
 
         result: dict[str, Any] | None = self._query_runner.run_retryable_cypher(
-            query, params, database, custom_error=False, mode=QueryMode.READ
+            query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=QueryMode.READ
         ).squeeze()
 
         if not result:

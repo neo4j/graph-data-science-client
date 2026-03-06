@@ -6,6 +6,7 @@ from graphdatascience import QueryRunner
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenWriteResult
 from graphdatascience.procedure_surface.cypher.community.leiden_cypher_endpoints import LeidenCypherEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -127,7 +128,8 @@ def test_leiden_write(
 
     # Verify the property was written to the database
     count_result = query_runner.run_cypher(
-        "MATCH (n:Person) WHERE n.leiden_community IS NOT NULL RETURN COUNT(*) AS count"
+        "MATCH (n:Person) WHERE n.leiden_community IS NOT NULL RETURN COUNT(*) AS count",
+        query_type=QueryType.USER_ACTION,
     )
     assert count_result.squeeze() == 6
 

@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
 from graphdatascience.procedure_surface.arrow.community.clique_counting_arrow_endpoints import (
     CliqueCountingArrowEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -97,7 +98,12 @@ def test_clique_counting_write(
     assert result.node_properties_written == 4
     assert result.global_count == [4, 1]
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.cliqueCount IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 4
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.cliqueCount IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0]
+        == 4
+    )
 
 
 def test_clique_counting_estimate(

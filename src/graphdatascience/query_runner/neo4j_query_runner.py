@@ -11,6 +11,8 @@ from pandas import DataFrame
 from tenacity import retry, retry_if_exception, stop_after_delay, wait_fixed
 
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
 
 from ..call_parameters import CallParameters
@@ -23,7 +25,6 @@ from ..version import __version__
 from .cypher_graph_constructor import CypherGraphConstructor
 from .graph_constructor import GraphConstructor
 from .progress.query_progress_logger import QueryProgressLogger
-from .query_runner import QueryRunner
 
 
 class Neo4jQueryRunner(QueryRunner):
@@ -155,12 +156,18 @@ class Neo4jQueryRunner(QueryRunner):
         # progress logging should not retry a lot as it perodically fetches the latest progress anyway
         connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
         # not using retryable cypher as failing is okay
-        return self.run_cypher(query=query, database=database, connectivity_retry_config=connectivity_retry_config)
+        return self.run_cypher(
+            query=query,
+            query_type=QueryType.USER_TRANSPILED,
+            database=database,
+            connectivity_retry_config=connectivity_retry_config,
+        )
 
     # only use for user defined queries
     def run_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
@@ -186,7 +193,7 @@ class Neo4jQueryRunner(QueryRunner):
             default_access_mode=mode.neo4j_access_mode(),
         ) as session:
             try:
-                result = session.run(self._wrap_query(query), params)
+                result = session.run(self._wrap_query(query, query_type), params)
             except Exception as e:
                 if custom_error:
                     self.handle_driver_exception(session, e)
@@ -211,6 +218,7 @@ class Neo4jQueryRunner(QueryRunner):
     def run_retryable_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
@@ -221,7 +229,7 @@ class Neo4jQueryRunner(QueryRunner):
             database = self._database
 
         if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 5, 0):
-            return self.run_cypher(query, params, database, mode, custom_error, connectivity_retry_config)
+            return self.run_cypher(query, query_type, params, database, mode, custom_error, connectivity_retry_config)
 
         if not mode:
             routing = neo4j.RoutingControl.WRITE
@@ -232,7 +240,7 @@ class Neo4jQueryRunner(QueryRunner):
             bookmark_manager = neo4j.GraphDatabase.bookmark_manager(self.bookmarks())
 
             result = self._driver.execute_query(
-                query_=self._wrap_query(query),
+                query_=self._wrap_query(query, query_type),
                 parameters_=params,
                 database_=database,
                 result_transformer_=neo4j.Result.to_df,
@@ -250,17 +258,26 @@ class Neo4jQueryRunner(QueryRunner):
             else:
                 raise e
 
-    def call_function(self, endpoint: str, params: CallParameters | None = None, custom_error: bool = True) -> Any:
+    def call_function(
+        self,
+        endpoint: str,
+        query_type: QueryType = QueryType.USER_TRANSPILED,
+        params: CallParameters | None = None,
+        custom_error: bool = True,
+    ) -> Any:
         if params is None:
             params = CallParameters()
         query = f"RETURN {endpoint}({params.placeholder_str()})"
 
         # we can use retryable cypher as we expect all gds functions to be idempotent
-        return self.run_retryable_cypher(query, params, custom_error=custom_error, mode=QueryMode.READ).squeeze()
+        return self.run_retryable_cypher(
+            query, query_type, params, custom_error=custom_error, mode=QueryMode.READ
+        ).squeeze()
 
     def call_procedure(
         self,
         endpoint: str,
+        query_type: QueryType = QueryType.USER_TRANSPILED,
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
@@ -277,9 +294,11 @@ class Neo4jQueryRunner(QueryRunner):
 
         def run_cypher_query() -> DataFrame:
             if retryable:
-                return self.run_retryable_cypher(query, params, database, custom_error=custom_error, mode=mode)
+                return self.run_retryable_cypher(
+                    query, query_type, params, database, custom_error=custom_error, mode=mode
+                )
             else:
-                return self.run_cypher(query, params, database, custom_error=custom_error)
+                return self.run_cypher(query, query_type, params, database, custom_error=custom_error)
 
         job_id = None if not params else params.get_job_id()
         if self._resolve_show_progress(logging) and job_id:
@@ -295,7 +314,7 @@ class Neo4jQueryRunner(QueryRunner):
             return self._server_version
 
         try:
-            server_version_string = self.call_function("gds.version", custom_error=False)
+            server_version_string = self.call_function("gds.version", query_type=QueryType.SYSTEM, custom_error=False)
             server_version = ServerVersion.from_string(server_version_string)
             self._server_version = server_version
             return server_version
@@ -501,9 +520,9 @@ class Neo4jQueryRunner(QueryRunner):
         warnings.filterwarnings("ignore", message=r".*returned by the procedure.* is deprecated.*")
         warnings.filterwarnings("ignore", message=r".*procedure field deprecated..*")
 
-    def _wrap_query(self, query: str) -> neo4j.Query:
+    def _wrap_query(self, query: str, query_type: QueryType) -> neo4j.Query:
         literal_query: LiteralString = str(query)  # type: ignore[assignment]
-        return neo4j.Query(text=literal_query, metadata={"app": f"gds-v{__version__}"})
+        return neo4j.Query(text=literal_query, metadata={"app": f"gds-v{__version__}", "type": query_type.value})
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600

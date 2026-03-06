@@ -8,6 +8,7 @@ from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
     NodePropertiesCypherEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -106,11 +107,14 @@ def test_write_node_properties(
     assert result.properties_written == 6  # 3 nodes * 2 properties
 
     # Verify properties were written to database
-    node_written = query_runner.run_cypher("""
+    node_written = query_runner.run_cypher(
+        """
         MATCH (n:Node)
         WHERE n.prop1 IS NOT NULL AND n.prop2 IS NOT NULL
         RETURN COUNT(n) as written
-    """).squeeze()
+    """,
+        query_type=QueryType.USER_ACTION,
+    ).iloc[0, 0]
 
     assert node_written == 3
 

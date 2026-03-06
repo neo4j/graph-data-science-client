@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoi
 from graphdatascience.procedure_surface.arrow.centrality.closeness_harmonic_arrow_endpoints import (
     ClosenessHarmonicArrowEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -111,7 +112,10 @@ def test_closeness_harmonic_write(
     assert "p50" in result.centrality_distribution
 
     assert (
-        query_runner.run_cypher("MATCH (n) WHERE n.harmonic_closeness IS NOT NULL RETURN COUNT(*) AS count").squeeze()
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.harmonic_closeness IS NOT NULL RETURN COUNT(*) AS count",
+            query_type=QueryType.USER_ACTION,
+        ).squeeze()
         == 4
     )
 

@@ -20,10 +20,7 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNode"
-        # TODO use call_function?
-        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_id}) AS node")
-
-        return result.iat[0, 0]
+        return self._query_runner.call_function(endpoint=f"{self._namespace}", params=CallParameters(nodeId=node_id))
 
     def asNodes(self, node_ids: list[int]) -> list[Any]:
         """
@@ -37,10 +34,7 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
 
         """
         self._namespace += ".asNodes"
-        # TODO use call_function?
-        result = self._query_runner.run_cypher(f"RETURN {self._namespace}({node_ids}) AS nodes")
-
-        return result.iat[0, 0]  # type: ignore
+        return self._query_runner.call_function(endpoint=f"{self._namespace}", params=CallParameters(nodeIds=node_ids))  # type: ignore
 
     @property
     def nodeProperty(self) -> NodePropertyFuncRunner:
@@ -63,7 +57,4 @@ class UtilProcRunner(UncallableNamespace, IllegalAttrChecker):
             available_values=available_values,
             selected_values=selected_values,
         )
-        query = f"RETURN {namespace}($available_values, $selected_values) AS encoded"
-        result = self._query_runner.run_cypher(query=query, params=params)
-
-        return result.iat[0, 0]  # type: ignore
+        return self._query_runner.call_function(endpoint=namespace, params=params)  # type: ignore

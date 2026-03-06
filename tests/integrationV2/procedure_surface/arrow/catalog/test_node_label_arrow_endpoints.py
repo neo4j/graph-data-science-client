@@ -7,6 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -79,9 +80,12 @@ def test_write_node_label(
     assert result.write_millis >= 0
     assert result.node_labels_written == 2
 
-    labels_written = query_runner.run_cypher("""
+    labels_written = query_runner.run_cypher(
+        """
         MATCH (n:WRITTEN)
         RETURN COUNT(n) as written
-    """).squeeze()
+    """,
+        query_type=QueryType.USER_ACTION,
+    ).squeeze()
 
     assert labels_written == 2

@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenWriteResult
 from graphdatascience.procedure_surface.arrow.community.leiden_arrow_endpoints import LeidenArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -131,7 +132,8 @@ def test_leiden_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2,
 
     # Verify the property was written to the database
     count_result = query_runner.run_cypher(
-        "MATCH (n:Person) WHERE n.leiden_community IS NOT NULL RETURN COUNT(*) AS count"
+        "MATCH (n:Person) WHERE n.leiden_community IS NOT NULL RETURN COUNT(*) AS count",
+        query_type=QueryType.USER_ACTION,
     )
     assert count_result.squeeze() == 6
 
