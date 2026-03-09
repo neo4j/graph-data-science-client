@@ -4,7 +4,7 @@ import logging
 import re
 import time
 import warnings
-from typing import Any, LiteralString, NamedTuple
+from typing import Any, NamedTuple
 
 import neo4j
 from pandas import DataFrame
@@ -521,8 +521,10 @@ class Neo4jQueryRunner(QueryRunner):
         warnings.filterwarnings("ignore", message=r".*procedure field deprecated..*")
 
     def _wrap_query(self, query: str, query_type: QueryType) -> neo4j.Query:
-        literal_query: LiteralString = str(query)  # type: ignore[assignment]
-        return neo4j.Query(text=literal_query, metadata={"app": f"gds-v{__version__}", "type": query_type.value})
+        return neo4j.Query(
+            text=query,  # type: ignore[assignment]
+            metadata={"app": f"gds-v{__version__}", "type": query_type.value},
+        )
 
     class ConnectivityRetriesConfig(NamedTuple):
         max_retries: int = 600
