@@ -109,6 +109,7 @@ class SessionQueryRunner(QueryRunner):
             params,
             yields,
             database,
+            mode=mode,
             logging=logging,
             retryable=retryable,
             custom_error=custom_error,
