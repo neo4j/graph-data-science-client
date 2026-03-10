@@ -8,6 +8,7 @@ from graphdatascience.procedure_surface.api.community.clique_counting_endpoints 
 from graphdatascience.procedure_surface.cypher.community.clique_counting_cypher_endpoints import (
     CliqueCountingCypherEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -88,7 +89,12 @@ def test_clique_counting_write(
     assert result.node_properties_written == 4
     assert result.global_count == [4, 1]
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.cliqueCount IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 4
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.cliqueCount IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0]
+        == 4
+    )
 
 
 def test_clique_counting_estimate(

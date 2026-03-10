@@ -4,6 +4,7 @@ from typing import Any, Generator
 from graphdatascience import QueryRunner
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.query_runner.query_type import QueryType
 
 
 @contextmanager
@@ -11,15 +12,16 @@ def create_graph(
     query_runner: QueryRunner, graph_name: str, data_query: str, projection_query: str
 ) -> Generator[GraphV2, Any, None]:
     try:
-        query_runner.run_cypher(data_query)
-        query_runner.run_cypher(projection_query)
+        query_runner.run_cypher(data_query, QueryType.USER_ACTION)
+        query_runner.run_cypher(projection_query, QueryType.USER_ACTION)
         yield get_graph(graph_name, query_runner)
     finally:
         delete_all_graphs(query_runner)
-        query_runner.run_cypher("MATCH (n) DETACH DELETE n")
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
 
 
 def delete_all_graphs(query_runner: QueryRunner) -> None:
     query_runner.run_cypher(
-        "CALL gds.graph.list() YIELD graphName CALL gds.graph.drop(graphName) YIELD graphName as g RETURN g"
+        "CALL gds.graph.list() YIELD graphName CALL gds.graph.drop(graphName) YIELD graphName as g RETURN g",
+        QueryType.USER_ACTION,
     )

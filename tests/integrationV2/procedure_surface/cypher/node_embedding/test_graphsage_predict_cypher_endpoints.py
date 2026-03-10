@@ -7,6 +7,7 @@ from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSa
 from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_train_cypher_endpoints import (
     GraphSageTrainCypherEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
@@ -52,7 +53,7 @@ def gs_model(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[Grap
 
     yield model
 
-    query_runner.run_cypher("CALL gds.model.drop('gs-model')")
+    query_runner.run_cypher("CALL gds.model.drop('gs-model')", query_type=QueryType.USER_ACTION)
 
 
 def test_stream(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:

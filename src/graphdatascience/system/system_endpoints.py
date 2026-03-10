@@ -10,6 +10,7 @@ from ..caller_base import CallerBase
 from ..error.client_only_endpoint import client_only_endpoint
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from ..query_runner.query_type import QueryType
 from ..server_version.compatible_with import compatible_with
 from ..server_version.server_version import ServerVersion
 
@@ -67,7 +68,9 @@ class DirectSystemEndpoints(CallerBase):
             """
 
         try:
-            isLicensed: bool = self._query_runner.run_cypher(query, custom_error=False).squeeze()
+            isLicensed: bool = self._query_runner.run_cypher(
+                query, QueryType.USER_TRANSPILED, custom_error=False
+            ).squeeze()
         except Exception as e:
             # AuraDS does not have `gds.isLicensed`, but is always GDS EE.
             if re.match(r".*Unknown function 'gds.isLicensed'.*", str(e)):

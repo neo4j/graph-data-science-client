@@ -10,6 +10,7 @@ from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
@@ -92,12 +93,15 @@ def test_list_without_graph(
     catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
     try:
-        query_runner.run_cypher("CREATE (x:Test)")
-        query_runner.run_cypher("""
+        query_runner.run_cypher("CREATE (x:Test)", query_type=QueryType.USER_ACTION)
+        query_runner.run_cypher(
+            """
             MATCH (n:Test)
             WITH gds.graph.project('second_graph', n, null) AS G
             RETURN G
-        """)
+        """,
+            query_type=QueryType.USER_ACTION,
+        )
 
         g2 = get_graph("second_graph", query_runner)
         result = catalog_endpoints.list()
@@ -105,7 +109,7 @@ def test_list_without_graph(
         assert len(result) == 2
         assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
     finally:
-        query_runner.run_cypher("MATCH (n:Test) DELETE n")
+        query_runner.run_cypher("MATCH (n:Test) DELETE n", query_type=QueryType.USER_ACTION)
 
 
 def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:

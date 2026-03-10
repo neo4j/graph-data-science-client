@@ -3,11 +3,11 @@ from typing import Any
 
 from pandas import DataFrame
 
+from graphdatascience.call_parameters import CallParameters
+from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.query_mode import QueryMode
-
-from ..call_parameters import CallParameters
-from ..server_version.server_version import ServerVersion
-from .graph_constructor import GraphConstructor
+from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 class QueryRunner(ABC):
@@ -15,6 +15,7 @@ class QueryRunner(ABC):
     def call_procedure(
         self,
         endpoint: str,
+        query_type: QueryType = QueryType.USER_TRANSPILED,
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
@@ -26,13 +27,16 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
+    def call_function(
+        self, endpoint: str, query_type: QueryType = QueryType.USER_TRANSPILED, params: CallParameters | None = None
+    ) -> Any:
         pass
 
     @abstractmethod
     def run_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
@@ -44,6 +48,7 @@ class QueryRunner(ABC):
     def run_retryable_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,

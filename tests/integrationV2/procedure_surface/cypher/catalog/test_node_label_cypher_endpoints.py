@@ -4,6 +4,7 @@ import pytest
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.node_label_cypher_endpoints import NodeLabelCypherEndpoints
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
     create_graph,
@@ -65,9 +66,12 @@ def test_write_node_label(
     assert "MUTATED" not in sample_graph.node_labels()
 
     assert (
-        query_runner.run_cypher("""
+        query_runner.run_cypher(
+            """
         MATCH (n:WRITTEN)
         RETURN COUNT(n) as written
-    """).squeeze()
+    """,
+            query_type=QueryType.USER_ACTION,
+        ).iloc[0, 0]
         == 2
     )

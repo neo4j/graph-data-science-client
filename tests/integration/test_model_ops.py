@@ -9,6 +9,7 @@ from graphdatascience.model.link_prediction_model import LPModel
 from graphdatascience.model.model import Model
 from graphdatascience.model.node_classification_model import NCModel
 from graphdatascience.model.node_regression_model import NRModel
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 from tests.integration.conftest import is_neo4j_44
@@ -39,7 +40,8 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:CONTEXTREL]->(i1),
         (d)-[:CONTEXTREL]->(i1),
         (e)-[:CONTEXTREL]->(i2)
-        """
+        """,
+        QueryType.USER_ACTION,
     )
     G, _ = gds.graph.project(
         "g",
@@ -49,7 +51,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
     yield G
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
     G.drop()
 
 
@@ -161,7 +163,7 @@ def gs_model(runner: Neo4jQueryRunner, gds: GraphDataScience, G: Graph) -> Gener
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name, false)"
     params = {"name": model.name()}
-    runner.run_cypher(query, params)
+    runner.run_cypher(query, QueryType.USER_ACTION, params)
 
 
 @pytest.mark.model_store_location
@@ -214,21 +216,21 @@ def test_model_publish(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name)"
     params = {"name": shared_model.name()}
-    runner.run_cypher(query, params)
+    runner.run_cypher(query, QueryType.USER_ACTION, params)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_load(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
-    runner.run_cypher(f"CALL gds.model.store('{gs_model.name()}')")
-    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')")
+    runner.run_cypher(f"CALL gds.model.store('{gs_model.name()}')", QueryType.USER_ACTION)
+    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')", QueryType.USER_ACTION)
 
     model, result = gds.model.load(gs_model.name())
     assert isinstance(model, GraphSageModel)
     assert result["loadMillis"] >= 0
 
-    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')")
-    runner.run_cypher(f"CALL gds.model.delete('{model.name()}')")
+    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')", QueryType.USER_ACTION)
+    runner.run_cypher(f"CALL gds.model.delete('{model.name()}')", QueryType.USER_ACTION)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
@@ -237,20 +239,20 @@ def test_model_store(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: 
     model_name = gds.model.store(gs_model)["modelName"]
 
     # Should be deletable now
-    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')")
-    runner.run_cypher(f"CALL gds.model.delete('{model_name}')")
+    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')", QueryType.USER_ACTION)
+    runner.run_cypher(f"CALL gds.model.delete('{model_name}')", QueryType.USER_ACTION)
 
 
 @pytest.mark.compatible_with(min_inclusive=ServerVersion(2, 5, 0))
 @pytest.mark.model_store_location
 def test_model_delete(runner: Neo4jQueryRunner, gds: GraphDataScience, gs_model: GraphSageModel) -> None:
-    model_name = runner.run_cypher(f"CALL gds.model.store('{gs_model.name()}')")["modelName"][0]
+    model_name = runner.run_cypher(f"CALL gds.model.store('{gs_model.name()}')", QueryType.USER_ACTION)["modelName"][0]
 
     model = gds.model.get(model_name)
-    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')")
+    runner.run_cypher(f"CALL gds.model.drop('{gs_model.name()}')", QueryType.USER_ACTION)
     assert gds.model.delete(model)["deleteMillis"] >= 0
 
-    res = runner.run_cypher(f"CALL gds.model.exists('{model_name}')")
+    res = runner.run_cypher(f"CALL gds.model.exists('{model_name}')", QueryType.USER_ACTION)
     assert not res["exists"][0]
 
 

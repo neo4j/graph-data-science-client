@@ -14,6 +14,7 @@ from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoi
 from graphdatascience.procedure_surface.arrow.centrality.articulationpoints_arrow_endpoints import (
     ArticulationPointsArrowEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -106,7 +107,9 @@ def test_articulationpoints_write(
     assert result.node_properties_written == 3
 
     assert (
-        query_runner.run_cypher("MATCH (n) WHERE n.articulationPoint IS NOT NULL RETURN COUNT(*) AS count").squeeze()
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.articulationPoint IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).squeeze()
         == 3
     )
 

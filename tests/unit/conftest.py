@@ -17,6 +17,7 @@ from graphdatascience.query_runner.cypher_graph_constructor import (
 )
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
@@ -46,6 +47,7 @@ class CollectingQueryRunner(QueryRunner):
     def call_procedure(
         self,
         endpoint: str,
+        query_type: QueryType = QueryType.USER_TRANSPILED,
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
@@ -61,20 +63,23 @@ class CollectingQueryRunner(QueryRunner):
         query = f"CALL {endpoint}({params.placeholder_str()}){yields_clause}"
 
         if retryable:
-            return self.run_retryable_cypher(query, params, database, mode, custom_error)
+            return self.run_retryable_cypher(query, query_type, params, database, mode, custom_error)
         else:
-            return self.run_cypher(query, params, database, mode, custom_error)
+            return self.run_cypher(query, query_type, params, database, mode, custom_error)
 
-    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
+    def call_function(
+        self, endpoint: str, query_type: QueryType = QueryType.USER_TRANSPILED, params: CallParameters | None = None
+    ) -> Any:
         if params is None:
             params = CallParameters()
         query = f"RETURN {endpoint}({params.placeholder_str()})"
 
-        return self.run_cypher(query, params).squeeze()
+        return self.run_cypher(query, query_type, params).squeeze()
 
     def run_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         db: str | None = None,
         mode: QueryMode | None = None,
@@ -85,7 +90,9 @@ class CollectingQueryRunner(QueryRunner):
 
         self.queries.append(query)
         self.params.append(dict(params.items()))
-        self.run_args.append({"db": db, "mode": mode, "custom_error": custom_error, "retryable": False})
+        self.run_args.append(
+            {"db": db, "mode": mode, "custom_error": custom_error, "retryable": False, "query_type": query_type.value}
+        )
 
         result = self.get_mock_result(query)
 
@@ -97,6 +104,7 @@ class CollectingQueryRunner(QueryRunner):
     def run_retryable_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,

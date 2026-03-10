@@ -4,11 +4,13 @@ from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.server_version.compatible_with import compatible_with
 from graphdatascience.server_version.server_version import ServerVersion
 
+from ..call_parameters import CallParameters
 from ..error.cypher_warning_handler import (
     filter_id_func_deprecation_warning,
 )
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
+from ..query_runner import QueryType
 
 
 class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
@@ -20,7 +22,9 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
         RETURN {self._namespace}(n1, n2, $config) AS score
         """
         params = {"config": config}
-        return self._query_runner.run_retryable_cypher(query, params, mode=QueryMode.READ)["score"].squeeze()  # type: ignore
+        return self._query_runner.run_retryable_cypher(
+            query, query_type=QueryType.USER_TRANSPILED, params=params, mode=QueryMode.READ
+        )["score"].squeeze()  # type: ignore
 
     @compatible_with("adamicAdar", min_inclusive=ServerVersion(2, 24, 0))
     def adamicAdar(self, node1: int, node2: int, **config: Any) -> float:
@@ -51,12 +55,18 @@ class TopologicalLPRunner(UncallableNamespace, IllegalAttrChecker):
     @compatible_with("sameCommunity", min_inclusive=ServerVersion(2, 24, 0))
     def sameCommunity(self, node1: int, node2: int, communityProperty: str | None = None) -> float:
         self._namespace += ".sameCommunity"
-        community_property = f", '{communityProperty}'" if communityProperty else ""
+        community_property_part = ", $communityProperty" if communityProperty else ""
 
         query = f"""
         MATCH (n1) WHERE id(n1) = {node1}
         MATCH (n2) WHERE id(n2) = {node2}
-        RETURN {self._namespace}(n1, n2{community_property}) AS score
+        RETURN {self._namespace}(n1, n2{community_property_part}) AS score
         """
 
-        return self._query_runner.run_retryable_cypher(query, mode=QueryMode.READ)["score"].squeeze()  # type: ignore
+        params = CallParameters()
+        if communityProperty:
+            params["communityProperty"] = communityProperty
+
+        return self._query_runner.run_retryable_cypher(
+            query, query_type=QueryType.USER_TRANSPILED, params=params, mode=QueryMode.READ
+        )["score"].squeeze()  # type: ignore

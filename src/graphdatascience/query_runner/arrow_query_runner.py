@@ -9,6 +9,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.retry_utils.retry_config import RetryConfigV2
 
 from ..call_parameters import CallParameters
@@ -64,31 +65,38 @@ class ArrowQueryRunner(QueryRunner):
     def run_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
-        return self._fallback_query_runner.run_cypher(query, params, database, mode, custom_error=custom_error)
+        return self._fallback_query_runner.run_cypher(
+            query, query_type, params, database, mode, custom_error=custom_error
+        )
 
     def run_retryable_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         return self._fallback_query_runner.run_retryable_cypher(
-            query, params, database, mode, custom_error=custom_error
+            query, query_type, params, database, mode, custom_error=custom_error
         )
 
-    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
-        return self._fallback_query_runner.call_function(endpoint, params)
+    def call_function(
+        self, endpoint: str, query_type: QueryType = QueryType.USER_TRANSPILED, params: CallParameters | None = None
+    ) -> Any:
+        return self._fallback_query_runner.call_function(endpoint, query_type, params)
 
     def call_procedure(
         self,
         endpoint: str,
+        query_type: QueryType = QueryType.USER_TRANSPILED,
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
@@ -189,7 +197,14 @@ class ArrowQueryRunner(QueryRunner):
             )
 
         return self._fallback_query_runner.call_procedure(
-            endpoint, params, yields, database, logging=logging, retryable=retryable, custom_error=custom_error
+            endpoint,
+            query_type,
+            params,
+            yields,
+            database,
+            logging=logging,
+            retryable=retryable,
+            custom_error=custom_error,
         )
 
     def server_version(self) -> ServerVersion:

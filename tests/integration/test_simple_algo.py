@@ -88,7 +88,7 @@ def test_fastRP_write(runner: Neo4jQueryRunner, gds: GraphDataScience) -> None:
     result = gds.fastRP.write(G, writeProperty="embedding", embeddingDimension=4, randomSeed=42)
     assert result["nodePropertiesWritten"] == 3
 
-    embeddings = runner.run_cypher(
+    embeddings = gds.run_cypher(
         """
         MATCH(n:Node)
         RETURN n.embedding as embedding

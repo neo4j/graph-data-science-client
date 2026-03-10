@@ -5,6 +5,7 @@ import pytest
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -27,13 +28,14 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (b)-[:REL]->(a),
         (c)-[:REL]->(a),
         (c)-[:REL]->(b)
-        """
+        """,
+        query_type=QueryType.USER_ACTION,
     )
     G, _ = gds.graph.project("g", {"Node": {"properties": ["age"]}}, {"REL": {"orientation": "UNDIRECTED"}})
 
     yield G
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", query_type=QueryType.USER_ACTION)
     G.drop()
 
 
@@ -46,7 +48,7 @@ def gs_model(gds: GraphDataScience, G: Graph, runner: Neo4jQueryRunner) -> Gener
     namespace = "beta." if gds.server_version() < ServerVersion(2, 5, 0) else ""
     query = f"CALL gds.{namespace}model.drop($name, false)"
     params = {"name": model.name()}
-    runner.run_cypher(query, params)
+    runner.run_cypher(query, QueryType.USER_ACTION, params)
 
 
 def test_model_exists(gs_model: GraphSageModel) -> None:

@@ -8,6 +8,7 @@ from tenacity import retry, retry_if_result
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
@@ -69,7 +70,14 @@ class ProjectProtocolV1(ProjectProtocol):
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V1.versioned_procedure_name(endpoint)
         return query_runner.call_procedure(
-            versioned_endpoint, params, yields, database=database, logging=logging, retryable=False, custom_error=False
+            versioned_endpoint,
+            QueryType.USER_TRANSPILED,
+            params,
+            yields,
+            database=database,
+            logging=logging,
+            retryable=False,
+            custom_error=False,
         )
 
 
@@ -102,7 +110,14 @@ class ProjectProtocolV2(ProjectProtocol):
     ) -> DataFrame:
         versioned_endpoint = ProtocolVersion.V2.versioned_procedure_name(endpoint)
         return query_runner.call_procedure(
-            versioned_endpoint, params, yields, database=database, logging=logging, retryable=False, custom_error=False
+            versioned_endpoint,
+            QueryType.USER_TRANSPILED,
+            params,
+            yields,
+            database=database,
+            logging=logging,
+            retryable=False,
+            custom_error=False,
         )
 
 
@@ -144,6 +159,7 @@ class ProjectProtocolV3(ProjectProtocol):
         # We need to pin the driver to a specific cluster member
         response = query_runner.call_procedure(
             ProtocolVersion.V3.versioned_procedure_name(endpoint),
+            QueryType.USER_TRANSPILED,
             params,
             yields,
             database,
@@ -165,6 +181,7 @@ class ProjectProtocolV3(ProjectProtocol):
             termination_flag.assert_running()
             return projection_query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name(endpoint),
+                QueryType.USER_TRANSPILED,
                 params,
                 yields,
                 database=database,

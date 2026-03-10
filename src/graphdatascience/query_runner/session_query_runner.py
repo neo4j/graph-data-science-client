@@ -7,18 +7,17 @@ from uuid import uuid4
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
+from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.arrow.error_handler import handle_flight_error
+from graphdatascience.query_runner import QueryMode, QueryType
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
-from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.server_version.server_version import ServerVersion
-
-from ..call_parameters import CallParameters
-from ..procedure_surface.arrow.error_handler import handle_flight_error
-from ..session.dbms.protocol_resolver import ProtocolVersionResolver
-from .protocol.project_protocols import ProjectProtocol
-from .protocol.write_protocols import WriteProtocol
-from .query_runner import QueryRunner
+from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 
 
 class SessionQueryRunner(QueryRunner):
@@ -46,36 +45,45 @@ class SessionQueryRunner(QueryRunner):
         self._resolved_protocol_version = ProtocolVersionResolver(db_query_runner).resolve()
         self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(
-            lambda query, database: self._gds_query_runner.run_cypher(query=query, database=database),
+            lambda query, database: self._gds_query_runner.run_cypher(
+                query=query, query_type=QueryType.USER_TRANSPILED, database=database
+            ),
             self._gds_query_runner.server_version,
         )
 
     def run_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
-        return self._db_query_runner.run_cypher(query, params, database, mode, custom_error)
+        return self._db_query_runner.run_cypher(query, query_type, params, database, mode, custom_error)
 
     def run_retryable_cypher(
         self,
         query: str,
+        query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
-        return self._db_query_runner.run_retryable_cypher(query, params, database, mode=mode, custom_error=custom_error)
+        return self._db_query_runner.run_retryable_cypher(
+            query, query_type, params, database, mode=mode, custom_error=custom_error
+        )
 
-    def call_function(self, endpoint: str, params: CallParameters | None = None) -> Any:
-        return self._gds_query_runner.call_function(endpoint, params)
+    def call_function(
+        self, endpoint: str, query_type: QueryType = QueryType.USER_TRANSPILED, params: CallParameters | None = None
+    ) -> Any:
+        return self._gds_query_runner.call_function(endpoint, query_type, params)
 
     def call_procedure(
         self,
         endpoint: str,
+        query_type: QueryType = QueryType.USER_TRANSPILED,
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
@@ -96,7 +104,15 @@ class SessionQueryRunner(QueryRunner):
             return self._remote_write_back(endpoint, params, terminationFlag, yields, database, logging, custom_error)
 
         return self._gds_query_runner.call_procedure(
-            endpoint, params, yields, database, logging=logging, retryable=retryable, custom_error=custom_error
+            endpoint,
+            query_type,
+            params,
+            yields,
+            database,
+            mode=mode,
+            logging=logging,
+            retryable=retryable,
+            custom_error=custom_error,
         )
 
     def is_remote_projected_graph(self, graph_name: str) -> bool:
@@ -211,7 +227,13 @@ class SessionQueryRunner(QueryRunner):
         config["writeToResultStore"] = True
 
         gds_write_result = self._gds_query_runner.call_procedure(
-            endpoint, params, yields, database=database, logging=logging, custom_error=custom_error
+            endpoint,
+            QueryType.USER_TRANSPILED,
+            params,
+            yields,
+            database=database,
+            logging=logging,
+            custom_error=custom_error,
         )
         terminationFlag.assert_running()
 

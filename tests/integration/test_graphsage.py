@@ -5,6 +5,7 @@ import pytest
 from graphdatascience.graph.graph_object import Graph
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.model.graphsage_model import GraphSageModel
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 MODEL_NAME = "gs"
@@ -24,13 +25,14 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (b)-[:REL]->(a),
         (c)-[:REL]->(a),
         (c)-[:REL]->(b)
-        """
+        """,
+        QueryType.USER_ACTION,
     )
     G, _ = gds.graph.project("g", "*", "*", nodeProperties=["x"])
 
     yield G
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
     G.drop()
 
 
@@ -52,7 +54,7 @@ def test_graphsage_train(model: GraphSageModel) -> None:
 def test_graphsage_write(G: Graph, model: GraphSageModel, runner: Neo4jQueryRunner) -> None:
     model.predict_write(G, writeProperty="gs")
 
-    result = runner.run_cypher("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim")
+    result = runner.run_cypher("MATCH (n:Node) RETURN size(n.gs) AS embeddingDim", QueryType.USER_ACTION)
     assert len(result) == G.node_count()
     assert result["embeddingDim"][0] == 20
 

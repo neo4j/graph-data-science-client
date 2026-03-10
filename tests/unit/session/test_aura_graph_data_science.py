@@ -215,6 +215,7 @@ def test_run_cypher_read(mocker: MockerFixture) -> None:
         "db": None,
         "mode": QueryMode.READ,
         "retryable": False,
+        "query_type": "user-direct",
     }
 
 

@@ -6,6 +6,7 @@ import pytest
 from pandas import DataFrame, Series
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
@@ -27,7 +28,7 @@ def run_around_tests(gds: GraphDataScience) -> Generator[None, None, None]:
         (a)-[:REL {relX: 5, relY: 6}]->(c),
         (b)-[:REL {relX: 6, relY: 7}]->(c),
         (b)-[:REL2]->(c)
-        """
+        """,
     )
 
     yield  # Test runs here
@@ -254,14 +255,14 @@ def test_graph_export(runner: QueryRunner, gds: GraphDataScience) -> None:
     assert result["dbName"] == MY_DB_NAME
 
     try:
-        runner.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.run_cypher("CREATE DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
         runner.set_database(MY_DB_NAME)
-        node_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c").squeeze()
+        node_count = runner.run_cypher("MATCH (n) RETURN COUNT(n) AS c", QueryType.USER_ACTION).squeeze()
 
         assert node_count == 3
     finally:
         runner.set_database(DB)
-        runner.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+        runner.run_cypher("DROP DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.filterwarnings("ignore: The query used a deprecated procedure.")

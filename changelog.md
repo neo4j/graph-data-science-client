@@ -13,5 +13,7 @@
 
 ## Improvements
 
+* Set `app` and `type` in Cypher queries being sent to Neo4j. This allows for better analysis by tools such as Neo4j Ops manager.
+
 
 ## Other changes

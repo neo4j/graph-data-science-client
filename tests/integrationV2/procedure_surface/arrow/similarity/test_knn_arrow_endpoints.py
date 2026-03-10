@@ -7,6 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -116,8 +117,11 @@ def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     assert result.node_pairs_considered > 0
 
     # Check that relationships were written to the database
-    count_result = query_runner.run_cypher("MATCH ()-[r:SIMILAR]->() RETURN COUNT(r) AS count")
-    assert count_result.squeeze() >= result.relationships_written
+    count_result = query_runner.run_cypher(
+        "MATCH ()-[r:SIMILAR]->() RETURN COUNT(r) AS count", query_type=QueryType.USER_ACTION
+    ).squeeze()
+
+    assert count_result >= result.relationships_written
 
 
 def test_knn_estimate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:

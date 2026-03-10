@@ -7,6 +7,7 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.pipeline.lp_training_pipeline import LPTrainingPipeline
 from graphdatascience.pipeline.nc_training_pipeline import NCTrainingPipeline
 from graphdatascience.pipeline.nr_training_pipeline import NRTrainingPipeline
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.server_version.server_version import ServerVersion
 
@@ -43,7 +44,8 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
         (c)-[:REL]->(e),
         (c)-[:REL]->(f),
         (c)-[:REL]->(g)
-        """
+        """,
+        QueryType.USER_ACTION,
     )
     G, _ = gds.graph.project(
         "g", {"Node": {"properties": ["age", "fraudster"]}}, {"REL": {"orientation": "UNDIRECTED"}}
@@ -51,7 +53,7 @@ def G(runner: Neo4jQueryRunner, gds: GraphDataScience) -> Generator[Graph, None,
 
     yield G
 
-    runner.run_cypher("MATCH (n) DETACH DELETE n")
+    runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
     G.drop()
 
 

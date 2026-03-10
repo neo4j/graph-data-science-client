@@ -5,6 +5,7 @@ from pytest_mock import MockerFixture
 
 from graphdatascience import ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.query_runner import QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
@@ -26,15 +27,21 @@ def gds(
 
 @pytest.fixture(autouse=True, scope="class")
 def setup_db(db_query_runner: Neo4jQueryRunner) -> Generator[None, None, None]:
-    db_query_runner.run_cypher("""
+    db_query_runner.run_cypher(
+        """
         CREATE (n)-[:REL]->(m)
-    """)
+    """,
+        query_type=QueryType.USER_ACTION,
+    )
 
     yield
 
-    db_query_runner.run_cypher("""
+    db_query_runner.run_cypher(
+        """
         MATCH (n) DETACH DELETE n
-    """)
+    """,
+        query_type=QueryType.USER_ACTION,
+    )
 
 
 @pytest.mark.db_integration

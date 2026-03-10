@@ -75,8 +75,8 @@ class RemoteWriteBackV1(WriteProtocol):
     ) -> DataFrame:
         return query_runner.call_procedure(
             ProtocolVersion.V1.versioned_procedure_name("gds.arrow.write"),
-            parameters,
-            yields,
+            params=parameters,
+            yields=yields,
             retryable=False,
             database=None,
             logging=False,
@@ -116,8 +116,8 @@ class RemoteWriteBackV2(WriteProtocol):
     ) -> DataFrame:
         return query_runner.call_procedure(
             ProtocolVersion.V2.versioned_procedure_name("gds.arrow.write"),
-            parameters,
-            yields,
+            params=parameters,
+            yields=yields,
             retryable=False,
             database=None,
             logging=False,
@@ -168,8 +168,8 @@ class RemoteWriteBackV3(WriteProtocol):
             terminationFlag.assert_running()
             result = query_runner.call_procedure(
                 ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
-                parameters,
-                yields,
+                params=parameters,
+                yields=yields,
                 retryable=True,
                 logging=False,
                 mode=QueryMode.WRITE,

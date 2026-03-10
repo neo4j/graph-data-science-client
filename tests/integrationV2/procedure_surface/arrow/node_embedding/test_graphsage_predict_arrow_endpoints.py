@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSa
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arrow_endpoints import (
     GraphSageTrainArrowEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -105,7 +106,10 @@ def test_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
         assert result.write_millis >= 0
 
         assert (
-            query_runner.run_cypher("MATCH (n) WHERE n.embedding IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 4
+            query_runner.run_cypher(
+                "MATCH (n) WHERE n.embedding IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+            ).iloc[0, 0]
+            == 4
         )
     finally:
         arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model.name()}).encode("utf-8"))

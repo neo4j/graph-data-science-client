@@ -8,6 +8,7 @@ from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints
 from graphdatascience.procedure_surface.cypher.community.labelpropagation_cypher_endpoints import (
     LabelPropagationCypherEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -109,7 +110,9 @@ def test_labelpropagation_write(
     assert isinstance(result.community_distribution, dict)
 
     # Verify the property was written to the database
-    count_result = query_runner.run_cypher("MATCH (n:Person) WHERE n.lp_community IS NOT NULL RETURN COUNT(*) AS count")
+    count_result = query_runner.run_cypher(
+        "MATCH (n:Person) WHERE n.lp_community IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+    )
     assert count_result.squeeze() == 4
 
 

@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import (
     RelationshipArrowEndpoints,
 )
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -155,11 +156,14 @@ def test_write_relationships_with_properties(
     assert result.relationships_written == 3
     assert result.properties_written == 3
 
-    props_written = query_runner.run_cypher("""
+    props_written = query_runner.run_cypher(
+        """
         MATCH (n)-[r]->(m)
         WHERE type(r) = "REL" AND r.weight IS NOT NULL
         RETURN COUNT(r) as written
-        """).squeeze()
+        """,
+        query_type=QueryType.USER_ACTION,
+    ).squeeze()
 
     assert props_written == 6  # Old and new relationships
 

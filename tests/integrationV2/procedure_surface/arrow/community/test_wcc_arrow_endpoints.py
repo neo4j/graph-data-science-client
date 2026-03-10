@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccWriteResult
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -99,7 +100,12 @@ def test_wcc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     assert result.write_millis >= 0
     assert result.node_properties_written == 3
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.componentId IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 3
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.componentId IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0]
+        == 3
+    )
 
 
 def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:

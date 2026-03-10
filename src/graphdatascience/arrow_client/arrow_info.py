@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..query_runner.query_runner import QueryRunner
-from ..server_version.server_version import ServerVersion
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.server_version.server_version import ServerVersion
 
 
 @dataclass(frozen=True)
@@ -20,7 +21,7 @@ class ArrowInfo:
             debugYields.append("versions")
 
         procResult = query_runner.call_procedure(
-            endpoint="gds.debug.arrow", custom_error=False, yields=debugYields
+            endpoint="gds.debug.arrow", query_type=QueryType.SYSTEM, custom_error=False, yields=debugYields
         ).iloc[0]
 
         return ArrowInfo(

@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.degree_arrow_endpoints import DegreeArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -94,7 +95,12 @@ def test_degree_write(arrow_client: AuthenticatedArrowClient, query_runner: Quer
     assert result.node_properties_written == 3
     assert "p50" in result.centrality_distribution
 
-    assert query_runner.run_cypher("MATCH (n) WHERE n.degree IS NOT NULL RETURN COUNT(*) AS count").squeeze() == 3
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.degree IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).squeeze()
+        == 3
+    )
 
 
 def test_degree_estimate(degree_endpoints: DegreeArrowEndpoints, sample_graph: GraphV2) -> None:

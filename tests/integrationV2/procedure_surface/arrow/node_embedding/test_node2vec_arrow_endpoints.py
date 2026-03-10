@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecWriteResult
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -104,7 +105,10 @@ def test_node2vec_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
     assert isinstance(result.loss_per_iteration, list)
 
     assert (
-        query_runner.run_cypher("MATCH (n) WHERE n.node2vec_embedding IS NOT NULL RETURN COUNT(*) AS count").squeeze()
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.node2vec_embedding IS NOT NULL RETURN COUNT(*) AS count",
+            query_type=QueryType.USER_ACTION,
+        ).iloc[0, 0]
         == 3
     )
 

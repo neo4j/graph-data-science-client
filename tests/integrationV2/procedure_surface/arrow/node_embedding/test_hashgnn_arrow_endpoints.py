@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWrit
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNWriteResult
 from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -119,7 +120,9 @@ def test_hashgnn_write(arrow_client: AuthenticatedArrowClient, query_runner: Que
     assert result.configuration is not None
 
     assert (
-        query_runner.run_cypher("MATCH (n) WHERE n.hashgnn_embedding IS NOT NULL RETURN COUNT(*) AS count").squeeze()
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.hashgnn_embedding IS NOT NULL RETURN COUNT(*) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0]
         == 4
     )
 

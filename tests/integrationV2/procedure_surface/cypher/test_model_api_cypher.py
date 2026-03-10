@@ -6,6 +6,7 @@ from neo4j.exceptions import Neo4jError
 from graphdatascience import QueryRunner
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
+from graphdatascience.query_runner import QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
@@ -40,14 +41,17 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
 def gs_model(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[str, None, None]:
     train_result = query_runner.run_cypher(
         "CALL gds.beta.graphSage.train($graph, {modelName: 'gs-model', featureProperties:['age'], embeddingDimension: 1, sampleSizes: [1], maxIterations: 1, searchDepth: 1})",
-        {"graph": sample_graph.name()},
+        query_type=QueryType.USER_ACTION,
+        params={"graph": sample_graph.name()},
     )
 
     model_name = train_result.iloc[0]["modelInfo"]["modelName"]
 
     yield model_name  # type: ignore
 
-    query_runner.run_cypher("CALL gds.model.drop($name, false)", {"name": model_name})
+    query_runner.run_cypher(
+        "CALL gds.model.drop($name, false)", query_type=QueryType.USER_ACTION, params={"name": model_name}
+    )
 
 
 @pytest.fixture
