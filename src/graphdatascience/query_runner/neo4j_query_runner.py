@@ -163,6 +163,12 @@ class Neo4jQueryRunner(QueryRunner):
             connectivity_retry_config=connectivity_retry_config,
         )
 
+    def get_auth(self) -> tuple[str, str] | None:
+        if isinstance(self._auth, neo4j.Auth):
+            return self._auth.principal, self._auth.credentials
+        else:
+            return self._auth
+
     # only use for user defined queries
     def run_cypher(
         self,

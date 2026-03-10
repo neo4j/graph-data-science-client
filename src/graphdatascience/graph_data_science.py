@@ -94,7 +94,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         if isinstance(endpoint, QueryRunner):
             self._query_runner = endpoint
         else:
-            db_auth = None
+            db_auth: neo4j.Auth | None = None
             if auth:
                 db_auth = neo4j.basic_auth(*auth)
             neo4j_query_runner = Neo4jQueryRunner.create_for_db(
@@ -119,21 +119,29 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             if auth is not None:
                 username, password = auth
                 arrow_auth = UsernamePasswordAuthentication(username, password)
+            if isinstance(endpoint, Neo4jQueryRunner):
+                if neo4j_auth := endpoint.get_auth():
+                    arrow_auth = UsernamePasswordAuthentication(neo4j_auth[0], neo4j_auth[1])
 
-            if arrow_client_options is None:
-                arrow_client_options = {}
-            if arrow_disable_server_verification:
-                disable_server_verification(arrow_client_options)
-            if arrow_tls_root_certs is not None:
-                set_tls_root_certs(arrow_client_options, arrow_tls_root_certs)
-            self._query_runner = ArrowQueryRunner.create(
-                self._query_runner,
-                arrow_info=arrow_info,
-                arrow_authentication=arrow_auth,
-                encrypted=self._query_runner.encrypted(),
-                arrow_client_options=arrow_client_options,
-                connection_string_override=None if arrow is True else arrow,
-            )
+            if isinstance(endpoint, Driver) and not auth:
+                warnings.warn(
+                    "Falling back to use Cypher for GDS. To use Arrow, you must explicitly provide the `auth` parameter."
+                )
+            else:
+                if arrow_client_options is None:
+                    arrow_client_options = {}
+                if arrow_disable_server_verification:
+                    disable_server_verification(arrow_client_options)
+                if arrow_tls_root_certs is not None:
+                    set_tls_root_certs(arrow_client_options, arrow_tls_root_certs)
+                self._query_runner = ArrowQueryRunner.create(
+                    self._query_runner,
+                    arrow_info=arrow_info,
+                    arrow_authentication=arrow_auth,
+                    encrypted=self._query_runner.encrypted(),
+                    arrow_client_options=arrow_client_options,
+                    connection_string_override=None if arrow is True else arrow,
+                )
 
         arrow_client = (
             None if not isinstance(self._query_runner, ArrowQueryRunner) else self._query_runner._gds_arrow_client
@@ -312,6 +320,7 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             The Neo4j Driver instance to use.
         auth : tuple[str, str] | None, default None
             A username, password pair for authentication.
+            Is required for enabling Arrow.
         database: str | None, default None
             The Neo4j database to query against.
         arrow : str | bool, default True
