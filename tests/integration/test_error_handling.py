@@ -214,7 +214,7 @@ def test_forward_server_side_warning(gds: GraphDataScience) -> None:
 @pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
 @pytest.mark.compatible_with_db_driver(min_inclusive=ServerVersion(5, 21, 0))
 def test_forward_driver_configured_warning(warning_driver: Driver) -> None:
-    gds = GraphDataScience(warning_driver)
+    gds = GraphDataScience(warning_driver, auth=AUTH)
 
     if is_neo4j_44(gds):
         return
@@ -230,5 +230,5 @@ def test_filter_out_client_related__warning(gds: GraphDataScience) -> None:
 @pytest.mark.filterwarnings("ignore: notification warnings are a preview feature")
 @pytest.mark.compatible_with_db_driver(min_inclusive=ServerVersion(5, 21, 0))
 def test_filter_out_client_related__driver_configured_warning(warning_driver: Driver) -> None:
-    gds = GraphDataScience(warning_driver)
+    gds = GraphDataScience(warning_driver, auth=AUTH)
     gds.graph.drop("g", failIfMissing=False)
