@@ -55,15 +55,10 @@ Remember that many community members have become regular contributors and some a
 
 Setting up the Python development environment:
 
- * Install Python 3.9+
- * [Install pip](https://pip.pypa.io/en/stable/installation/)
+ * [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
  * Install the project's Python dependencies:
    ```bash
-   pip install -r requirements/base/base.txt \
-   -r requirements/base/ogb.txt \
-   -r requirements/base/networkx.txt \
-   -r requirements/dev/dev.txt \
-   -r requirements/dev/test.txt
+   uv sync
    ```
  * (Optional) To run integration tests locally, set up a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with [GDS](https://neo4j.com/docs/graph-data-science/current/) installed
 
