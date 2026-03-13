@@ -16,7 +16,7 @@ The unit tests are run without a connection a database. Typically the `Collectin
 To run the unit tests (with default options), simply call:
 
 ```bash
-pytest graphdatascience/tests/unit
+uv run pytest tests/unit
 ```
 
 or for just `just unit-tests`
@@ -65,7 +65,7 @@ Once the driver connects successfully to the Neo4j DBMS the tests will go on to 
 To run the integration tests (with default options), simply call:
 
 ```bash
-pytest graphdatascience/tests/integration
+uv run pytest tests/integration
 ```
 
 To include tests that require the Enterprise Edition of the Neo4j Graph Data Science library, you must specify the option `--include-enterprise`.
@@ -96,7 +96,7 @@ dbms.ssl.policy.bolt.client_auth=NONE
 To run only integration tests that are marked as `encrypted_only`, call:
 
 ```bash
-pytest graphdatascience/tests/integration --encrypted-only
+uv run pytest tests/integration --encrypted-only
 ```
 
 ### GDS library versions

@@ -13,9 +13,6 @@ manual-docs:
 api-docs:
    ./scripts/render_api_docs
 
-update-env:
-    uv pip install --group dev -e .[networkx,ogb,rust-ext] --upgrade
-
 pre-release:
     ./scripts/release_helper/pre_release.py
 
@@ -23,7 +20,7 @@ post-release-main version="":
     ./scripts/release_helper/post_release_main.py {{version}}
 
 unit-tests extra_options="":
-    pytest tests/unit {{extra_options}}
+    uv run pytest tests/unit {{extra_options}}
 
 # just it test true "--durations=20"
 it filter="" enterprise="true" extra_options="":
@@ -39,12 +36,12 @@ it filter="" enterprise="true" extra_options="":
     trap "cd $ENV_DIR && docker compose down" EXIT
     cd $ENV_DIR && docker compose up -d
     cd -
-    pytest tests/integration $EXTRA_FLAGS --basetemp=tmp/ {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run pytest tests/integration $EXTRA_FLAGS --basetemp=tmp/ {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 
 # such as `just it-v2 wcc`
 it-v2 filter="" extra_options="":
-    pytest tests/integrationV2 --include-integration-v2 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run pytest tests/integrationV2 --include-integration-v2 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 
 # runs the
@@ -60,7 +57,7 @@ session-v1-it:
     NEO4J_PASSWORD=password \
     NEO4J_DB=neo4j \
     NEO4J_AURA_DB_URI=bolt://localhost:7687 \
-    pytest tests --include-cloud-architecture
+    uv run pytest tests --include-cloud-architecture
 
 
 update-session-image:
