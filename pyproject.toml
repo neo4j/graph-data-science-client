@@ -54,8 +54,6 @@ rust-ext = ["neo4j-rust-ext >= 4.4.12, < 7.0"]
 
 
 [dependency-groups]
-# To install all development dependencies,
-# run `pip install --group dev -e .` inside repository root folder.#
 dev = [
     "tox>4.24",
     { include-group = "dev-base" },

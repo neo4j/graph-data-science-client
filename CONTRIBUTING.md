@@ -58,7 +58,7 @@ Setting up the Python development environment:
  * [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
  * Install the project's Python dependencies:
    ```bash
-   uv sync
+   uv sync --all-extras
    ```
  * (Optional) To run integration tests locally, set up a [Neo4j DBMS](https://neo4j.com/docs/getting-started/current/) with [GDS](https://neo4j.com/docs/graph-data-science/current/) installed
 
