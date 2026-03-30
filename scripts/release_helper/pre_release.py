@@ -105,6 +105,8 @@ def main() -> None:
 
     verify_installation_docs(repo_dir, version, min_server_version)
 
+    print(f"All checks passed. Now find the latest prepare build to release from at https://live.neo4j-build.io/buildConfiguration/GraphAnalytics_Prepare_gdsclient")
+
 
 if __name__ == "__main__":
     main()
