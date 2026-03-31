@@ -52,29 +52,12 @@ class GdsSessionConnectionInfo:
 
 
 @pytest.fixture(scope="package")
-def password_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, None]:
-    """Create a temporary file and return its path."""
-    tmp_dir = tmp_path_factory.mktemp("passwords")
-    temp_file_path = os.path.join(tmp_dir, "password")
-
-    with open(temp_file_path, "w") as f:
-        f.write("password")
-
-    yield tmp_dir
-
-    # Clean up the file
-    os.unlink(temp_file_path)
-
-
-@pytest.fixture(scope="package")
 def network() -> Generator[Network, None, None]:
     with Network() as network:
         yield network
 
 
-def start_session(
-    logs_dir: Path, network: Network, password_dir: Path
-) -> Generator[GdsSessionConnectionInfo, None, None]:
+def start_session(logs_dir: Path, network: Network) -> Generator[GdsSessionConnectionInfo, None, None]:
     if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
         uri_parts = session_uri.split(":")
         yield GdsSessionConnectionInfo(host=uri_parts[0], arrow_port=8491, bolt_port=int(uri_parts[1]))
@@ -92,8 +75,9 @@ def start_session(
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
+        .with_env("ENVIRONMENT", "local")
+        .with_env("EXTRA_FLAGS", "--disable-authentication")
         .with_exposed_ports(8491, 8080)
-        .with_volume_mapping(password_dir, "/passwords")
         .waiting_for(HttpWaitStrategy(8080, path="/available"))
     )
     if not inside_ci():

@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Generator
 
 import pytest
-from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
 
 from graphdatascience import QueryRunner
@@ -24,14 +23,12 @@ LOGGER = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="package")
-def session_connection(
-    network: Network, password_dir: Path, logs_dir: Path
-) -> Generator[GdsSessionConnectionInfo, None, None]:
-    yield from start_session(logs_dir, network, password_dir)
+def session_connection(network: Network, logs_dir: Path) -> Generator[GdsSessionConnectionInfo, None, None]:
+    yield from start_session(logs_dir, network)
 
 
 @pytest.fixture(scope="package")
-def arrow_client(session_connection: DockerContainer) -> AuthenticatedArrowClient:
+def arrow_client(session_connection: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
     return create_arrow_client(session_connection)
 
 
