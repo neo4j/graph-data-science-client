@@ -10,10 +10,11 @@ from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import (
     AlphaRemoteEndpoints,
     BetaEndpoints,
-    DirectEndpoints,
+    DirectSessionEndpoints,
 )
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
 from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
+from graphdatascience.procedure_surface.api.model import ModelCatalogEndpoints
 from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
@@ -30,7 +31,7 @@ from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
 
 
-class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
+class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
     """
     Primary API class for interacting with Neo4j database + Graph Data Science Session.
     Always bind this object to a variable called `gds`.
@@ -196,6 +197,10 @@ class AuraGraphDataScience(DirectEndpoints, UncallableNamespace):
         These endpoints are a preview of the API for the next major version of this library.
         """
         return self._v2_endpoints
+
+    @property
+    def model(self) -> ModelCatalogEndpoints:
+        return self.v2.model
 
     def __getattr__(self, attr: str) -> IndirectCallBuilder:
         return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
