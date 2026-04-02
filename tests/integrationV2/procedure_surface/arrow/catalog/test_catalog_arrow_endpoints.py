@@ -208,4 +208,3 @@ def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
         assert result.relationship_distribution == "UNIFORM"
         assert result.relationship_property is None
         assert catalog_endpoints.list("generated") is not None
-

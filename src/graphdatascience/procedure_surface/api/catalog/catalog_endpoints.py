@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import NamedTuple, Type
+from typing import Any, NamedTuple, Type
 
 from pandas import DataFrame
 from pydantic import field_validator
@@ -248,9 +248,9 @@ class GraphGenerationStats(BaseResult):
     relationship_distribution: str
     relationship_property: RelationshipPropertySpec | None
 
-    @field_validator('relationship_property', mode='before')
+    @field_validator("relationship_property", mode="before")
     @classmethod
-    def check_empty_property(cls, value):
+    def check_empty_property(cls, value: Any) -> Any:
         return value or None
 
 
