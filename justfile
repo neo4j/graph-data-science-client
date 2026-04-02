@@ -66,8 +66,14 @@ update-session-image:
 update-neo4j-image:
     docker pull neo4j:enterprise
 
-update neo4j-aura-image:
-    docker pull europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise
+update-neo4j-aura-image:
+    # check https://console.cloud.google.com/artifacts/docker/neo4j-aura-image-artifacts/europe-west1/aura-dev/neo4j-enterprise?project=neo4j-aura-image-artifacts to pull a later image
+    docker pull europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:2026.03.1
+
+update-test-images:
+    just update-session-image
+    just update-neo4j-image
+    just update-neo4j-aura-image
 
 prs:
     gh pr list --author "@me"
