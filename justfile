@@ -52,6 +52,7 @@ session-v1-it:
     trap "cd $ENV_DIR && docker compose down" EXIT
     cd $ENV_DIR && docker compose up -d
     cd -
+    sleep 5 # wait for the containers to be ready
     NEO4J_URI=bolt://localhost:7688 \
     NEO4J_USER=neo4j \
     NEO4J_PASSWORD=password \

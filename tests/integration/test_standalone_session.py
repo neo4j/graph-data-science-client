@@ -11,15 +11,14 @@ def test_graph_construct_and_calling_procedure(standalone_aura_gds: AuraGraphDat
     nodes = DataFrame({"nodeId": [0, 1, 2, 3]})
     relationships = DataFrame({"sourceNodeId": [0, 1, 2, 3], "targetNodeId": [1, 2, 3, 0]})
 
-    G = standalone_aura_gds.graph.construct("graph", nodes, relationships)
+    with standalone_aura_gds.graph.construct("graph", nodes, relationships) as G:
+        assert G.name() == "graph"
+        assert G.node_count() == 4
+        assert G.relationship_count() == 4
 
-    assert G.name() == "graph"
-    assert G.node_count() == 4
-    assert G.relationship_count() == 4
+        result = standalone_aura_gds.pageRank.stream(G)
 
-    result = standalone_aura_gds.pageRank.stream(G)
-
-    assert len(result) == 4
+        assert len(result) == 4
 
 
 @pytest.mark.cloud_architecture
