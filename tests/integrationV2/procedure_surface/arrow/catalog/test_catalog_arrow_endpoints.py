@@ -182,3 +182,29 @@ def test_graph_generate_with_relationships_property(catalog_endpoints: CatalogAr
         assert result.relationship_property == RelationshipPropertySpec.fixed("weight", 42)
 
         assert catalog_endpoints.list("generated") is not None
+
+
+def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
+    G, result = catalog_endpoints.generate(
+        "generated",
+        node_count=10,
+        average_degree=5,
+        relationship_distribution="UNIFORM",
+        relationship_seed=42,
+        orientation="UNDIRECTED",
+        allow_self_loops=False,
+        read_concurrency=1,
+        sudo=True,
+        log_progress=False,
+        username="neo4j",
+    )
+
+    with G:
+        assert G.name() == "generated"
+        assert result.name == "generated"
+        assert result.nodes == 10
+        assert result.relationships > 5
+        assert result.generate_millis >= 0
+        assert result.relationship_distribution == "UNIFORM"
+        assert result.relationship_property is None
+        assert catalog_endpoints.list("generated") is not None

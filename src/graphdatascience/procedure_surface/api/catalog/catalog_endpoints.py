@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import NamedTuple, Type
+from typing import Any, NamedTuple, Type
 
 from pandas import DataFrame
+from pydantic import field_validator
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -245,7 +246,12 @@ class GraphGenerationStats(BaseResult):
     relationship_seed: int | None
     average_degree: float
     relationship_distribution: str
-    relationship_property: RelationshipPropertySpec
+    relationship_property: RelationshipPropertySpec | None
+
+    @field_validator("relationship_property", mode="before")
+    @classmethod
+    def check_empty_property(cls, value: Any) -> Any:
+        return value or None
 
 
 class RelationshipPropertySpec(BaseResult):
