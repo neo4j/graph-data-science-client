@@ -227,12 +227,12 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "cloud_architecture" in item.keywords:
                 item.add_marker(skip_cloud_architecture)
 
-    with GraphDataScience(URI, auth=AUTH) as gds:
-        try:
-            server_version = gds._server_version
-        except Exception as e:
-            print("Could not derive GDS library server version")
-            raise e
+    try:
+        with GraphDataScience(URI, auth=AUTH) as gds:
+            server_version = gds.server_version()
+    except Exception as e:
+        print("Could not derive GDS library server version")
+        raise e
 
     skip_incompatible_versions = pytest.mark.skip(reason=f"incompatible with GDS server version {server_version}")
 

@@ -57,7 +57,9 @@ def network() -> Generator[Network, None, None]:
         yield network
 
 
-def start_session(logs_dir: Path, network: Network) -> Generator[GdsSessionConnectionInfo, None, None]:
+def start_session(
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, network: Network
+) -> Generator[GdsSessionConnectionInfo, None, None]:
     if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
         uri_parts = session_uri.split(":")
         yield GdsSessionConnectionInfo(host=uri_parts[0], arrow_port=8491, bolt_port=int(uri_parts[1]))
@@ -67,6 +69,9 @@ def start_session(logs_dir: Path, network: Network) -> Generator[GdsSessionConne
         "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
     )
     LOGGER.info(f"Using session image: {session_image}")
+
+    model_dir = tmp_path_factory.mktemp("models")
+
     session_container = (
         DockerContainer(
             image=session_image,
@@ -77,6 +82,7 @@ def start_session(logs_dir: Path, network: Network) -> Generator[GdsSessionConne
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
         .with_env("ENVIRONMENT", "local")
         .with_env("EXTRA_FLAGS", "--disable-authentication")
+        .with_volume_mapping(model_dir, "/models", mode="rw")
         .with_exposed_ports(8491, 8080)
         .waiting_for(HttpWaitStrategy(8080, path="/available"))
     )

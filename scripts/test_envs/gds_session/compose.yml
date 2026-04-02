@@ -2,13 +2,15 @@ services:
   gds-session:
     image: europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest # build locally if you dont want to use a released one
     volumes:
-      - ./password:/passwords/password
+      - /tmp/models:/models
     environment:
       - SESSION_ID=42
       - MODEL_STORAGE_BASE_LOCATION=/models
       - ALLOW_LIST=DEFAULT
       - DNS_NAME=gds-session
       - PAGE_CACHE_SIZE=100M
+      - ENVIRONMENT=local
+      - EXTRA_FLAGS=--disable-authentication
     ports:
       - "7688:7687"
       - "8080:8080"

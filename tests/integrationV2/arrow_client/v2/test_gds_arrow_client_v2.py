@@ -17,8 +17,10 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import cr
 
 
 @pytest.fixture(scope="package")
-def session_connection(network: Network, logs_dir: Path) -> Generator[GdsSessionConnectionInfo, None, None]:
-    yield from start_session(logs_dir, network)
+def session_connection(
+    network: Network, tmp_path_factory: pytest.TempPathFactory, logs_dir: Path
+) -> Generator[GdsSessionConnectionInfo, None, None]:
+    yield from start_session(logs_dir, tmp_path_factory, network)
 
 
 @pytest.fixture(scope="package")
