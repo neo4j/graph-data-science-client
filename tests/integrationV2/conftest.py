@@ -52,28 +52,13 @@ class GdsSessionConnectionInfo:
 
 
 @pytest.fixture(scope="package")
-def password_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, None]:
-    """Create a temporary file and return its path."""
-    tmp_dir = tmp_path_factory.mktemp("passwords")
-    temp_file_path = os.path.join(tmp_dir, "password")
-
-    with open(temp_file_path, "w") as f:
-        f.write("password")
-
-    yield tmp_dir
-
-    # Clean up the file
-    os.unlink(temp_file_path)
-
-
-@pytest.fixture(scope="package")
 def network() -> Generator[Network, None, None]:
     with Network() as network:
         yield network
 
 
 def start_session(
-    logs_dir: Path, network: Network, password_dir: Path
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, network: Network
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
         uri_parts = session_uri.split(":")
@@ -84,6 +69,10 @@ def start_session(
         "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
     )
     LOGGER.info(f"Using session image: {session_image}")
+
+    model_dir = tmp_path_factory.mktemp("models")
+    model_dir.chmod(0o777)  # allow other user inside container to write to model dir
+
     session_container = (
         DockerContainer(
             image=session_image,
@@ -92,8 +81,10 @@ def start_session(
         .with_env("DNS_NAME", "gds-session")
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
+        .with_env("ENVIRONMENT", "local")
+        .with_env("EXTRA_FLAGS", "--disable-authentication")
+        .with_volume_mapping(model_dir, "/models", mode="rw")
         .with_exposed_ports(8491, 8080)
-        .with_volume_mapping(password_dir, "/passwords")
         .waiting_for(HttpWaitStrategy(8080, path="/available"))
     )
     if not inside_ci():
@@ -107,9 +98,12 @@ def start_session(
             )
         finally:
             stdout, stderr = session_container.get_logs()
+            stderr_lines = stderr.decode("utf-8", errors="replace").splitlines()
+            stderr_lines = [line for line in stderr_lines if line.strip() and "log4j" not in line.lower()]
 
-            if stderr:
-                print(f"Error logs from session container:\n{stderr}")
+            if stderr_lines:
+                log_lines = "\n".join(stderr_lines)
+                LOGGER.info(f"Error logs from session container:\n{log_lines}")
 
             if inside_ci():
                 print(f"Session container logs:\n{stdout}")

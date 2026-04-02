@@ -16,9 +16,9 @@ from tests.integrationV2.procedure_surface.conftest import (
 
 @pytest.fixture(scope="package")
 def session_connection(
-    network: Network, password_dir: Path, logs_dir: Path
+    network: Network, tmp_path_factory: pytest.TempPathFactory, logs_dir: Path
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
-    yield from start_session(logs_dir, network, password_dir)
+    yield from start_session(logs_dir, tmp_path_factory, network)
 
 
 @pytest.fixture(scope="package")

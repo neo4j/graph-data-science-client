@@ -74,7 +74,7 @@ def test_model_exists(gs_model: str, model_api: ModelApiCypher) -> None:
     assert not model_api.exists("nonexistent-model")
 
 
-def test_model_delete(gs_model: str, model_api: ModelApiCypher) -> None:
+def test_model_drop(gs_model: str, model_api: ModelApiCypher) -> None:
     model_details = model_api.drop(gs_model, fail_if_missing=False)
 
     assert model_details is not None
