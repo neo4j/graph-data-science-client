@@ -45,23 +45,28 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
             raise ValueError(f"Model with name `{model_name}` does not exist")
         return self._to_model_details(items[0])
 
-    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails:
+    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails | None:
         raw = self._arrow_client.do_action_with_retry(
             "v2/model.drop",
             payload=json.dumps({"modelName": model_name, "failIfMissing": fail_if_missing}).encode("utf-8"),
         )
         items = deserialize(raw)
-        if not items:
+        if not items and fail_if_missing:
             raise ValueError(f"Model with name `{model_name}` does not exist")
+        if not items:
+            return None
         return self._to_model_details(items[0])
 
-    def delete(self, model_name: str) -> ModelDeleteResult:
+    def delete(self, model_name: str, fail_if_missing: bool = False) -> ModelDeleteResult | None:
         raw = self._arrow_client.do_action_with_retry(
-            "v2/model.delete", payload=json.dumps({"modelName": model_name}).encode("utf-8")
+            "v2/model.delete",
+            payload=json.dumps({"modelName": model_name, "failIfMissing": fail_if_missing}).encode("utf-8"),
         )
         items = deserialize(raw)
-        if not items:
+        if not items and fail_if_missing:
             raise ValueError(f"Model with name `{model_name}` does not exist")
+        if not items:
+            return None
         return ModelDeleteResult(**items[0])
 
     def load(self, model_name: str) -> ModelLoadResult:

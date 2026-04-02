@@ -69,7 +69,7 @@ class ModelCatalogEndpoints(ABC):
         """
 
     @abstractmethod
-    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails:
+    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails | None:
         """Drop a model from the in-memory catalog.
 
         Parameters
@@ -86,13 +86,15 @@ class ModelCatalogEndpoints(ABC):
         """
 
     @abstractmethod
-    def delete(self, model_name: str) -> ModelDeleteResult:
+    def delete(self, model_name: str, fail_if_missing: bool = False) -> ModelDeleteResult | None:
         """Delete a persisted model from storage.
 
         Parameters
         ----------
         model_name: str
             The model to delete.
+        fail_if_missing: bool
+            If True, a missing model will cause an error. If False, returns None when missing.
 
         Returns
         -------

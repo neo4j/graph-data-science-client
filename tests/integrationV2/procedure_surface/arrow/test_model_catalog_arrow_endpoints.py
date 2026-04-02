@@ -99,8 +99,9 @@ def test_model_drop(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     assert model_catalog.exists(gs_model_name) is None
 
     # Attempt to drop a non-existing model
-    with pytest.raises(ValueError, match="Model with name `nonexistent-model` does not exist"):
-        model_catalog.drop("nonexistent-model", fail_if_missing=False)
+
+    no_drop_result = model_catalog.drop("nonexistent-model", fail_if_missing=False)
+    assert no_drop_result is None
 
     with pytest.raises(FlightServerError, match="Model with name `nonexistent-model` does not exist"):
         model_catalog.drop("nonexistent-model", fail_if_missing=True)
@@ -157,4 +158,6 @@ def test_delete_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) 
     assert deleted.loaded
 
     with pytest.raises(Exception, match=r".*Model with name `nonexistent-model` does not exist.*"):
-        model_catalog.delete("nonexistent-model")
+        model_catalog.delete("nonexistent-model", fail_if_missing=True)
+
+    assert model_catalog.delete("nonexistent-model", fail_if_missing=False) is None

@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Generator
@@ -29,6 +30,13 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
         for item in items:
             if "db_integration" in item.keywords:
                 item.add_marker(skip_ci)
+
+def debugger_is_active() -> bool:
+    try:
+        return sys.gettrace() is not None or sys.monitoring.get_tool(sys.monitoring.DEBUGGER_ID) is not None
+    except AttributeError:
+        LOGGER.debug("")
+        return False
 
 
 # best used with pytest --basetemp=tmp/pytest for easy access to logs
@@ -97,11 +105,13 @@ def start_session(
             )
         finally:
             stdout, stderr = session_container.get_logs()
+            stderr_lines = stderr.decode("utf-8", errors="replace").splitlines()
+            stderr_lines = [line for line in stderr_lines if line.strip() and "log4j" not in line.lower()]
 
-            if stderr:
-                print(f"Error logs from session container:\n{stderr}")
+            if stderr_lines:
+                LOGGER.info(f"Error logs from session container:\n{'\n'.join(stderr_lines)}")
 
-            if inside_ci():
+            if debugger_is_active() or inside_ci():
                 print(f"Session container logs:\n{stdout}")
 
             out_file = logs_dir / "session_container.log"
