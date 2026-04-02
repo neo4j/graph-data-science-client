@@ -79,6 +79,7 @@ def start_session(
     LOGGER.info(f"Using session image: {session_image}")
 
     model_dir = tmp_path_factory.mktemp("models")
+    model_dir.chmod(0o777) # allow other user inside container to write to model dir
 
     session_container = (
         DockerContainer(
