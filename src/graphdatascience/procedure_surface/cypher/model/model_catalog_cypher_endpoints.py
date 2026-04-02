@@ -55,7 +55,15 @@ class ModelCatalogCypherEndpoints(ModelCatalogEndpoints):
 
     def delete(self, model_name: str, fail_if_missing: bool = False) -> ModelDeleteResult | None:
         params = CallParameters(model_name=model_name)
-        df = self._query_runner.call_procedure("gds.model.delete", params=params, custom_error=False)
+
+        try:
+            df = self._query_runner.call_procedure("gds.model.delete", params=params, custom_error=False)
+        except neo4j.exceptions.ClientError as e:
+            if "Model with name" not in str(e) or fail_if_missing:
+                raise e
+            else:
+                return None
+
         if df.empty and fail_if_missing:
             raise ValueError(f"Model with name `{model_name}` does not exist")
         if df.empty:
