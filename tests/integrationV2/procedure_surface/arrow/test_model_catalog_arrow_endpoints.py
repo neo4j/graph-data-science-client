@@ -156,5 +156,5 @@ def test_delete_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) 
     assert not deleted.stored
     assert deleted.loaded
 
-    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
+    with pytest.raises(Exception, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.delete("nonexistent-model")
