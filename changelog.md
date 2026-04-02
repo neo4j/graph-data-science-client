@@ -13,6 +13,7 @@
 * Fixed a bug where `gds.v2.graph.list()` would fail due to `memoryUsage` not being present in the result.
 * Fixed a bug where GDS would fail if constructed via `from_driver` and without explicit auth provided.
 * Fixed a bug in `gds.v2.model.drop` where it would fail even if `fail_if_missing` was set to `False`. 
+* Fixed a bug in `gds.v2.graph.generate` where it would fail if the `relationship_property` was not set.
 
 
 ## Improvements
