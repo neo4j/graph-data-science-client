@@ -43,6 +43,17 @@ class DirectEndpoints(
         super().__init__(query_runner, namespace, server_version)
 
 
+class DirectSessionEndpoints(
+    SingleModeAlgoEndpoints,
+    DirectSystemEndpoints,
+    DirectUtilEndpoints,
+    PipelineEndpoints,
+    ConfigEndpoints,
+):
+    def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
+        super().__init__(query_runner, namespace, server_version)
+
+
 """
 This class should inherit endpoint classes that only expose calls of the `gds.alpha` namespace.
 Example of such endpoints: "gds.alpha.listProgress".
