@@ -228,6 +228,8 @@ The `list()` method returns the name and size of memory of all currently active 
 sessions.list()
 ----
 
+For a detailed description of the allowed parameters, see the https://neo4j.com/{docs-version}/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.list[API] reference.
+
 
 === Deleting a GDS Session
 

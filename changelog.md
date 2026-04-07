@@ -20,6 +20,7 @@
 
 * Set `app` and `type` in Cypher queries being sent to Neo4j. This allows for better analysis by tools such as Neo4j Ops manager.
 * Warn about falling back to Cypher instead of using Arrow, if GraphDataScience object is created via `from_driver` without explict auth. 
+* Added new optional filters to `GdsSessions::list`, such as `instance_id`, `list_only_owned` or `include_deleted`.
 
 
 ## Other changes
