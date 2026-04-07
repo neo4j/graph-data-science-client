@@ -363,7 +363,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1/graph-analytics/sessions?projectId=some-tenant",
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
         json={
             "data": [
                 {
@@ -396,6 +396,7 @@ def test_list_sessions(requests_mock: Mocker) -> None:
     )
 
     result = api.list_sessions()
+    requested_endpoint = str(requests_mock.request_history[-1])
 
     expected1 = SessionDetailsWithErrors(
         id="id0",
@@ -430,6 +431,10 @@ def test_list_sessions(requests_mock: Mocker) -> None:
     )
 
     assert result == [expected1, expected2]
+    assert (
+        requested_endpoint
+        == "GET https://api.neo4j.io/v1/graph-analytics/sessions?projectId=some-tenant&listOnlyOwned=false&includeDeleted=false"
+    )
 
 
 def test_list_sessions_with_instance_id(requests_mock: Mocker) -> None:
@@ -437,7 +442,7 @@ def test_list_sessions_with_instance_id(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
-        "https://api.neo4j.io/v1/graph-analytics/sessions?projectId=some-tenant&instanceId=dbid",
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
         json={
             "data": [
                 {
@@ -468,6 +473,7 @@ def test_list_sessions_with_instance_id(requests_mock: Mocker) -> None:
     )
 
     result = api.list_sessions("dbid")
+    requested_endpoint = str(requests_mock.request_history[-1])
 
     expected1 = SessionDetailsWithErrors(
         id="id0",
@@ -500,6 +506,37 @@ def test_list_sessions_with_instance_id(requests_mock: Mocker) -> None:
     )
 
     assert result == [expected1, expected2]
+    assert (
+        requested_endpoint
+        == "GET https://api.neo4j.io/v1/graph-analytics/sessions?projectId=some-tenant&listOnlyOwned=false&includeDeleted=false&instanceId=dbid"
+    )
+
+
+def test_list_sessions_with_extended_filters(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/graph-analytics/sessions",
+        json={"data": []},
+    )
+
+    start_date = datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc)
+    end_date = datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc)
+
+    api.list_sessions(
+        instance_id="dbid",
+        list_only_owned=True,
+        include_deleted=False,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    requested_endpoint = requests_mock.request_history[-1]
+    assert (
+        str(requested_endpoint)
+        == "GET https://api.neo4j.io/v1/graph-analytics/sessions?projectId=some-tenant&listOnlyOwned=true&includeDeleted=false&instanceId=dbid&startDate=2025-01-01T10%3A00%3A00%2B00%3A00&endDate=2025-01-02T10%3A00%3A00%2B00%3A00"
+    )
 
 
 def test_list_session_state_error_forwards(requests_mock: Mocker) -> None:

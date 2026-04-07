@@ -59,6 +59,7 @@ dev = [
     { include-group = "dev-base" },
     { include-group = "test" },
     { include-group = "docs-ci" },
+    { include-group = "notebook-base"}
 ]
 
 dev-base = [
