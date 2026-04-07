@@ -1,7 +1,7 @@
 * xref:index.adoc[Introduction]
 * xref:installation.adoc[]
 * xref:getting-started.adoc[]
-* xref:graph-analytics-serverless.adoc[]
+* xref:aura-graph-analytics.adoc[]
 * xref:graph-object.adoc[]
 * xref:algorithms.adoc[]
 * xref:pipelines.adoc[]

@@ -1,6 +1,6 @@
 = Aura Graph Analytics
 
-:page-aliases: gds-session
+:page-aliases: gds-session, graph-analytics-serverless
 
 Aura Graph Analytics is an on-demand ephemeral compute environment for running GDS workloads.
 Each compute unit is called a _GDS Session_.
