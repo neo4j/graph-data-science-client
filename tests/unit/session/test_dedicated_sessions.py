@@ -161,18 +161,32 @@ class FakeAuraApi(AuraApi):
     def delete_instance(self, instance_id: str) -> InstanceSpecificDetails:
         return self._instances.pop(instance_id)
 
-    def list_sessions(self, dbid: str | None = None) -> list[SessionDetailsWithErrors]:
-        if dbid:
-            self._mimic_paused_db_behaviour(dbid)
+    def list_sessions(
+        self,
+        instance_id: str | None = None,
+        list_only_owned: bool = False,
+        include_deleted: bool = False,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> list[SessionDetailsWithErrors]:
+        if instance_id:
+            self._mimic_paused_db_behaviour(instance_id)
 
-        matching_for_dbid = [v for _, v in self._sessions.items() if not dbid or v.instance_id == dbid]
-        matching_for_user = [v for v in matching_for_dbid if v.user_id == self._console_user or self._admin_user]
+        matching_sessions = [v for _, v in self._sessions.items() if not instance_id or v.instance_id == instance_id]
 
-        # assume user is not admin
-        if self._admin_user:
-            return matching_for_dbid
-        else:
-            return matching_for_user
+        if list_only_owned:
+            matching_sessions = [v for v in matching_sessions if v.user_id == self._console_user or self._admin_user]
+
+        if start_date:
+            matching_sessions = [v for v in matching_sessions if v.created_at >= start_date]
+
+        if end_date:
+            matching_sessions = [v for v in matching_sessions if v.created_at <= end_date]
+
+        if not include_deleted:
+            matching_sessions = [v for v in matching_sessions if v.status != "deleted"]
+
+        return matching_sessions
 
     def list_instances(self) -> list[InstanceDetails]:
         return [v for _, v in self._instances.items()]
@@ -340,6 +354,29 @@ def test_list_session_gds_instance(aura_api: AuraApi) -> None:
     sessions = DedicatedSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
+
+
+def test_list_session_forwards_filters(mocker: MockerFixture, aura_api: AuraApi) -> None:
+    sessions = DedicatedSessions(aura_api)
+    list_sessions_spy = mocker.spy(aura_api, "list_sessions")
+    start_date = datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc)
+    end_date = datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc)
+
+    sessions.list(
+        instance_id="instance-1",
+        list_only_owned=True,
+        include_deleted=False,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    list_sessions_spy.assert_called_once_with(
+        instance_id="instance-1",
+        list_only_owned=True,
+        include_deleted=False,
+        start_date=start_date,
+        end_date=end_date,
+    )
 
 
 def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> None:

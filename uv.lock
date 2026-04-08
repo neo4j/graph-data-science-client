@@ -983,7 +983,11 @@ rust-ext = [
 dev = [
     { name = "autodoc-pydantic" },
     { name = "enum-tools", extra = ["sphinx"] },
+    { name = "ipykernel" },
     { name = "mypy" },
+    { name = "nbclient" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
     { name = "networkx", version = "3.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "networkx", version = "3.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pandas-stubs" },
@@ -1084,7 +1088,11 @@ provides-extras = ["networkx", "ogb", "rust-ext"]
 dev = [
     { name = "autodoc-pydantic" },
     { name = "enum-tools", extras = ["sphinx"], specifier = "==0.13.0" },
+    { name = "ipykernel", specifier = "==7.1.0" },
     { name = "mypy", specifier = "==1.19.1" },
+    { name = "nbclient", specifier = "==0.10.4" },
+    { name = "nbconvert", specifier = "==7.16.6" },
+    { name = "nbformat", specifier = "==5.10.4" },
     { name = "networkx", specifier = ">=2.0,<4.0" },
     { name = "pandas-stubs", specifier = "==2.2.3.241009" },
     { name = "pytest", specifier = "==9.0.2" },

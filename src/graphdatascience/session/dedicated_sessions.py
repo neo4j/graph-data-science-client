@@ -192,12 +192,24 @@ class DedicatedSessions:
 
         return False
 
-    def list(self, dbid: str | None = None) -> list[SessionInfo]:
-        sessions = self._aura_api.list_sessions(dbid)
+    def list(
+        self,
+        instance_id: str | None = None,
+        list_only_owned: bool = False,
+        include_deleted: bool = False,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> list[SessionInfo]:
+        sessions = self._aura_api.list_sessions(
+            instance_id=instance_id,
+            list_only_owned=list_only_owned,
+            include_deleted=include_deleted,
+            start_date=start_date,
+            end_date=end_date,
+        )
         return [SessionInfo.from_session_details(i) for i in sessions]
 
     def _find_existing_session(self, session_name: str) -> SessionDetails | None:
-        matched_sessions: list[SessionDetails] = []
         matched_sessions = [s for s in self._aura_api.list_sessions() if s.name == session_name]
 
         if len(matched_sessions) == 0:

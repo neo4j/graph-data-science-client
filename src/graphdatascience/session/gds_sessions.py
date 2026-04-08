@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -175,11 +175,31 @@ class GdsSessions:
         """
         return self._impl.delete(session_name=session_name, session_id=session_id)
 
-    def list(self) -> list[SessionInfo]:
+    def list(
+        self,
+        instance_id: str | None = None,
+        list_only_owned: bool = False,
+        include_deleted: bool = False,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> list[SessionInfo]:
         """
         Retrieves the list of GDS sessions visible by the user associated by the given api-credentials.
+
+        Args:
+            instance_id: Optional filter for sessions attached to one AuraDB instance.
+            list_only_owned: Optional filter to list only sessions owned by the authenticated user.
+            include_deleted: Optional flag to include deleted sessions.
+            start_date: Optional lower bound for session creation timestamp.
+            end_date: Optional upper bound for session creation timestamp.
 
         Returns:
             A list of SessionInfo objects representing the GDS sessions.
         """
-        return self._impl.list()
+        return self._impl.list(
+            instance_id=instance_id,
+            list_only_owned=list_only_owned,
+            include_deleted=include_deleted,
+            start_date=start_date,
+            end_date=end_date,
+        )

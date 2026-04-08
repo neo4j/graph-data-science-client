@@ -5,7 +5,7 @@ import math
 import time
 import warnings
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 from http import HTTPStatus
 from typing import Any
 from urllib.parse import urlparse
@@ -167,12 +167,29 @@ class AuraApi:
 
         return SessionDetails.from_json(raw_json["data"])
 
-    def list_sessions(self, dbid: str | None = None) -> list[SessionDetailsWithErrors]:
+    def list_sessions(
+        self,
+        instance_id: str | None = None,
+        list_only_owned: bool = False,
+        include_deleted: bool = False,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> list[SessionDetailsWithErrors]:
         # these are query parameters (not passed in the body)
-        params = {
+        params: dict[str, str] = {
             "projectId": self._project_id,
-            "instanceId": dbid,
+            "listOnlyOwned": str(list_only_owned).lower(),
+            "includeDeleted": str(include_deleted).lower(),
         }
+
+        if instance_id is not None:
+            params["instanceId"] = instance_id
+
+        if start_date is not None:
+            params["startDate"] = start_date.isoformat()
+
+        if end_date is not None:
+            params["endDate"] = end_date.isoformat()
 
         response = self._request_session.get(
             f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions", params=params

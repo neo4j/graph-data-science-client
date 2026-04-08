@@ -1,4 +1,5 @@
 style skip_notebooks="false":
+     uv sync --frozen
      SKIP_NOTEBOOKS={{skip_notebooks}} ./scripts/makestyle && ./scripts/checkstyle
 
 check-notebooks:

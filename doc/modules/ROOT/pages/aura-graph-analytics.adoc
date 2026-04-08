@@ -1,6 +1,6 @@
 = Aura Graph Analytics
 
-:page-aliases: gds-session
+:page-aliases: gds-session, graph-analytics-serverless
 
 Aura Graph Analytics is an on-demand ephemeral compute environment for running GDS workloads.
 Each compute unit is called a _GDS Session_.
@@ -227,6 +227,8 @@ The `list()` method returns the name and size of memory of all currently active 
 ----
 sessions.list()
 ----
+
+For a detailed description of the allowed parameters, see the https://neo4j.com/{docs-version}/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.list[API] reference.
 
 
 === Deleting a GDS Session
