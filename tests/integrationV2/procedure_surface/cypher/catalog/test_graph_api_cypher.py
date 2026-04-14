@@ -17,7 +17,7 @@ def G(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
         (d: Node2 {s: 4}),
         (a)-[:REL {y: 42.0, z: 1}]->(b),
         (a)-[:REL {y: 13.37, z: 2}]->(c),
-        (b)-[:REL {z: 7.9, z: 3}]->(c),
+        (b)-[:REL {y: 7.9, z: 3}]->(c),
         (b)-[:REL2 {q: 7.9}]->(d)
     """
 
