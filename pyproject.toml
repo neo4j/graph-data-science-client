@@ -77,7 +77,7 @@ dev-base = [
     "types-colorama",
 ]
 test = [
-    "pytest == 9.0.2",
+    "pytest==9.0.3",
     "pytest-timeout",
     "requests_mock == 1.12.1",
     "pytest_mock == 3.15.1",
