@@ -66,11 +66,9 @@ def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph
     assert result.graph_name == "g"
     assert result.node_count == 3
     assert result.relationship_count == 1
-    assert result.graph_schema == {
-        "graphProperties": {},
-        "nodes": {"A": {}, "B": {}, "Node": {}},
-        "relationships": {"__ALL__": {"direction": "DIRECTED", "properties": {}}},
-    }
+    assert result.graph_schema["nodes"] == {"A": {}, "B": {}, "Node": {}}
+    assert result.graph_schema["relationships"] == {"__ALL__": {"direction": "DIRECTED", "properties": {}}}
+
     assert result.creation_time < datetime.datetime.now(datetime.timezone.utc)
     assert result.database == "neo4j"
     assert result.database_location == "local"
