@@ -42,7 +42,6 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
     assert result.node_count == 3
     assert result.relationship_count == 1
     assert result.graph_schema == {
-        "graphProperties": {},
         "nodes": {"A": {}, "B": {}, "Node": {}},
         "relationships": {"REL": {"direction": "DIRECTED", "properties": {}}},
     }
