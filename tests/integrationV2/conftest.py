@@ -82,6 +82,7 @@ def start_session(
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
         .with_env("ENVIRONMENT", "local")
+        .with_env("SESSION_ID", 42)
         .with_env("EXTRA_FLAGS", "--disable-authentication")
         .with_volume_mapping(model_dir, "/models", mode="rw")
         .with_exposed_ports(8491, 8080)
