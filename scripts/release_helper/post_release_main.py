@@ -186,13 +186,6 @@ def update_package_json(new_version: PythonLibraryVersion) -> None:
 
 
 def update_installation_adoc(next_version: PythonLibraryVersion) -> None:
-    new_compat_table_entry = f"""
-.1+<.^| {next_version.major_minor()}
-.1+<.^| >= 2.6, < 2.24
-.1+<.^| >= 3.10, < 3.14
-.1+<.^| >= 4.4.12, < 7.0.0
-    """.strip()
-
     installation_file = REPO_ROOT / "doc" / "modules" / "ROOT" / "pages" / "installation.adoc"
     content = installation_file.read_text()
 
@@ -201,6 +194,18 @@ def update_installation_adoc(next_version: PythonLibraryVersion) -> None:
     if not match:
         raise ValueError("Could not find installation table in installation.adoc")
     version_table = match.group(2)
+
+    latest_compat_entry = version_table.split("\n\n")[0]
+    latest_compat_entries = [entry for entry in latest_compat_entry.splitlines() if entry.strip()]
+    if not latest_compat_entries:
+        raise ValueError("Could not find latest compatibility entry in installation.adoc")
+
+    latest_compat_entries[0] = re.sub(
+        r"(^\.1\+<\.\^\|\s*)\S+",
+        rf"\g<1>{next_version.major_minor()}",
+        latest_compat_entries[0],
+    )
+    new_compat_table_entry = "\n".join(latest_compat_entries)
 
     if new_compat_table_entry in version_table:
         print(f"☑️ No changes needed for {installation_file.relative_to(REPO_ROOT)}")
@@ -244,8 +249,6 @@ def main() -> None:
     print("\n✅ Post-release tasks completed!")
     print("\nNext steps:")
     print("* Review the changes")
-    if not released_version.is_alpha():
-        print("* Update installation.adoc")
     print(f"* Commit with message: 'Prepare for {next_version} development'")
     print("* Push to main branch")
 
