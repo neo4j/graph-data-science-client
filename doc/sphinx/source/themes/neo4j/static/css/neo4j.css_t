@@ -157,6 +157,16 @@ div.code-block-caption:hover > a.headerlink {
     padding-bottom: 0.5rem;
 }
 
+.nav-menu .toctree-l{{ level }} a:hover,
+.nav-menu .toctree-l{{ level }} span:hover {
+    background: light-dark(var(--theme-light-color-neutral-hover), var(--theme-dark-color-primary-hover-weak));
+}
+
+.nav-menu .toctree-l{{ level }}>a.current {
+    background: light-dark(var(--theme-light-color-neutral-hover), var(--theme-dark-color-primary-hover-weak));
+    color: light-dark(var(--theme-light-color-primary-text), var(--theme-dark-color-primary-text));
+}
+
 .nav-menu .toctree-l{{ level }}>a.current::before {
     content: "";
     width: 4px;
