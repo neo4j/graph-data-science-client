@@ -1,0 +1,59 @@
+name: "Verify docs PR"
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "doc/**"
+
+jobs:
+  #  Generate HTML
+  docs-build-pr:
+    uses: neo4j/docs-tools/.github/workflows/reusable-docs-build.yml@v2
+    with:
+      deploy-id: ${{ github.event.number }}
+      retain-artifacts: 14
+      docs-dir: "doc"
+
+  # Parse the json log output from the HTML build, and output warnings and errors as annotations
+  # Optionally, fail the build if there are warnings or errors
+  # By default, the job fails if there are errors, passes if there are warnings only.
+  docs-verify-pr:
+    needs: docs-build-pr
+    uses: neo4j/docs-tools/.github/workflows/reusable-docs-verify.yml@v2
+    with:
+      failOnWarnings: true
+
+  # Get lists of changes in the PR
+  # - all updated asciidoc files
+  # - all updated asciidoc pages
+  # - all new asciidoc pages
+  docs-changes-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      asciidoc-files: ${{ steps.get-file-changes.outputs.asciidoc_all_changed_files }}
+      pages-modified: ${{ steps.get-file-changes.outputs.pages_modified_files }}
+      pages-added: ${{ steps.get-file-changes.outputs.pages_added_files }}
+    steps:
+      - name: Get file changes
+        id: get-file-changes
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
+        with:
+          separator: ","
+          files_yaml: |
+            pages:
+            - '**/modules/**/pages/**/*.adoc'
+            asciidoc:
+            - '**/modules/**/*.adoc'
+
+  # Generate a PR comment if the docs are using the pageList extension
+  # The extension maps asciidoc source files to their HTML output paths
+  # The comment will contain links to new and changed pages in the deployed HTML docs
+  docs-updates-comment-pr:
+    if: needs.docs-build-pr.outputs.pages-listed == 'success'
+    needs: [docs-build-pr, docs-changes-pr]
+    uses: neo4j/docs-tools/.github/workflows/reusable-docs-pr-changes.yml@v2
+    with:
+      pages-modified: ${{ needs.docs-changes-pr.outputs.pages-modified }}
+      pages-added: ${{ needs.docs-changes-pr.outputs.pages-added }}

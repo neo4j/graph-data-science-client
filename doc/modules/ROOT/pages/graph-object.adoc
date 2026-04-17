@@ -86,7 +86,7 @@ Cypher projection is not a dedicated procedure; rather it requires writing a Cyp
 
 Read more about Cypher projection in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project-cypher-projection/[GDS manual].
 
-The method `gds.graph.cypher.project` bridges the gap between <<getting-started-minimal-example, `gds.run_cypher`>> and having to follow with `gds.graph.get`.
+The method `gds.graph.cypher.project` bridges the gap between xref:getting-started.adoc#getting-started-minimal-example[`gds.run_cypher`] and having to follow with `gds.graph.get`.
 
 === Syntax
 .Cypher projection signature
