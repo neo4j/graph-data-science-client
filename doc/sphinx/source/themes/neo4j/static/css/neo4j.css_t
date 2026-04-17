@@ -4,8 +4,8 @@ html.is-clipped--nav #searchbox {
     display: none !important;
 }
 
-body.sphinx .navbar-link a {
-    color: #3182ce;
+body .sphinxsidebar {
+    background: light-dark(var(--palette-neutral-15),var(--theme-dark-color-neutral-bg-weak));
 }
 
 body.sphinx .navbar-link a.external::after {
@@ -42,7 +42,6 @@ body.sphinx a.external::after {
 @media screen and (min-width: 1024px) {
 
     body.sphinx .toolbar {
-        background: initial;
         box-shadow: none;
         height: 0;
     }
@@ -63,15 +62,6 @@ body.sphinx a.external::after {
     body.sphinx .nav,
     body.sphinx .nav-panel-menu {
         height: auto;
-        background: initial;
-    }
-
-    body.sphinx .sphinxsidebar {
-        background: #f5f7fa;
-    }
-
-    body.sphinx .nav-panel-menu:not(.is-active)::after {
-        background: initial;
     }
 
     body.sphinx .navbar-start {
@@ -94,7 +84,6 @@ body.sphinx a.external::after {
 }
 
 .navbar-item, .navbar-link {
-    color: #4a5568;
     line-height: 1.8;
     padding: 0.5rem 1rem;
     position: relative;
@@ -114,7 +103,6 @@ body.sphinx a.external::after {
     flex-grow: 1;
 }
 .doc h1, .doc h2, .doc h3, .doc h4, .doc h5, .doc h6 {
-    color: #4a5568;
     font-weight: 400;
     -webkit-hyphens: none;
     -ms-hyphens: none;
@@ -171,12 +159,12 @@ div.code-block-caption:hover > a.headerlink {
 
 .nav-menu .toctree-l{{ level }} a:hover,
 .nav-menu .toctree-l{{ level }} span:hover {
-    background-color: #e6e9ee;
+    background: light-dark(var(--theme-light-color-neutral-hover), var(--theme-dark-color-primary-hover-weak));
 }
 
 .nav-menu .toctree-l{{ level }}>a.current {
-    background-color: #e6f8ff;
-    color: #0056b3;
+    background: light-dark(var(--theme-light-color-neutral-hover), var(--theme-dark-color-primary-hover-weak));
+    color: light-dark(var(--theme-light-color-primary-text), var(--theme-dark-color-primary-text));
 }
 
 .nav-menu .toctree-l{{ level }}>a.current::before {
@@ -186,7 +174,6 @@ div.code-block-caption:hover > a.headerlink {
     position: absolute;
     left: 0;
     top: 0;
-    background: #0056b3;
     border-radius: 4px;
 }
 
@@ -202,7 +189,6 @@ div.code-block-caption:hover > a.headerlink {
 }
 
 .nav-menu a, .nav-text {
-    color: #535b66;
     font-weight: 400;
     display: block;
     padding: 0.25rem 0;
@@ -231,9 +217,7 @@ body.sphinx .deprecated > *::after {
 
 body.sphinx .doc dl.deprecated dt:first-of-type span.sig-prename,
 body.sphinx .doc dl.deprecated dt:first-of-type span.sig-name {
-    border-bottom: 1px solid #f6ad55;
-    /* color: #702459; */
-    /* background-color: #fed7e2; */
+    border-bottom: 1px solid var(--palette-lemon-30);
 }
 
 body.sphinx .doc dl.deprecated {
@@ -244,7 +228,5 @@ body.sphinx .doc dl.deprecated {
 body.sphinx .doc div.deprecated {
     padding: 1rem;
     margin: 0 2rem;
-    /* color: #702459; */
-    border-left: 2px solid #f6ad55;
-    background-color: #fffaf0;
+    border-left: 2px solid var(--palette-lemon-30);
 }

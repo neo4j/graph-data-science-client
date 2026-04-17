@@ -12,7 +12,12 @@
 {% endblock %}
 
 {%- block content %}
-<body class="article docs sphinx">
+<body class="light-mode dark-mode article docs sphinx">
+<script>
+  const userColorSchemeName = 'neo4j-docs-theme';
+  const userColorScheme = localStorage.getItem(userColorSchemeName) || 'system';
+  document.documentElement.style.colorScheme = userColorScheme;
+</script>
 
 {%- block document %}
 
