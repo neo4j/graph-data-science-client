@@ -476,28 +476,11 @@ class GdsArrowClient:
         self,
         endpoint: str,
         job_id: str,
-        data: pyarrow.Table | list[pyarrow.RecordBatch] | list[pandas.DataFrame],
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | list[pandas.DataFrame] | pandas.DataFrame,
         batch_size: int = 10000,
         progress_callback: ProgressCallback = lambda num_rows: None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
-        if isinstance(data, pandas.DataFrame):
-            data = [data]
-
-        def map_list_entry_to_batches(e: pyarrow.RecordBatch | pandas.DataFrame) -> list[pyarrow.RecordBatch]:
-            return [e] if isinstance(e, pyarrow.RecordBatch) else pyarrow.Table.from_pandas(e).to_batches(batch_size)
-
-        batches: list[pyarrow.RecordBatch] = []
-        match data:
-            case list():
-                for entry in data:
-                    partial_batches = map_list_entry_to_batches(entry)
-                    batches.extend(partial_batches)
-            case pyarrow.Table():
-                batches = data.to_batches(batch_size)
-            case _:
-                raise ValueError(f"Unsupported data type: {type(data)}")
-
         flight_descriptor = {
             "name": endpoint,
             "version": ArrowEndpointVersion.V2.version(),
@@ -507,11 +490,45 @@ class GdsArrowClient:
         }
         upload_descriptor = flight.FlightDescriptor.for_command(json.dumps(flight_descriptor).encode("utf-8"))
 
+        for batches in self._batch_groups(data, batch_size):
+            self._upload_batches(upload_descriptor, batches, job_id, progress_callback, termination_flag)
+
+    @staticmethod
+    def _batch_groups(
+        data: pyarrow.Table | list[pyarrow.RecordBatch] | list[pandas.DataFrame] | pandas.DataFrame,
+        batch_size: int,
+    ) -> list[list[pyarrow.RecordBatch]]:
+        if isinstance(data, pandas.DataFrame):
+            return [pyarrow.Table.from_pandas(data).to_batches(batch_size)]
+
+        if isinstance(data, pyarrow.Table):
+            return [data.to_batches(batch_size)]
+
+        if isinstance(data, list):
+            if all(isinstance(entry, pandas.DataFrame) for entry in data):
+                return [pyarrow.Table.from_pandas(entry).to_batches(batch_size) for entry in data]
+
+            if all(isinstance(entry, pyarrow.RecordBatch) for entry in data):
+                return [data]
+
+        raise ValueError(f"Unsupported data type: {type(data)}")
+
+    def _upload_batches(
+        self,
+        upload_descriptor: flight.FlightDescriptor,
+        batches: list[pyarrow.RecordBatch],
+        job_id: str,
+        progress_callback: ProgressCallback,
+        termination_flag: TerminationFlag | None,
+    ) -> None:
+        if not batches:
+            return
+
         put_stream, ack_stream = self._flight_client.do_put_with_retry(upload_descriptor, batches[0].schema)
 
         @self._flight_client._retry_config.decorator(operation_name="Upload batch", logger=self._logger)
-        def upload_batch(p: RecordBatch) -> None:
-            put_stream.write_batch(p)
+        def upload_batch(batch: RecordBatch) -> None:
+            put_stream.write_batch(batch)
 
         with put_stream:
             for partition in batches:
