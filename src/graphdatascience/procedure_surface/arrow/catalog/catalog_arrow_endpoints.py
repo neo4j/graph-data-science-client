@@ -142,6 +142,52 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
 
+    def project_native(
+        self,
+        graph_name: str,
+        node_label_filter: list[str],
+        relationship_type_filter: list[str],
+        *,
+        node_properties: list[str] | None = None,
+        relationship_properties: list[str] | None = None,
+        job_id: str | None = None,
+        concurrency: int | None = None,
+        undirected_relationship_types: builtins.list[str] | None = None,
+        inverse_indexed_relationship_types: builtins.list[str] | None = None,
+        batch_size: int | None = None,
+        logging: bool = True,
+    ) -> GraphWithProjectResult:
+        """
+        Projects a graph from the Neo4j database into the GDS graph catalog.
+
+        Parameters
+        ----------
+        graph_name : str
+            Name of the graph to be created in the catalog.
+        query : str
+            Cypher query to select nodes and relationships for the graph projection.
+            Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
+        job_id
+            Identifier for the computation.
+        concurrency
+            Number of concurrent threads to use.
+        undirected_relationship_types : list[str]
+            List of relationship types to treat as undirected.
+        inverse_indexed_relationship_types : list[str]
+            List of relationship types to index in both directions.
+        batch_size : int | None, default=None
+            Number of rows to process in each batch when projecting the graph.
+        logging : bool, default=True
+            Whether to log progress during graph projection.
+        Returns
+        -------
+        ProjectionResult:
+            A result object containing information about the projected graph.
+        """
+
+        if self._query_runner is None:
+            raise ValueError("Remote projection is only supported for attached Sessions.")
+
     def construct(
         self,
         graph_name: str,
