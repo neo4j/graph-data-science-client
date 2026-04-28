@@ -150,3 +150,58 @@ def test_project_from_tables(arrow_client: AuthenticatedArrowClient, gds_arrow_c
     assert listing.node_count == 6
     assert listing.relationship_count == 3
     assert listing.graph_name == "table"
+
+
+def test_project_from_tables_with_heterogeneous_dataframe_schemas(
+    arrow_client: AuthenticatedArrowClient, gds_arrow_client: GdsArrowClient
+) -> None:
+    graph_name = "heterogeneous-table"
+
+    nodes_a = pd.DataFrame(
+        {
+            "nodeId": np.array([1, 2], dtype=np.int64),
+            "labels": ["A", "A"],
+            "score": np.array([1.5, 2.5], dtype=np.float64),
+        }
+    )
+    nodes_b = pd.DataFrame(
+        {
+            "nodeId": np.array([3, 4], dtype=np.int64),
+            "labels": ["B", "B"],
+            "rank": np.array([7, 8], dtype=np.int64),
+        }
+    )
+    rels_x = pd.DataFrame(
+        {
+            "sourceNodeId": np.array([1], dtype=np.int64),
+            "targetNodeId": np.array([3], dtype=np.int64),
+            "relationshipType": ["X"],
+            "weight": np.array([0.75], dtype=np.float64),
+        }
+    )
+    rels_y = pd.DataFrame(
+        {
+            "sourceNodeId": np.array([2], dtype=np.int64),
+            "targetNodeId": np.array([4], dtype=np.int64),
+            "relationshipType": ["Y"],
+            "flag": np.array([1], dtype=np.int64),
+        }
+    )
+
+    job_id = gds_arrow_client.create_graph(graph_name)
+    gds_arrow_client.upload_nodes(job_id, [nodes_a, nodes_b])
+    gds_arrow_client.node_load_done(job_id)
+
+    while gds_arrow_client.job_status(job_id).status != "RELATIONSHIP_LOADING":
+        pass
+
+    gds_arrow_client.upload_relationships(job_id, [rels_x, rels_y])
+    gds_arrow_client.relationship_load_done(job_id)
+
+    while gds_arrow_client.job_status(job_id).status != "Done":
+        pass
+
+    listing = CatalogArrowEndpoints(arrow_client).list(graph_name)[0]
+    assert listing.node_count == 4
+    assert listing.relationship_count == 2
+    assert listing.graph_name == graph_name
