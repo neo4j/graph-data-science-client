@@ -560,14 +560,8 @@ For a full list of the available algorithms, see the https://neo4j.com/docs/grap
 === Limitations
 
 * Model Catalog is supported with limitations:
-** Trained models can only be used for prediction using the same Session in which they were trained.
-   After the Session is deleted, all trained models will be lost.
 ** Model publishing is not supported, including
 *** `gds.model.publish`
-** Model persistence is not supported, including
-*** `gds.model.store`
-*** `gds.model.load`
-*** `gds.model.delete`
 * Topological Link Prediction algorithms are not supported, including
 ** `gds.alpha.linkprediction.adamicAdar`
 ** `gds.alpha.linkprediction.commonNeighbors`
@@ -681,3 +675,7 @@ NOTE: If you want to use Cypher to operate Aura Graph Analytics use the https://
 ----
 gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
 ----
+
+
+== Model Catalog
+Storing models in GDS Sessions is identical to other deployment modes. There are no code or parameter changes necessary. For more information on how the model catalog works in GDS Sessions see the link:https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/machine-learning/[Model Catalog documentation in the GDS Manual].
