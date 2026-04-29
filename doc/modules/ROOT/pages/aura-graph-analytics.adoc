@@ -667,7 +667,7 @@ gds.wcc.write(
 You can run Cypher queries on the Neo4j DB using the `run_cypher()` method.
 There is no restriction on the type of query that can be run, but it is important to note that the query will be run on the Neo4j DB, and not on the GDS Session.
 
-NOTE: If you want to use Cypher to operate Aura Graph Analytics use the https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/cypher[Cypher API].
+NOTE: If you want to use Cypher to operate Aura Graph Analytics use the {neo4j-docs-base-uri}/graph-data-science/current/aura-graph-analytics/cypher[Cypher API].
 
 
 .Run a Cypher query to find our written-back embeddings:
@@ -678,4 +678,4 @@ gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
 
 
 == Model Catalog
-Storing models in GDS Sessions is identical to other deployment modes. There are no code or parameter changes necessary. For more information on how the model catalog works in GDS Sessions see the link:https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/machine-learning/[Model Catalog documentation in the GDS Manual].
+Storing models in GDS Sessions is identical to other deployment modes. There are no code or parameter changes necessary. For more information on how the model catalog works in GDS Sessions see the link:{neo4j-docs-base-uri}/graph-data-science/current/aura-graph-analytics/machine-learning/[Model Catalog documentation in the GDS Manual].
