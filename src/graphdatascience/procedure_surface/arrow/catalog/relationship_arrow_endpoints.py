@@ -29,6 +29,10 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
         self._show_progress = show_progress
+        self._collapse_path_endpoints = CollapsePathArrowEndpoints(
+            self._arrow_client,
+            show_progress=self._show_progress,
+        )
 
     def stream(
         self,
@@ -214,10 +218,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> CollapsePathResult:
-        return CollapsePathArrowEndpoints(
-            self._arrow_client,
-            show_progress=self._show_progress,
-        ).mutate(
+        return self._collapse_path_endpoints.mutate(
             G=G,
             path_templates=path_templates,
             mutate_relationship_type=mutate_relationship_type,

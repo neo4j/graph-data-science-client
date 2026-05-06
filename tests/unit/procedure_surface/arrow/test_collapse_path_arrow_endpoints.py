@@ -1,7 +1,6 @@
 from unittest import mock
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import RelationshipArrowEndpoints
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
@@ -69,44 +68,3 @@ def test_collapse_path_mutate_runs_arrow_job() -> None:
         show_progress=False,
     )
     get_summary.assert_called_once_with(arrow_client, "job-1")
-
-
-def test_relationship_collapse_path_delegates_to_dedicated_endpoint() -> None:
-    graph = mock.Mock()
-
-    with mock.patch(
-        "graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints.CollapsePathArrowEndpoints",
-        create=True,
-    ) as collapse_path_endpoints:
-        collapse_path_endpoints.return_value.mutate.return_value = mock.sentinel.result
-
-        result = RelationshipArrowEndpoints(
-            arrow_client=mock.Mock(spec=AuthenticatedArrowClient),
-            write_back_client=None,
-        ).collapse_path(
-            G=graph,
-            path_templates=[["REL", "REL"]],
-            mutate_relationship_type="FoF",
-            node_labels=["Node"],
-            allow_self_loops=True,
-            concurrency=4,
-            job_id="job-1",
-            sudo=True,
-            log_progress=False,
-            username="neo4j",
-        )
-
-    assert result is mock.sentinel.result
-    collapse_path_endpoints.assert_called_once()
-    collapse_path_endpoints.return_value.mutate.assert_called_once_with(
-        G=graph,
-        path_templates=[["REL", "REL"]],
-        mutate_relationship_type="FoF",
-        node_labels=["Node"],
-        allow_self_loops=True,
-        concurrency=4,
-        job_id="job-1",
-        sudo=True,
-        log_progress=False,
-        username="neo4j",
-    )

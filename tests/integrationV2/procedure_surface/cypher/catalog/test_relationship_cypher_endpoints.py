@@ -7,6 +7,7 @@ from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import (
     RelationshipCypherEndpoints,
 )
@@ -259,23 +260,22 @@ def test_to_undirected_with_property_aggregation(
 def test_collapse_path_delegates_to_dedicated_endpoint(
     relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2
 ) -> None:
-    with mock.patch(
-        "graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints.CollapsePathCypherEndpoints"
-    ) as collapse_path_endpoints:
-        collapse_path_endpoints.return_value.mutate.return_value = mock.sentinel.result
+    collapse_path_endpoints = mock.Mock()
+    collapse_path_endpoints.mutate.return_value = mock.sentinel.result
+    relationship_endpoints._collapse_path_endpoints = collapse_path_endpoints
 
-        result = relationship_endpoints.collapse_path(
-            G=sample_graph,
-            path_templates=[["REL", "REL"]],
-            mutate_relationship_type="FoF",
-        )
-
-    assert result is mock.sentinel.result
-    collapse_path_endpoints.assert_called_once_with(relationship_endpoints._query_runner)
-    collapse_path_endpoints.return_value.mutate.assert_called_once_with(
+    result = relationship_endpoints.collapse_path(
         G=sample_graph,
         path_templates=[["REL", "REL"]],
         mutate_relationship_type="FoF",
+    )
+
+    assert result is mock.sentinel.result
+    collapse_path_endpoints.mutate.assert_called_once_with(
+        G=sample_graph,
+        path_templates=[["REL", "REL"]],
+        mutate_relationship_type="FoF",
+        node_labels=ALL_LABELS,
         allow_self_loops=False,
         concurrency=None,
         job_id=None,

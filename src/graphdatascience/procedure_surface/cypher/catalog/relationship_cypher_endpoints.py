@@ -23,6 +23,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
     def __init__(self, query_runner: QueryRunner, gds_arrow_client: GdsArrowClient | None = None):
         self._query_runner = query_runner
         self._gds_arrow_client = gds_arrow_client
+        self._collapse_path_endpoints = CollapsePathCypherEndpoints(self._query_runner)
 
     def stream(
         self,
@@ -240,7 +241,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> CollapsePathResult:
-        return CollapsePathCypherEndpoints(self._query_runner).mutate(
+        return self._collapse_path_endpoints.mutate(
             G=G,
             path_templates=path_templates,
             mutate_relationship_type=mutate_relationship_type,
