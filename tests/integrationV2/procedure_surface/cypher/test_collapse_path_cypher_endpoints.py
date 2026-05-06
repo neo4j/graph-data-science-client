@@ -54,7 +54,7 @@ def test_collapse_path(collapse_path_endpoints: CollapsePathCypherEndpoints, sam
         mutate_relationship_type="FoF",
     )
 
-    assert result.relationshipsWritten == 3
-    assert result.mutateMillis >= 0
-    assert result.preProcessingMillis >= 0
-    assert result.computeMillis >= 0
+    assert result.relationships_written == 3
+    assert result.mutate_millis >= 0
+    assert result.pre_processing_millis >= 0
+    assert result.compute_millis >= 0

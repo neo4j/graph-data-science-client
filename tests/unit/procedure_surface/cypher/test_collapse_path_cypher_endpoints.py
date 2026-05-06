@@ -34,6 +34,7 @@ def test_collapse_path_mutate_runs_query() -> None:
         G=graph,
         path_templates=[["REL", "REL"]],
         mutate_relationship_type="FoF",
+        node_labels=["Node"],
         allow_self_loops=True,
         concurrency=4,
         job_id="job-1",
@@ -42,7 +43,7 @@ def test_collapse_path_mutate_runs_query() -> None:
         username="neo4j",
     )
 
-    assert result.relationshipsWritten == 4
+    assert result.relationships_written == 4
     query_runner.call_procedure.assert_called_once_with(
         endpoint="gds.collapsePath.mutate",
         params=mock.ANY,
@@ -52,6 +53,7 @@ def test_collapse_path_mutate_runs_query() -> None:
     assert params["config"] == {
         "pathTemplates": [["REL", "REL"]],
         "mutateRelationshipType": "FoF",
+        "nodeLabels": ["Node"],
         "allowSelfLoops": True,
         "concurrency": 4,
         "jobId": "job-1",
@@ -74,6 +76,7 @@ def test_relationship_collapse_path_delegates_to_dedicated_endpoint() -> None:
             G=graph,
             path_templates=[["REL", "REL"]],
             mutate_relationship_type="FoF",
+            node_labels=["Node"],
             allow_self_loops=True,
             concurrency=4,
             job_id="job-1",
@@ -88,6 +91,7 @@ def test_relationship_collapse_path_delegates_to_dedicated_endpoint() -> None:
         G=graph,
         path_templates=[["REL", "REL"]],
         mutate_relationship_type="FoF",
+        node_labels=["Node"],
         allow_self_loops=True,
         concurrency=4,
         job_id="job-1",

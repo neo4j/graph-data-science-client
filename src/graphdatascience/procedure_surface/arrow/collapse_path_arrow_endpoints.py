@@ -4,6 +4,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import CollapsePathResult
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
@@ -19,6 +20,7 @@ class CollapsePathArrowEndpoints(CollapsePathEndpoints):
         path_templates: list[list[str]],
         mutate_relationship_type: str,
         *,
+        node_labels: list[str] = ALL_LABELS,
         allow_self_loops: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -30,6 +32,7 @@ class CollapsePathArrowEndpoints(CollapsePathEndpoints):
             graph_name=G.name(),
             path_templates=path_templates,
             mutate_relationship_type=mutate_relationship_type,
+            node_labels=node_labels,
             allow_self_loops=allow_self_loops,
             concurrency=concurrency,
             job_id=job_id,

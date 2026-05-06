@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import CollapsePathResult
 
 
@@ -14,6 +15,7 @@ class CollapsePathEndpoints(ABC):
         path_templates: list[list[str]],
         mutate_relationship_type: str,
         *,
+        node_labels: list[str] = ALL_LABELS,
         allow_self_loops: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -32,6 +34,8 @@ class CollapsePathEndpoints(ABC):
             A path template is an ordered list of relationship types used for the traversal. The same relationship type can be added multiple times, in order to traverse them as indicated. And, you may specify several path templates to process in one go.
         mutate_relationship_type : str
             Name of the relationship type to store the results in.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         allow_self_loops : bool, default=False
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency

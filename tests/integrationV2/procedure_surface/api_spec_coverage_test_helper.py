@@ -85,6 +85,7 @@ IGNORED_PARAMETERS = {
         "relationship_weight_property",
     ],
     r".*scale_properties.*": ["relationship_types"],
+    r".*collapse_path.*": ["relationship_types"],
 }
 
 ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, str | None]] = {

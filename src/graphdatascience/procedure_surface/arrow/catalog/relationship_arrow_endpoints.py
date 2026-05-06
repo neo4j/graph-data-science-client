@@ -14,7 +14,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
     RelationshipsToUndirectedResult,
     RelationshipsWriteResult,
 )
-from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
@@ -206,6 +206,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         path_templates: list[list[str]],
         mutate_relationship_type: str,
         *,
+        node_labels: list[str] = ALL_LABELS,
         allow_self_loops: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -220,6 +221,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             G=G,
             path_templates=path_templates,
             mutate_relationship_type=mutate_relationship_type,
+            node_labels=node_labels,
             allow_self_loops=allow_self_loops,
             concurrency=concurrency,
             job_id=job_id,

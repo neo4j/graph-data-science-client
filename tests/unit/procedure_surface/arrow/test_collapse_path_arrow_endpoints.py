@@ -41,6 +41,7 @@ def test_collapse_path_mutate_runs_arrow_job() -> None:
             G=graph,
             path_templates=[["REL", "REL"]],
             mutate_relationship_type="FoF",
+            node_labels=["Node"],
             allow_self_loops=True,
             concurrency=4,
             job_id="job-1",
@@ -49,7 +50,7 @@ def test_collapse_path_mutate_runs_arrow_job() -> None:
             username="neo4j",
         )
 
-    assert result.relationshipsWritten == 4
+    assert result.relationships_written == 4
     run_job_and_wait.assert_called_once_with(
         arrow_client,
         "v2/graph.relationships.collapsePath",
@@ -57,6 +58,7 @@ def test_collapse_path_mutate_runs_arrow_job() -> None:
             "graphName": "g",
             "pathTemplates": [["REL", "REL"]],
             "mutateRelationshipType": "FoF",
+            "nodeLabels": ["Node"],
             "allowSelfLoops": True,
             "concurrency": 4,
             "jobId": "job-1",
@@ -85,6 +87,7 @@ def test_relationship_collapse_path_delegates_to_dedicated_endpoint() -> None:
             G=graph,
             path_templates=[["REL", "REL"]],
             mutate_relationship_type="FoF",
+            node_labels=["Node"],
             allow_self_loops=True,
             concurrency=4,
             job_id="job-1",
@@ -99,6 +102,7 @@ def test_relationship_collapse_path_delegates_to_dedicated_endpoint() -> None:
         G=graph,
         path_templates=[["REL", "REL"]],
         mutate_relationship_type="FoF",
+        node_labels=["Node"],
         allow_self_loops=True,
         concurrency=4,
         job_id="job-1",

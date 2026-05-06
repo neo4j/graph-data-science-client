@@ -9,7 +9,7 @@ from pydantic import AliasChoices, Field, field_validator
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
-from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 
 
 class RelationshipsEndpoints(ABC):
@@ -214,6 +214,7 @@ class RelationshipsEndpoints(ABC):
         path_templates: list[list[str]],
         mutate_relationship_type: str,
         *,
+        node_labels: list[str] = ALL_LABELS,
         allow_self_loops: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -233,6 +234,8 @@ class RelationshipsEndpoints(ABC):
             A path template is an ordered list of relationship types used for the traversal. The same relationship type can be added multiple times, in order to traverse them as indicated. And, you may specify several path templates to process in one go.
         mutate_relationship_type : str
             Name of the relationship type to store the results in.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         allow_self_loops : bool, default=False
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency
@@ -297,10 +300,10 @@ class RelationshipsToUndirectedResult(RelationshipsInverseIndexResult):
 
 
 class CollapsePathResult(BaseResult):
-    preProcessingMillis: int
-    computeMillis: int
-    mutateMillis: int
-    relationshipsWritten: int
+    pre_processing_millis: int
+    compute_millis: int
+    mutate_millis: int
+    relationships_written: int
     configuration: dict[str, Any]
 
 
