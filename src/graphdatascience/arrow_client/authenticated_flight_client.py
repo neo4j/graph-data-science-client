@@ -10,7 +10,7 @@ from typing import Any, Iterator, Type
 import certifi
 from pyarrow import Schema, flight
 from pyarrow import __version__ as arrow_version
-from pyarrow._flight import (
+from pyarrow.flight import (
     Action,
     ActionType,
     FlightInternalError,

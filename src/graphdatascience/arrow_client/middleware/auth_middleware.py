@@ -4,7 +4,7 @@ import base64
 import time
 from typing import Any
 
-from pyarrow._flight import ClientMiddleware, ClientMiddlewareFactory
+from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 

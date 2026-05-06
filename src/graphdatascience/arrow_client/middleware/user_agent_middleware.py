@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pyarrow._flight import ClientMiddleware, ClientMiddlewareFactory
+from pyarrow.flight import ClientMiddleware, ClientMiddlewareFactory
 
 
 class UserAgentFactory(ClientMiddlewareFactory):  # type: ignore

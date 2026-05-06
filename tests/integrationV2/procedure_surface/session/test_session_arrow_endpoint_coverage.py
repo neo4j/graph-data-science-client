@@ -4,6 +4,12 @@ from collections import defaultdict
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
+    NodeRegressionPipelineArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints import (
+    NodeRegressionPredictArrowEndpoints,
+)
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 # mapping for arrow endpoint name parts -> endpoint callable from SessionV2Endpoints
@@ -34,6 +40,20 @@ ENDPOINT_MAPPINGS = {
     "maxFlow.minCost": "max_flow.min_cost",
 }
 
+PIPELINE_NODE_REGRESSION_MAPPINGS = {
+    "nodeRegression": ("pipeline.node_regression",),
+    "nodeRegression.autoTuning.configure": ("pipeline.node_regression.configure_auto_tuning",),
+    "nodeRegression.features.select": ("pipeline.node_regression.select_features",),
+    "nodeRegression.modelCandidate.add": (
+        "pipeline.node_regression.add_linear_regression",
+        "pipeline.node_regression.add_random_forest",
+    ),
+    "nodeRegression.nodeProperty.add": ("pipeline.node_regression.add_node_property",),
+    "nodeRegression.predict": ("pipeline.node_regression.predict",),
+    "nodeRegression.split.configure": ("pipeline.node_regression.configure_split",),
+    "nodeRegression.train": ("pipeline.node_regression.train",),
+}
+
 
 @pytest.fixture
 def endpoints(arrow_client: AuthenticatedArrowClient) -> SessionV2Endpoints:
@@ -52,8 +72,19 @@ def to_snake(camel: str) -> str:
     return snake.lower()
 
 
+def _has_dotted_path(root: object, dotted_path: str) -> bool:
+    current = root
+    for part in dotted_path.split("."):
+        if not hasattr(current, part):
+            return False
+        current = getattr(current, part)
+    return True
+
+
 def check_gds_v2_availability(endpoints: SessionV2Endpoints, algo: str) -> bool:
     """Check if an algorithm is available through gds.v2 interface"""
+    if algo in PIPELINE_NODE_REGRESSION_MAPPINGS:
+        return all(_has_dotted_path(endpoints, path) for path in PIPELINE_NODE_REGRESSION_MAPPINGS[algo])
 
     for old, new in ENDPOINT_MAPPINGS.items():
         if old in algo:
@@ -72,6 +103,24 @@ def check_gds_v2_availability(endpoints: SessionV2Endpoints, algo: str) -> bool:
 
     # if we can resolve an object for all parts of the algo endpoint we assume it is available
     return True
+
+
+def test_check_gds_v2_availability_for_node_regression_actions(endpoints: SessionV2Endpoints) -> None:
+    assert check_gds_v2_availability(endpoints, "nodeRegression")
+    assert check_gds_v2_availability(endpoints, "nodeRegression.autoTuning.configure")
+    assert check_gds_v2_availability(endpoints, "nodeRegression.features.select")
+    assert check_gds_v2_availability(endpoints, "nodeRegression.nodeProperty.add")
+    assert check_gds_v2_availability(endpoints, "nodeRegression.predict")
+    assert check_gds_v2_availability(endpoints, "nodeRegression.split.configure")
+    assert check_gds_v2_availability(endpoints, "nodeRegression.train")
+
+
+def test_check_gds_v2_availability_requires_both_model_candidate_methods(endpoints: SessionV2Endpoints) -> None:
+    pipeline = endpoints.pipeline.node_regression
+
+    assert hasattr(pipeline, "add_linear_regression")
+    assert hasattr(pipeline, "add_random_forest")
+    assert check_gds_v2_availability(endpoints, "nodeRegression.modelCandidate.add")
 
 
 def test_algo_coverage(endpoints: SessionV2Endpoints) -> None:
@@ -116,3 +165,52 @@ def test_algo_coverage(endpoints: SessionV2Endpoints) -> None:
 
     # check missing endpoints against known missing algos
     assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"
+
+
+def test_pipeline_coverage(endpoints: SessionV2Endpoints) -> None:
+    arrow_client = endpoints._arrow_client
+
+    # Get all available Arrow actions
+    available_v2_actions = [
+        action.type.removeprefix("v2/") for action in arrow_client.list_actions() if action.type.startswith("v2/")
+    ]
+
+    # Filter to only v2 algorithm actions (exclude graph, model, catalog operations)
+    pipeline_actions: set[str] = {action for action in available_v2_actions if action.startswith("pipeline")}
+
+    missing_endpoints: set[str] = set()
+    available_endpoints: set[str] = set()
+
+    algos_per_category = defaultdict(list)
+    for action in pipeline_actions:
+        category, algo_parts = action.split(".", maxsplit=1)
+        algos_per_category[category].append(algo_parts)
+
+    for category, algos in algos_per_category.items():
+        for algo in algos:
+            is_available = check_gds_v2_availability(
+                endpoints,
+                algo,
+            )
+            action = f"{category}.{algo}"
+            if is_available:
+                available_endpoints.add(action)
+            else:
+                missing_endpoints.add(action)
+
+    # Print summary
+    print("\nArrow Action Coverage Summary:")
+    print(f"Total Pipeline actions found: {len(pipeline_actions)}")
+    print(f"Available through gds.v2: {len(available_endpoints)}")
+
+    missing_endpoints = {e for e in missing_endpoints if "pipeline.nodeRegression" in e}
+
+    # check missing endpoints against known missing algos
+    assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"
+
+
+def test_session_pipeline_node_regression_predict_resolves(endpoints: SessionV2Endpoints) -> None:
+    pipeline_endpoints = endpoints.pipeline.node_regression
+
+    assert isinstance(pipeline_endpoints, NodeRegressionPipelineArrowEndpoints)
+    assert isinstance(pipeline_endpoints.predict, NodeRegressionPredictArrowEndpoints)

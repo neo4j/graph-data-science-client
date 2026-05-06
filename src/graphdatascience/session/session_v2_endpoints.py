@@ -54,6 +54,7 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_fo
 )
 from graphdatascience.procedure_surface.api.pathfinding.spanning_tree_endpoints import SpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeEndpoints
+from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
@@ -141,6 +142,9 @@ from graphdatascience.procedure_surface.arrow.pathfinding.spanning_tree_arrow_en
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.steiner_tree_arrow_endpoints import (
     SteinerTreeArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
+    PipelineArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
@@ -559,6 +563,13 @@ class SessionV2Endpoints:
         return TriangleCountArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
+
+    @property
+    def pipeline(self) -> PipelineEndpoints:
+        """
+        Return endpoints for pipeline procedures.
+        """
+        return PipelineArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def triangles(self) -> TrianglesEndpoints:

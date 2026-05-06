@@ -1,5 +1,5 @@
 import pytest
-from pyarrow._flight import FlightInternalError, FlightTimedOutError, FlightUnavailableError
+from pyarrow.flight import FlightInternalError, FlightTimedOutError, FlightUnavailableError
 
 from graphdatascience.retry_utils.retry_config import RetryConfigV2, StopConfig
 

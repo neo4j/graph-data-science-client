@@ -38,6 +38,29 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "pipeline.exists",
     "pipeline.list",
     "pipeline.drop",
+    "alpha.pipeline.node_classification.add_mlp",
+    "beta.pipeline.link_prediction.add_random_forest",
+    "beta.pipeline.node_classification.select_features",
+    "beta.pipeline.node_classification.train",
+    "beta.pipeline.node_classification.predict.mutate",
+    "beta.pipeline.node_classification.add_node_property",
+    "beta.pipeline.link_prediction.add_feature",
+    "beta.pipeline.link_prediction.add_logistic_regression",
+    "beta.pipeline.link_prediction.create",
+    "beta.pipeline.link_prediction.predict.mutate",
+    "beta.pipeline.node_classification.add_logistic_regression",
+    "beta.pipeline.node_classification.create",
+    "beta.pipeline.node_classification.predict.write",
+    "beta.pipeline.link_prediction.add_node_property",
+    "alpha.pipeline.node_classification.configure_auto_tuning",
+    "beta.pipeline.link_prediction.predict.stream",
+    "beta.pipeline.link_prediction.configure_split",
+    "beta.pipeline.link_prediction.train",
+    "beta.pipeline.node_classification.add_random_forest",
+    "alpha.pipeline.link_prediction.add_mlp",
+    "alpha.pipeline.link_prediction.configure_auto_tuning",
+    "beta.pipeline.node_classification.predict.stream",
+    "beta.pipeline.node_classification.configure_split",
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(
@@ -60,6 +83,7 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("prizesteiner_tree", "prize_steiner_tree"),
         ("spanning_tree", "spanning_tree"),
         ("steiner_tree", "steiner_tree"),
+        ("alpha.pipeline.nodeRegression", "pipeline.node_regression"),
     ]
 )
 
@@ -254,6 +278,8 @@ def verify_configuration_fields(
 
         actual_default = actual_parameters[name].default
         if actual_default is inspect.Parameter.empty:
+            actual_default = None
+        if actual_default == []:
             actual_default = None
 
         assert actual_default == expected_default, (

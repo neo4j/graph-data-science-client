@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from pyarrow._flight import Result
+from pyarrow.flight import Result
 
 
 class ArrowTestResult(Result):  # type:ignore

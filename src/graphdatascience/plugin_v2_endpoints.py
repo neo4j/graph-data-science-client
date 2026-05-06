@@ -52,6 +52,7 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_fo
 )
 from graphdatascience.procedure_surface.api.pathfinding.spanning_tree_endpoints import SpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeEndpoints
+from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
@@ -139,6 +140,9 @@ from graphdatascience.procedure_surface.cypher.pathfinding.spanning_tree_cypher_
 )
 from graphdatascience.procedure_surface.cypher.pathfinding.steiner_tree_cypher_endpoints import (
     SteinerTreeCypherEndpoints,
+)
+from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
+    PipelineCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints import KnnCypherEndpoints
 from graphdatascience.procedure_surface.cypher.similarity.node_similarity_cypher_endpoints import (
@@ -502,6 +506,13 @@ class PluginV2Endpoints:
         Return endpoints for the triangle count algorithm.
         """
         return TriangleCountCypherEndpoints(self._db_client)
+
+    @property
+    def pipeline(self) -> PipelineEndpoints:
+        """
+        Return endpoints for pipeline procedures.
+        """
+        return PipelineCypherEndpoints(self._db_client)
 
     @property
     def triangles(self) -> TrianglesEndpoints:

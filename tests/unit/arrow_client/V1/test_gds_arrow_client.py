@@ -4,13 +4,13 @@ from typing import Any, Generator, TypeAlias
 
 import pyarrow as pa
 import pytest
-from pyarrow._flight import GeneratorStream
 from pyarrow.flight import (
     Action,
     FlightServerBase,
     FlightServerError,
     FlightTimedOutError,
     FlightUnavailableError,
+    GeneratorStream,
     Ticket,
 )
 
