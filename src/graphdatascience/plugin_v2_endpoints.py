@@ -31,6 +31,7 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
+from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.config_endpoints import ConfigEndpoints
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
@@ -98,6 +99,7 @@ from graphdatascience.procedure_surface.cypher.community.sllpa_cypher_endpoints 
 from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_endpoints import (
     TriangleCountCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.community.triangles_cypher_endpoints import TrianglesCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
 from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
@@ -500,6 +502,13 @@ class PluginV2Endpoints:
         Return endpoints for the triangle count algorithm.
         """
         return TriangleCountCypherEndpoints(self._db_client)
+
+    @property
+    def triangles(self) -> TrianglesEndpoints:
+        """
+        Return endpoint for the triangles algorithm.
+        """
+        return TrianglesCypherEndpoints(self._db_client)
 
     @property
     def wcc(self) -> WccEndpoints:

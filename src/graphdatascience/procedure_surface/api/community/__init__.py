@@ -82,6 +82,7 @@ from graphdatascience.procedure_surface.api.community.triangle_count_endpoints i
     TriangleCountStatsResult,
     TriangleCountWriteResult,
 )
+from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import (
     WccEndpoints,
     WccMutateResult,
@@ -147,6 +148,7 @@ __all__ = [
     "TriangleCountMutateResult",
     "TriangleCountStatsResult",
     "TriangleCountWriteResult",
+    "TrianglesEndpoints",
     "WccEndpoints",
     "WccMutateResult",
     "WccStatsResult",

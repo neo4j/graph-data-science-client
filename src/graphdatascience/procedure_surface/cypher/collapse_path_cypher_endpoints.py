@@ -3,8 +3,8 @@ from __future__ import annotations
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import CollapsePathResult
-from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 

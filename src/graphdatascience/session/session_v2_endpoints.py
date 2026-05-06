@@ -33,6 +33,7 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
+from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.list_progress_endpoint import ListProgressEndpoint
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
@@ -100,6 +101,7 @@ from graphdatascience.procedure_surface.arrow.community.sllpa_arrow_endpoints im
 from graphdatascience.procedure_surface.arrow.community.triangle_count_arrow_endpoints import (
     TriangleCountArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.community.triangles_arrow_endpoints import TrianglesArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.arrow.config_arrow_endpoints import ConfigArrowEndpoints
 from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint import ListProgressArrowEndpoint
@@ -557,6 +559,13 @@ class SessionV2Endpoints:
         return TriangleCountArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
+
+    @property
+    def triangles(self) -> TrianglesEndpoints:
+        """
+        Return endpoint for the triangles algorithm.
+        """
+        return TrianglesArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     @property
     def wcc(self) -> WccEndpoints:

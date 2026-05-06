@@ -38,7 +38,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "pipeline.exists",
     "pipeline.list",
     "pipeline.drop",
-    "triangles",
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(
@@ -105,6 +104,9 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, str | None]] = {
         "write_property": None,
     },
     ".*triangle_count.*": {
+        "max_degree": None,
+    },
+    ".*triangles$": {
         "max_degree": None,
     },
 }
