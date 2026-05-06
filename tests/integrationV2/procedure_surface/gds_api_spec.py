@@ -5,32 +5,6 @@ from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
 
-# endpoints not mapped yet in the v2 endpoints of the python client
-UNMAPPED_ENDPOINTS: set[str] = {
-    "dag.topological_sort.stream",
-    "hits.mutate",
-    "hits.stream",
-    "hits.stats",
-    "hits.write",
-    "ml.kge.predict.mutate",
-    "ml.kge.predict.stream",
-    "ml.kge.predict.write",
-    "random_walk.stats",
-    "random_walk.stream",
-    "random_walk.mutate",
-    "split_relationships.mutate",
-    "memory.summary",
-    "memory.list",
-    "list",  # listing only available endpoints
-    "user_log",
-    # TODO
-    "pipeline.exists",
-    "pipeline.list",
-    "pipeline.drop",
-    "triangles",
-    "collapse_path.mutate",
-}
-
 
 class SourceKind(Enum):
     POSITIONAL = "POSITIONAL"
