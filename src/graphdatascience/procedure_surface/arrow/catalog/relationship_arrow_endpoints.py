@@ -15,6 +15,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
     RelationshipsWriteResult,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
+from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
 
@@ -212,8 +213,11 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> CollapsePathResult:
-        config = ConfigConverter.convert_to_gds_config(
-            graph_name=G.name(),
+        return CollapsePathArrowEndpoints(
+            self._arrow_client,
+            show_progress=self._show_progress,
+        ).mutate(
+            G=G,
             path_templates=path_templates,
             mutate_relationship_type=mutate_relationship_type,
             allow_self_loops=allow_self_loops,
@@ -223,10 +227,3 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             log_progress=log_progress,
             username=username,
         )
-
-        show_progress = self._show_progress and log_progress
-        job_id = JobClient.run_job_and_wait(
-            self._arrow_client, "v2/graph.relationships.collapsePath", config, show_progress=show_progress
-        )
-
-        return CollapsePathResult(**JobClient.get_summary(self._arrow_client, job_id))

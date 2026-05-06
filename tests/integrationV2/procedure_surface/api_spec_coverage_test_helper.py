@@ -39,7 +39,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "pipeline.list",
     "pipeline.drop",
     "triangles",
-    "collapse_path.mutate",
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(

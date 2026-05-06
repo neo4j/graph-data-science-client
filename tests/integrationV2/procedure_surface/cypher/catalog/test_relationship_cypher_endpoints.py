@@ -1,5 +1,7 @@
 from typing import Generator
 
+from unittest import mock
+
 import pytest
 
 from graphdatascience import QueryRunner
@@ -255,14 +257,30 @@ def test_to_undirected_with_property_aggregation(
     assert result.relationships_written == 6
 
 
-def test_collapse_path(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
-    result = relationship_endpoints.collapse_path(
+def test_collapse_path_delegates_to_dedicated_endpoint(
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2
+) -> None:
+    with mock.patch(
+        "graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints.CollapsePathCypherEndpoints"
+    ) as collapse_path_endpoints:
+        collapse_path_endpoints.return_value.mutate.return_value = mock.sentinel.result
+
+        result = relationship_endpoints.collapse_path(
+            G=sample_graph,
+            path_templates=[["REL", "REL"]],
+            mutate_relationship_type="FoF",
+        )
+
+    assert result is mock.sentinel.result
+    collapse_path_endpoints.assert_called_once_with(relationship_endpoints._query_runner)
+    collapse_path_endpoints.return_value.mutate.assert_called_once_with(
         G=sample_graph,
         path_templates=[["REL", "REL"]],
         mutate_relationship_type="FoF",
+        allow_self_loops=False,
+        concurrency=None,
+        job_id=None,
+        sudo=False,
+        log_progress=True,
+        username=None,
     )
-
-    assert result.relationshipsWritten == 3
-    assert result.mutateMillis >= 0
-    assert result.preProcessingMillis >= 0
-    assert result.computeMillis >= 0

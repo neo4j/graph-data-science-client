@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoi
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
+from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
 from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
@@ -70,6 +71,7 @@ from graphdatascience.procedure_surface.cypher.centrality.closeness_harmonic_cyp
 from graphdatascience.procedure_surface.cypher.centrality.degree_cypher_endpoints import DegreeCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.eigenvector_cypher_endpoints import EigenvectorCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.pagerank_cypher_endpoints import PageRankCypherEndpoints
+from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.clique_counting_cypher_endpoints import (
     CliqueCountingCypherEndpoints,
 )
@@ -178,6 +180,13 @@ class PluginV2Endpoints:
         Return endpoint for listing progress.
         """
         return ListProgressCypherEndpoint(self._db_client)
+
+    @property
+    def collapse_path(self) -> CollapsePathEndpoints:
+        """
+        Return endpoints for collapsing relationship paths.
+        """
+        return CollapsePathCypherEndpoints(self._db_client)
 
     ## Algorithms
 

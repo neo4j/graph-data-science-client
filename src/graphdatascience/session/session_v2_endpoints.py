@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoi
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
+from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
 from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
@@ -72,6 +73,7 @@ from graphdatascience.procedure_surface.arrow.centrality.closeness_harmonic_arro
 from graphdatascience.procedure_surface.arrow.centrality.degree_arrow_endpoints import DegreeArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.eigenvector_arrow_endpoints import EigenvectorArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.pagerank_arrow_endpoints import PageRankArrowEndpoints
+from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.clique_counting_arrow_endpoints import (
     CliqueCountingArrowEndpoints,
 )
@@ -203,6 +205,13 @@ class SessionV2Endpoints:
         Return system-related endpoints.
         """
         return ListProgressArrowEndpoint(self._arrow_client)
+
+    @property
+    def collapse_path(self) -> CollapsePathEndpoints:
+        """
+        Return endpoints for collapsing relationship paths.
+        """
+        return CollapsePathArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     ## Algorithms
 
