@@ -1,3 +1,3 @@
-from graphdatascience.procedure_surface.cypher.system_cypher_endpoints import SystemCypherEndpoints
+from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 
-__all__ = ["SystemCypherEndpoints"]
+__all__ = ["ListProgressCypherEndpoint"]

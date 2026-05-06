@@ -5,9 +5,9 @@ from abc import ABC, abstractmethod
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
-class SystemEndpoints(ABC):
+class ListProgressEndpoint(ABC):
     @abstractmethod
-    def list_progress(
+    def __call__(
         self,
         job_id: str | None = None,
         show_completed: bool = False,

@@ -14,7 +14,8 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
     RelationshipsToUndirectedResult,
     RelationshipsWriteResult,
 )
-from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
 
@@ -28,6 +29,10 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
         self._show_progress = show_progress
+        self._collapse_path_endpoints = CollapsePathArrowEndpoints(
+            self._arrow_client,
+            show_progress=self._show_progress,
+        )
 
     def stream(
         self,
@@ -205,6 +210,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         path_templates: list[list[str]],
         mutate_relationship_type: str,
         *,
+        node_labels: list[str] = ALL_LABELS,
         allow_self_loops: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -212,10 +218,11 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> CollapsePathResult:
-        config = ConfigConverter.convert_to_gds_config(
-            graph_name=G.name(),
+        return self._collapse_path_endpoints.mutate(
+            G=G,
             path_templates=path_templates,
             mutate_relationship_type=mutate_relationship_type,
+            node_labels=node_labels,
             allow_self_loops=allow_self_loops,
             concurrency=concurrency,
             job_id=job_id,
@@ -223,10 +230,3 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             log_progress=log_progress,
             username=username,
         )
-
-        show_progress = self._show_progress and log_progress
-        job_id = JobClient.run_job_and_wait(
-            self._arrow_client, "v2/graph.relationships.collapsePath", config, show_progress=show_progress
-        )
-
-        return CollapsePathResult(**JobClient.get_summary(self._arrow_client, job_id))

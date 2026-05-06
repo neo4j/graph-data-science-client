@@ -4,14 +4,14 @@ import pytest
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
-from graphdatascience.procedure_surface.cypher.system_cypher_endpoints import SystemCypherEndpoints
+from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 from graphdatascience.query_runner.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def system_endpoints(query_runner: QueryRunner) -> Generator[SystemCypherEndpoints, None, None]:
-    yield SystemCypherEndpoints(query_runner)
+def list_progress_endpoint(query_runner: QueryRunner) -> Generator[ListProgressCypherEndpoint, None, None]:
+    yield ListProgressCypherEndpoint(query_runner)
 
 
 graph = """
@@ -40,8 +40,8 @@ def job_id(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[str, N
 
 
 @pytest.mark.skip(reason="Enable when we figure out how to retain jobs")
-def test_list_progress_job_id(system_endpoints: SystemCypherEndpoints, job_id: str) -> None:
-    results = system_endpoints.list_progress(show_completed=True)
+def test_list_progress_job_id(list_progress_endpoint: ListProgressCypherEndpoint, job_id: str) -> None:
+    results = list_progress_endpoint(show_completed=True)
 
     assert len(results) == 1
 
@@ -53,6 +53,6 @@ def test_list_progress_job_id(system_endpoints: SystemCypherEndpoints, job_id: s
     assert "#" in result.progress_bar
 
 
-def test_list_nothing(system_endpoints: SystemCypherEndpoints) -> None:
-    results = system_endpoints.list_progress()
+def test_list_nothing(list_progress_endpoint: ListProgressCypherEndpoint) -> None:
+    results = list_progress_endpoint()
     assert len(results) == 0

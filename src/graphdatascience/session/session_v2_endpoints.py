@@ -1,6 +1,6 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api import ConfigEndpoints, SystemEndpoints
+from graphdatascience.procedure_surface.api import ConfigEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoi
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
+from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
 from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
@@ -32,7 +33,9 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
+from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
+from graphdatascience.procedure_surface.api.list_progress_endpoint import ListProgressEndpoint
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
@@ -71,6 +74,7 @@ from graphdatascience.procedure_surface.arrow.centrality.closeness_harmonic_arro
 from graphdatascience.procedure_surface.arrow.centrality.degree_arrow_endpoints import DegreeArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.eigenvector_arrow_endpoints import EigenvectorArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.pagerank_arrow_endpoints import PageRankArrowEndpoints
+from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.clique_counting_arrow_endpoints import (
     CliqueCountingArrowEndpoints,
 )
@@ -97,8 +101,10 @@ from graphdatascience.procedure_surface.arrow.community.sllpa_arrow_endpoints im
 from graphdatascience.procedure_surface.arrow.community.triangle_count_arrow_endpoints import (
     TriangleCountArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.community.triangles_arrow_endpoints import TrianglesArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.arrow.config_arrow_endpoints import ConfigArrowEndpoints
+from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint import ListProgressArrowEndpoint
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import (
     ModelCatalogArrowEndpoints,
 )
@@ -140,7 +146,6 @@ from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints imp
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
     NodeSimilarityArrowEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.system_arrow_endpoints import SystemArrowEndpoints
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -197,11 +202,18 @@ class SessionV2Endpoints:
         return ConfigArrowEndpoints(self._arrow_client)
 
     @property
-    def system(self) -> SystemEndpoints:
+    def list_progress(self) -> ListProgressEndpoint:
         """
         Return system-related endpoints.
         """
-        return SystemArrowEndpoints(self._arrow_client)
+        return ListProgressArrowEndpoint(self._arrow_client)
+
+    @property
+    def collapse_path(self) -> CollapsePathEndpoints:
+        """
+        Return endpoints for collapsing relationship paths.
+        """
+        return CollapsePathArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     ## Algorithms
 
@@ -547,6 +559,13 @@ class SessionV2Endpoints:
         return TriangleCountArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
+
+    @property
+    def triangles(self) -> TrianglesEndpoints:
+        """
+        Return endpoint for the triangles algorithm.
+        """
+        return TrianglesArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
 
     @property
     def wcc(self) -> WccEndpoints:

@@ -1,8 +1,14 @@
 import json
+from enum import Enum
 from pathlib import Path
 from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
+
+
+class SourceKind(Enum):
+    POSITIONAL = "POSITIONAL"
+    CONFIG = "CONFIG"
 
 
 class TypeInfo(BaseModel, extra="forbid", populate_by_name=True):
@@ -17,6 +23,8 @@ class Parameter(BaseModel, extra="forbid", populate_by_name=True):
 
     name: str
     type: TypeInfo
+    sourceKind: SourceKind
+    positionIndex: int | None = None
     defaultValue: Optional[Any] = None
 
 
@@ -40,6 +48,12 @@ class EndpointSpec(BaseModel, extra="forbid", populate_by_name=True):
     parameters: List[Parameter]
     returnFields: List[ReturnField]
 
+    def config_parameters(self) -> List[Parameter]:
+        return [param for param in self.parameters if param.sourceKind == SourceKind.CONFIG]
+
+    def positional_parameters(self) -> List[Parameter]:
+        return [param for param in self.parameters if param.sourceKind == SourceKind.POSITIONAL]
+
 
 class EndpointWithModesSpec(BaseModel, extra="forbid", populate_by_name=True):
     """Represents a GDS procedure with its parameters and modes."""
@@ -51,7 +65,7 @@ class EndpointWithModesSpec(BaseModel, extra="forbid", populate_by_name=True):
     def callable_modes(self) -> List[EndpointSpec]:
         return [
             EndpointSpec(
-                name=f"{self.name}.{mode.mode}",
+                name=f"{self.name}.{mode.mode}" if mode.mode.lower() != "unknown" else self.name,
                 parameters=self.parameters + mode.parameters,
                 returnFields=mode.returnFields,
             )

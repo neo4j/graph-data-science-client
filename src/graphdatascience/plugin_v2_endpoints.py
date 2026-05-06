@@ -1,5 +1,4 @@
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
-from graphdatascience.procedure_surface.api import SystemEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
@@ -11,6 +10,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoi
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
+from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
 from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
@@ -31,6 +31,7 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
+from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.config_endpoints import ConfigEndpoints
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
@@ -71,6 +72,7 @@ from graphdatascience.procedure_surface.cypher.centrality.closeness_harmonic_cyp
 from graphdatascience.procedure_surface.cypher.centrality.degree_cypher_endpoints import DegreeCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.eigenvector_cypher_endpoints import EigenvectorCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.pagerank_cypher_endpoints import PageRankCypherEndpoints
+from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.clique_counting_cypher_endpoints import (
     CliqueCountingCypherEndpoints,
 )
@@ -97,8 +99,10 @@ from graphdatascience.procedure_surface.cypher.community.sllpa_cypher_endpoints 
 from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_endpoints import (
     TriangleCountCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.community.triangles_cypher_endpoints import TrianglesCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
+from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import (
     ModelCatalogCypherEndpoints,
 )
@@ -140,7 +144,6 @@ from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints i
 from graphdatascience.procedure_surface.cypher.similarity.node_similarity_cypher_endpoints import (
     NodeSimilarityCypherEndpoints,
 )
-from graphdatascience.procedure_surface.cypher.system_cypher_endpoints import SystemCypherEndpoints
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -174,11 +177,18 @@ class PluginV2Endpoints:
         return ConfigCypherEndpoints(self._db_client)
 
     @property
-    def system(self) -> SystemEndpoints:
+    def list_progress(self) -> ListProgressCypherEndpoint:
         """
-        Return endpoints for system management.
+        Return endpoint for listing progress.
         """
-        return SystemCypherEndpoints(self._db_client)
+        return ListProgressCypherEndpoint(self._db_client)
+
+    @property
+    def collapse_path(self) -> CollapsePathEndpoints:
+        """
+        Return endpoints for collapsing relationship paths.
+        """
+        return CollapsePathCypherEndpoints(self._db_client)
 
     ## Algorithms
 
@@ -492,6 +502,13 @@ class PluginV2Endpoints:
         Return endpoints for the triangle count algorithm.
         """
         return TriangleCountCypherEndpoints(self._db_client)
+
+    @property
+    def triangles(self) -> TrianglesEndpoints:
+        """
+        Return endpoint for the triangles algorithm.
+        """
+        return TrianglesCypherEndpoints(self._db_client)
 
     @property
     def wcc(self) -> WccEndpoints:
