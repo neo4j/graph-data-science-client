@@ -5,7 +5,7 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
-from graphdatascience.procedure_surface.arrow.system_arrow_endpoints import SystemArrowEndpoints
+from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint import ListProgressArrowEndpoint
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 graph = """
@@ -28,12 +28,12 @@ def job_id(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> Gen
 
 
 @pytest.fixture
-def system_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[SystemArrowEndpoints, None, None]:
-    yield SystemArrowEndpoints(arrow_client)
+def list_progress_endpoint(arrow_client: AuthenticatedArrowClient) -> Generator[ListProgressArrowEndpoint, None, None]:
+    yield ListProgressArrowEndpoint(arrow_client)
 
 
-def test_list_progress_job_id(system_endpoints: SystemArrowEndpoints, job_id: str) -> None:
-    results = system_endpoints.list_progress(job_id=job_id, show_completed=True)
+def test_list_progress_job_id(list_progress_endpoint: ListProgressArrowEndpoint, job_id: str) -> None:
+    results = list_progress_endpoint(job_id=job_id, show_completed=True)
 
     assert len(results) == 1
 
@@ -45,6 +45,6 @@ def test_list_progress_job_id(system_endpoints: SystemArrowEndpoints, job_id: st
     assert "#" in result.progress_bar
 
 
-def test_list_nothing(system_endpoints: SystemArrowEndpoints) -> None:
-    results = system_endpoints.list_progress()
+def test_list_nothing(list_progress_endpoint: ListProgressArrowEndpoint) -> None:
+    results = list_progress_endpoint()
     assert len(results) == 0

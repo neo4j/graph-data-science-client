@@ -1,6 +1,6 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api import ConfigEndpoints, SystemEndpoints
+from graphdatascience.procedure_surface.api import ConfigEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
@@ -33,6 +33,7 @@ from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEn
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
+from graphdatascience.procedure_surface.api.list_progress_endpoint import ListProgressEndpoint
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
@@ -99,6 +100,7 @@ from graphdatascience.procedure_surface.arrow.community.triangle_count_arrow_end
 )
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.arrow.config_arrow_endpoints import ConfigArrowEndpoints
+from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint import ListProgressArrowEndpoint
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import (
     ModelCatalogArrowEndpoints,
 )
@@ -140,7 +142,6 @@ from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints imp
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
     NodeSimilarityArrowEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.system_arrow_endpoints import SystemArrowEndpoints
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -197,11 +198,11 @@ class SessionV2Endpoints:
         return ConfigArrowEndpoints(self._arrow_client)
 
     @property
-    def system(self) -> SystemEndpoints:
+    def list_progress(self) -> ListProgressEndpoint:
         """
         Return system-related endpoints.
         """
-        return SystemArrowEndpoints(self._arrow_client)
+        return ListProgressArrowEndpoint(self._arrow_client)
 
     ## Algorithms
 

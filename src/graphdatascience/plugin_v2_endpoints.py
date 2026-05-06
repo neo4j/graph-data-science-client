@@ -1,5 +1,4 @@
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
-from graphdatascience.procedure_surface.api import SystemEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
@@ -99,6 +98,7 @@ from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_e
 )
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
+from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import (
     ModelCatalogCypherEndpoints,
 )
@@ -140,7 +140,6 @@ from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints i
 from graphdatascience.procedure_surface.cypher.similarity.node_similarity_cypher_endpoints import (
     NodeSimilarityCypherEndpoints,
 )
-from graphdatascience.procedure_surface.cypher.system_cypher_endpoints import SystemCypherEndpoints
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
@@ -174,11 +173,11 @@ class PluginV2Endpoints:
         return ConfigCypherEndpoints(self._db_client)
 
     @property
-    def system(self) -> SystemEndpoints:
+    def list_progress(self) -> ListProgressCypherEndpoint:
         """
-        Return endpoints for system management.
+        Return endpoint for listing progress.
         """
-        return SystemCypherEndpoints(self._db_client)
+        return ListProgressCypherEndpoint(self._db_client)
 
     ## Algorithms
 

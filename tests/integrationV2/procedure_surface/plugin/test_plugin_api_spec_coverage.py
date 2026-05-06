@@ -13,27 +13,12 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.plugin_v2_endpoints import PluginV2Endpoints
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from tests.integrationV2.procedure_surface.gds_api_spec import (
+    UNMAPPED_ENDPOINTS,
     EndpointSpec,
     EndpointWithModesSpec,
     Parameter,
-    ReturnField,
+    ReturnField, SourceKind,
 )
-
-MISSING_ENDPOINTS: set[str] = {
-    "dag.topological_sort.stream",
-    "hits.mutate",
-    "hits.stream",
-    "hits.stats",
-    "hits.write",
-    "ml.kge.predict.mutate",
-    "ml.kge.predict.stream",
-    "ml.kge.predict.write",
-    "random_walk.stats",
-    "random_walk.stream",
-    "random_walk.mutate",
-    "split_relationships.mutate",
-}
-
 
 ENDPOINT_MAPPINGS = OrderedDict(
     [
@@ -142,18 +127,25 @@ def resolve_callable_object(endpoints: PluginV2Endpoints, endpoint: str) -> Meth
     """Check if an algorithm is available through gds.v2 interface"""
     endpoint_parts = endpoint.split(".")
 
-    callable_object: PluginV2Endpoints | MethodType = endpoints
+    resolved_object: Any = endpoints
     for endpoint_part in endpoint_parts:
         # Get the algorithm endpoint
-        if not hasattr(callable_object, endpoint_part):
+        if not hasattr(resolved_object, endpoint_part):
             return None
 
-        callable_object = getattr(callable_object, endpoint_part)
+        resolved_object = getattr(resolved_object, endpoint_part)
 
-    if not callable(callable_object):
-        raise ValueError(f"Resolved object {callable_object} for endpoint {endpoint} is not callable")
+    if not callable(resolved_object):
+        raise ValueError(f"Resolved object {resolved_object} for endpoint {endpoint} is not callable")
 
-    return callable_object
+    if isinstance(resolved_object, MethodType):
+        return resolved_object
+
+    call_method = getattr(resolved_object, "__call__", None)
+    if isinstance(call_method, MethodType):
+        return call_method
+
+    raise ValueError(f"Resolved callable object {resolved_object} for endpoint {endpoint} is not a method")
 
 
 def verify_return_fields(
@@ -170,13 +162,29 @@ def verify_return_fields(
     if return_annotation is DataFrame:
         return  # For DataFrames we dont know the columns in advance
 
-    # TODO check type of return fields
-    if issubclass(return_annotation, BaseModel):
-        actual_return_fields: set[str] = return_annotation.model_fields.keys()
+    result_type: type[BaseModel] | None = None
+
+    if inspect.isclass(return_annotation) and issubclass(return_annotation, BaseModel):
+        result_type = return_annotation
     else:
+        origin = typing.get_origin(return_annotation)
+        args = typing.get_args(return_annotation)
+
+        if origin is list:
+            item_type = args[0] if args else None
+            if inspect.isclass(item_type) and issubclass(item_type, BaseModel):
+                result_type = item_type
+        elif origin is tuple:
+            model_types = [arg for arg in args if inspect.isclass(arg) and issubclass(arg, BaseModel)]
+            if len(model_types) == 1:
+                result_type = model_types[0]
+
+    if not result_type:
         raise ValueError(
-            f"Return annotation {return_annotation} is not a Pydantic model. Please add support here for testing."
+            f"Return annotation {return_annotation} is not a supported result type. Please add support here for testing."
         )
+
+    actual_return_fields: set[str] = set(result_type.model_fields.keys())
 
     expected_return_field_keys = {to_snake(field.name) for field in expected_return_fields}
 
@@ -199,6 +207,10 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
                 if param in expected_configuration:
                     expected_configuration.pop(param)
 
+    # rename graph_name to G for python endpoint
+    if "graph_name" in expected_configuration:
+        expected_configuration["G"] = expected_configuration.pop("graph_name")
+
     method_signature: Any | inspect.Signature = inspect.signature(callable_object)
 
     if not isinstance(method_signature, inspect.Signature):
@@ -207,9 +219,7 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
     actual_parameters = method_signature.parameters
 
     # validate parameter names match
-    actual_parameters_keys = set(actual_parameters.keys()) - {
-        "G"
-    }  # exclude Graph parameter as its not part of the spec
+    actual_parameters_keys = actual_parameters.keys()
     expected_parameter_keys = expected_configuration.keys()
 
     missing_params = expected_parameter_keys - actual_parameters_keys
@@ -225,7 +235,7 @@ def verify_configuration_fields(callable_object: MethodType, endpoint_spec: Endp
     required_params_with_default = [
         name
         for name, param in actual_parameters.items()
-        if param.default is not inspect.Parameter.empty and not expected_configuration[name].type.optional
+        if param.default is not inspect.Parameter.empty and not expected_configuration[name].type.optional and expected_configuration[name].sourceKind == SourceKind.CONFIG
     ]
     if required_params_with_default:
         raise ValueError(
@@ -273,11 +283,9 @@ def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
                 endpoints,
                 endpoint_name,
             )
-            if not callable_object and endpoint_name not in MISSING_ENDPOINTS:
+            if not callable_object and endpoint_name not in UNMAPPED_ENDPOINTS:
                 missing_endpoints.add(endpoint_name)
             elif callable_object:
-                # TODO verify against gds-api spec
-                # returnFields = callable_object.__
                 available_endpoints.add(endpoint_name)
                 verify_return_fields(callable_object, expected_return_fields=endpoint_spec.returnFields)
                 verify_configuration_fields(callable_object, endpoint_spec=endpoint_spec)
@@ -288,7 +296,7 @@ def test_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
     print(f"Available through gds.v2: {len(available_endpoints)}")
 
     # check if any previously missing algos are now available
-    newly_available_endpoints = available_endpoints.intersection(MISSING_ENDPOINTS)
+    newly_available_endpoints = available_endpoints.intersection(UNMAPPED_ENDPOINTS)
     assert not newly_available_endpoints, "Endpoints now available, please remove from MISSING_ENDPOINTS"
 
     # check missing endpoints against known missing algos
