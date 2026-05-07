@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from pyarrow._flight import Result
+from pyarrow.flight import Result
 
 
 def deserialize_single(input_stream: list[Result]) -> dict[str, Any]:

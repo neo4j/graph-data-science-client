@@ -12,9 +12,6 @@ class Model(ABC):
         self._name = name
         self._model_api = model_api
 
-    # TODO estimate mode, predict modes on here?
-    # implement Cypher and Arrow info_provider and stuff
-
     def name(self) -> str:
         """
         Get the name of the model.

@@ -89,7 +89,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         Train a model on a given graph using the pipeline.
 
         Args:
-            G: The graph to train on.
+            G: Graph object to use
             **config: The configuration for training.
 
         Returns:
@@ -116,7 +116,7 @@ class TrainingPipeline(ABC, Generic[MODEL_TYPE]):
         Estimate the training time for a given graph and configuration.
 
         Args:
-            G: The graph to train on.
+            G: Graph object to use
             **config: The configuration for training.
 
         Returns:

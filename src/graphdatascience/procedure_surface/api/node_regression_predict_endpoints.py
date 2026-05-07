@@ -1,0 +1,113 @@
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import Any
+
+from pandas import DataFrame
+
+from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+
+
+class NodeRegressionPipelinePredictEndpoints(ABC):
+    @abstractmethod
+    def stream(
+        self,
+        G: GraphV2,
+        model_name: str,
+        *,
+        relationship_types: list[str] | None = None,
+        target_node_labels: list[str] | None = None,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> DataFrame:
+        """
+        Run node regression prediction in stream mode.
+
+        Parameters
+        ----------
+        G
+            Graph object to use
+        model_name
+            The trained model to use for prediction.
+        relationship_types
+            Optional relationship type filter.
+        target_node_labels
+            Optional node label filter.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
+        log_progress
+            Display progress logging.
+        sudo
+            Disable the memory guard.
+        concurrency
+            Number of concurrent threads to use.
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        DataFrame
+            The prediction results as a DataFrame.
+        """
+        pass
+
+    @abstractmethod
+    def mutate(
+        self,
+        G: GraphV2,
+        model_name: str,
+        mutate_property: str,
+        *,
+        relationship_types: list[str] | None = None,
+        target_node_labels: list[str] | None = None,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> NodeRegressionPipelinePredictMutateResult:
+        """
+        Run node regression prediction in mutate mode.
+
+        Parameters
+        ----------
+        G
+            Graph object to use
+        model_name
+            The trained model to use for prediction.
+        mutate_property
+            Name of the node property to store the results in.
+        relationship_types
+            Optional relationship type filter.
+        target_node_labels
+            Optional node label filter.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
+        log_progress
+            Display progress logging.
+        sudo
+            Disable the memory guard.
+        concurrency
+            Number of concurrent threads to use.
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        NodeRegressionPipelinePredictMutateResult
+            The mutate result summary.
+        """
+        pass
+
+
+class NodeRegressionPipelinePredictMutateResult(BaseResult):
+    compute_millis: int | None = None
+    configuration: dict[str, Any] | None = None
+    mutate_millis: int | None = None
+    node_properties_written: int | None = None
+    post_processing_millis: int | None = None
+    pre_processing_millis: int | None = None

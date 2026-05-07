@@ -4,7 +4,6 @@ from typing import Any, Generator, TypeAlias
 
 import pyarrow as pa
 import pytest
-from pyarrow._flight import GeneratorStream
 from pyarrow.flight import (
     Action,
     FlightInternalError,
@@ -12,6 +11,7 @@ from pyarrow.flight import (
     FlightServerError,
     FlightTimedOutError,
     FlightUnavailableError,
+    GeneratorStream,
     Ticket,
 )
 from tenacity import retry_any, retry_if_exception_type, stop_after_attempt, wait_none
