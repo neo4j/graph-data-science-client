@@ -143,7 +143,7 @@ from graphdatascience.procedure_surface.arrow.pathfinding.spanning_tree_arrow_en
 from graphdatascience.procedure_surface.arrow.pathfinding.steiner_tree_arrow_endpoints import (
     SteinerTreeArrowEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
+from graphdatascience.procedure_surface.arrow.pipeline.pipeline_arrow_endpoints import (
     PipelineArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints

@@ -4,6 +4,12 @@ from collections import defaultdict
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
+    NodeClassificationPipelineArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints import (
+    NodeClassificationPredictArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
     NodeRegressionPipelineArrowEndpoints,
 )
@@ -26,15 +32,7 @@ UNMAPPED_ENDPOINTS = [
     "pipeline.linkPrediction.train",
     "pipeline.linkPrediction.train.estimate",
     "pipeline.list",
-    "pipeline.nodeClassification",
-    "pipeline.nodeClassification.autoTuning.configure",
-    "pipeline.nodeClassification.features.select",
-    "pipeline.nodeClassification.modelCandidate.add",
-    "pipeline.nodeClassification.nodeProperty.add",
-    "pipeline.nodeClassification.predict",
     "pipeline.nodeClassification.predict.estimate",
-    "pipeline.nodeClassification.split.configure",
-    "pipeline.nodeClassification.train",
     "pipeline.nodeClassification.train.estimate",
     "pipeline.nodeRegression.features.select",
 ]
@@ -66,6 +64,7 @@ ENDPOINT_MAPPINGS = {
     "longestPath": "dag.longest_path",
     "maxFlow.minCost": "max_flow.min_cost",
     # pipelines
+    "pipeline.nodeClassification.modelCandidate.add": "pipeline.node_classification.add_logistic_regression",
     "nodeRegression": "node_regression",
     "autoTuning.configure": "configure_auto_tuning",
     "features.select": "select_features",
@@ -197,3 +196,10 @@ def test_session_pipeline_node_regression_predict_resolves(endpoints: SessionV2E
 
     assert isinstance(pipeline_endpoints, NodeRegressionPipelineArrowEndpoints)
     assert isinstance(pipeline_endpoints.predict, NodeRegressionPredictArrowEndpoints)
+
+
+def test_session_pipeline_node_classification_predict_resolves(endpoints: SessionV2Endpoints) -> None:
+    pipeline_endpoints = endpoints.pipeline.node_classification
+
+    assert isinstance(pipeline_endpoints, NodeClassificationPipelineArrowEndpoints)
+    assert isinstance(pipeline_endpoints.predict, NodeClassificationPredictArrowEndpoints)

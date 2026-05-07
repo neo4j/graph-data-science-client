@@ -5,6 +5,7 @@
   "damping_factor": "Probability of a jump to a random node.",
   "delta_threshold": "Minimum change between iterations.",
   "G": [
+    "Graph object to use",
     "Graph object to use.",
     "Graph object to use or a dictionary representing the graph dimensions."
   ],

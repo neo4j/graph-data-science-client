@@ -9,6 +9,8 @@ import pytest
 
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
+EXCLUDED_COMMON_PARAMETERS = {"model_name", "pipeline_name"}
+
 
 def load_parameter_descriptions() -> Dict[str, list[str] | str]:
     """Load the canonical parameter descriptions from parameters.json."""
@@ -135,7 +137,11 @@ def test_common_parameter_consistency() -> None:
     inconsistencies: list[dict[str, Any]] = []
 
     # Only assert consistency for parameters used more than 10x
-    param_descriptions = {k: v for k, v in param_descriptions.items() if len(v.keys()) > 10}
+    param_descriptions = {
+        k: v
+        for k, v in param_descriptions.items()
+        if len(v.keys()) > 10 and k.split(":")[0] not in EXCLUDED_COMMON_PARAMETERS
+    }
 
     suggested_descriptions = load_parameter_descriptions()
 

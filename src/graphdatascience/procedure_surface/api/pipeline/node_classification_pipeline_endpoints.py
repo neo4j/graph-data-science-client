@@ -5,29 +5,28 @@ from typing import Any
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
-from graphdatascience.procedure_surface.api.node_regression_predict_endpoints import (
-    NodeRegressionPipelinePredictEndpoints,
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
+    NodeClassificationPipelinePredictEndpoints,
 )
-from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
-from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
-from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
-    NodeRegressionPipelineInfoResult,
-    NodeRegressionPipelineTrainResult,
+from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import NodeClassificationPipeline
+from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
+    NodeClassificationPipelineInfoResult,
+    NodeClassificationPipelineTrainResult,
 )
 
 
-class NodeRegressionPipelineEndpoints(ABC):
+class NodeClassificationPipelineEndpoints(ABC):
     @property
     @abstractmethod
-    def predict(self) -> NodeRegressionPipelinePredictEndpoints:
-        """Access prediction endpoints for node regression models trained from this surface."""
+    def predict(self) -> NodeClassificationPipelinePredictEndpoints:
+        """Access prediction endpoints for node classification models trained from this surface."""
         pass
 
     @abstractmethod
-    def create(self, pipeline_name: str) -> tuple[NodeRegressionPipeline, NodeRegressionPipelineInfoResult]:
+    def create(self, pipeline_name: str) -> tuple[NodeClassificationPipeline, NodeClassificationPipelineInfoResult]:
         """
-        Create a new node regression pipeline.
+        Create a new node classification pipeline.
 
         Parameters
         ----------
@@ -36,15 +35,15 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        tuple[NodeRegressionPipeline, NodeRegressionPipelineInfoResult]
+        tuple[NodeClassificationPipeline, NodeClassificationPipelineInfoResult]
             The created pipeline and the corresponding result payload.
         """
         pass
 
     @abstractmethod
-    def get(self, pipeline_name: str) -> NodeRegressionPipeline:
+    def get(self, pipeline_name: str) -> NodeClassificationPipeline:
         """
-        Retrieve an existing node regression pipeline by name.
+        Retrieve an existing node classification pipeline by name.
 
         Parameters
         ----------
@@ -53,7 +52,7 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeRegressionPipeline
+        NodeClassificationPipeline
             The reconstructed pipeline object.
         """
         pass
@@ -61,7 +60,7 @@ class NodeRegressionPipelineEndpoints(ABC):
     @abstractmethod
     def add_node_property(
         self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> NodeRegressionPipelineInfoResult:
+    ) -> NodeClassificationPipelineInfoResult:
         """
         Add a node property step to the pipeline.
 
@@ -76,7 +75,7 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeRegressionPipelineInfoResult
+        NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
         pass
@@ -84,7 +83,7 @@ class NodeRegressionPipelineEndpoints(ABC):
     @abstractmethod
     def select_features(
         self, pipeline_name: str, feature_properties: str | list[str]
-    ) -> NodeRegressionPipelineInfoResult:
+    ) -> NodeClassificationPipelineInfoResult:
         """
         Select the node properties used as input features.
 
@@ -97,26 +96,28 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeRegressionPipelineInfoResult
+        NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
         pass
 
     @abstractmethod
-    def add_linear_regression(
+    def add_logistic_regression(
         self,
         pipeline_name: str,
         *,
         batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
         learning_rate: float | tuple[float, float] = 0.001,
         max_epochs: int | tuple[int, int] = 100,
         min_epochs: int | tuple[int, int] = 1,
         patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
         tolerance: float | tuple[float, float] = 0.001,
-    ) -> NodeRegressionPipelineInfoResult:
+    ) -> NodeClassificationPipelineInfoResult:
         """
-        Add a linear regression model candidate to the pipeline.
+        Add a logistic regression model candidate to the pipeline.
 
         Parameters
         ----------
@@ -124,6 +125,10 @@ class NodeRegressionPipelineEndpoints(ABC):
             Name of the pipeline to update.
         batch_size
             Batch size to use during training. Pass a two-value tuple to define a parameter range.
+        class_weights
+            Optional class weights to use during training.
+        focus_weight
+            Focus weight for optimization. Pass a two-value tuple to define a parameter range.
         learning_rate
             Learning rate for optimization. Pass a two-value tuple to define a parameter range.
         max_epochs
@@ -139,7 +144,7 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeRegressionPipelineInfoResult
+        NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
         pass
@@ -149,13 +154,14 @@ class NodeRegressionPipelineEndpoints(ABC):
         self,
         pipeline_name: str,
         *,
+        criterion: str | None = "GINI",
         max_depth: int | tuple[int, int] = 2147483647,
         max_features_ratio: float | tuple[float, float] | None = None,
         min_leaf_size: int | tuple[int, int] = 1,
         min_split_size: int | tuple[int, int] = 2,
         number_of_decision_trees: int | tuple[int, int] = 100,
         number_of_samples_ratio: float | tuple[float, float] = 1.0,
-    ) -> NodeRegressionPipelineInfoResult:
+    ) -> NodeClassificationPipelineInfoResult:
         """
         Add a random forest model candidate to the pipeline.
 
@@ -163,6 +169,8 @@ class NodeRegressionPipelineEndpoints(ABC):
         ----------
         pipeline_name
             Name of the pipeline to update.
+        criterion
+            Split criterion to optimize.
         max_depth
             Maximum tree depth. Pass a two-value tuple to define a parameter range.
         max_features_ratio
@@ -178,7 +186,34 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeRegressionPipelineInfoResult
+        NodeClassificationPipelineInfoResult
+            The updated pipeline state.
+        """
+        pass
+
+    @abstractmethod
+    def add_mlp(
+        self,
+        pipeline_name: str,
+        *,
+        hidden_layer_sizes: list[int],
+        penalty: float | tuple[float, float] = 0.0,
+    ) -> NodeClassificationPipelineInfoResult:
+        """
+        Add a multi-layer perceptron model candidate to the pipeline.
+
+        Parameters
+        ----------
+        pipeline_name
+            Name of the pipeline to update.
+        hidden_layer_sizes
+            Sizes of the hidden layers in the neural network.
+        penalty
+            Penalty term to use during training. Pass a two-value tuple to define a parameter range.
+
+        Returns
+        -------
+        NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
         pass
@@ -186,7 +221,7 @@ class NodeRegressionPipelineEndpoints(ABC):
     @abstractmethod
     def configure_split(
         self, pipeline_name: str, *, test_fraction: float = 0.3, validation_folds: int = 3
-    ) -> NodeRegressionPipelineInfoResult:
+    ) -> NodeClassificationPipelineInfoResult:
         """
         Configure the train-test split used by the pipeline.
 
@@ -201,13 +236,15 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeRegressionPipelineInfoResult
+        NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
         pass
 
     @abstractmethod
-    def configure_auto_tuning(self, pipeline_name: str, *, max_trials: int = 10) -> NodeRegressionPipelineInfoResult:
+    def configure_auto_tuning(
+        self, pipeline_name: str, *, max_trials: int = 10
+    ) -> NodeClassificationPipelineInfoResult:
         """
         Configure auto-tuning for the pipeline.
 
@@ -220,7 +257,7 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeRegressionPipelineInfoResult
+        NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
         pass
@@ -231,7 +268,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         G: GraphV2,
         pipeline_name: str,
         *,
-        metrics: list[str | NodeRegressionMetric],
+        metrics: list[str],
         model_name: str,
         target_property: str,
         relationship_types: list[str] = ALL_TYPES,
@@ -243,9 +280,9 @@ class NodeRegressionPipelineEndpoints(ABC):
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[NodeRegressionModelV2, NodeRegressionPipelineTrainResult]:
+    ) -> tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]:
         """
-        Train a node regression model from the given pipeline.
+        Train a node classification model from the specified pipeline.
 
         Parameters
         ----------
@@ -254,7 +291,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         pipeline_name
             Name of the pipeline to train.
         metrics
-            Metrics to optimize for. Plain strings and ``NodeRegressionMetric`` values are both accepted.
+            Metrics to optimize for.
         model_name
             Name under which the trained model will be stored.
         target_property
@@ -280,7 +317,7 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        tuple[NodeRegressionModelV2, NodeRegressionPipelineTrainResult]
+        tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]
             The trained model and the corresponding training result.
         """
         pass
