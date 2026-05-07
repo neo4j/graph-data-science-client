@@ -76,13 +76,13 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         self,
         pipeline_name: str,
         *,
-        batch_size: int | tuple[int, int] | list[int] = 100,
-        learning_rate: float | tuple[float, float] | list[float] = 0.001,
-        max_epochs: int | tuple[int, int] | list[int] = 100,
-        min_epochs: int | tuple[int, int] | list[int] = 1,
-        patience: int | tuple[int, int] | list[int] = 1,
-        penalty: float | tuple[float, float] | list[float] = 0.0,
-        tolerance: float | tuple[float, float] | list[float] = 0.001,
+        batch_size: int | tuple[int, int] = 100,
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
+        penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> NodeRegressionPipelineInfoResult:
         config = convert_to_parameter_space_config(
             range_keys={
@@ -112,12 +112,12 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         self,
         pipeline_name: str,
         *,
-        max_depth: int | tuple[int, int] | list[int] = 2147483647,
-        max_features_ratio: float | tuple[float, float] | list[float] | None = None,
-        min_leaf_size: int | tuple[int, int] | list[int] = 1,
-        min_split_size: int | tuple[int, int] | list[int] = 2,
-        number_of_decision_trees: int | tuple[int, int] | list[int] = 100,
-        number_of_samples_ratio: float | tuple[float, float] | list[float] = 1.0,
+        max_depth: int | tuple[int, int] = 2147483647,
+        max_features_ratio: float | tuple[float, float] | None = None,
+        min_leaf_size: int | tuple[int, int] = 1,
+        min_split_size: int | tuple[int, int] = 2,
+        number_of_decision_trees: int | tuple[int, int] = 100,
+        number_of_samples_ratio: float | tuple[float, float] = 1.0,
     ) -> NodeRegressionPipelineInfoResult:
         config = convert_to_parameter_space_config(
             range_keys={

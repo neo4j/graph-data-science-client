@@ -1,6 +1,8 @@
+from typing import Any, cast
 from unittest import mock
 
 import pandas as pd
+import pytest
 
 
 def test_node_regression_add_linear_regression_runs_query() -> None:
@@ -32,7 +34,7 @@ def test_node_regression_add_linear_regression_runs_query() -> None:
     )
 
 
-def test_node_regression_add_linear_regression_accepts_list_range_inputs() -> None:
+def test_node_regression_add_linear_regression_accepts_tuple_range_inputs() -> None:
     row = mock.Mock()
     row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
     query_runner = mock.Mock()
@@ -44,8 +46,8 @@ def test_node_regression_add_linear_regression_accepts_list_range_inputs() -> No
 
     NodeRegressionPipelineCypherEndpoints(query_runner).add_linear_regression(
         "pipe",
-        max_epochs=[5, 20],
-        penalty=[0.0, 0.5],
+        max_epochs=(5, 20),
+        penalty=(0.0, 0.5),
     )
 
     assert query_runner.call_procedure.call_args.kwargs["params"]["config"] == {
@@ -57,6 +59,20 @@ def test_node_regression_add_linear_regression_accepts_list_range_inputs() -> No
         "penalty": {"range": [0.0, 0.5]},
         "tolerance": 0.001,
     }
+
+
+def test_node_regression_add_linear_regression_rejects_list_range_inputs() -> None:
+    query_runner = mock.Mock()
+
+    from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
+        NodeRegressionPipelineCypherEndpoints,
+    )
+
+    with pytest.raises(ValueError, match="max_epochs range inputs must be tuples with exactly two values."):
+        NodeRegressionPipelineCypherEndpoints(query_runner).add_linear_regression(
+            "pipe",
+            max_epochs=cast(Any, [5, 20]),
+        )
 
 
 def test_node_regression_add_node_property_runs_query_with_config() -> None:

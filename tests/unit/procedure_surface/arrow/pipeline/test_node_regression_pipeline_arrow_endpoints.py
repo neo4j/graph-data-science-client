@@ -1,6 +1,8 @@
+from typing import Any, cast
 from unittest import mock
 
 import pandas as pd
+import pytest
 from pyarrow import flight
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -58,14 +60,14 @@ def test_node_regression_add_random_forest_runs_arrow_action() -> None:
     )
 
 
-def test_node_regression_add_random_forest_accepts_list_range_inputs() -> None:
+def test_node_regression_add_random_forest_accepts_tuple_range_inputs() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
 
     NodeRegressionPipelineArrowEndpoints(arrow_client, None).add_random_forest(
         "pipe",
-        max_depth=[3, 9],
-        number_of_decision_trees=[10, 50],
+        max_depth=(3, 9),
+        number_of_decision_trees=(10, 50),
     )
 
     arrow_client.do_action_with_retry.assert_called_once_with(
@@ -80,6 +82,16 @@ def test_node_regression_add_random_forest_accepts_list_range_inputs() -> None:
             "numberOfSamplesRatio": 1.0,
         },
     )
+
+
+def test_node_regression_add_random_forest_rejects_list_range_inputs() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+
+    with pytest.raises(ValueError, match="max_depth range inputs must be tuples with exactly two values."):
+        NodeRegressionPipelineArrowEndpoints(arrow_client, None).add_random_forest(
+            "pipe",
+            max_depth=cast(Any, [3, 9]),
+        )
 
 
 def test_node_regression_add_linear_regression_runs_arrow_action() -> None:

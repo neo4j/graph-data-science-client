@@ -29,12 +29,12 @@ def convert_to_parameter_space_config(*, range_keys: set[str], **kwargs: Any | N
 
 def _to_parameter_space_value(key: str, value: Any) -> Any:
     if isinstance(value, tuple):
-        value = list(value)
+        if len(value) != 2:
+            raise ValueError(f"{key} range inputs must be tuples with exactly two values.")
+        return {"range": list(value)}
 
     if isinstance(value, list):
-        if len(value) != 2:
-            raise ValueError(f"{key} range inputs must have exactly two values.")
-        return {"range": value}
+        raise ValueError(f"{key} range inputs must be tuples with exactly two values.")
 
     return value
 
@@ -129,13 +129,13 @@ class NodeRegressionPipelineEndpoints(ABC):
         self,
         pipeline_name: str,
         *,
-        batch_size: int | tuple[int, int] | list[int] = 100,
-        learning_rate: float | tuple[float, float] | list[float] = 0.001,
-        max_epochs: int | tuple[int, int] | list[int] = 100,
-        min_epochs: int | tuple[int, int] | list[int] = 1,
-        patience: int | tuple[int, int] | list[int] = 1,
-        penalty: float | tuple[float, float] | list[float] = 0.0,
-        tolerance: float | tuple[float, float] | list[float] = 0.001,
+        batch_size: int | tuple[int, int] = 100,
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
+        penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> NodeRegressionPipelineInfoResult:
         """
         Add a linear regression model candidate to the pipeline.
@@ -145,19 +145,19 @@ class NodeRegressionPipelineEndpoints(ABC):
         pipeline_name
             Name of the pipeline to update.
         batch_size
-            Batch size to use during training. Pass a two-value tuple or list to define a parameter range.
+            Batch size to use during training. Pass a two-value tuple to define a parameter range.
         learning_rate
-            Learning rate for optimization. Pass a two-value tuple or list to define a parameter range.
+            Learning rate for optimization. Pass a two-value tuple to define a parameter range.
         max_epochs
-            Maximum number of training epochs. Pass a two-value tuple or list to define a parameter range.
+            Maximum number of training epochs. Pass a two-value tuple to define a parameter range.
         min_epochs
-            Minimum number of training epochs. Pass a two-value tuple or list to define a parameter range.
+            Minimum number of training epochs. Pass a two-value tuple to define a parameter range.
         patience
-            Early stopping patience. Pass a two-value tuple or list to define a parameter range.
+            Early stopping patience. Pass a two-value tuple to define a parameter range.
         penalty
-            Penalty term to use during training. Pass a two-value tuple or list to define a parameter range.
+            Penalty term to use during training. Pass a two-value tuple to define a parameter range.
         tolerance
-            Convergence tolerance. Pass a two-value tuple or list to define a parameter range.
+            Convergence tolerance. Pass a two-value tuple to define a parameter range.
 
         Returns
         -------
@@ -171,12 +171,12 @@ class NodeRegressionPipelineEndpoints(ABC):
         self,
         pipeline_name: str,
         *,
-        max_depth: int | tuple[int, int] | list[int] = 2147483647,
-        max_features_ratio: float | tuple[float, float] | list[float] | None = None,
-        min_leaf_size: int | tuple[int, int] | list[int] = 1,
-        min_split_size: int | tuple[int, int] | list[int] = 2,
-        number_of_decision_trees: int | tuple[int, int] | list[int] = 100,
-        number_of_samples_ratio: float | tuple[float, float] | list[float] = 1.0,
+        max_depth: int | tuple[int, int] = 2147483647,
+        max_features_ratio: float | tuple[float, float] | None = None,
+        min_leaf_size: int | tuple[int, int] = 1,
+        min_split_size: int | tuple[int, int] = 2,
+        number_of_decision_trees: int | tuple[int, int] = 100,
+        number_of_samples_ratio: float | tuple[float, float] = 1.0,
     ) -> NodeRegressionPipelineInfoResult:
         """
         Add a random forest model candidate to the pipeline.
@@ -186,17 +186,17 @@ class NodeRegressionPipelineEndpoints(ABC):
         pipeline_name
             Name of the pipeline to update.
         max_depth
-            Maximum tree depth. Pass a two-value tuple or list to define a parameter range.
+            Maximum tree depth. Pass a two-value tuple to define a parameter range.
         max_features_ratio
-            Fraction of features sampled per split. Pass a two-value tuple or list to define a parameter range.
+            Fraction of features sampled per split. Pass a two-value tuple to define a parameter range.
         min_leaf_size
-            Minimum number of samples in a leaf. Pass a two-value tuple or list to define a parameter range.
+            Minimum number of samples in a leaf. Pass a two-value tuple to define a parameter range.
         min_split_size
-            Minimum number of samples required to split a node. Pass a two-value tuple or list to define a parameter range.
+            Minimum number of samples required to split a node. Pass a two-value tuple to define a parameter range.
         number_of_decision_trees
-            Number of trees to train. Pass a two-value tuple or list to define a parameter range.
+            Number of trees to train. Pass a two-value tuple to define a parameter range.
         number_of_samples_ratio
-            Fraction of samples used per tree. Pass a two-value tuple or list to define a parameter range.
+            Fraction of samples used per tree. Pass a two-value tuple to define a parameter range.
 
         Returns
         -------
