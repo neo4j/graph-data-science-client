@@ -183,6 +183,8 @@ def test_node_regression_train_runs_arrow_job_and_returns_arrow_wired_model() ->
         assert isinstance(model, NodeRegressionModelV2)
         assert model.name() == "model"
         assert result.train_millis == 7
+        assert result.model_info is not None
+        assert result.model_info.model_name == "model"
         run_job_and_wait.assert_called_once()
         get_summary.assert_called_once_with(arrow_client, "job-1")
 
@@ -220,28 +222,29 @@ def test_node_regression_predict_stream_runs_arrow_job() -> None:
     stream_results.assert_called_once_with(arrow_client, "g", "job-1")
 
 
-def test_node_regression_predict_mutate_runs_arrow_mutation() -> None:
+def test_node_regression_predict_mutate_uses_node_property_helper() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     graph = mock.Mock()
     graph.name.return_value = "g"
 
-    mutate_response = mock.Mock()
-    mutate_response.node_properties_written = 4
-    mutate_response.mutate_millis = 5
+    helper_result = {
+        "computeMillis": 1,
+        "mutateMillis": 5,
+        "nodePropertiesWritten": 4,
+        "postProcessingMillis": 2,
+        "preProcessingMillis": 3,
+        "configuration": {"mutateProperty": "predicted"},
+    }
 
     with (
+        mock.patch(
+            "graphdatascience.procedure_surface.arrow.node_property_endpoints.NodePropertyEndpointsHelper.run_job_and_mutate",
+            return_value=helper_result,
+        ) as run_job_and_mutate,
         mock.patch(
             "graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints.JobClient.run_job_and_wait",
             return_value="job-1",
         ) as run_job_and_wait,
-        mock.patch(
-            "graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints.JobClient.get_summary",
-            return_value={"computeMillis": 1, "postProcessingMillis": 2, "preProcessingMillis": 3, "configuration": {}},
-        ),
-        mock.patch(
-            "graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints.MutationClient.mutate_node_property",
-            return_value=mutate_response,
-        ),
     ):
         result = NodeRegressionPredictArrowEndpoints(arrow_client, None).mutate(
             graph,
@@ -251,8 +254,7 @@ def test_node_regression_predict_mutate_runs_arrow_mutation() -> None:
 
     assert result.node_properties_written == 4
     assert result.mutate_millis == 5
-    run_job_and_wait.assert_called_once_with(
-        arrow_client,
+    run_job_and_mutate.assert_called_once_with(
         "v2/pipeline.nodeRegression.predict",
         {
             "graphName": "g",
@@ -260,5 +262,6 @@ def test_node_regression_predict_mutate_runs_arrow_mutation() -> None:
             "logProgress": True,
             "sudo": False,
         },
-        show_progress=True,
+        "predicted",
     )
+    run_job_and_wait.assert_not_called()

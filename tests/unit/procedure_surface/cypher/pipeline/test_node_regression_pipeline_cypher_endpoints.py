@@ -140,6 +140,8 @@ def test_node_regression_train_runs_query() -> None:
     assert isinstance(model, NodeRegressionModelV2)
     assert model.name() == "model"
     assert result.train_millis == 7
+    assert result.model_info is not None
+    assert result.model_info.model_name == "model"
     assert query_runner.call_procedure.call_args_list[1].kwargs["endpoint"] == "gds.alpha.pipeline.nodeRegression.train"
 
 

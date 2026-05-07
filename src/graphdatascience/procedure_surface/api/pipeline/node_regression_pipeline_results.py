@@ -16,8 +16,16 @@ class NodeRegressionPipelineCreateResult(NodeRegressionPipelineInfoResult):
     pass
 
 
+class NodeRegressionModelInfoResult(BaseResult):
+    best_parameters: dict[str, Any] | None = None
+    metrics: dict[str, Any] | None = None
+    model_name: str | None = None
+    model_type: str | None = None
+    pipeline: dict[str, Any] | None = None
+
+
 class NodeRegressionPipelineTrainResult(BaseResult):
     configuration: dict[str, Any] | None = None
-    model_info: dict[str, Any] | None = None
+    model_info: NodeRegressionModelInfoResult | None = None
     model_selection_stats: dict[str, Any] | None = None
     train_millis: int | None = None
