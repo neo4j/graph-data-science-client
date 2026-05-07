@@ -60,7 +60,8 @@ def _drop_pipeline(arrow_client: AuthenticatedArrowClient, pipeline_name: str) -
     )
 
 
-def test_node_classification_train_and_predict_stream_and_write(
+@pytest.mark.db_integration
+def test_node_classification_train_and_predict_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
     db_graph: GraphV2,
@@ -87,12 +88,6 @@ def test_node_classification_train_and_predict_stream_and_write(
         assert train_result.train_millis >= 0
         assert model.exists()
 
-        stream_result = model.predict_stream(db_graph)
-
-        assert "predictedClass" in stream_result.columns
-        assert "predictedProbabilities" in stream_result.columns
-        assert len(stream_result) == 4
-
         write_result = model.predict_write(
             db_graph,
             write_property="myPredictedClass",
@@ -102,6 +97,35 @@ def test_node_classification_train_and_predict_stream_and_write(
         assert write_result.node_properties_written == 8
         assert write_result.write_millis is not None
         assert write_result.write_millis >= 0
+    finally:
+        arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model_name}).encode("utf-8"))
+        _drop_pipeline(arrow_client, pipeline_name)
+
+
+def test_node_classification_train_and_predict_and_stream(
+    arrow_client: AuthenticatedArrowClient,
+    endpoints: NodeClassificationPipelineArrowEndpoints,
+    sample_graph: GraphV2,
+) -> None:
+    pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
+    model_name = f"nc-model-{uuid4().hex[:8]}"
+
+    try:
+        pipeline, create_result = endpoints.create(pipeline_name)
+        pipeline.select_features(node_properties=["feature"])
+        pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
+        model, train_result = pipeline.train(
+            sample_graph,
+            metrics=["F1_WEIGHTED"],
+            model_name=model_name,
+            target_property="target",
+        )
+
+        stream_result = model.predict_stream(sample_graph)
+
+        assert "predictedClass" in stream_result.columns
+        assert "predictedProbabilities" in stream_result.columns
+        assert len(stream_result) == 4
     finally:
         arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model_name}).encode("utf-8"))
         _drop_pipeline(arrow_client, pipeline_name)
