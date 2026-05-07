@@ -30,7 +30,7 @@ class NodeRegressionPipelinePredictEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run prediction on.
+            Graph object to use
         model_name
             The trained model to use for prediction.
         relationship_types
@@ -76,11 +76,11 @@ class NodeRegressionPipelinePredictEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to run prediction on.
+            Graph object to use
         model_name
             The trained model to use for prediction.
         mutate_property
-            The node property that will receive the predicted values.
+            Name of the node property to store the results in.
         relationship_types
             Optional relationship type filter.
         target_node_labels

@@ -272,7 +272,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         Parameters
         ----------
         G
-            The graph to train on.
+            Graph object to use
         pipeline_name
             Name of the pipeline to train.
         metrics

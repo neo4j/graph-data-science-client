@@ -42,7 +42,7 @@ class NodeRegressionModelV2(Model):
         Parameters
         ----------
         G
-            The graph to run prediction on.
+            Graph object to use
         relationship_types
             Optional relationship type filter.
         target_node_labels
@@ -94,9 +94,9 @@ class NodeRegressionModelV2(Model):
         Parameters
         ----------
         G
-            The graph to run prediction on.
+            Graph object to use
         mutate_property
-            The node property that will receive the predicted values.
+            Name of the node property to store the results in.
         relationship_types
             Optional relationship type filter.
         target_node_labels

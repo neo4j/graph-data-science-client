@@ -213,7 +213,7 @@ class NodeRegressionPipeline:
         Parameters
         ----------
         G
-            The graph to train on.
+            Graph object to use
         metrics
             Metrics to optimize for. Plain strings and ``NodeRegressionMetric`` values are both accepted.
         model_name
