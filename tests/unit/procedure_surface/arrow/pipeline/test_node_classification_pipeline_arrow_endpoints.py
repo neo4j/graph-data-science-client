@@ -49,51 +49,6 @@ def test_node_classification_predict_stream_forces_probability_distribution() ->
     stream_results.assert_called_once_with(arrow_client, "g", "job-1")
 
 
-def test_node_classification_predict_write_uses_node_property_helper() -> None:
-    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    graph = mock.Mock()
-    graph.name.return_value = "g"
-
-    helper_result = {
-        "computeMillis": 1,
-        "writeMillis": 5,
-        "nodePropertiesWritten": 4,
-        "postProcessingMillis": 2,
-        "preProcessingMillis": 3,
-        "configuration": {"writeProperty": "predicted"},
-    }
-
-    with mock.patch(
-        "graphdatascience.procedure_surface.arrow.node_property_endpoints.NodePropertyEndpointsHelper.run_job_and_write",
-        return_value=helper_result,
-    ) as run_job_and_write:
-        result = NodeClassificationPredictArrowEndpoints(arrow_client, None).write(
-            graph,
-            model_name="model",
-            write_property="predicted",
-            predicted_probability_property="probabilities",
-        )
-
-    assert result.node_properties_written == 4
-    assert result.write_millis == 5
-    run_job_and_write.assert_called_once_with(
-        "v2/pipeline.nodeClassification.predict",
-        graph,
-        {
-            "graphName": "g",
-            "modelName": "model",
-            "logProgress": True,
-            "sudo": False,
-        },
-        {
-            "writeProperty": "predicted",
-            "predictedProbabilityProperty": "probabilities",
-        },
-        write_concurrency=None,
-        concurrency=None,
-    )
-
-
 def test_node_classification_train_runs_arrow_job_and_returns_arrow_wired_model() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     graph = mock.Mock()

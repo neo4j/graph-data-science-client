@@ -84,7 +84,9 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
         )
         return NodeRegressionPipelineInfoResult(**result)
 
-    def select_features(self, pipeline_name: str, feature_properties: str | list[str]) -> NodeRegressionPipelineInfoResult:
+    def select_features(
+        self, pipeline_name: str, feature_properties: str | list[str]
+    ) -> NodeRegressionPipelineInfoResult:
         result = self._call_action(
             "v2/pipeline.nodeRegression.features.select",
             pipeline_name=pipeline_name,

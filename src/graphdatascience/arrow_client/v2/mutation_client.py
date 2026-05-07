@@ -1,5 +1,6 @@
 import math
 import time
+from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import MutateResult
@@ -24,16 +25,32 @@ class MutationClient:
         )
 
     @staticmethod
+    def mutate_node_properties(
+        client: AuthenticatedArrowClient,
+        result_store_job_id: str,
+        mutate_properties: dict[str, str] | None = None,
+        process_job_id: str | None = None,
+    ) -> MutateResult:
+        return MutationClient._mutate(
+            client=client,
+            result_store_job_id=result_store_job_id,
+            mutate_properties=mutate_properties,
+            process_job_id=process_job_id,
+        )
+
+    @staticmethod
     def mutate_relationship_property(
         client: AuthenticatedArrowClient,
         job_id: str,
         mutate_relationship_type: str,
         mutate_property: str | None,
+        mutate_properties: dict[str, str] | None = None,
     ) -> MutateResult:
         return MutationClient._mutate(
             client=client,
             result_store_job_id=job_id,
             mutate_property=mutate_property,
+            mutate_properties=mutate_properties,
             mutate_relationship_type=mutate_relationship_type,
         )
 
@@ -43,9 +60,10 @@ class MutationClient:
         result_store_job_id: str,
         process_job_id: str | None = None,
         mutate_property: str | None = None,
+        mutate_properties: dict[str, str] | None = None,
         mutate_relationship_type: str | None = None,
     ) -> MutateResult:
-        mutate_config = {
+        mutate_config: dict[str, Any] = {
             "jobId": result_store_job_id,
         }
         if process_job_id:
@@ -54,6 +72,8 @@ class MutationClient:
             mutate_config["mutateRelationshipType"] = mutate_relationship_type
         if mutate_property:
             mutate_config["mutateProperty"] = mutate_property
+        if mutate_properties:
+            mutate_config["mutateProperties"] = mutate_properties
 
         start_time = time.time()
         mutate_arrow_res = client.do_action_with_retry(MutationClient.MUTATE_ENDPOINT, mutate_config)

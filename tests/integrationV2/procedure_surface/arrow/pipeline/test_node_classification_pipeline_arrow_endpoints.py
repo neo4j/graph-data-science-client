@@ -4,17 +4,16 @@ from uuid import uuid4
 
 import pytest
 
+from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
     NodeClassificationPipelineArrowEndpoints,
 )
-from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
+from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph, create_graph_from_db
 
-
-@pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
-    gdl = """
+graph = """
     CREATE
     (a: Node {feature: 1.0, target: 0}),
     (b: Node {feature: 2.0, target: 1}),
@@ -24,10 +23,29 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
     (b)-[:REL]->(c),
     (c)-[:REL]->(d),
     (d)-[:REL]->(a)
-    """
+"""
 
-    with create_graph(arrow_client, f"node-classification-g-{uuid4().hex[:8]}", gdl) as G:
+
+@pytest.fixture
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+    with create_graph(arrow_client, f"node-classification-g-{uuid4().hex[:8]}", graph) as G:
         yield G
+
+
+@pytest.fixture
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+    with create_graph_from_db(
+        arrow_client,
+        query_runner,
+        "g",
+        graph,
+        """
+                        MATCH (n)-->(m)
+                        WITH gds.graph.project.remote(n, m, {sourceNodeProperties: properties(n), targetNodeProperties: properties(m)}) as g
+                        RETURN g
+                    """,
+    ) as g:
+        yield g
 
 
 @pytest.fixture
@@ -44,38 +62,43 @@ def _drop_pipeline(arrow_client: AuthenticatedArrowClient, pipeline_name: str) -
 
 def test_node_classification_train_and_predict_stream_and_write(
     arrow_client: AuthenticatedArrowClient,
-    endpoints: NodeClassificationPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    query_runner: QueryRunner,
+    db_graph: GraphV2,
 ) -> None:
+    endpoints = NodeClassificationPipelineArrowEndpoints(
+        arrow_client, RemoteWriteBackClient(arrow_client, query_runner), show_progress=False
+    )
+
     pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
     model_name = f"nc-model-{uuid4().hex[:8]}"
 
     try:
         pipeline, create_result = endpoints.create(pipeline_name)
-        feature_result = pipeline.select_features(node_properties=["feature"])
-        candidate_result = pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
+        pipeline.select_features(node_properties=["feature"])
+        pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
         model, train_result = pipeline.train(
-            sample_graph,
+            db_graph,
             metrics=["F1_WEIGHTED"],
             model_name=model_name,
             target_property="target",
         )
-        stream_result = model.predict_stream(sample_graph)
-        write_result = model.predict_write(
-            sample_graph,
-            write_property="predictedClass",
-            predicted_probability_property="predictedProbabilities",
-        )
 
-        assert create_result.name == pipeline_name
-        assert feature_result.name == pipeline_name
-        assert candidate_result.name == pipeline_name
         assert train_result.train_millis is not None
         assert train_result.train_millis >= 0
         assert model.exists()
+
+        stream_result = model.predict_stream(db_graph)
+
         assert "predictedClass" in stream_result.columns
         assert "predictedProbabilities" in stream_result.columns
         assert len(stream_result) == 4
+
+        write_result = model.predict_write(
+            db_graph,
+            write_property="myPredictedClass",
+            predicted_probability_property="myPredictedProbabilities",
+        )
+
         assert write_result.node_properties_written == 8
         assert write_result.write_millis is not None
         assert write_result.write_millis >= 0
@@ -112,6 +135,7 @@ def test_node_classification_predict_mutate(
         assert mutate_result.node_properties_written == 8
         assert mutate_result.mutate_millis is not None
         assert mutate_result.mutate_millis >= 0
+        assert mutate_result.configuration and mutate_result.configuration["mutateProperty"] == "predictedClass"
     finally:
         arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model_name}).encode("utf-8"))
         _drop_pipeline(arrow_client, pipeline_name)

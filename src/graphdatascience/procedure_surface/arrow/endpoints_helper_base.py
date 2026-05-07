@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from typing import Any
 
 from pandas import DataFrame
@@ -40,6 +41,7 @@ class EndpointsHelperBase:
         config: dict[str, Any],
         *,
         mutate_property: str | None = None,
+        mutate_property_overwrites: OrderedDict[str, str] | None = None,
         mutate_relationship_type: str | None = None,
     ) -> dict[str, Any]:
         """Run a job, mutate node properties, and return summary with mutation result."""
@@ -54,18 +56,26 @@ class EndpointsHelperBase:
             )
         elif mutate_property:
             mutate_result = MutationClient.mutate_node_property(self._arrow_client, job_id, mutate_property)
+        elif mutate_property_overwrites:
+            mutate_result = MutationClient.mutate_node_properties(
+                self._arrow_client, job_id, mutate_property_overwrites
+            )
         else:
             raise ValueError("Either mutate_property or mutate_relationship_type must be provided for mutation.")
 
         computation_result["mutateMillis"] = mutate_result.mutate_millis
-        if mutate_property:
+        if mutate_property or mutate_property_overwrites:
             # modify computation result to include mutation details
             computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
         if mutate_relationship_type:
             computation_result["relationshipsWritten"] = mutate_result.relationships_written
 
         if (nested_config := computation_result.get("configuration", None)) is not None:
-            nested_config["mutateProperty"] = mutate_property
+            if mutate_property:
+                nested_config["mutateProperty"] = mutate_property
+            if mutate_property_overwrites:
+                # expect first entry is the mutate property
+                nested_config["mutateProperty"] = mutate_property_overwrites.popitem(last=False)[1]
             if mutate_relationship_type is not None:
                 nested_config["mutateRelationshipType"] = mutate_relationship_type
             self._drop_write_internals(nested_config)

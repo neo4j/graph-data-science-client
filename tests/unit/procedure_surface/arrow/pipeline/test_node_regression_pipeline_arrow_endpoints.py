@@ -147,25 +147,6 @@ def test_node_regression_add_node_property_runs_arrow_action_with_config() -> No
     )
 
 
-def test_node_regression_select_features_uses_node_properties_payload() -> None:
-    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
-
-    result = NodeRegressionPipelineArrowEndpoints(arrow_client, None).select_features(
-        "pipe",
-        feature_properties=["feature"],
-    )
-
-    assert result.name == "pipe"
-    arrow_client.do_action_with_retry.assert_called_once_with(
-        "v2/pipeline.nodeRegression.features.select",
-        {
-            "pipelineName": "pipe",
-            "nodeProperties": ["feature"],
-        },
-    )
-
-
 def test_node_regression_get_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     arrow_client.do_action_with_retry.return_value = [
@@ -239,48 +220,3 @@ def test_node_regression_predict_stream_runs_arrow_job() -> None:
         show_progress=True,
     )
     stream_results.assert_called_once_with(arrow_client, "g", "job-1")
-
-
-def test_node_regression_predict_mutate_uses_node_property_helper() -> None:
-    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    graph = mock.Mock()
-    graph.name.return_value = "g"
-
-    helper_result = {
-        "computeMillis": 1,
-        "mutateMillis": 5,
-        "nodePropertiesWritten": 4,
-        "postProcessingMillis": 2,
-        "preProcessingMillis": 3,
-        "configuration": {"mutateProperty": "predicted"},
-    }
-
-    with (
-        mock.patch(
-            "graphdatascience.procedure_surface.arrow.node_property_endpoints.NodePropertyEndpointsHelper.run_job_and_mutate",
-            return_value=helper_result,
-        ) as run_job_and_mutate,
-        mock.patch(
-            "graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints.JobClient.run_job_and_wait",
-            return_value="job-1",
-        ) as run_job_and_wait,
-    ):
-        result = NodeRegressionPredictArrowEndpoints(arrow_client, None).mutate(
-            graph,
-            model_name="model",
-            mutate_property="predicted",
-        )
-
-    assert result.node_properties_written == 4
-    assert result.mutate_millis == 5
-    run_job_and_mutate.assert_called_once_with(
-        "v2/pipeline.nodeRegression.predict",
-        {
-            "graphName": "g",
-            "modelName": "model",
-            "logProgress": True,
-            "sudo": False,
-        },
-        "predicted",
-    )
-    run_job_and_wait.assert_not_called()

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import OrderedDict
+
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -89,14 +91,22 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
             sudo=sudo,
             concurrency=concurrency,
             job_id=job_id,
+            include_predicted_probabilities=predicted_probability_property is not None,
         )
+
         if predicted_probability_property is not None:
             config["predictedProbabilityProperty"] = predicted_probability_property
 
-        raw_result = self._node_property_endpoints.run_job_and_mutate(
+        mutate_properties = OrderedDict(
+            predictedClass=mutate_property,
+        )
+        if predicted_probability_property is not None:
+            mutate_properties["predictedProbabilities"] = predicted_probability_property
+
+        raw_result = self._node_property_endpoints.run_job_and_mutate_multiple(
             "v2/pipeline.nodeClassification.predict",
             config,
-            mutate_property,
+            mutate_property_overwrites=mutate_properties,
         )
 
         return NodeClassificationPipelinePredictMutateResult(**raw_result)
@@ -127,10 +137,11 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
             sudo=sudo,
             concurrency=concurrency,
             job_id=job_id,
+            include_predicted_probabilities=predicted_probability_property is not None,
         )
-        property_overwrites: dict[str, str] = {"writeProperty": write_property}
+        property_overwrites: dict[str, str] = {"predictedClass": write_property}
         if predicted_probability_property is not None:
-            property_overwrites["predictedProbabilityProperty"] = predicted_probability_property
+            property_overwrites["predictedProbabilities"] = predicted_probability_property
 
         raw_result = self._node_property_endpoints.run_job_and_write(
             "v2/pipeline.nodeClassification.predict",

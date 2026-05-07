@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, OrderedDict
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
@@ -12,6 +12,11 @@ class NodePropertyEndpointsHelper(EndpointsHelperBase):
 
     def run_job_and_mutate(self, endpoint: str, config: dict[str, Any], mutate_property: str) -> dict[str, Any]:
         return self._run_job_and_mutate(endpoint, config, mutate_property=mutate_property)
+
+    def run_job_and_mutate_multiple(
+        self, endpoint: str, config: dict[str, Any], mutate_property_overwrites: OrderedDict[str, str]
+    ) -> dict[str, Any]:
+        return self._run_job_and_mutate(endpoint, config, mutate_property_overwrites=mutate_property_overwrites)
 
     def run_job_and_write(
         self,
