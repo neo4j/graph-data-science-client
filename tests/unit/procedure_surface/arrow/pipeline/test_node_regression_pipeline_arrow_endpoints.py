@@ -153,7 +153,7 @@ def test_node_regression_select_features_uses_node_properties_payload() -> None:
 
     result = NodeRegressionPipelineArrowEndpoints(arrow_client, None).select_features(
         "pipe",
-        node_properties=["feature"],
+        feature_properties=["feature"],
     )
 
     assert result.name == "pipe"

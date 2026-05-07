@@ -53,7 +53,7 @@ def test_node_regression_train_and_predict_stream(
     try:
         pipeline, create_result = endpoints.create(pipeline_name)
         node_property_result = pipeline.add_node_property("pageRank", mutate_property="pr")
-        feature_result = pipeline.select_features(node_properties=["pr"])
+        feature_result = pipeline.select_features(feature_properties=["pr"])
         regression_result = pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
         model, train_result = pipeline.train(
             sample_graph,
@@ -87,7 +87,7 @@ def test_node_regression_predict_mutate(
 
     try:
         pipeline, _ = endpoints.create(pipeline_name)
-        pipeline.select_features(node_properties=["feature"])
+        pipeline.select_features(feature_properties=["feature"])
         pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
         model, _ = pipeline.train(
             sample_graph,
@@ -115,7 +115,7 @@ def test_node_regression_get_returns_pipeline_object(
 
     try:
         pipeline, create_result = endpoints.create(pipeline_name)
-        pipeline.select_features(node_properties=["feature"])
+        pipeline.select_features(feature_properties=["feature"])
         pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
         fetched_pipeline = endpoints.get(pipeline_name)
 

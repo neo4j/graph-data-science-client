@@ -68,10 +68,12 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         ).squeeze()
         return NodeRegressionPipelineInfoResult(**result.to_dict())
 
-    def select_features(self, pipeline_name: str, node_properties: str | list[str]) -> NodeRegressionPipelineInfoResult:
+    def select_features(
+        self, pipeline_name: str, feature_properties: str | list[str]
+    ) -> NodeRegressionPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.selectFeatures",
-            params=CallParameters(pipeline_name=pipeline_name, node_properties=node_properties),
+            params=CallParameters(pipeline_name=pipeline_name, feature_properties=feature_properties),
         ).squeeze()
         return NodeRegressionPipelineInfoResult(**result.to_dict())
 

@@ -106,7 +106,7 @@ def test_node_regression_pipeline_accepts_separate_ops_and_trainer() -> None:
     pipeline = NodeRegressionPipeline("pipe", ops, trainer)
 
     assert pipeline.add_node_property("pageRank", mutate_property="score") == "pipe:pageRank:score"
-    assert pipeline.select_features(node_properties=["score"]) == "pipe:['score']"
+    assert pipeline.select_features(feature_properties=["score"]) == "pipe:['score']"
     assert pipeline.train(mock.Mock(), metrics=["MAE"], model_name="model", target_property="target") == (
         None,
         "trained",
