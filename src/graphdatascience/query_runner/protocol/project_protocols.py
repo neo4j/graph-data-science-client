@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from logging import DEBUG, getLogger
 from typing import Any, Tuple
@@ -6,6 +8,7 @@ from pandas import DataFrame, Series
 from tenacity import retry, retry_if_result
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
@@ -27,7 +30,7 @@ class ProjectProtocol(ABC):
         self,
         graph_name: str,
         query: str,
-        job_id: str | None = None,
+        job_id: str,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
@@ -72,13 +75,17 @@ class ProjectProtocol(ABC):
         if token is None:
             token = "IGNORED"
 
-        return {
+        config = {
             "host": connection_info.host,
             "port": connection_info.port,
             "token": token,
             "encrypted": connection_info.encrypted,
-            "batchSize": batch_size,
         }
+
+        if batch_size is not None:
+            config["batchSize"] = batch_size
+
+        return config
 
 
 class ProjectProtocolV3(ProjectProtocol):
@@ -86,7 +93,7 @@ class ProjectProtocolV3(ProjectProtocol):
         self,
         graph_name: str,
         query: str,
-        job_id: str | None = None,
+        job_id: str,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
@@ -99,15 +106,17 @@ class ProjectProtocolV3(ProjectProtocol):
 
         logger = getLogger()
 
+        configuration = ConfigConverter.convert_to_gds_config(
+            undirectedRelationshipTypes=undirected_relationship_types,
+            inverseIndexedRelationshipTypes=inverse_indexed_relationship_types,
+            concurrency=concurrency,
+        )
+
         params = {
             "graph_name": graph_name,
             "query": query,
             "jobId": job_id,
-            "configuration": {
-                "undirectedRelationshipTypes": undirected_relationship_types,
-                "inverseIndexedRelationshipTypes": inverse_indexed_relationship_types,
-                "concurrency": concurrency,
-            },
+            "configuration": configuration,
             "arrow_config": self._arrow_config(batch_size),
         }
 
@@ -156,7 +165,7 @@ class ProjectProtocolV3(ProjectProtocol):
         batch_size: int | None = None,
         logging: bool = True,
     ) -> dict[str, Any]:
-        raise NotImplementedError("Store projection is not supported in protocol version 4")
+        raise NotImplementedError("Store projection is not supported in protocol version 3")
 
 
 class ProjectProtocolV4(ProjectProtocol):
@@ -164,22 +173,24 @@ class ProjectProtocolV4(ProjectProtocol):
         self,
         graph_name: str,
         query: str,
-        job_id: str | None = None,
+        job_id: str,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
     ) -> dict[str, Any]:
+        configuration = ConfigConverter.convert_to_gds_config(
+            undirectedRelationshipTypes=undirected_relationship_types,
+            inverseIndexedRelationshipTypes=inverse_indexed_relationship_types,
+            concurrency=concurrency,
+        )
+
         params = {
             "graph_name": graph_name,
             "query": query,
             "jobId": job_id,
-            "configuration": {
-                "undirectedRelationshipTypes": undirected_relationship_types,
-                "inverseIndexedRelationshipTypes": inverse_indexed_relationship_types,
-                "concurrency": concurrency,
-            },
+            "configuration": configuration,
             "arrow_config": self._arrow_config(batch_size),
         }
 
@@ -204,18 +215,20 @@ class ProjectProtocolV4(ProjectProtocol):
         batch_size: int | None = None,
         logging: bool = True,
     ) -> dict[str, Any]:
+        configuration = ConfigConverter.convert_to_gds_config(
+            nodeProperties=node_properties,
+            relationshipProperties=relationship_properties,
+            job_id=job_id,
+            undirectedRelationshipTypes=undirected_relationship_types,
+            inverseIndexedRelationshipTypes=inverse_indexed_relationship_types,
+            readConcurrency=concurrency,
+        )
+
         params = {
             "graph_name": graph_name,
             "node_labels": node_label_filter,
             "relationship_types": relationship_type_filter,
-            "configuration": {
-                "nodeProperties": node_properties,
-                "relationshipProperties": relationship_properties,
-                "jobId": job_id,
-                "undirectedRelationshipTypes": undirected_relationship_types,
-                "inverseIndexedRelationshipTypes": inverse_indexed_relationship_types,
-                "readConcurrency": concurrency,
-            },
+            "configuration": configuration,
             "arrow_config": self._arrow_config(batch_size),
         }
 
@@ -255,7 +268,7 @@ class ProjectProtocolV4(ProjectProtocol):
         def poll_result() -> Series[Any]:
             self._termination_flag.assert_running()
             status_result = query_runner.run_cypher(
-                f"CALL gds.arrow.job.status('{job_id}')",
+                f"CALL gds.arrow.job.status.v4('{job_id}')",
                 QueryType.USER_TRANSPILED,
             ).squeeze()
 

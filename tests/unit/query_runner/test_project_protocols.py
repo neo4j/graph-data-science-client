@@ -206,7 +206,7 @@ def test_v4_run_cypher_projection_polls_until_done(arrow_client: MagicMock, qr: 
 
     protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
 
-    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n")
+    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
 
     assert result == {"nodeCount": 1}
 
@@ -229,7 +229,7 @@ def test_v4_run_cypher_projection_raises_when_status_has_error(
     protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
 
     with pytest.raises(Exception, match="boom"):
-        protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n")
+        protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
 
 
 def test_v3_run_cypher_projection_dispatches_expected_query_and_params(
@@ -294,7 +294,7 @@ def test_v3_run_cypher_projection_polls_until_done(arrow_client: MagicMock, qr: 
 
     protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
 
-    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n")
+    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
 
     assert result == {"status": Status.DONE.name, "nodeCount": 1}
     assert len(qr.queries) == 4
@@ -314,7 +314,7 @@ def test_v3_run_cypher_projection_defaults_port_when_missing(
 
     protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
 
-    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n")
+    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
 
     assert result == {"status": Status.DONE.name, "nodeCount": 0}
     assert len(qr.queries) == 2
