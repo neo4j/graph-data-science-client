@@ -279,4 +279,6 @@ class ProjectProtocolV4(ProjectProtocol):
 
         result = poll_result()
 
+        query_runner.close()
+
         return result["result"]  # type: ignore

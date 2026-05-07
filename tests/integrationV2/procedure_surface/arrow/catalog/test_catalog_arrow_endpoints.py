@@ -9,8 +9,10 @@ from pyarrow.flight import FlightServerError
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
+from graphdatascience.procedure_surface.arrow.catalog import ProjectionResult
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
@@ -87,6 +89,8 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
             query="UNWIND range(1, 10) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
         )
 
+        assert isinstance(result, ProjectionResult)
+
         assert G.name() == "g"
         assert result.graph_name == "g"
         assert result.node_count == 10
@@ -96,6 +100,32 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
         assert len(endpoints.list("g")) == 1
     finally:
         endpoints.drop("g", fail_if_missing=False)
+
+
+@pytest.mark.db_integration
+def test_store_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
+    try:
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x CREATE (:Person)-[:KNOWS]->(:Person)",
+            QueryType.USER_ACTION,
+        )
+
+        endpoints = CatalogArrowEndpoints(arrow_client, query_runner)
+        G, result = endpoints.project_native(
+            graph_name="g",
+            node_label_filter=["Person"],
+            relationship_type_filter=["KNOWS"],
+        )
+
+        assert G.name() == "g"
+        assert result.graph_name == "g"
+        assert result.node_count == 10
+        assert result.relationship_count == 5
+
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
 
 
 def test_construct(arrow_client: AuthenticatedArrowClient) -> None:
