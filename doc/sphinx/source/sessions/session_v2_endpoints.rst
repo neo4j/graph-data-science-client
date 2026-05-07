@@ -10,6 +10,7 @@ SessionV2Endpoints
    ../v2_endpoints/community_endpoints
    ../v2_endpoints/node_embedding_endpoints
    ../v2_endpoints/pathfinding_endpoints
+   ../v2_endpoints/pipeline_endpoints
    ../v2_endpoints/similarity_endpoints
    ../v2_endpoints/estimation_result
    ../v2_endpoints/model_endpoints
