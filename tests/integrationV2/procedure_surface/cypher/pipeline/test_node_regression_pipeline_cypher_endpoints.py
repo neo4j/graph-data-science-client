@@ -54,7 +54,7 @@ def test_node_regression_train_cypher_pipeline(
     try:
         pipeline, create_result = endpoints.create(pipeline_name)
         node_property_result = pipeline.add_node_property("pageRank", mutate_property="pr")
-        feature_result = pipeline.select_features(["pr"])
+        feature_result = pipeline.select_features(node_properties=["pr"])
         candidate_result = pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
         model, train_result = pipeline.train(
             sample_graph,

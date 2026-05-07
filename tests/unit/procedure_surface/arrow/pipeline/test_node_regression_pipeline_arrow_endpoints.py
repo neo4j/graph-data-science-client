@@ -147,6 +147,25 @@ def test_node_regression_add_node_property_runs_arrow_action_with_config() -> No
     )
 
 
+def test_node_regression_select_features_uses_node_properties_payload() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+
+    result = NodeRegressionPipelineArrowEndpoints(arrow_client, None).select_features(
+        "pipe",
+        node_properties=["feature"],
+    )
+
+    assert result.name == "pipe"
+    arrow_client.do_action_with_retry.assert_called_once_with(
+        "v2/pipeline.nodeRegression.features.select",
+        {
+            "pipelineName": "pipe",
+            "nodeProperties": ["feature"],
+        },
+    )
+
+
 def test_node_regression_get_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     arrow_client.do_action_with_retry.return_value = [

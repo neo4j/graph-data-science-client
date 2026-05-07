@@ -48,13 +48,13 @@ class NodeRegressionPipeline:
         """
         return self._ops.add_node_property(self._name, procedure_name, **config)
 
-    def select_features(self, feature_properties: str | list[str]) -> NodeRegressionPipelineInfoResult:
+    def select_features(self, node_properties: str | list[str]) -> NodeRegressionPipelineInfoResult:
         """
         Select the node properties used as input features.
 
         Parameters
         ----------
-        feature_properties
+        node_properties
             One or more node properties to use as features.
 
         Returns
@@ -62,7 +62,7 @@ class NodeRegressionPipeline:
         NodeRegressionPipelineInfoResult
             The updated pipeline state.
         """
-        return self._ops.select_features(self._name, feature_properties)
+        return self._ops.select_features(self._name, node_properties)
 
     def add_linear_regression(
         self,

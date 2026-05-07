@@ -52,7 +52,7 @@ def test_node_classification_train_and_predict_stream_and_write(
 
     try:
         pipeline, create_result = endpoints.create(pipeline_name)
-        feature_result = pipeline.select_features(["feature"])
+        feature_result = pipeline.select_features(node_properties=["feature"])
         candidate_result = pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
         model, train_result = pipeline.train(
             sample_graph,
@@ -94,7 +94,7 @@ def test_node_classification_predict_mutate(
 
     try:
         pipeline, _ = endpoints.create(pipeline_name)
-        pipeline.select_features(["feature"])
+        pipeline.select_features(node_properties=["feature"])
         pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
         model, _ = pipeline.train(
             sample_graph,

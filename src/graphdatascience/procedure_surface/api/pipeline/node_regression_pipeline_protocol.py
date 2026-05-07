@@ -19,7 +19,7 @@ class NodeRegressionPipelineOps(Protocol):
     ) -> NodeRegressionPipelineInfoResult: ...
 
     def select_features(
-        self, pipeline_name: str, feature_properties: str | list[str]
+        self, pipeline_name: str, node_properties: str | list[str]
     ) -> NodeRegressionPipelineInfoResult: ...
 
     def add_linear_regression(

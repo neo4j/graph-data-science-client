@@ -82,9 +82,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         pass
 
     @abstractmethod
-    def select_features(
-        self, pipeline_name: str, feature_properties: str | list[str]
-    ) -> NodeRegressionPipelineInfoResult:
+    def select_features(self, pipeline_name: str, node_properties: str | list[str]) -> NodeRegressionPipelineInfoResult:
         """
         Select the node properties used as input features.
 
@@ -92,7 +90,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         ----------
         pipeline_name
             Name of the pipeline to update.
-        feature_properties
+        node_properties
             One or more node properties to use as features.
 
         Returns

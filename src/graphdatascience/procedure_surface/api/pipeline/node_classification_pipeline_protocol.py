@@ -18,7 +18,7 @@ class NodeClassificationPipelineOps(Protocol):
     ) -> NodeClassificationPipelineInfoResult: ...
 
     def select_features(
-        self, pipeline_name: str, feature_properties: str | list[str]
+        self, pipeline_name: str, node_properties: str | list[str]
     ) -> NodeClassificationPipelineInfoResult: ...
 
     def add_logistic_regression(

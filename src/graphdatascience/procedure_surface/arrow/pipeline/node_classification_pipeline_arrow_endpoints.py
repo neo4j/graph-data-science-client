@@ -86,11 +86,9 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         return NodeClassificationPipelineInfoResult(**result)
 
     def select_features(
-        self, pipeline_name: str, feature_properties: str | list[str]
+        self, pipeline_name: str, node_properties: str | list[str]
     ) -> NodeClassificationPipelineInfoResult:
-        result = self._call_action(
-            "features.select", pipeline_name=pipeline_name, feature_properties=feature_properties
-        )
+        result = self._call_action("features.select", pipeline_name=pipeline_name, node_properties=node_properties)
         return NodeClassificationPipelineInfoResult(**result)
 
     def add_logistic_regression(

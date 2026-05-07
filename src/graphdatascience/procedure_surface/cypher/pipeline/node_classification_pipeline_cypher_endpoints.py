@@ -72,11 +72,11 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
         return NodeClassificationPipelineInfoResult(**result.to_dict())
 
     def select_features(
-        self, pipeline_name: str, feature_properties: str | list[str]
+        self, pipeline_name: str, node_properties: str | list[str]
     ) -> NodeClassificationPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.selectFeatures",
-            params=CallParameters(pipeline_name=pipeline_name, feature_properties=feature_properties),
+            params=CallParameters(pipeline_name=pipeline_name, node_properties=node_properties),
         ).squeeze()
         return NodeClassificationPipelineInfoResult(**result.to_dict())
 

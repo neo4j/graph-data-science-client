@@ -121,6 +121,27 @@ def test_node_classification_train_runs_arrow_job_and_returns_arrow_wired_model(
     get_summary.assert_called_once_with(arrow_client, "job-1")
 
 
+def test_node_classification_select_features_uses_node_properties_payload() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+    row = mock.Mock()
+    row.body.to_pybytes.return_value = b'{"name":"pipe","featureProperties":[]}'
+    arrow_client.do_action_with_retry.return_value = [row]
+
+    result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).select_features(
+        "pipe",
+        node_properties=["feature"],
+    )
+
+    assert result.name == "pipe"
+    arrow_client.do_action_with_retry.assert_called_once_with(
+        "v2/pipeline.nodeClassification.features.select",
+        {
+            "pipelineName": "pipe",
+            "nodeProperties": ["feature"],
+        },
+    )
+
+
 def test_node_classification_add_mlp_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     row = mock.Mock()
