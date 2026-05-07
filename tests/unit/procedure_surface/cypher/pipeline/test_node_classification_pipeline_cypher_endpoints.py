@@ -50,6 +50,23 @@ def test_node_classification_create_returns_info_result() -> None:
     assert result.name == "pipe"
 
 
+def test_node_classification_get_uses_pipeline_list() -> None:
+    query_runner = mock.Mock()
+    query_runner.call_procedure.return_value = pd.DataFrame(
+        [{"pipelineName": "pipe", "pipelineType": "Node classification training pipeline"}]
+    )
+
+    pipeline = NodeClassificationPipelineCypherEndpoints(query_runner).get("pipe")
+
+    assert pipeline.name() == "pipe"
+    query_runner.call_procedure.assert_called_once_with(
+        "gds.pipeline.list",
+        params=mock.ANY,
+        custom_error=False,
+    )
+    assert query_runner.call_procedure.call_args.kwargs["params"] == {"pipeline_name": "pipe"}
+
+
 def test_node_classification_predict_stream_mutate_and_write_run_queries() -> None:
     mutate_row = mock.Mock()
     mutate_row.to_dict.return_value = {

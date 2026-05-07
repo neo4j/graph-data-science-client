@@ -1,6 +1,10 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import PipelineEndpoints
+from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
+    PipelineCatalogEntry,
+    PipelineEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
     NodeClassificationPipelineArrowEndpoints,
 )
@@ -19,6 +23,11 @@ class PipelineArrowEndpoints(PipelineEndpoints):
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
         self._show_progress = show_progress
+
+    def list(self, pipeline_name: str | None = None) -> list[PipelineCatalogEntry]:
+        config = {} if pipeline_name is None else {"pipelineName": pipeline_name}
+        result = deserialize(self._arrow_client.do_action_with_retry("v2/pipeline.list", config))
+        return [PipelineCatalogEntry(**item) for item in result]
 
     @property
     def node_classification(self) -> NodeClassificationPipelineArrowEndpoints:

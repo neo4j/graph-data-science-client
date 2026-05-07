@@ -36,7 +36,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "user_log",
     # TODO
     "pipeline.exists",
-    "pipeline.list",
     "pipeline.drop",
     "beta.pipeline.link_prediction.add_random_forest",
     "beta.pipeline.link_prediction.add_feature",
@@ -109,6 +108,9 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, str | None]] = {
     ".*(knn|node_similarity).filtered.*": {
         "source_node_filter": None,
         "target_node_filter": None,
+    },
+    ".*pipeline.list": {
+        "pipeline_name": None,
     },
     ".*sllpa.mutate": {
         "mutate_property": None,

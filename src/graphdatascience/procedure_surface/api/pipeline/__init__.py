@@ -26,10 +26,14 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_re
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import PipelineEndpoints
+from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
+    PipelineCatalogEntry,
+    PipelineEndpoints,
+)
 
 __all__ = [
     "PipelineEndpoints",
+    "PipelineCatalogEntry",
     "NodeClassificationPipeline",
     "NodeClassificationPipelineEndpoints",
     "NodeClassificationPipelineInfoResult",

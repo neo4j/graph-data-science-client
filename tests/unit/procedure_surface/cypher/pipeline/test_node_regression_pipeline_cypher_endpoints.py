@@ -101,10 +101,10 @@ def test_node_regression_add_node_property_runs_query_with_config() -> None:
 
 
 def test_node_regression_get_runs_query() -> None:
-    row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": ["feature"]}
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = pd.DataFrame(
+        [{"pipelineName": "pipe", "pipelineType": "Node regression training pipeline"}]
+    )
 
     from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
         NodeRegressionPipelineCypherEndpoints,
@@ -113,7 +113,12 @@ def test_node_regression_get_runs_query() -> None:
     pipeline = NodeRegressionPipelineCypherEndpoints(query_runner).get("pipe")
 
     assert pipeline.name() == "pipe"
-    assert query_runner.call_procedure.call_args.kwargs["endpoint"] == "gds.alpha.pipeline.nodeRegression.get"
+    query_runner.call_procedure.assert_called_once_with(
+        "gds.pipeline.list",
+        params=mock.ANY,
+        custom_error=False,
+    )
+    assert query_runner.call_procedure.call_args.kwargs["params"] == {"pipeline_name": "pipe"}
 
 
 def test_node_regression_train_runs_query() -> None:

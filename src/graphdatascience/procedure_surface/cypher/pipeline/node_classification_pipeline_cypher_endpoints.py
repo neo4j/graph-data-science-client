@@ -47,9 +47,16 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
 
     def get(self, pipeline_name: str) -> NodeClassificationPipeline:
         result = self._query_runner.call_procedure(
-            endpoint="gds.beta.pipeline.nodeClassification.get", params=CallParameters(pipeline_name=pipeline_name)
-        ).squeeze()
-        return NodeClassificationPipeline(result.to_dict()["name"], self, self)
+            "gds.pipeline.list",
+            params=CallParameters(pipeline_name=pipeline_name),
+            custom_error=False,
+        )
+        if result.empty:
+            raise ValueError(f"No pipeline named '{pipeline_name}' exists")
+        pipeline_info = result.iloc[0].to_dict()
+        if pipeline_info.get("pipelineType") != "Node classification training pipeline":
+            raise ValueError(f"Pipeline '{pipeline_name}' is not a node classification pipeline")
+        return NodeClassificationPipeline(str(pipeline_info.get("pipelineName", pipeline_name)), self, self)
 
     def add_node_property(
         self, pipeline_name: str, procedure_name: str, **config: Any

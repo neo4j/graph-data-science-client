@@ -31,7 +31,6 @@ UNMAPPED_ENDPOINTS = [
     "pipeline.linkPrediction.split.configure",
     "pipeline.linkPrediction.train",
     "pipeline.linkPrediction.train.estimate",
-    "pipeline.list",
     "pipeline.nodeClassification.predict.estimate",
     "pipeline.nodeClassification.train.estimate",
     "pipeline.nodeRegression.features.select",
