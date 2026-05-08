@@ -30,7 +30,7 @@ The `GdsSessions` object is the API entry point to the following operations:
 
 
 You need Neo4j Aura API credentials (`CLIENT_ID` and `CLIENT_SECRET`) to create a `GdsSessions` object.
-See the link:{neo4j-docs-base-uri}/aura/platform/api/authentication/#_creating_credentials[Aura documentation] for instructions on how to create API credentials from your Neo4j Aura account.
+See the link:{neo4j-docs-base-uri}/aura/api/authentication/#_creating_credentials[Aura documentation] for instructions on how to create API credentials from your Neo4j Aura account.
 If your Aura user is part of multiple projects, the desired project ID must also be provided.
 
 .Creating a GdsSessions object:
