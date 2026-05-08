@@ -31,7 +31,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to create.
+            Name of the pipeline.
 
         Returns
         -------
@@ -48,7 +48,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to retrieve.
+            Name of the pipeline.
 
         Returns
         -------
@@ -67,7 +67,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to update.
+            Name of the pipeline.
         procedure_name
             The procedure name of the node property step to add.
         config
@@ -90,7 +90,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to update.
+            Name of the pipeline.
         node_properties
             One or more node properties to use as features.
 
@@ -122,7 +122,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to update.
+            Name of the pipeline.
         batch_size
             Batch size to use during training. Pass a two-value tuple to define a parameter range.
         class_weights
@@ -168,7 +168,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to update.
+            Name of the pipeline.
         criterion
             Split criterion to optimize.
         max_depth
@@ -205,7 +205,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to update.
+            Name of the pipeline.
         hidden_layer_sizes
             Sizes of the hidden layers in the neural network.
         penalty
@@ -228,7 +228,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to update.
+            Name of the pipeline.
         test_fraction
             Fraction of nodes reserved for testing.
         validation_folds
@@ -251,7 +251,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         Parameters
         ----------
         pipeline_name
-            Name of the pipeline to update.
+            Name of the pipeline.
         max_trials
             Maximum number of trials to run during auto-tuning.
 
@@ -289,11 +289,11 @@ class NodeClassificationPipelineEndpoints(ABC):
         G
             Graph object to use
         pipeline_name
-            Name of the pipeline to train.
+            Name of the pipeline.
         metrics
             Metrics to optimize for.
         model_name
-            Name under which the trained model will be stored.
+            Name of the trained model.
         target_property
             The target node property to predict.
         relationship_types

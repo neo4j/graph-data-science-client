@@ -45,7 +45,7 @@ class ModelCatalogEndpoints(ABC):
         Parameters
         ----------
         model_name: str
-            The name of the model to check.
+            Name of the model.
 
         Returns
         -------
@@ -60,7 +60,7 @@ class ModelCatalogEndpoints(ABC):
         Parameters
         ----------
         model_name: str
-            The model name to resolve.
+            Name of the model.
 
         Returns
         -------
@@ -75,7 +75,7 @@ class ModelCatalogEndpoints(ABC):
         Parameters
         ----------
         model_name: str
-            The model to drop.
+            Name of the model.
         fail_if_missing: bool
             If True, a missing model will cause an error. If False, returns None when missing.
 
@@ -92,7 +92,7 @@ class ModelCatalogEndpoints(ABC):
         Parameters
         ----------
         model_name: str
-            The model to delete.
+            Name of the model.
         fail_if_missing: bool
             If True, a missing model will cause an error. If False, returns None when missing.
 
@@ -109,7 +109,7 @@ class ModelCatalogEndpoints(ABC):
         Parameters
         ----------
         model_name: str
-            The model to load.
+            Name of the model.
 
         Returns
         -------
@@ -124,7 +124,7 @@ class ModelCatalogEndpoints(ABC):
         Parameters
         ----------
         model_name: str
-            The model to store.
+            Name of the model.
         fail_if_unsupported: bool
             If True, unsupported models cause an error.
 

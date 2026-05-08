@@ -32,7 +32,7 @@ class NodeRegressionPipelinePredictEndpoints(ABC):
         G
             Graph object to use
         model_name
-            The trained model to use for prediction.
+            Name of the model.
         relationship_types
             Optional relationship type filter.
         target_node_labels
@@ -78,7 +78,7 @@ class NodeRegressionPipelinePredictEndpoints(ABC):
         G
             Graph object to use
         model_name
-            The trained model to use for prediction.
+            Name of the model.
         mutate_property
             Name of the node property to store the results in.
         relationship_types

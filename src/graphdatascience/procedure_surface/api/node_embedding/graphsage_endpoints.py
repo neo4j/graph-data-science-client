@@ -38,7 +38,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
         G
            Graph object to use
         model_name : str
-            Name under which the model will be stored
+            Name of the trained model.
         feature_properties : list[str]
             The names of the node properties to use as input features
         activation_function : str | None

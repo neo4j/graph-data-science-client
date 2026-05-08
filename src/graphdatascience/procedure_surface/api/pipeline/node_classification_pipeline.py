@@ -253,7 +253,7 @@ class NodeClassificationPipeline:
         metrics
             Metrics to optimize for.
         model_name
-            Name under which the trained model will be stored.
+            Name of the trained model.
         target_property
             The target node property to predict.
         relationship_types
