@@ -228,7 +228,7 @@ The `list()` method returns the name and size of memory of all currently active 
 sessions.list()
 ----
 
-For a detailed description of the allowed parameters, see the https://neo4j.com/{docs-version}/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.list[API] reference.
+For a detailed description of the allowed parameters, see the https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.list[API reference].
 
 
 === Deleting a GDS Session
@@ -274,7 +274,7 @@ memory = sessions.estimate(
 )
 ----
 
-For a detailed description of the allowed parameters, see the https://neo4j.com/{docs-version}/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API] reference.
+For a detailed description of the allowed parameters, see the https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API reference].
 
 
 == Projecting graphs into a GDS Session
@@ -554,7 +554,7 @@ gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInf
 gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=["pr", "embedding"])
 ----
 
-For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/algorithms[API reference].
+For a full list of the available algorithms, see the link:https://neo4j.com/docs/graph-data-science-client/{page-version}/api/plugin/algorithms[API reference].
 
 
 === Limitations
