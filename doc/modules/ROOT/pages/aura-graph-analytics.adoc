@@ -30,7 +30,7 @@ The `GdsSessions` object is the API entry point to the following operations:
 
 
 You need Neo4j Aura API credentials (`CLIENT_ID` and `CLIENT_SECRET`) to create a `GdsSessions` object.
-See the link:{neo4j-docs-base-uri}/aura/platform/api/authentication/#_creating_credentials[Aura documentation] for instructions on how to create API credentials from your Neo4j Aura account.
+See the link:{neo4j-docs-base-uri}/aura/api/authentication/#_creating_credentials[Aura documentation] for instructions on how to create API credentials from your Neo4j Aura account.
 If your Aura user is part of multiple projects, the desired project ID must also be provided.
 
 .Creating a GdsSessions object:
@@ -46,7 +46,7 @@ PROJECT_ID = None
 sessions = GdsSessions(api_credentials=AuraAPICredentials(CLIENT_ID, CLIENT_SECRET, PROJECT_ID))
 ----
 
-All available methods and parameters are listed in the https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/[API reference].
+All available methods and parameters are listed in the link:{neo4j-docs-base-uri}/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/[API reference].
 
 
 === Creating a GDS Session
@@ -228,7 +228,7 @@ The `list()` method returns the name and size of memory of all currently active 
 sessions.list()
 ----
 
-For a detailed description of the allowed parameters, see the https://neo4j.com/{docs-version}/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.list[API] reference.
+For a detailed description of the allowed parameters, see the link:{neo4j-docs-base-uri}/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.list[API reference].
 
 
 === Deleting a GDS Session
@@ -274,7 +274,7 @@ memory = sessions.estimate(
 )
 ----
 
-For a detailed description of the allowed parameters, see the https://neo4j.com/{docs-version}/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API] reference.
+For a detailed description of the allowed parameters, see the link:{neo4j-docs-base-uri}/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API reference].
 
 
 == Projecting graphs into a GDS Session
@@ -341,7 +341,7 @@ The remote projection query supports the same syntax as a Cypher projection, wit
 Instead, the graph name is provided to the `gds.graph.project()` endpoint.
 . The `gds.graph.project.remote()` function must be used, instead of the `gds.graph.project()` function.
 
-For full details and examples on how to write Cypher projection queries, see the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
+For full details and examples on how to write Cypher projection queries, see the link:{neo4j-docs-base-uri}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
 
 
 ==== Relationship type undirectedness and inverse indexing
@@ -554,7 +554,7 @@ gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInf
 gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=["pr", "embedding"])
 ----
 
-For a full list of the available algorithms, see the https://neo4j.com/docs/graph-data-science-client/{page-version}/api/algorithms[API reference].
+For a full list of the available algorithms, see the link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/plugin/algorithms[API reference].
 
 
 === Limitations
