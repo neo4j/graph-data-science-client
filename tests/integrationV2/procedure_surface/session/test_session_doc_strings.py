@@ -135,11 +135,7 @@ def test_common_parameter_consistency() -> None:
     inconsistencies: list[dict[str, Any]] = []
 
     # Only assert consistency for parameters used more than 10x
-    param_descriptions = {
-        k: v
-        for k, v in param_descriptions.items()
-        if len(v.keys()) > 10 and k.split(":")[0]
-    }
+    param_descriptions = {k: v for k, v in param_descriptions.items() if len(v.keys()) > 10 and k.split(":")[0]}
 
     suggested_descriptions = load_parameter_descriptions()
 

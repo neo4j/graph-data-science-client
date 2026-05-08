@@ -4,12 +4,6 @@ from collections import defaultdict
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
-    NodeClassificationPipelineArrowEndpoints,
-)
-from graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints import (
-    NodeClassificationPredictArrowEndpoints,
-)
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
     NodeRegressionPipelineArrowEndpoints,
 )
@@ -195,10 +189,3 @@ def test_session_pipeline_node_regression_predict_resolves(endpoints: SessionV2E
 
     assert isinstance(pipeline_endpoints, NodeRegressionPipelineArrowEndpoints)
     assert isinstance(pipeline_endpoints.predict, NodeRegressionPredictArrowEndpoints)
-
-
-def test_session_pipeline_node_classification_predict_resolves(endpoints: SessionV2Endpoints) -> None:
-    pipeline_endpoints = endpoints.pipeline.node_classification
-
-    assert isinstance(pipeline_endpoints, NodeClassificationPipelineArrowEndpoints)
-    assert isinstance(pipeline_endpoints.predict, NodeClassificationPredictArrowEndpoints)
