@@ -63,7 +63,7 @@ ENDPOINT_MAPPINGS = {
     "longestPath": "dag.longest_path",
     "maxFlow.minCost": "max_flow.min_cost",
     # pipelines
-    "pipeline.nodeClassification.modelCandidate.add": "pipeline.node_classification.add_logistic_regression",
+    "nodeClassification": "node_classification",
     "nodeRegression": "node_regression",
     "autoTuning.configure": "configure_auto_tuning",
     "features.select": "select_features",
