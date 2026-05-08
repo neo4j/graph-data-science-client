@@ -274,7 +274,7 @@ memory = sessions.estimate(
 )
 ----
 
-For a detailed description of the allowed parameters, see the https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API reference].
+For a detailed description of the allowed parameters, see the link:{neo4j-docs-base-uri}/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API reference].
 
 
 == Projecting graphs into a GDS Session
@@ -341,7 +341,7 @@ The remote projection query supports the same syntax as a Cypher projection, wit
 Instead, the graph name is provided to the `gds.graph.project()` endpoint.
 . The `gds.graph.project.remote()` function must be used, instead of the `gds.graph.project()` function.
 
-For full details and examples on how to write Cypher projection queries, see the link:{}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
+For full details and examples on how to write Cypher projection queries, see the link:{neo4j-docs-base-uri}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
 
 
 ==== Relationship type undirectedness and inverse indexing
