@@ -4,11 +4,7 @@ from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize, deserialize_single
-from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
 from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
 )
@@ -20,12 +16,17 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
-    NodeClassificationPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
+    NodeClassificationPipelineTrainEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints import (
     NodeClassificationPredictArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pipeline.node_classification_train_arrow_endpoints import (
+    NodeClassificationTrainArrowEndpoints,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
@@ -45,6 +46,16 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
             show_progress=show_progress,
         )
         self._model_api = ModelApiArrow(arrow_client)
+        self._train = NodeClassificationTrainArrowEndpoints(
+            arrow_client=arrow_client,
+            model_api=self._model_api,
+            predict_endpoints=self._predict,
+            show_progress=show_progress,
+        )
+
+    @property
+    def train(self) -> NodeClassificationPipelineTrainEndpoints:
+        return self._train
 
     @property
     def predict(self) -> NodeClassificationPipelinePredictEndpoints:
@@ -195,57 +206,6 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
     ) -> NodeClassificationPipelineInfoResult:
         result = self._call_action("autoTuning.configure", pipeline_name=pipeline_name, max_trials=max_trials)
         return NodeClassificationPipelineInfoResult(**result)
-
-    def train(
-        self,
-        G: GraphV2,
-        pipeline_name: str,
-        *,
-        metrics: list[str],
-        model_name: str,
-        target_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        target_node_labels: list[str] = ALL_LABELS,
-        store_model_to_disk: bool = False,
-        random_seed: Any | None = None,
-        username: str | None = None,
-        log_progress: bool = True,
-        sudo: bool = False,
-        concurrency: int | None = None,
-        job_id: str | None = None,
-    ) -> tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]:
-        config = ConfigConverter.convert_to_gds_config(
-            graph_name=G.name(),
-            metrics=metrics,
-            model_name=model_name,
-            pipeline=pipeline_name,
-            target_property=target_property,
-            relationship_types=relationship_types,
-            target_node_labels=target_node_labels,
-            store_model_to_disk=store_model_to_disk,
-            random_seed=random_seed,
-            username=username,
-            log_progress=log_progress,
-            sudo=sudo,
-            concurrency=concurrency,
-            job_id=job_id,
-        )
-        show_progress = self._show_progress and log_progress
-        result_job_id = JobClient.run_job_and_wait(
-            self._arrow_client,
-            "v2/pipeline.nodeClassification.train",
-            config,
-            show_progress=show_progress,
-        )
-        result = JobClient.get_summary(self._arrow_client, result_job_id)
-        return (
-            NodeClassificationModelV2(
-                model_name,
-                self._model_api,
-                predict_endpoints=self._predict,
-            ),
-            NodeClassificationPipelineTrainResult(**result),
-        )
 
     def _call_action(self, suffix: str, **payload: Any) -> dict[str, Any]:
         config = ConfigConverter.convert_to_gds_config(**payload)

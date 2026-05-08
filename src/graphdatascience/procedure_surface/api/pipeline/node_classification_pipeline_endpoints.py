@@ -3,20 +3,25 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
 from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import NodeClassificationPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
-    NodeClassificationPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
+    NodeClassificationPipelineTrainEndpoints,
 )
 
 
 class NodeClassificationPipelineEndpoints(ABC):
+    @property
+    @abstractmethod
+    def train(self) -> NodeClassificationPipelineTrainEndpoints:
+        """Access training endpoints for node classification pipelines."""
+        pass
+
     @property
     @abstractmethod
     def predict(self) -> NodeClassificationPipelinePredictEndpoints:
@@ -259,65 +264,5 @@ class NodeClassificationPipelineEndpoints(ABC):
         -------
         NodeClassificationPipelineInfoResult
             The updated pipeline state.
-        """
-        pass
-
-    @abstractmethod
-    def train(
-        self,
-        G: GraphV2,
-        pipeline_name: str,
-        *,
-        metrics: list[str],
-        model_name: str,
-        target_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        target_node_labels: list[str] = ALL_LABELS,
-        store_model_to_disk: bool = False,
-        random_seed: Any | None = None,
-        username: str | None = None,
-        log_progress: bool = True,
-        sudo: bool = False,
-        concurrency: int | None = None,
-        job_id: str | None = None,
-    ) -> tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]:
-        """
-        Train a node classification model from the specified pipeline.
-
-        Parameters
-        ----------
-        G
-            Graph object to use
-        pipeline_name
-            Name of the pipeline.
-        metrics
-            Metrics to optimize for.
-        model_name
-            Name of the trained model.
-        target_property
-            The target node property to predict.
-        relationship_types
-            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        target_node_labels
-            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        store_model_to_disk
-            Whether to persist the trained model to disk.
-        random_seed
-            Seed for random number generation to ensure reproducible results.
-        username
-            As an administrator, impersonate a different user for accessing their graphs.
-        log_progress
-            Display progress logging.
-        sudo
-            Disable the memory guard.
-        concurrency
-            Number of concurrent threads to use.
-        job_id
-            Identifier for the computation.
-
-        Returns
-        -------
-        tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]
-            The trained model and the corresponding training result.
         """
         pass

@@ -4,6 +4,7 @@ from typing import Any
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_protocol import (
     NodeClassificationPipelineOps,
@@ -281,6 +282,77 @@ class NodeClassificationPipeline:
             The trained model and the corresponding training result.
         """
         return self._trainer.train(
+            G,
+            self._name,
+            metrics=metrics,
+            model_name=model_name,
+            target_property=target_property,
+            relationship_types=relationship_types,
+            target_node_labels=target_node_labels,
+            store_model_to_disk=store_model_to_disk,
+            random_seed=random_seed,
+            username=username,
+            log_progress=log_progress,
+            sudo=sudo,
+            concurrency=concurrency,
+            job_id=job_id,
+        )
+
+    def train_estimate(
+        self,
+        G: GraphV2,
+        *,
+        metrics: list[str],
+        model_name: str,
+        target_property: str,
+        relationship_types: list[str] = ALL_TYPES,
+        target_node_labels: list[str] = ALL_LABELS,
+        store_model_to_disk: bool = False,
+        random_seed: Any | None = None,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> EstimationResult:
+        """
+        Estimate the memory required to train a node classification model from this pipeline.
+
+        Parameters
+        ----------
+        G
+            Graph object to use
+        metrics
+            Metrics to optimize for.
+        model_name
+            Name of the trained model.
+        target_property
+            The target node property to predict.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        target_node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        store_model_to_disk
+            Whether to persist the trained model to disk.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
+        log_progress
+            Display progress logging.
+        sudo
+            Disable the memory guard.
+        concurrency
+            Number of concurrent threads to use.
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        EstimationResult
+            The estimated memory footprint for training.
+        """
+        return self._trainer.train.estimate(
             G,
             self._name,
             metrics=metrics,

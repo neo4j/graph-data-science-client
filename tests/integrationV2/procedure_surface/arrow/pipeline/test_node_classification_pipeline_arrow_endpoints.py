@@ -131,6 +131,65 @@ def test_node_classification_train_and_predict_and_stream(
         _drop_pipeline(arrow_client, pipeline_name)
 
 
+def test_node_classification_train_estimate(
+    arrow_client: AuthenticatedArrowClient,
+    endpoints: NodeClassificationPipelineArrowEndpoints,
+    sample_graph: GraphV2,
+) -> None:
+    pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
+    model_name = f"nc-model-{uuid4().hex[:8]}"
+
+    try:
+        pipeline, _ = endpoints.create(pipeline_name)
+        pipeline.select_features(node_properties=["feature"])
+        pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
+        estimate = pipeline.train_estimate(
+            sample_graph,
+            metrics=["F1_WEIGHTED"],
+            model_name=model_name,
+            target_property="target",
+        )
+
+        assert estimate.required_memory is not None
+        assert estimate.bytes_max is None or estimate.bytes_max >= 0
+    finally:
+        arrow_client.do_action_with_retry(
+            "v2/model.drop",
+            {"modelName": model_name, "failIfMissing": False},
+        )
+        _drop_pipeline(arrow_client, pipeline_name)
+
+
+def test_node_classification_predict_estimate(
+    arrow_client: AuthenticatedArrowClient,
+    endpoints: NodeClassificationPipelineArrowEndpoints,
+    sample_graph: GraphV2,
+) -> None:
+    pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
+    model_name = f"nc-model-{uuid4().hex[:8]}"
+
+    try:
+        pipeline, _ = endpoints.create(pipeline_name)
+        pipeline.select_features(node_properties=["feature"])
+        pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
+        model, _ = pipeline.train(
+            sample_graph,
+            metrics=["F1_WEIGHTED"],
+            model_name=model_name,
+            target_property="target",
+        )
+        estimate = model.predict_estimate(sample_graph)
+
+        assert estimate.required_memory is not None
+        assert estimate.bytes_max is None or estimate.bytes_max >= 0
+    finally:
+        arrow_client.do_action_with_retry(
+            "v2/model.drop",
+            {"modelName": model_name, "failIfMissing": False},
+        )
+        _drop_pipeline(arrow_client, pipeline_name)
+
+
 def test_node_classification_predict_mutate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeClassificationPipelineArrowEndpoints,

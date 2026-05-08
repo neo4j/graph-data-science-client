@@ -3,6 +3,9 @@ from unittest import mock
 import pandas as pd
 
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
+    NodeClassificationPipeline,
+)
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
 )
@@ -34,6 +37,74 @@ def test_node_classification_train_runs_query() -> None:
     assert result.model_info.model_name == "model"
     assert (
         query_runner.call_procedure.call_args_list[1].kwargs["endpoint"] == "gds.beta.pipeline.nodeClassification.train"
+    )
+
+
+def test_node_classification_train_estimate_runs_query() -> None:
+    row = mock.Mock()
+    row.to_dict.return_value = {
+        "nodeCount": 4,
+        "relationshipCount": 4,
+        "requiredMemory": "42 KiB",
+        "treeView": "",
+        "mapView": {},
+        "bytesMin": 1,
+        "bytesMax": 2,
+        "heapPercentageMin": 0.1,
+        "heapPercentageMax": 0.2,
+    }
+    query_runner = mock.Mock()
+    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    graph = mock.Mock()
+    graph.name.return_value = "g"
+
+    result = NodeClassificationPipelineCypherEndpoints(query_runner).train.estimate(
+        graph,
+        "pipe",
+        metrics=["F1_WEIGHTED"],
+        model_name="model",
+        target_property="y",
+    )
+
+    assert result.node_count == 4
+    assert (
+        query_runner.call_procedure.call_args.kwargs["endpoint"]
+        == "gds.beta.pipeline.nodeClassification.train.estimate"
+    )
+
+
+def test_node_classification_pipeline_train_estimate_delegates_to_trainer() -> None:
+    trainer = mock.Mock()
+    trainer.train = mock.Mock()
+    graph = mock.Mock()
+    expected = mock.Mock()
+    trainer.train.estimate.return_value = expected
+
+    pipeline = NodeClassificationPipeline("pipe", mock.Mock(), trainer)
+
+    result = pipeline.train_estimate(
+        graph,
+        metrics=["F1_WEIGHTED"],
+        model_name="model",
+        target_property="y",
+    )
+
+    assert result is expected
+    trainer.train.estimate.assert_called_once_with(
+        graph,
+        "pipe",
+        metrics=["F1_WEIGHTED"],
+        model_name="model",
+        target_property="y",
+        relationship_types=["*"],
+        target_node_labels=["*"],
+        store_model_to_disk=False,
+        random_seed=None,
+        username=None,
+        log_progress=True,
+        sudo=False,
+        concurrency=None,
+        job_id=None,
     )
 
 
@@ -128,6 +199,61 @@ def test_node_classification_predict_stream_mutate_and_write_run_queries() -> No
     assert (
         query_runner.call_procedure.call_args_list[2].kwargs["endpoint"]
         == "gds.beta.pipeline.nodeClassification.predict.write"
+    )
+
+
+def test_node_classification_predict_estimate_runs_query() -> None:
+    row = mock.Mock()
+    row.to_dict.return_value = {
+        "nodeCount": 4,
+        "relationshipCount": 4,
+        "requiredMemory": "42 KiB",
+        "treeView": "",
+        "mapView": {},
+        "bytesMin": 1,
+        "bytesMax": 2,
+        "heapPercentageMin": 0.1,
+        "heapPercentageMax": 0.2,
+    }
+    query_runner = mock.Mock()
+    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    graph = mock.Mock()
+    graph.name.return_value = "g"
+
+    result = NodeClassificationPipelineCypherEndpoints(query_runner).predict.estimate(
+        graph,
+        model_name="model",
+    )
+
+    assert result.node_count == 4
+    assert (
+        query_runner.call_procedure.call_args.kwargs["endpoint"]
+        == "gds.beta.pipeline.nodeClassification.predict.stream.estimate"
+    )
+
+
+def test_node_classification_model_predict_estimate_delegates_to_predict_endpoints() -> None:
+    graph = mock.Mock()
+    model_api = mock.Mock()
+    predict_endpoints = mock.Mock()
+    expected = mock.Mock()
+    predict_endpoints.estimate.return_value = expected
+
+    model = NodeClassificationModelV2("model", model_api, predict_endpoints)
+
+    result = model.predict_estimate(graph, concurrency=4)
+
+    assert result is expected
+    predict_endpoints.estimate.assert_called_once_with(
+        graph,
+        model_name="model",
+        relationship_types=None,
+        target_node_labels=None,
+        username=None,
+        log_progress=True,
+        sudo=False,
+        concurrency=4,
+        job_id=None,
     )
 
 

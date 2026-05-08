@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
     NodeClassificationPipelinePredictMutateResult,
@@ -65,6 +66,32 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
             show_progress=show_progress,
         )
         return JobClient.stream_results(self._arrow_client, G.name(), result_job_id)
+
+    def estimate(
+        self,
+        G: GraphV2,
+        model_name: str,
+        *,
+        relationship_types: list[str] | None = None,
+        target_node_labels: list[str] | None = None,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> EstimationResult:
+        config = ConfigConverter.convert_to_gds_config(
+            graph_name=G.name(),
+            model_name=model_name,
+            relationship_types=relationship_types,
+            target_node_labels=target_node_labels,
+            username=username,
+            log_progress=log_progress,
+            sudo=sudo,
+            concurrency=concurrency,
+            job_id=job_id,
+        )
+        return self._node_property_endpoints.estimate("v2/pipeline.nodeClassification.predict.estimate", G, config)
 
     def mutate(
         self,

@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
 
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
-    NodeClassificationPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
+    NodeClassificationPipelineTrainEndpoints,
 )
 
 
@@ -68,21 +67,5 @@ class NodeClassificationPipelineOps(Protocol):
 
 @runtime_checkable
 class NodeClassificationPipelineTrainer(Protocol):
-    def train(
-        self,
-        G: GraphV2,
-        pipeline_name: str,
-        *,
-        metrics: list[str],
-        model_name: str,
-        target_property: str,
-        relationship_types: list[str] = ALL_TYPES,
-        target_node_labels: list[str] = ALL_LABELS,
-        store_model_to_disk: bool = False,
-        random_seed: Any | None = None,
-        username: str | None = None,
-        log_progress: bool = True,
-        sudo: bool = False,
-        concurrency: int | None = None,
-        job_id: str | None = None,
-    ) -> tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]: ...
+    @property
+    def train(self) -> NodeClassificationPipelineTrainEndpoints: ...

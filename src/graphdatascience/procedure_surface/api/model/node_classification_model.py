@@ -5,6 +5,7 @@ from pandas import DataFrame
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.model.v2.model import Model
 from graphdatascience.model.v2.model_api import ModelApi
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
     NodeClassificationPipelinePredictMutateResult,
@@ -65,6 +66,57 @@ class NodeClassificationModelV2(Model):
             The prediction results as a DataFrame.
         """
         return self._predict_endpoints.stream(
+            G,
+            model_name=self.name(),
+            relationship_types=relationship_types,
+            target_node_labels=target_node_labels,
+            username=username,
+            log_progress=log_progress,
+            sudo=sudo,
+            concurrency=concurrency,
+            job_id=job_id,
+        )
+
+    def predict_estimate(
+        self,
+        G: GraphV2,
+        *,
+        relationship_types: list[str] | None = None,
+        target_node_labels: list[str] | None = None,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> EstimationResult:
+        """
+        Estimate the memory required to run prediction.
+
+        Parameters
+        ----------
+        G
+            Graph object to use
+        relationship_types
+            Optional relationship type filter.
+        target_node_labels
+            Optional node label filter.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
+        log_progress
+            Display progress logging.
+        sudo
+            Disable the memory guard.
+        concurrency
+            Number of concurrent threads to use.
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        EstimationResult
+            The estimated memory footprint for prediction.
+        """
+        return self._predict_endpoints.estimate(
             G,
             model_name=self.name(),
             relationship_types=relationship_types,

@@ -7,9 +7,26 @@ from pandas import DataFrame
 
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class NodeClassificationPipelinePredictEndpoints(ABC):
+    @abstractmethod
+    def estimate(
+        self,
+        G: GraphV2,
+        model_name: str,
+        *,
+        relationship_types: list[str] | None = None,
+        target_node_labels: list[str] | None = None,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> EstimationResult:
+        pass
+
     @abstractmethod
     def stream(
         self,
