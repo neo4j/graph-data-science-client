@@ -176,7 +176,9 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
 
     @property
     def graph(self) -> GraphRemoteProcRunner:
-        return GraphRemoteProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
+        return GraphRemoteProcRunner(
+            self._query_runner, self.arrow_client(), f"{self._namespace}.graph", self._server_version
+        )
 
     @property
     def util(self) -> UtilRemoteProcRunner:

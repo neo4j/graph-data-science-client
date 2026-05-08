@@ -471,6 +471,12 @@ class GdsArrowClient:
 
         return self._flight_client.request_token()
 
+    def flight_client(self) -> AuthenticatedArrowClient:
+        """
+        Returns the underlying flight client.
+        """
+        return self._flight_client
+
     def _upload_data(
         self,
         endpoint: str,
