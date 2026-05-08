@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from concurrent.futures.thread import ThreadPoolExecutor
 from logging import DEBUG, getLogger
 from typing import Any, Tuple
 
@@ -8,6 +9,7 @@ from pandas import DataFrame, Series
 from tenacity import retry, retry_if_result
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -87,6 +89,14 @@ class ProjectProtocol(ABC):
 
         return config
 
+    def _show_progress(self, job_id: str, show_progress: bool, termination_flag: TerminationFlag) -> None:
+        job_client = JobClient()
+
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            executor.submit(
+                job_client.wait_for_job, self._arrow_client, job_id, show_progress, Status.DONE.name, termination_flag
+            )
+
 
 class ProjectProtocolV3(ProjectProtocol):
     def run_cypher_projection(
@@ -145,6 +155,8 @@ class ProjectProtocolV3(ProjectProtocol):
                 params,
             )
 
+        self._show_progress(job_id, logging, self._termination_flag)
+
         projection_result = project_fn()
 
         projection_query_runner.close()
@@ -199,7 +211,7 @@ class ProjectProtocolV4(ProjectProtocol):
             params,
         )
 
-        return self._await_completion(actual_job_id, projection_query_runner)
+        return self._await_completion(actual_job_id, projection_query_runner, logging)
 
     def run_store_projection(
         self,
@@ -237,7 +249,7 @@ class ProjectProtocolV4(ProjectProtocol):
             params,
         )
 
-        return self._await_completion(actual_job_id, projection_query_runner)
+        return self._await_completion(actual_job_id, projection_query_runner, logging)
 
     def _start_job(self, query: str, params: dict[str, Any]) -> Tuple[str, QueryRunner]:
         start_response = self._query_runner.run_cypher(
@@ -254,7 +266,7 @@ class ProjectProtocolV4(ProjectProtocol):
 
         return actual_job_id, projection_query_runner
 
-    def _await_completion(self, job_id: str, query_runner: QueryRunner) -> dict[str, Any]:
+    def _await_completion(self, job_id: str, query_runner: QueryRunner, show_progress: bool) -> dict[str, Any]:
         def is_not_done(r: Series[Any]) -> bool:
             status: str = r["status"]
             return status != Status.DONE.name
@@ -276,6 +288,8 @@ class ProjectProtocolV4(ProjectProtocol):
                 raise Exception(status_result["error"])
 
             return status_result  # type: ignore
+
+        self._show_progress(job_id, show_progress, self._termination_flag)
 
         result = poll_result()
 
