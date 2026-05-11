@@ -86,14 +86,22 @@ class JobClient:
 
     @staticmethod
     def stream_results(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> DataFrame:
+        export_job_id = JobClient.export_result(client, graph_name, job_id)
+
+        return JobClient.get_stream(client, export_job_id)
+
+    @staticmethod
+    def export_result(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> str:
         payload = {
             "graphName": graph_name,
             "jobId": job_id,
         }
 
         res = client.do_action_with_retry("v2/results.stream", payload)
-        export_job_id = JobIdConfig(**deserialize_single(res)).job_id
+        return JobIdConfig(**deserialize_single(res)).job_id
 
+    @staticmethod
+    def get_stream(client: AuthenticatedArrowClient, export_job_id: str) -> DataFrame:
         stream_payload = {"version": "v2", "name": export_job_id, "body": {}}
 
         ticket = Ticket(json.dumps(stream_payload).encode("utf-8"))

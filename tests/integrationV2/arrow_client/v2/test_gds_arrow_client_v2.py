@@ -52,7 +52,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 def test_stream_node_label(gds_arrow_client: GdsArrowClient, sample_graph: GraphV2) -> None:
     job_id = gds_arrow_client.get_nodes(sample_graph.name(), node_filter="n.prop1 > 1")
-    result = gds_arrow_client.stream_job(sample_graph.name(), job_id)
+    result = gds_arrow_client.stream_job(job_id)
 
     assert ["nodeId"] == list(result.columns)
     assert len(result) == 2
@@ -60,7 +60,7 @@ def test_stream_node_label(gds_arrow_client: GdsArrowClient, sample_graph: Graph
 
 def test_stream_node_properties(gds_arrow_client: GdsArrowClient, sample_graph: GraphV2) -> None:
     job_id = gds_arrow_client.get_node_properties(sample_graph.name(), node_properties=["prop1", "prop2"])
-    result = gds_arrow_client.stream_job(sample_graph.name(), job_id)
+    result = gds_arrow_client.stream_job(job_id)
 
     assert len(result) == 3
     assert "nodeId" in result.columns
@@ -73,7 +73,7 @@ def test_stream_node_properties(gds_arrow_client: GdsArrowClient, sample_graph: 
 
 def test_stream_relationship_properties(gds_arrow_client: GdsArrowClient, sample_graph: GraphV2) -> None:
     job_id = gds_arrow_client.get_relationships(sample_graph.name(), ["REL"], relationship_properties=["relX", "relY"])
-    result = gds_arrow_client.stream_job(sample_graph.name(), job_id)
+    result = gds_arrow_client.stream_job(job_id)
 
     assert len(result) == 2
     assert "sourceNodeId" in result.columns

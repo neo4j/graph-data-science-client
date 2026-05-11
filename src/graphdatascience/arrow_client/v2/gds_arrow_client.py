@@ -123,7 +123,8 @@ class GdsArrowClient:
             job_id=job_id,
         )
 
-        return JobClient.run_job_and_wait(self._flight_client, "v2/graph.nodeLabel.stream", config, log_progress)
+        compute_job = JobClient.run_job_and_wait(self._flight_client, "v2/graph.nodeLabel.stream", config, log_progress)
+        return JobClient.export_result(self._flight_client, graph_name, compute_job)
 
     def get_relationships(
         self,
@@ -175,14 +176,12 @@ class GdsArrowClient:
 
         return JobClient.run_job(self._flight_client, endpoint, config)
 
-    def stream_job(self, graph_name: str, job_id: str) -> pandas.DataFrame:
+    def stream_job(self, job_id: str) -> pandas.DataFrame:
         """
         Streams the results of a previously started job.
 
         Parameters
         ----------
-        graph_name
-           The graph name.
         job_id
             Identifier for the computation.
 
@@ -191,7 +190,7 @@ class GdsArrowClient:
         DataFrame
             A pandas DataFrame containing the results of the job.
         """
-        return JobClient().stream_results(self._flight_client, graph_name, job_id)
+        return JobClient().get_stream(self._flight_client, job_id)
 
     def create_graph(
         self,
