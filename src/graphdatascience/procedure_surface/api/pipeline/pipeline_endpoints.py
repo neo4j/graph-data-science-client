@@ -20,10 +20,26 @@ class PipelineCatalogEntry(BaseResult):
     pipeline_info: dict[str, Any] | None = None
 
 
+class PipelineExistsResult(BaseResult):
+    pipeline_name: str
+    pipeline_type: str
+    exists: bool
+
+
 class PipelineEndpoints(ABC):
     @abstractmethod
     def list(self, pipeline_name: str | None = None) -> list[PipelineCatalogEntry]:
         """List pipeline catalog entries, optionally filtered by pipeline name."""
+        pass
+
+    @abstractmethod
+    def exists(self, pipeline_name: str) -> PipelineExistsResult | None:
+        """Return pipeline existence details when present, otherwise None."""
+        pass
+
+    @abstractmethod
+    def drop(self, pipeline_name: str, *, fail_if_missing: bool = False) -> PipelineCatalogEntry | None:
+        """Drop a pipeline from the catalog, optionally failing when missing."""
         pass
 
     @property

@@ -2,7 +2,7 @@ import inspect
 import re
 import typing
 from collections import OrderedDict
-from types import MethodType
+from types import MethodType, UnionType
 from typing import Any
 
 from pandas import DataFrame
@@ -34,9 +34,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "memory.list",
     "list",  # listing only available endpoints
     "user_log",
-    # TODO
-    "pipeline.exists",
-    "pipeline.drop",
     "beta.pipeline.link_prediction.add_random_forest",
     "beta.pipeline.link_prediction.add_feature",
     "beta.pipeline.link_prediction.add_logistic_regression",
@@ -99,7 +96,7 @@ IGNORED_PARAMETERS = {
     r".*collapse_path.*": ["relationship_types"],
 }
 
-ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, str | None]] = {
+ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
     ".*": {
         "concurrency": None,
         "job_id": None,
@@ -123,6 +120,9 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, str | None]] = {
     },
     ".*triangles$": {
         "max_degree": None,
+    },
+    "pipeline.drop": {
+        "fail_if_missing": False,
     },
 }
 
@@ -198,6 +198,14 @@ def verify_return_fields(callable_object: MethodType, expected_return_fields: li
             model_types = [arg for arg in args if inspect.isclass(arg) and issubclass(arg, BaseModel)]
             if len(model_types) == 1:
                 result_type = model_types[0]
+        elif origin is UnionType:
+            model_types = [arg for arg in args if inspect.isclass(arg) and issubclass(arg, BaseModel)]
+            if len(model_types) == 1:
+                result_type = model_types[0]
+        else:
+            raise ValueError(
+                f"Return annotation {return_annotation} has unsupported origin {origin}. Please add support here for testing."
+            )
 
     if not result_type:
         raise ValueError(
@@ -313,5 +321,7 @@ def assert_api_spec_coverage(
     print(f"Available through gds.v2: {len(available_endpoints)}")
 
     newly_available_endpoints = available_endpoints.intersection(UNMAPPED_ENDPOINTS)
-    assert not newly_available_endpoints, "Endpoints now available, please remove from MISSING_ENDPOINTS"
+    assert not newly_available_endpoints, (
+        f"Endpoints {newly_available_endpoints} now available, please remove from MISSING_ENDPOINTS"
+    )
     assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"

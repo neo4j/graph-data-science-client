@@ -7,6 +7,8 @@ from pyarrow import flight
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
+from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
     NodeRegressionPipelineArrowEndpoints,
 )
@@ -147,19 +149,41 @@ def test_node_regression_add_node_property_runs_arrow_action_with_config() -> No
     )
 
 
-def test_node_regression_get_runs_arrow_action() -> None:
+def test_node_regression_get_uses_shared_pipeline_catalog() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [
-        _flight_result('{"pipelineName":"pipe","pipelineType":"Node regression training pipeline"}')
-    ]
+    pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
+    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+        pipelineName="pipe", pipelineType="Node regression training pipeline"
+    )
 
-    pipeline = NodeRegressionPipelineArrowEndpoints(arrow_client, None).get("pipe")
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints.PipelineCatalogArrowEndpoints",
+        return_value=pipeline_catalog,
+    ) as pipeline_catalog_cls:
+        pipeline = NodeRegressionPipelineArrowEndpoints(
+            arrow_client,
+            None,
+        ).get("pipe")
 
     assert pipeline.name() == "pipe"
-    arrow_client.do_action_with_retry.assert_called_once_with(
-        "v2/pipeline.list",
-        {"pipelineName": "pipe"},
+    pipeline_catalog_cls.assert_called_once_with(
+        arrow_client,
+        None,
+        show_progress=True,
     )
+    pipeline_catalog.exists.assert_called_once_with("pipe")
+    arrow_client.do_action_with_retry.assert_not_called()
+
+
+def test_node_regression_endpoints_do_not_accept_pipeline_catalog_constructor_override() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+    constructor = mock.Mock(side_effect=NodeRegressionPipelineArrowEndpoints)
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints.PipelineCatalogArrowEndpoints"
+    ):
+        with pytest.raises(TypeError, match="pipeline_catalog"):
+            constructor(arrow_client, None, pipeline_catalog=mock.Mock())
 
 
 def test_node_regression_train_runs_arrow_job_and_returns_arrow_wired_model() -> None:

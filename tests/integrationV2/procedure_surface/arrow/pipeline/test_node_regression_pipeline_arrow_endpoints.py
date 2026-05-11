@@ -122,3 +122,21 @@ def test_node_regression_get_returns_pipeline_object(
         assert fetched_pipeline.name() == pipeline_name
     finally:
         _drop_pipeline(arrow_client, pipeline_name)
+
+
+def test_node_regression_pipeline_object_supports_exists_and_drop(
+    arrow_client: AuthenticatedArrowClient,
+    endpoints: NodeRegressionPipelineArrowEndpoints,
+) -> None:
+    pipeline_name = f"nr-pipe-{uuid4().hex[:8]}"
+
+    try:
+        pipeline, _ = endpoints.create(pipeline_name)
+
+        assert pipeline.exists() is True
+        dropped = pipeline.drop()
+        assert dropped is not None
+        assert dropped.pipeline_name == pipeline_name
+        assert pipeline.exists() is False
+    finally:
+        _drop_pipeline(arrow_client, pipeline_name)

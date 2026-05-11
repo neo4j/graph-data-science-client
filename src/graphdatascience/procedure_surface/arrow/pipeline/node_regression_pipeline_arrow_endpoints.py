@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize, deserialize_single
+from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
@@ -22,9 +22,13 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_re
     NodeRegressionPipelineTrainResult,
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints import (
     NodeRegressionPredictArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
+    PipelineCatalogArrowEndpoints,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
@@ -37,8 +41,14 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
         show_progress: bool = True,
     ) -> None:
         self._arrow_client = arrow_client
+        self._write_back_client = write_back_client
         self._show_progress = show_progress
         self._predict = NodeRegressionPredictArrowEndpoints(
+            arrow_client,
+            write_back_client,
+            show_progress=show_progress,
+        )
+        self._pipeline_catalog: PipelineCatalogProtocol = PipelineCatalogArrowEndpoints(
             arrow_client,
             write_back_client,
             show_progress=show_progress,
@@ -51,23 +61,23 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
 
     def create(self, pipeline_name: str) -> tuple[NodeRegressionPipeline, NodeRegressionPipelineInfoResult]:
         result = self._call_action("v2/pipeline.nodeRegression", pipeline_name=pipeline_name)
-        return NodeRegressionPipeline(pipeline_name, self, self), NodeRegressionPipelineInfoResult(**result)
+        return (
+            NodeRegressionPipeline(pipeline_name, self, self, self._pipeline_catalog),
+            NodeRegressionPipelineInfoResult(**result),
+        )
 
     def get(self, pipeline_name: str) -> NodeRegressionPipeline:
-        result = deserialize(
-            self._arrow_client.do_action_with_retry(
-                "v2/pipeline.list",
-                ConfigConverter.convert_to_gds_config(pipeline_name=pipeline_name),
-            )
-        )
-        if not result:
+        pipeline_info = self._pipeline_catalog.exists(pipeline_name)
+        if not pipeline_info:
             raise ValueError(f"No pipeline named '{pipeline_name}' exists")
-        if len(result) != 1:
-            raise ValueError(f"Expected exactly one pipeline named '{pipeline_name}', got {len(result)}")
-        pipeline_info = result[0]
-        if pipeline_info.get("pipelineType") != "Node regression training pipeline":
+        if pipeline_info.pipeline_type != "Node regression training pipeline":
             raise ValueError(f"Pipeline '{pipeline_name}' is not a node regression pipeline")
-        return NodeRegressionPipeline(pipeline_info.get("pipelineName", pipeline_name), self, self)
+        return NodeRegressionPipeline(
+            pipeline_info.pipeline_name,
+            self,
+            self,
+            self._pipeline_catalog,
+        )
 
     def add_node_property(
         self, pipeline_name: str, procedure_name: str, **config: Any

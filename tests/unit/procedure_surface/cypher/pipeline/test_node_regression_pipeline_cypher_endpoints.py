@@ -4,6 +4,10 @@ from unittest import mock
 import pandas as pd
 import pytest
 
+from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
+from graphdatascience.procedure_surface.cypher.pipeline import NodeRegressionPipelineCypherEndpoints
+
 
 def test_node_regression_add_linear_regression_runs_query() -> None:
     create_row = mock.Mock()
@@ -167,6 +171,41 @@ def test_node_regression_train_accepts_pipeline_name() -> None:
 
     endpoints = NodeRegressionPipelineCypherEndpoints(query_runner)
     endpoints.train(graph, "pipe", metrics=["MAE"], model_name="model", target_property="y")
+
+
+def test_node_regression_get_uses_shared_pipeline_catalog() -> None:
+    query_runner = mock.Mock()
+    pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
+    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+        pipelineName="pipe", pipelineType="Node regression training pipeline"
+    )
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints.PipelineCatalogCypherEndpoints",
+        return_value=pipeline_catalog,
+    ) as pipeline_catalog_cls:
+        pipeline = NodeRegressionPipelineCypherEndpoints(query_runner).get("pipe")
+
+    assert pipeline.name() == "pipe"
+    pipeline_catalog_cls.assert_called_once_with(query_runner)
+    pipeline_catalog.exists.assert_called_once_with("pipe")
+    query_runner.call_procedure.assert_not_called()
+
+
+def test_node_regression_endpoints_do_not_accept_pipeline_catalog_constructor_override() -> None:
+    query_runner = mock.Mock()
+
+    from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
+        NodeRegressionPipelineCypherEndpoints,
+    )
+
+    constructor = mock.Mock(side_effect=NodeRegressionPipelineCypherEndpoints)
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints.PipelineCatalogCypherEndpoints"
+    ):
+        with pytest.raises(TypeError, match="pipeline_catalog"):
+            constructor(query_runner, pipeline_catalog=mock.Mock())
 
 
 def test_node_regression_predict_stream_and_mutate_run_queries() -> None:
