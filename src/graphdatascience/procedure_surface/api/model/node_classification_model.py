@@ -46,7 +46,7 @@ class NodeClassificationModelV2(Model):
         G
             Graph object to use
         relationship_types
-            Optional relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Optional node label filter.
         username
@@ -97,7 +97,7 @@ class NodeClassificationModelV2(Model):
         G
             Graph object to use
         relationship_types
-            Optional relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Optional node label filter.
         username
@@ -152,7 +152,7 @@ class NodeClassificationModelV2(Model):
         mutate_property
             Name of the node property to store the predicted class in.
         relationship_types
-            Optional relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Optional node label filter.
         predicted_probability_property
@@ -212,7 +212,7 @@ class NodeClassificationModelV2(Model):
         write_property
             Name of the node property to store the predicted class in.
         relationship_types
-            Optional relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Optional node label filter.
         predicted_probability_property

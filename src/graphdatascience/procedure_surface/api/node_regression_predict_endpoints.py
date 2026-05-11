@@ -34,7 +34,7 @@ class NodeRegressionPipelinePredictEndpoints(ABC):
         model_name
             Name of the model.
         relationship_types
-            Optional relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Optional node label filter.
         username
@@ -82,7 +82,7 @@ class NodeRegressionPipelinePredictEndpoints(ABC):
         mutate_property
             Name of the node property to store the results in.
         relationship_types
-            Optional relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Optional node label filter.
         username

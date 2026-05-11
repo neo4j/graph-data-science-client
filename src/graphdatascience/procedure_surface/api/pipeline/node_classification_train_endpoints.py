@@ -38,7 +38,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
         Parameters
         ----------
         G
-            Graph object to use.
+            Graph object to use
         pipeline_name
             Name of the pipeline.
         metrics
@@ -48,7 +48,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
         target_property
             Target node property to predict.
         relationship_types
-            Relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Node label filter.
         store_model_to_disk
@@ -56,7 +56,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
         random_seed
             Seed for random number generation.
         username
-            Optional impersonated user.
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
@@ -98,7 +98,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
         Parameters
         ----------
         G
-            Graph object to use.
+            Graph object to use
         pipeline_name
             Name of the pipeline.
         metrics
@@ -108,7 +108,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
         target_property
             Target node property to predict.
         relationship_types
-            Relationship type filter.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Node label filter.
         store_model_to_disk
@@ -116,7 +116,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
         random_seed
             Seed for random number generation.
         username
-            Optional impersonated user.
+            As an administrator, impersonate a different user for accessing their graphs.
         log_progress
             Display progress logging.
         sudo
