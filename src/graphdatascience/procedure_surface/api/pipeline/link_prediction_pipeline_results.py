@@ -1,0 +1,26 @@
+from typing import Any
+
+from graphdatascience.procedure_surface.api.base_result import BaseResult
+
+
+class LinkPredictionPipelineInfoResult(BaseResult):
+    feature_steps: list[Any] | None = None
+    name: str | None = None
+    node_property_steps: list[Any] | None = None
+    parameter_space: dict[str, Any] | None = None
+    split_config: dict[str, Any] | None = None
+
+
+class LinkPredictionModelInfoResult(BaseResult):
+    best_parameters: dict[str, Any] | None = None
+    metrics: dict[str, Any] | None = None
+    model_name: str | None = None
+    model_type: str | None = None
+    pipeline: dict[str, Any] | None = None
+
+
+class LinkPredictionPipelineTrainResult(BaseResult):
+    configuration: dict[str, Any] | None = None
+    model_info: LinkPredictionModelInfoResult | None = None
+    model_selection_stats: dict[str, Any] | None = None
+    train_millis: int | None = None

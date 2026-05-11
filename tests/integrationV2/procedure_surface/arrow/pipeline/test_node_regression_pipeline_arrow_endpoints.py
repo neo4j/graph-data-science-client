@@ -9,6 +9,9 @@ from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoint
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
     NodeRegressionPipelineArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
+    PipelineCatalogArrowEndpoints,
+)
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
@@ -32,14 +35,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 @pytest.fixture
 def endpoints(arrow_client: AuthenticatedArrowClient) -> NodeRegressionPipelineArrowEndpoints:
-    return NodeRegressionPipelineArrowEndpoints(arrow_client, None, show_progress=False)
-
-
-def _drop_pipeline(arrow_client: AuthenticatedArrowClient, pipeline_name: str) -> None:
-    arrow_client.do_action_with_retry(
-        "v2/pipeline.drop",
-        {"pipelineName": pipeline_name, "failIfMissing": False},
-    )
+    return NodeRegressionPipelineArrowEndpoints(arrow_client, show_progress=False)
 
 
 def test_node_regression_train_and_predict_stream(
@@ -74,7 +70,7 @@ def test_node_regression_train_and_predict_stream(
         assert len(stream_result) == 4
     finally:
         ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_regression_predict_mutate(
@@ -103,7 +99,7 @@ def test_node_regression_predict_mutate(
         assert mutate_result.mutate_millis >= 0
     finally:
         ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_regression_get_returns_pipeline_object(
@@ -121,7 +117,7 @@ def test_node_regression_get_returns_pipeline_object(
 
         assert fetched_pipeline.name() == pipeline_name
     finally:
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_regression_pipeline_object_supports_exists_and_drop(
@@ -139,4 +135,4 @@ def test_node_regression_pipeline_object_supports_exists_and_drop(
         assert dropped.pipeline_name == pipeline_name
         assert pipeline.exists() is False
     finally:
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)

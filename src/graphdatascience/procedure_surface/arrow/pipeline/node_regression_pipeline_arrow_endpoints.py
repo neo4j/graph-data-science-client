@@ -5,7 +5,6 @@ from typing import Any
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
@@ -37,20 +36,17 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None,
         show_progress: bool = True,
     ) -> None:
         self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
         self._show_progress = show_progress
         self._predict = NodeRegressionPredictArrowEndpoints(
             arrow_client,
-            write_back_client,
+            None,
             show_progress=show_progress,
         )
         self._pipeline_catalog: PipelineCatalogProtocol = PipelineCatalogArrowEndpoints(
             arrow_client,
-            write_back_client,
             show_progress=show_progress,
         )
         self._model_api = ModelApiArrow(arrow_client)

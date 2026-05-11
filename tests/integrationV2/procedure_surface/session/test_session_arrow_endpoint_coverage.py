@@ -10,15 +10,7 @@ UNMAPPED_ENDPOINTS = [
     "pipeline.drop",
     "pipeline.exists",
     "pipeline.linkPrediction",
-    "pipeline.linkPrediction.autoTuning.configure",
-    "pipeline.linkPrediction.feature.add",
-    "pipeline.linkPrediction.modelCandidate.add",
-    "pipeline.linkPrediction.nodeProperty.add",
     "pipeline.linkPrediction.predict",
-    "pipeline.linkPrediction.predict.estimate",
-    "pipeline.linkPrediction.split.configure",
-    "pipeline.linkPrediction.train",
-    "pipeline.linkPrediction.train.estimate",
     "pipeline.nodeRegression.features.select",
 ]
 
@@ -49,9 +41,11 @@ ENDPOINT_MAPPINGS = {
     "longestPath": "dag.longest_path",
     "maxFlow.minCost": "max_flow.min_cost",
     # pipelines
+    "linkPrediction": "link_prediction",
     "nodeClassification": "node_classification",
     "nodeRegression": "node_regression",
     "autoTuning.configure": "configure_auto_tuning",
+    "feature.add": "add_feature",
     "features.select": "select_features",
     "modelCandidate.add": "add_random_forest",
     "nodeProperty.add": "add_node_property",

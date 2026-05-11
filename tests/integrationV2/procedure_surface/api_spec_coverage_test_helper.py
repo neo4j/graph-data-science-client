@@ -34,16 +34,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "memory.list",
     "list",  # listing only available endpoints
     "user_log",
-    "beta.pipeline.link_prediction.add_random_forest",
-    "beta.pipeline.link_prediction.add_feature",
-    "beta.pipeline.link_prediction.add_logistic_regression",
-    "beta.pipeline.link_prediction.create",
-    "beta.pipeline.link_prediction.predict.mutate",
-    "beta.pipeline.link_prediction.add_node_property",
-    "beta.pipeline.link_prediction.predict.stream",
-    "beta.pipeline.link_prediction.configure_split",
-    "beta.pipeline.link_prediction.train",
-    "alpha.pipeline.link_prediction.configure_auto_tuning",
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(
@@ -68,6 +58,8 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("steiner_tree", "steiner_tree"),
         ("beta.pipeline.node_classification", "pipeline.node_classification"),
         ("alpha.pipeline.node_classification", "pipeline.node_classification"),
+        ("beta.pipeline.link_prediction", "pipeline.link_prediction"),
+        ("alpha.pipeline.link_prediction", "pipeline.link_prediction"),
         ("alpha.pipeline.nodeRegression", "pipeline.node_regression"),
     ]
 )

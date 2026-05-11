@@ -142,7 +142,6 @@ def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
     assert pipeline.name() == "pipe"
     pipeline_catalog_cls.assert_called_once_with(
         arrow_client,
-        None,
         show_progress=True,
     )
     pipeline_catalog.exists.assert_called_once_with("pipe")

@@ -11,6 +11,9 @@ from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoint
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
     NodeClassificationPipelineArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
+    PipelineCatalogArrowEndpoints,
+)
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph, create_graph_from_db
 
 graph = """
@@ -53,13 +56,6 @@ def endpoints(arrow_client: AuthenticatedArrowClient) -> NodeClassificationPipel
     return NodeClassificationPipelineArrowEndpoints(arrow_client, None, show_progress=False)
 
 
-def _drop_pipeline(arrow_client: AuthenticatedArrowClient, pipeline_name: str) -> None:
-    arrow_client.do_action_with_retry(
-        "v2/pipeline.drop",
-        {"pipelineName": pipeline_name, "failIfMissing": False},
-    )
-
-
 @pytest.mark.db_integration
 def test_node_classification_train_and_predict_write(
     arrow_client: AuthenticatedArrowClient,
@@ -99,7 +95,7 @@ def test_node_classification_train_and_predict_write(
         assert write_result.write_millis >= 0
     finally:
         ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_classification_train_and_predict_and_stream(
@@ -128,7 +124,7 @@ def test_node_classification_train_and_predict_and_stream(
         assert len(stream_result) == 4
     finally:
         ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_classification_train_estimate(
@@ -154,7 +150,7 @@ def test_node_classification_train_estimate(
         assert estimate.bytes_max is None or estimate.bytes_max >= 0
     finally:
         ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_classification_pipeline_object_supports_exists_and_drop(
@@ -172,7 +168,7 @@ def test_node_classification_pipeline_object_supports_exists_and_drop(
         assert dropped.pipeline_name == pipeline_name
         assert pipeline.exists() is False
     finally:
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_classification_predict_estimate(
@@ -199,7 +195,7 @@ def test_node_classification_predict_estimate(
         assert estimate.bytes_max is None or estimate.bytes_max >= 0
     finally:
         ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 
 def test_node_classification_predict_mutate(
@@ -233,4 +229,4 @@ def test_node_classification_predict_mutate(
         assert mutate_result.configuration and mutate_result.configuration["mutateProperty"] == "predictedClass"
     finally:
         ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
-        _drop_pipeline(arrow_client, pipeline_name)
+        PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
