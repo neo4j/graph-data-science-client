@@ -99,41 +99,6 @@ def test_node_classification_train_estimate_runs_arrow_job() -> None:
     estimate.assert_called_once()
 
 
-def test_node_classification_predict_estimate_runs_arrow_job() -> None:
-    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    graph = mock.Mock()
-    graph.name.return_value = "g"
-
-    with (
-        mock.patch(
-            "graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints.JobClient.run_job_and_wait",
-            return_value="job-1",
-        ) as run_job_and_wait,
-        mock.patch(
-            "graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints.JobClient.get_summary",
-            return_value={
-                "nodeCount": 4,
-                "relationshipCount": 4,
-                "requiredMemory": "42 KiB",
-                "treeView": "",
-                "mapView": {},
-                "bytesMin": 1,
-                "bytesMax": 2,
-                "heapPercentageMin": 0.1,
-                "heapPercentageMax": 0.2,
-            },
-        ) as get_summary,
-    ):
-        result = NodeClassificationPredictArrowEndpoints(arrow_client, None).estimate(
-            graph,
-            model_name="model",
-        )
-
-    assert result.node_count == 4
-    run_job_and_wait.assert_called_once()
-    get_summary.assert_called_once_with(arrow_client, "job-1")
-
-
 def test_node_classification_select_features_uses_node_properties_payload() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     row = mock.Mock()

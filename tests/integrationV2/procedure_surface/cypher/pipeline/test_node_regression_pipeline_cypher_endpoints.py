@@ -4,6 +4,7 @@ from uuid import uuid4
 import pytest
 
 from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
     NodeRegressionPipelineCypherEndpoints,
 )
@@ -71,11 +72,7 @@ def test_node_regression_train_cypher_pipeline(
         assert train_result.train_millis >= 0
         assert model.name() == model_name
     finally:
-        query_runner.run_cypher(
-            "CALL gds.model.drop($name, false)",
-            query_type=QueryType.USER_ACTION,
-            params={"name": model_name},
-        )
+        ModelCatalogCypherEndpoints(query_runner).drop(model_name)
         query_runner.run_cypher(
             "CALL gds.pipeline.drop($name, false)",
             query_type=QueryType.USER_ACTION,
