@@ -16,14 +16,12 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_metric impo
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_endpoints import (
     NodeRegressionPipelineEndpoints,
-    convert_to_parameter_space_config,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
-    NodeRegressionPipelineCreateResult,
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import PipelineEndpoints
+from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints import (
     NodeRegressionPredictArrowEndpoints,
@@ -51,9 +49,9 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
     def predict(self) -> NodeRegressionPipelinePredictEndpoints:
         return self._predict
 
-    def create(self, pipeline_name: str) -> tuple[NodeRegressionPipeline, NodeRegressionPipelineCreateResult]:
-        result = self._call_action("", pipeline_name=pipeline_name)
-        return NodeRegressionPipeline(pipeline_name, self, self), NodeRegressionPipelineCreateResult(**result)
+    def create(self, pipeline_name: str) -> tuple[NodeRegressionPipeline, NodeRegressionPipelineInfoResult]:
+        result = self._call_action("v2/pipeline.nodeRegression", pipeline_name=pipeline_name)
+        return NodeRegressionPipeline(pipeline_name, self, self), NodeRegressionPipelineInfoResult(**result)
 
     def get(self, pipeline_name: str) -> NodeRegressionPipeline:
         result = deserialize(
@@ -90,7 +88,9 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
         self, pipeline_name: str, feature_properties: str | list[str]
     ) -> NodeRegressionPipelineInfoResult:
         result = self._call_action(
-            "features.select", pipeline_name=pipeline_name, feature_properties=feature_properties
+            "v2/pipeline.nodeRegression.features.select",
+            pipeline_name=pipeline_name,
+            feature_properties=feature_properties,
         )
         return NodeRegressionPipelineInfoResult(**result)
 
@@ -117,7 +117,9 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
             penalty=penalty,
             tolerance=tolerance,
         )
-        result = self._call_action("modelCandidate.add", pipeline_name=pipeline_name, **config)
+        result = self._call_action(
+            "v2/pipeline.nodeRegression.modelCandidate.add", pipeline_name=pipeline_name, **config
+        )
         return NodeRegressionPipelineInfoResult(**result)
 
     def add_random_forest(
@@ -148,14 +150,16 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
             number_of_decision_trees=number_of_decision_trees,
             number_of_samples_ratio=number_of_samples_ratio,
         )
-        result = self._call_action("modelCandidate.add", pipeline_name=pipeline_name, **config)
+        result = self._call_action(
+            "v2/pipeline.nodeRegression.modelCandidate.add", pipeline_name=pipeline_name, **config
+        )
         return NodeRegressionPipelineInfoResult(**result)
 
     def configure_split(
         self, pipeline_name: str, *, test_fraction: float = 0.3, validation_folds: int = 3
     ) -> NodeRegressionPipelineInfoResult:
         result = self._call_action(
-            "split.configure",
+            "v2/pipeline.nodeRegression.split.configure",
             pipeline_name=pipeline_name,
             test_fraction=test_fraction,
             validation_folds=validation_folds,
@@ -163,7 +167,9 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
         return NodeRegressionPipelineInfoResult(**result)
 
     def configure_auto_tuning(self, pipeline_name: str, *, max_trials: int = 10) -> NodeRegressionPipelineInfoResult:
-        result = self._call_action("autoTuning.configure", pipeline_name=pipeline_name, max_trials=max_trials)
+        result = self._call_action(
+            "v2/pipeline.nodeRegression.autoTuning.configure", pipeline_name=pipeline_name, max_trials=max_trials
+        )
         return NodeRegressionPipelineInfoResult(**result)
 
     def train(
@@ -217,27 +223,6 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
             NodeRegressionPipelineTrainResult(**result),
         )
 
-    def _call_action(self, suffix: str, **payload: Any) -> dict[str, Any]:
+    def _call_action(self, endpoint: str, **payload: Any) -> dict[str, Any]:
         config = ConfigConverter.convert_to_gds_config(**payload)
-        endpoint = "v2/pipeline.nodeRegression" if not suffix else f"v2/pipeline.nodeRegression.{suffix}"
         return deserialize_single(self._arrow_client.do_action_with_retry(endpoint, config))
-
-
-class PipelineArrowEndpoints(PipelineEndpoints):
-    def __init__(
-        self,
-        arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None,
-        show_progress: bool = True,
-    ) -> None:
-        self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
-        self._show_progress = show_progress
-
-    @property
-    def node_regression(self) -> NodeRegressionPipelineArrowEndpoints:
-        return NodeRegressionPipelineArrowEndpoints(
-            self._arrow_client,
-            self._write_back_client,
-            show_progress=self._show_progress,
-        )

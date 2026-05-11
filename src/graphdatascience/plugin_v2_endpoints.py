@@ -141,7 +141,7 @@ from graphdatascience.procedure_surface.cypher.pathfinding.spanning_tree_cypher_
 from graphdatascience.procedure_surface.cypher.pathfinding.steiner_tree_cypher_endpoints import (
     SteinerTreeCypherEndpoints,
 )
-from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
+from graphdatascience.procedure_surface.cypher.pipeline.pipeline_cypher_endpoints import (
     PipelineCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints import KnnCypherEndpoints

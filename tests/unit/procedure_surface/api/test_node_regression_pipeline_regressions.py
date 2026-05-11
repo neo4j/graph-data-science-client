@@ -74,8 +74,8 @@ def test_node_regression_pipeline_accepts_separate_ops_and_trainer() -> None:
         def add_node_property(self, pipeline_name: str, procedure_name: str, **config: Any) -> str:
             return f"{pipeline_name}:{procedure_name}:{config['mutate_property']}"
 
-        def select_features(self, pipeline_name: str, feature_properties: str | list[str]) -> str:
-            return f"{pipeline_name}:{feature_properties}"
+        def select_features(self, pipeline_name: str, node_properties: str | list[str]) -> str:
+            return f"{pipeline_name}:{node_properties}"
 
         def add_linear_regression(self, pipeline_name: str, **_: Any) -> str:
             return pipeline_name
@@ -106,7 +106,7 @@ def test_node_regression_pipeline_accepts_separate_ops_and_trainer() -> None:
     pipeline = NodeRegressionPipeline("pipe", ops, trainer)
 
     assert pipeline.add_node_property("pageRank", mutate_property="score") == "pipe:pageRank:score"
-    assert pipeline.select_features(["score"]) == "pipe:['score']"
+    assert pipeline.select_features(feature_properties=["score"]) == "pipe:['score']"
     assert pipeline.train(mock.Mock(), metrics=["MAE"], model_name="model", target_property="target") == (
         None,
         "trained",

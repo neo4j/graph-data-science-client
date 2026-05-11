@@ -13,14 +13,12 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_metric impo
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_endpoints import (
     NodeRegressionPipelineEndpoints,
-    convert_to_parameter_space_config,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
-    NodeRegressionPipelineCreateResult,
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import PipelineEndpoints
+from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
 from graphdatascience.procedure_surface.cypher.pipeline.node_regression_predict_cypher_endpoints import (
     NodeRegressionPredictCypherEndpoints,
@@ -38,17 +36,24 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
     def predict(self) -> NodeRegressionPipelinePredictEndpoints:
         return self._predict
 
-    def create(self, pipeline_name: str) -> tuple[NodeRegressionPipeline, NodeRegressionPipelineCreateResult]:
+    def create(self, pipeline_name: str) -> tuple[NodeRegressionPipeline, NodeRegressionPipelineInfoResult]:
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.create", params=CallParameters(pipeline_name=pipeline_name)
         ).squeeze()
-        return NodeRegressionPipeline(pipeline_name, self, self), NodeRegressionPipelineCreateResult(**result.to_dict())
+        return NodeRegressionPipeline(pipeline_name, self, self), NodeRegressionPipelineInfoResult(**result.to_dict())
 
     def get(self, pipeline_name: str) -> NodeRegressionPipeline:
         result = self._query_runner.call_procedure(
-            endpoint="gds.alpha.pipeline.nodeRegression.get", params=CallParameters(pipeline_name=pipeline_name)
-        ).squeeze()
-        return NodeRegressionPipeline(result.to_dict()["name"], self, self)
+            "gds.pipeline.list",
+            params=CallParameters(pipeline_name=pipeline_name),
+            custom_error=False,
+        )
+        if result.empty:
+            raise ValueError(f"No pipeline named '{pipeline_name}' exists")
+        pipeline_info = result.iloc[0].to_dict()
+        if pipeline_info.get("pipelineType") != "Node regression training pipeline":
+            raise ValueError(f"Pipeline '{pipeline_name}' is not a node regression pipeline")
+        return NodeRegressionPipeline(str(pipeline_info.get("pipelineName", pipeline_name)), self, self)
 
     def add_node_property(
         self, pipeline_name: str, procedure_name: str, **config: Any
@@ -211,12 +216,3 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
             ),
             NodeRegressionPipelineTrainResult(**result.to_dict()),
         )
-
-
-class PipelineCypherEndpoints(PipelineEndpoints):
-    def __init__(self, query_runner: QueryRunner):
-        self._query_runner = query_runner
-
-    @property
-    def node_regression(self) -> NodeRegressionPipelineCypherEndpoints:
-        return NodeRegressionPipelineCypherEndpoints(self._query_runner)

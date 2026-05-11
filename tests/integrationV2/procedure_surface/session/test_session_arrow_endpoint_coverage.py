@@ -4,12 +4,6 @@ from collections import defaultdict
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
-    NodeRegressionPipelineArrowEndpoints,
-)
-from graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints import (
-    NodeRegressionPredictArrowEndpoints,
-)
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 UNMAPPED_ENDPOINTS = [
@@ -25,17 +19,6 @@ UNMAPPED_ENDPOINTS = [
     "pipeline.linkPrediction.split.configure",
     "pipeline.linkPrediction.train",
     "pipeline.linkPrediction.train.estimate",
-    "pipeline.list",
-    "pipeline.nodeClassification",
-    "pipeline.nodeClassification.autoTuning.configure",
-    "pipeline.nodeClassification.features.select",
-    "pipeline.nodeClassification.modelCandidate.add",
-    "pipeline.nodeClassification.nodeProperty.add",
-    "pipeline.nodeClassification.predict",
-    "pipeline.nodeClassification.predict.estimate",
-    "pipeline.nodeClassification.split.configure",
-    "pipeline.nodeClassification.train",
-    "pipeline.nodeClassification.train.estimate",
     "pipeline.nodeRegression.features.select",
 ]
 
@@ -66,10 +49,11 @@ ENDPOINT_MAPPINGS = {
     "longestPath": "dag.longest_path",
     "maxFlow.minCost": "max_flow.min_cost",
     # pipelines
+    "nodeClassification": "node_classification",
     "nodeRegression": "node_regression",
     "autoTuning.configure": "configure_auto_tuning",
     "features.select": "select_features",
-    "modelCandidate.add": "add_linear_regression",
+    "modelCandidate.add": "add_random_forest",
     "nodeProperty.add": "add_node_property",
     "split.configure": "configure_split",
 }
@@ -190,10 +174,3 @@ def test_pipeline_coverage(endpoints: SessionV2Endpoints) -> None:
 
     # check missing endpoints against known missing algos
     assert not unexpected_missing_endpoints, f"Unexpectedly missing endpoints {len(unexpected_missing_endpoints)}"
-
-
-def test_session_pipeline_node_regression_predict_resolves(endpoints: SessionV2Endpoints) -> None:
-    pipeline_endpoints = endpoints.pipeline.node_regression
-
-    assert isinstance(pipeline_endpoints, NodeRegressionPipelineArrowEndpoints)
-    assert isinstance(pipeline_endpoints.predict, NodeRegressionPredictArrowEndpoints)

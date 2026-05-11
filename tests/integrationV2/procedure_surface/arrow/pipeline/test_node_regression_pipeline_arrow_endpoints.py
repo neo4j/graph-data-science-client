@@ -1,4 +1,3 @@
-import json
 from typing import Generator
 from uuid import uuid4
 
@@ -6,6 +5,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
     NodeRegressionPipelineArrowEndpoints,
 )
@@ -53,7 +53,7 @@ def test_node_regression_train_and_predict_stream(
     try:
         pipeline, create_result = endpoints.create(pipeline_name)
         node_property_result = pipeline.add_node_property("pageRank", mutate_property="pr")
-        feature_result = pipeline.select_features(["pr"])
+        feature_result = pipeline.select_features(feature_properties=["pr"])
         regression_result = pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
         model, train_result = pipeline.train(
             sample_graph,
@@ -73,7 +73,7 @@ def test_node_regression_train_and_predict_stream(
         assert "predictedValue" in stream_result.columns
         assert len(stream_result) == 4
     finally:
-        arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model_name}).encode("utf-8"))
+        ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
         _drop_pipeline(arrow_client, pipeline_name)
 
 
@@ -87,7 +87,7 @@ def test_node_regression_predict_mutate(
 
     try:
         pipeline, _ = endpoints.create(pipeline_name)
-        pipeline.select_features(["feature"])
+        pipeline.select_features(feature_properties=["feature"])
         pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
         model, _ = pipeline.train(
             sample_graph,
@@ -102,7 +102,7 @@ def test_node_regression_predict_mutate(
         assert mutate_result.mutate_millis is not None
         assert mutate_result.mutate_millis >= 0
     finally:
-        arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model_name}).encode("utf-8"))
+        ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
         _drop_pipeline(arrow_client, pipeline_name)
 
 
@@ -115,7 +115,7 @@ def test_node_regression_get_returns_pipeline_object(
 
     try:
         pipeline, create_result = endpoints.create(pipeline_name)
-        pipeline.select_features(["feature"])
+        pipeline.select_features(feature_properties=["feature"])
         pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
         fetched_pipeline = endpoints.get(pipeline_name)
 

@@ -3,7 +3,7 @@ from typing import Any
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
-class NodeRegressionPipelineInfoResult(BaseResult):
+class NodeClassificationPipelineInfoResult(BaseResult):
     auto_tuning_config: dict[str, Any] | None = None
     feature_properties: list[Any] | None = None
     name: str | None = None
@@ -12,7 +12,7 @@ class NodeRegressionPipelineInfoResult(BaseResult):
     split_config: dict[str, Any] | None = None
 
 
-class NodeRegressionModelInfoResult(BaseResult):
+class NodeClassificationModelInfoResult(BaseResult):
     best_parameters: dict[str, Any] | None = None
     metrics: dict[str, Any] | None = None
     model_name: str | None = None
@@ -20,8 +20,8 @@ class NodeRegressionModelInfoResult(BaseResult):
     pipeline: dict[str, Any] | None = None
 
 
-class NodeRegressionPipelineTrainResult(BaseResult):
+class NodeClassificationPipelineTrainResult(BaseResult):
     configuration: dict[str, Any] | None = None
-    model_info: NodeRegressionModelInfoResult | None = None
+    model_info: NodeClassificationModelInfoResult | None = None
     model_selection_stats: dict[str, Any] | None = None
     train_millis: int | None = None
