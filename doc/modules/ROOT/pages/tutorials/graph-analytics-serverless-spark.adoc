@@ -29,7 +29,7 @@ version `1.18` or later, as well as `pyspark`.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.18" python-dotenv "pyspark[sql]"
+%pip install "graphdatascience>=1.22" python-dotenv "pyspark[sql]"
 ----
 
 [source, python, role=no-test]
@@ -269,7 +269,7 @@ job_id = arrow_client.get_node_properties(G.name(), ["pagerank"])
 
 # Define a function that receives data from the GDS Session and turns it into data batches
 def retrieve_data(ignored):
-    stream_data = arrow_client.stream_job(G.name(), job_id)
+    stream_data = arrow_client.stream_job(job_id)
     batches = pyarrow.Table.from_pandas(stream_data).to_batches(1000)
     for b in batches:
         yield b
