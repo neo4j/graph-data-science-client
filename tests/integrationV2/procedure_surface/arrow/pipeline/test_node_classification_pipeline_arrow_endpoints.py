@@ -157,6 +157,24 @@ def test_node_classification_train_estimate(
         _drop_pipeline(arrow_client, pipeline_name)
 
 
+def test_node_classification_pipeline_object_supports_exists_and_drop(
+    arrow_client: AuthenticatedArrowClient,
+    endpoints: NodeClassificationPipelineArrowEndpoints,
+) -> None:
+    pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
+
+    try:
+        pipeline, _ = endpoints.create(pipeline_name)
+
+        assert pipeline.exists() is True
+        dropped = pipeline.drop()
+        assert dropped is not None
+        assert dropped.pipeline_name == pipeline_name
+        assert pipeline.exists() is False
+    finally:
+        _drop_pipeline(arrow_client, pipeline_name)
+
+
 def test_node_classification_predict_estimate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeClassificationPipelineArrowEndpoints,

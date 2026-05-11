@@ -103,3 +103,25 @@ def test_node_classification_predict_estimate_cypher_pipeline(
             query_type=QueryType.USER_ACTION,
             params={"name": pipeline_name},
         )
+
+
+def test_node_classification_pipeline_object_supports_exists_and_drop(
+    query_runner: Neo4jQueryRunner,
+    endpoints: NodeClassificationPipelineCypherEndpoints,
+) -> None:
+    pipeline_name = f"nc-cypher-pipe-{uuid4().hex[:8]}"
+
+    try:
+        pipeline, _ = endpoints.create(pipeline_name)
+
+        assert pipeline.exists() is True
+        dropped = pipeline.drop()
+        assert dropped is not None
+        assert dropped.pipeline_name == pipeline_name
+        assert pipeline.exists() is False
+    finally:
+        query_runner.run_cypher(
+            "CALL gds.pipeline.drop($name, false)",
+            query_type=QueryType.USER_ACTION,
+            params={"name": pipeline_name},
+        )

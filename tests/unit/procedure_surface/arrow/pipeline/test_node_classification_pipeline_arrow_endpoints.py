@@ -1,6 +1,7 @@
 from unittest import mock
 
 import pandas as pd
+import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
@@ -118,6 +119,43 @@ def test_node_classification_select_features_uses_node_properties_payload() -> N
             "nodeProperties": ["feature"],
         },
     )
+
+
+def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+    pipeline_catalog = mock.Mock()
+    pipeline_catalog.list.return_value = [
+        mock.Mock(pipeline_name="pipe", pipeline_type="Node classification training pipeline")
+    ]
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints.PipelineCatalogArrowEndpoints",
+        return_value=pipeline_catalog,
+    ) as pipeline_catalog_cls:
+        pipeline = NodeClassificationPipelineArrowEndpoints(
+            arrow_client,
+            None,
+        ).get("pipe")
+
+    assert pipeline.name() == "pipe"
+    pipeline_catalog_cls.assert_called_once_with(
+        arrow_client,
+        None,
+        show_progress=True,
+    )
+    pipeline_catalog.list.assert_called_once_with("pipe")
+    arrow_client.do_action_with_retry.assert_not_called()
+
+
+def test_node_classification_endpoints_do_not_accept_pipeline_catalog_constructor_override() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+    constructor = mock.Mock(side_effect=NodeClassificationPipelineArrowEndpoints)
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints.PipelineCatalogArrowEndpoints"
+    ):
+        with pytest.raises(TypeError, match="pipeline_catalog"):
+            constructor(arrow_client, None, pipeline_catalog=mock.Mock())
 
 
 def test_node_classification_add_mlp_runs_arrow_action() -> None:

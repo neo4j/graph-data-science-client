@@ -14,6 +14,10 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
     NodeClassificationPipelineInfoResult,
     NodeClassificationPipelineTrainResult,
 )
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import (
+    PipelineCatalogEntryProtocol,
+    PipelineCatalogProtocol,
+)
 
 
 class NodeClassificationPipeline:
@@ -24,11 +28,16 @@ class NodeClassificationPipeline:
     """
 
     def __init__(
-        self, name: str, ops: NodeClassificationPipelineOps, trainer: NodeClassificationPipelineTrainer
+        self,
+        name: str,
+        ops: NodeClassificationPipelineOps,
+        trainer: NodeClassificationPipelineTrainer,
+        catalog: PipelineCatalogProtocol,
     ) -> None:
         self._name = name
         self._ops = ops
         self._trainer = trainer
+        self._catalog = catalog
 
     def name(self) -> str:
         """Return the pipeline name."""
@@ -226,6 +235,14 @@ class NodeClassificationPipeline:
             The updated pipeline state.
         """
         return self._ops.configure_auto_tuning(self._name, max_trials=max_trials)
+
+    def exists(self) -> bool:
+        """Return whether the pipeline exists."""
+        return self._catalog.exists(self._name) is not None
+
+    def drop(self, failIfMissing: bool = False) -> PipelineCatalogEntryProtocol | None:
+        """Drop the pipeline and return its catalog entry when available."""
+        return self._catalog.drop(self._name, fail_if_missing=failIfMissing)
 
     def train(
         self,

@@ -19,9 +19,13 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_re
     NodeRegressionPipelineTrainResult,
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
 from graphdatascience.procedure_surface.cypher.pipeline.node_regression_predict_cypher_endpoints import (
     NodeRegressionPredictCypherEndpoints,
+)
+from graphdatascience.procedure_surface.cypher.pipeline.pipeline_catalog_cypher_endpoints import (
+    PipelineCatalogCypherEndpoints,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -30,6 +34,7 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
+        self._pipeline_catalog: PipelineCatalogProtocol = PipelineCatalogCypherEndpoints(query_runner)
         self._predict = NodeRegressionPredictCypherEndpoints(query_runner)
 
     @property
@@ -40,20 +45,23 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.create", params=CallParameters(pipeline_name=pipeline_name)
         ).squeeze()
-        return NodeRegressionPipeline(pipeline_name, self, self), NodeRegressionPipelineInfoResult(**result.to_dict())
+        return (
+            NodeRegressionPipeline(pipeline_name, self, self, self._pipeline_catalog),
+            NodeRegressionPipelineInfoResult(**result.to_dict()),
+        )
 
     def get(self, pipeline_name: str) -> NodeRegressionPipeline:
-        result = self._query_runner.call_procedure(
-            "gds.pipeline.list",
-            params=CallParameters(pipeline_name=pipeline_name),
-            custom_error=False,
-        )
-        if result.empty:
+        pipeline_info = self._pipeline_catalog.exists(pipeline_name)
+        if not pipeline_info:
             raise ValueError(f"No pipeline named '{pipeline_name}' exists")
-        pipeline_info = result.iloc[0].to_dict()
-        if pipeline_info.get("pipelineType") != "Node regression training pipeline":
+        if pipeline_info.pipeline_type != "Node regression training pipeline":
             raise ValueError(f"Pipeline '{pipeline_name}' is not a node regression pipeline")
-        return NodeRegressionPipeline(str(pipeline_info.get("pipelineName", pipeline_name)), self, self)
+        return NodeRegressionPipeline(
+            pipeline_info.pipeline_name,
+            self,
+            self,
+            self._pipeline_catalog,
+        )
 
     def add_node_property(
         self, pipeline_name: str, procedure_name: str, **config: Any

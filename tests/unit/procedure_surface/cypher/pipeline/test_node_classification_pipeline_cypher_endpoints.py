@@ -1,6 +1,7 @@
 from unittest import mock
 
 import pandas as pd
+import pytest
 
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
@@ -80,7 +81,7 @@ def test_node_classification_pipeline_train_estimate_delegates_to_trainer() -> N
     expected = mock.Mock()
     trainer.train.estimate.return_value = expected
 
-    pipeline = NodeClassificationPipeline("pipe", mock.Mock(), trainer)
+    pipeline = NodeClassificationPipeline("pipe", mock.Mock(), trainer, mock.Mock())
 
     result = pipeline.train_estimate(
         graph,
@@ -121,21 +122,34 @@ def test_node_classification_create_returns_info_result() -> None:
     assert result.name == "pipe"
 
 
-def test_node_classification_get_uses_pipeline_list() -> None:
+def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = pd.DataFrame(
-        [{"pipelineName": "pipe", "pipelineType": "Node classification training pipeline"}]
-    )
+    pipeline_catalog = mock.Mock()
+    pipeline_catalog.list.return_value = [
+        mock.Mock(pipeline_name="pipe", pipeline_type="Node classification training pipeline")
+    ]
 
-    pipeline = NodeClassificationPipelineCypherEndpoints(query_runner).get("pipe")
+    with mock.patch(
+        "graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipeline_cypher_endpoints.PipelineCatalogCypherEndpoints",
+        return_value=pipeline_catalog,
+    ) as pipeline_catalog_cls:
+        pipeline = NodeClassificationPipelineCypherEndpoints(query_runner).get("pipe")
 
     assert pipeline.name() == "pipe"
-    query_runner.call_procedure.assert_called_once_with(
-        "gds.pipeline.list",
-        params=mock.ANY,
-        custom_error=False,
-    )
-    assert query_runner.call_procedure.call_args.kwargs["params"] == {"pipeline_name": "pipe"}
+    pipeline_catalog_cls.assert_called_once_with(query_runner)
+    pipeline_catalog.list.assert_called_once_with("pipe")
+    query_runner.call_procedure.assert_not_called()
+
+
+def test_node_classification_endpoints_do_not_accept_pipeline_catalog_constructor_override() -> None:
+    query_runner = mock.Mock()
+    constructor = mock.Mock(side_effect=NodeClassificationPipelineCypherEndpoints)
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipeline_cypher_endpoints.PipelineCatalogCypherEndpoints"
+    ):
+        with pytest.raises(TypeError, match="pipeline_catalog"):
+            constructor(query_runner, pipeline_catalog=mock.Mock())
 
 
 def test_node_classification_predict_stream_mutate_and_write_run_queries() -> None:

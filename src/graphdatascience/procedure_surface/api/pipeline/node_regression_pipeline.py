@@ -14,19 +14,30 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_re
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
 )
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import (
+    PipelineCatalogEntryProtocol,
+    PipelineCatalogProtocol,
+)
 
 
 class NodeRegressionPipeline:
     """
     Represents a node regression training pipeline.
 
-    Construct this using :func:`gds.v2.pipeline.node_regression.create()`.
+    Construct this using: func:`gds.v2.pipeline.node_regression.create()`.
     """
 
-    def __init__(self, name: str, ops: NodeRegressionPipelineOps, trainer: NodeRegressionPipelineTrainer):
+    def __init__(
+        self,
+        name: str,
+        ops: NodeRegressionPipelineOps,
+        trainer: NodeRegressionPipelineTrainer,
+        catalog: PipelineCatalogProtocol,
+    ):
         self._name = name
         self._ops = ops
         self._trainer = trainer
+        self._catalog = catalog
 
     def name(self) -> str:
         """Return the pipeline name."""
@@ -189,6 +200,14 @@ class NodeRegressionPipeline:
             The updated pipeline state.
         """
         return self._ops.configure_auto_tuning(self._name, max_trials=max_trials)
+
+    def exists(self) -> bool:
+        """Return whether the pipeline exists."""
+        return self._catalog.exists(self._name) is not None
+
+    def drop(self, failIfMissing: bool = False) -> PipelineCatalogEntryProtocol | None:
+        """Drop the pipeline and return its catalog entry when available."""
+        return self._catalog.drop(self._name, fail_if_missing=failIfMissing)
 
     def train(
         self,
