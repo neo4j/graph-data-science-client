@@ -4,12 +4,14 @@ import pandas as pd
 import pytest
 
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
     NodeClassificationPipeline,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
 )
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipeline_cypher_endpoints import (
     NodeClassificationPipelineCypherEndpoints,
 )
@@ -124,10 +126,10 @@ def test_node_classification_create_returns_info_result() -> None:
 
 def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
     query_runner = mock.Mock()
-    pipeline_catalog = mock.Mock()
-    pipeline_catalog.list.return_value = [
-        mock.Mock(pipeline_name="pipe", pipeline_type="Node classification training pipeline")
-    ]
+    pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
+    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+        pipelineName="pipe", pipelineType="Node classification training pipeline"
+    )
 
     with mock.patch(
         "graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipeline_cypher_endpoints.PipelineCatalogCypherEndpoints",
@@ -137,7 +139,7 @@ def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
 
     assert pipeline.name() == "pipe"
     pipeline_catalog_cls.assert_called_once_with(query_runner)
-    pipeline_catalog.list.assert_called_once_with("pipe")
+    pipeline_catalog.exists.assert_called_once_with("pipe")
     query_runner.call_procedure.assert_not_called()
 
 

@@ -7,6 +7,8 @@ from pyarrow import flight
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
+from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
     NodeRegressionPipelineArrowEndpoints,
 )
@@ -149,10 +151,10 @@ def test_node_regression_add_node_property_runs_arrow_action_with_config() -> No
 
 def test_node_regression_get_uses_shared_pipeline_catalog() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    pipeline_catalog = mock.Mock()
-    pipeline_catalog.list.return_value = [
-        mock.Mock(pipeline_name="pipe", pipeline_type="Node regression training pipeline")
-    ]
+    pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
+    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+        pipelineName="pipe", pipelineType="Node regression training pipeline"
+    )
 
     with mock.patch(
         "graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints.PipelineCatalogArrowEndpoints",
@@ -169,7 +171,7 @@ def test_node_regression_get_uses_shared_pipeline_catalog() -> None:
         None,
         show_progress=True,
     )
-    pipeline_catalog.list.assert_called_once_with("pipe")
+    pipeline_catalog.exists.assert_called_once_with("pipe")
     arrow_client.do_action_with_retry.assert_not_called()
 
 

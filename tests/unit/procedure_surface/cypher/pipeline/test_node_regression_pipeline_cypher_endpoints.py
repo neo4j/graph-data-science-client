@@ -4,6 +4,10 @@ from unittest import mock
 import pandas as pd
 import pytest
 
+from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
+from graphdatascience.procedure_surface.cypher.pipeline import NodeRegressionPipelineCypherEndpoints
+
 
 def test_node_regression_add_linear_regression_runs_query() -> None:
     create_row = mock.Mock()
@@ -171,13 +175,9 @@ def test_node_regression_train_accepts_pipeline_name() -> None:
 
 def test_node_regression_get_uses_shared_pipeline_catalog() -> None:
     query_runner = mock.Mock()
-    pipeline_catalog = mock.Mock()
-    pipeline_catalog.list.return_value = [
-        mock.Mock(pipeline_name="pipe", pipeline_type="Node regression training pipeline")
-    ]
-
-    from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
-        NodeRegressionPipelineCypherEndpoints,
+    pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
+    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+        pipelineName="pipe", pipelineType="Node regression training pipeline"
     )
 
     with mock.patch(
@@ -188,7 +188,7 @@ def test_node_regression_get_uses_shared_pipeline_catalog() -> None:
 
     assert pipeline.name() == "pipe"
     pipeline_catalog_cls.assert_called_once_with(query_runner)
-    pipeline_catalog.list.assert_called_once_with("pipe")
+    pipeline_catalog.exists.assert_called_once_with("pipe")
     query_runner.call_procedure.assert_not_called()
 
 
