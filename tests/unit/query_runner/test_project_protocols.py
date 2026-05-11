@@ -7,6 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import (
     AuthenticatedArrowClient,
     ConnectionInfo,
 )
+from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
 from graphdatascience.query_runner.protocol.project_protocols import (
     ProjectProtocol,
     ProjectProtocolV3,
@@ -50,7 +51,7 @@ def test_select_unsupported_version_raises(arrow_client: MagicMock, qr: Collecti
 def test_arrow_config_uses_advertised_connection_info(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
     protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
 
-    config = protocol._arrow_config(batch_size=100)
+    config = build_arrow_config(protocol._arrow_client, 100)
 
     assert config == {
         "host": "arrow.host",
@@ -70,7 +71,7 @@ def test_arrow_config_falls_back_to_ignored_token_when_none(
 
     protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
 
-    config = protocol._arrow_config(batch_size=None)
+    config = build_arrow_config(protocol._arrow_client, None)
 
     assert config["token"] == "IGNORED"
     assert config["batchSize"] is None

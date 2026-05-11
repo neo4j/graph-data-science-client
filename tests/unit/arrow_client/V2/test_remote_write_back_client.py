@@ -4,6 +4,7 @@ from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
@@ -31,9 +32,7 @@ def test_write_back_client_initialization(write_back_client: RemoteWriteBackClie
     assert isinstance(write_back_client, RemoteWriteBackClient)
 
 
-def test_arrow_configuration(
-    write_back_client: RemoteWriteBackClient, mock_arrow_client: AuthenticatedArrowClient
-) -> None:
+def test_arrow_configuration(mock_arrow_client: AuthenticatedArrowClient) -> None:
     expected_config = {
         "host": "remote",
         "port": 8080,
@@ -41,5 +40,5 @@ def test_arrow_configuration(
         "encrypted": False,
     }
 
-    config = write_back_client._arrow_configuration()
+    config = build_arrow_config(mock_arrow_client)
     assert config == expected_config
