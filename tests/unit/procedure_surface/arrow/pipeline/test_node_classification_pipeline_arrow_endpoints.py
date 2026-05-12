@@ -1,3 +1,4 @@
+import json
 from unittest import mock
 
 import pandas as pd
@@ -12,6 +13,42 @@ from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipel
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints import (
     NodeClassificationPredictArrowEndpoints,
 )
+
+
+def _arrow_result(payload: dict[str, object]) -> mock.Mock:
+    row = mock.Mock()
+    row.body.to_pybytes.return_value = json.dumps(payload).encode("utf-8")
+    return row
+
+
+def _info_payload(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureProperties": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "NodeClassification",
+            "pipeline": {"nodePropertySteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
 
 
 def test_node_classification_predict_stream_forces_probability_distribution() -> None:
@@ -64,7 +101,7 @@ def test_node_classification_train_runs_arrow_job_and_returns_arrow_wired_model(
         ) as run_job_and_wait,
         mock.patch(
             "graphdatascience.procedure_surface.arrow.pipeline.node_classification_train_arrow_endpoints.JobClient.get_summary",
-            return_value={"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}},
+            return_value=_train_summary(),
         ) as get_summary,
     ):
         endpoints = NodeClassificationPipelineArrowEndpoints(arrow_client, None)
@@ -104,9 +141,7 @@ def test_node_classification_train_estimate_runs_arrow_job() -> None:
 
 def test_node_classification_select_features_uses_node_properties_payload() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    row = mock.Mock()
-    row.body.to_pybytes.return_value = b'{"name":"pipe","featureProperties":[]}'
-    arrow_client.do_action_with_retry.return_value = [row]
+    arrow_client.do_action_with_retry.return_value = [_arrow_result(_info_payload())]
 
     result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).select_features(
         "pipe",
@@ -150,9 +185,7 @@ def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
 
 def test_node_classification_add_mlp_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    row = mock.Mock()
-    row.body.to_pybytes.return_value = b'{"name":"pipe","featureProperties":[]}'
-    arrow_client.do_action_with_retry.return_value = [row]
+    arrow_client.do_action_with_retry.return_value = [_arrow_result(_info_payload())]
 
     result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).add_mlp(
         "pipe",
@@ -190,9 +223,7 @@ def test_node_classification_add_mlp_runs_arrow_action() -> None:
 
 def test_node_classification_add_mlp_uses_default_hidden_layer_sizes() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    row = mock.Mock()
-    row.body.to_pybytes.return_value = b'{"name":"pipe","featureProperties":[]}'
-    arrow_client.do_action_with_retry.return_value = [row]
+    arrow_client.do_action_with_retry.return_value = [_arrow_result(_info_payload())]
 
     result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).add_mlp("pipe")
 

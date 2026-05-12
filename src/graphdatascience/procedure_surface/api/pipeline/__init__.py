@@ -1,8 +1,4 @@
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
-from graphdatascience.procedure_surface.api.node_regression_predict_endpoints import (
-    NodeRegressionPipelinePredictEndpoints,
-    NodeRegressionPipelinePredictMutateResult,
-)
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import LinkPredictionPipeline
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
     LinkPredictionPipelineEndpoints,
@@ -38,6 +34,10 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_en
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
+    NodeRegressionPipelinePredictEndpoints,
+    NodeRegressionPipelinePredictMutateResult,
 )
 from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
     PipelineCatalogEntry,

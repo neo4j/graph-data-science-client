@@ -92,7 +92,7 @@ class LinkPredictionPipelineEndpoints(ABC):
         node_properties: list[str],
     ) -> LinkPredictionPipelineInfoResult:
         """
-        Add an edge feature step to the pipeline.
+        Add an relationship feature step to the pipeline.
 
         Parameters
         ----------

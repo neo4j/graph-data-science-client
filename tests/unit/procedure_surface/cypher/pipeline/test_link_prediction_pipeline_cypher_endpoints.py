@@ -11,9 +11,39 @@ from graphdatascience.procedure_surface.cypher.pipeline.link_prediction_pipeline
 )
 
 
+def _info_payload(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureSteps": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "LinkPrediction",
+            "pipeline": {"featureSteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_link_prediction_create_returns_info_result() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -26,7 +56,7 @@ def test_link_prediction_create_returns_info_result() -> None:
 
 def test_link_prediction_add_feature_runs_query() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -46,7 +76,7 @@ def test_link_prediction_add_feature_runs_query() -> None:
 
 def test_link_prediction_configure_split_runs_query() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "splitConfig": {}}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -73,7 +103,7 @@ def test_link_prediction_configure_split_runs_query() -> None:
 
 def test_link_prediction_add_mlp_runs_query() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureSteps": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -109,7 +139,7 @@ def test_link_prediction_add_mlp_runs_query() -> None:
 
 def test_link_prediction_add_mlp_uses_default_hidden_layer_sizes() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureSteps": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -121,7 +151,7 @@ def test_link_prediction_add_mlp_uses_default_hidden_layer_sizes() -> None:
 
 def test_link_prediction_add_random_forest_runs_query() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureSteps": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -153,7 +183,7 @@ def test_link_prediction_add_random_forest_runs_query() -> None:
 
 def test_link_prediction_add_node_property_runs_query_with_config() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -177,7 +207,7 @@ def test_link_prediction_add_node_property_runs_query_with_config() -> None:
 
 def test_link_prediction_configure_auto_tuning_runs_query() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "autoTuningConfig": {"maxTrials": 42}}
+    row.to_dict.return_value = _info_payload(autoTuningConfig={"maxTrials": 42})
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -224,9 +254,9 @@ def test_link_prediction_endpoints_do_not_accept_pipeline_catalog_constructor_ov
 
 def test_link_prediction_train_runs_query() -> None:
     create_row = mock.Mock()
-    create_row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    create_row.to_dict.return_value = _info_payload()
     row = mock.Mock()
-    row.to_dict.return_value = {"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}}
+    row.to_dict.return_value = _train_summary()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
         mock.Mock(squeeze=mock.Mock(return_value=create_row)),

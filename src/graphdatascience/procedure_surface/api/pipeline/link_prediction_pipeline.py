@@ -148,8 +148,8 @@ class LinkPredictionPipeline:
     def exists(self) -> bool:
         return self._catalog.exists(self._name) is not None
 
-    def drop(self, failIfMissing: bool = False) -> PipelineCatalogEntryProtocol | None:
-        return self._catalog.drop(self._name, fail_if_missing=failIfMissing)
+    def drop(self, fail_if_missing: bool = False) -> PipelineCatalogEntryProtocol | None:
+        return self._catalog.drop(self._name, fail_if_missing=fail_if_missing)
 
     def train(
         self,

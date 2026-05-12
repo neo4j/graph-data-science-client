@@ -52,7 +52,9 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
             model_name=model_name,
             relationship_types=relationship_types,
             target_node_labels=target_node_labels,
-            include_predicted_probabilities=include_predicted_probabilities,
+            include_predicted_probabilities=include_predicted_probabilities
+            if include_predicted_probabilities
+            else None,
             username=username,
             log_progress=log_progress,
             sudo=sudo,

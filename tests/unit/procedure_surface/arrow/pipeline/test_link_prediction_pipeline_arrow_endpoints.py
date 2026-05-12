@@ -1,3 +1,4 @@
+import json
 from typing import Any, cast
 from unittest import mock
 
@@ -23,9 +24,39 @@ def _flight_result(payload: str) -> flight.Result:
     return mock.Mock(body=body, spec=flight.Result)
 
 
+def _info_payload(**overrides: object) -> str:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureSteps": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return json.dumps(payload)
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "LinkPrediction",
+            "pipeline": {"featureSteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_link_prediction_create_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureSteps":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     pipeline, result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).create("pipe")
 
@@ -39,7 +70,7 @@ def test_link_prediction_create_runs_arrow_action() -> None:
 
 def test_link_prediction_add_feature_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureSteps":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).add_feature(
         "pipe",
@@ -60,7 +91,7 @@ def test_link_prediction_add_feature_runs_arrow_action() -> None:
 
 def test_link_prediction_configure_split_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","splitConfig":{}}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).configure_split(
         "pipe",
@@ -87,7 +118,7 @@ def test_link_prediction_configure_split_runs_arrow_action() -> None:
 
 def test_link_prediction_add_mlp_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureSteps":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).add_mlp(
         "pipe",
@@ -125,7 +156,7 @@ def test_link_prediction_add_mlp_runs_arrow_action() -> None:
 
 def test_link_prediction_add_mlp_uses_default_hidden_layer_sizes() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureSteps":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).add_mlp("pipe")
 
@@ -135,7 +166,7 @@ def test_link_prediction_add_mlp_uses_default_hidden_layer_sizes() -> None:
 
 def test_link_prediction_add_random_forest_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureSteps":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).add_random_forest(
         "pipe",
@@ -167,7 +198,7 @@ def test_link_prediction_add_random_forest_runs_arrow_action() -> None:
 
 def test_link_prediction_add_node_property_runs_arrow_action_with_config() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","nodePropertySteps":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).add_node_property(
         "pipe",
@@ -192,9 +223,7 @@ def test_link_prediction_add_node_property_runs_arrow_action_with_config() -> No
 
 def test_link_prediction_configure_auto_tuning_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [
-        _flight_result('{"name":"pipe","autoTuningConfig":{"maxTrials":42}}')
-    ]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload(autoTuningConfig={"maxTrials": 42}))]
 
     result = LinkPredictionPipelineArrowEndpoints(arrow_client, None).configure_auto_tuning("pipe", max_trials=42)
 
@@ -235,7 +264,7 @@ def test_link_prediction_train_runs_arrow_job_and_returns_arrow_wired_model() ->
         ) as run_job_and_wait,
         mock.patch(
             "graphdatascience.procedure_surface.arrow.pipeline.link_prediction_train_arrow_endpoints.JobClient.get_summary",
-            return_value={"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}},
+            return_value=_train_summary(),
         ),
     ):
         endpoints = LinkPredictionPipelineArrowEndpoints(arrow_client, None)

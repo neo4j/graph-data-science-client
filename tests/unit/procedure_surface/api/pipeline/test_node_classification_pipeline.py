@@ -35,7 +35,7 @@ def test_node_classification_pipeline_drop_delegates_to_catalog_endpoint() -> No
 
     pipeline = NodeClassificationPipeline("pipe", ops, trainer, catalog)
 
-    result = pipeline.drop(failIfMissing=True)
+    result = pipeline.drop(fail_if_missing=True)
 
     assert result is not None
     assert result.pipeline_name == "pipe"

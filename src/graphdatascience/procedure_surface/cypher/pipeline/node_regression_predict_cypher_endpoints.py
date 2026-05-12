@@ -4,7 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.node_regression_predict_endpoints import (
+from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
     NodeRegressionPipelinePredictEndpoints,
     NodeRegressionPipelinePredictMutateResult,
 )

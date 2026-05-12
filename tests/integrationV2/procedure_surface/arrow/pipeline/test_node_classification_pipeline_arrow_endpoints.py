@@ -117,7 +117,7 @@ def test_node_classification_train_and_predict_and_stream(
             target_property="target",
         )
 
-        stream_result = model.predict_stream(sample_graph)
+        stream_result = model.predict_stream(sample_graph, include_predicted_probabilities=True)
 
         assert "predictedClass" in stream_result.columns
         assert "predictedProbabilities" in stream_result.columns

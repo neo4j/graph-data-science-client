@@ -205,9 +205,9 @@ class NodeRegressionPipeline:
         """Return whether the pipeline exists."""
         return self._catalog.exists(self._name) is not None
 
-    def drop(self, failIfMissing: bool = False) -> PipelineCatalogEntryProtocol | None:
+    def drop(self, fail_if_missing: bool = False) -> PipelineCatalogEntryProtocol | None:
         """Drop the pipeline and return its catalog entry when available."""
-        return self._catalog.drop(self._name, fail_if_missing=failIfMissing)
+        return self._catalog.drop(self._name, fail_if_missing=fail_if_missing)
 
     def train(
         self,

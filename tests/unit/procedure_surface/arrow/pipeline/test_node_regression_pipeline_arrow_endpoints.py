@@ -1,3 +1,4 @@
+import json
 from typing import Any, cast
 from unittest import mock
 
@@ -23,9 +24,39 @@ def _flight_result(payload: str) -> flight.Result:
     return mock.Mock(body=body, spec=flight.Result)
 
 
+def _info_payload(**overrides: object) -> str:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureProperties": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return json.dumps(payload)
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "NodeRegression",
+            "pipeline": {"nodePropertySteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_node_regression_create_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     pipeline, result = NodeRegressionPipelineArrowEndpoints(arrow_client).create("pipe")
 
@@ -39,7 +70,7 @@ def test_node_regression_create_runs_arrow_action() -> None:
 
 def test_node_regression_add_random_forest_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = NodeRegressionPipelineArrowEndpoints(arrow_client).add_random_forest(
         "pipe",
@@ -64,7 +95,7 @@ def test_node_regression_add_random_forest_runs_arrow_action() -> None:
 
 def test_node_regression_add_random_forest_accepts_tuple_range_inputs() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     NodeRegressionPipelineArrowEndpoints(arrow_client).add_random_forest(
         "pipe",
@@ -98,7 +129,7 @@ def test_node_regression_add_random_forest_rejects_list_range_inputs() -> None:
 
 def test_node_regression_add_linear_regression_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = NodeRegressionPipelineArrowEndpoints(arrow_client).add_linear_regression(
         "pipe",
@@ -126,7 +157,7 @@ def test_node_regression_add_linear_regression_runs_arrow_action() -> None:
 
 def test_node_regression_add_node_property_runs_arrow_action_with_config() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
     result = NodeRegressionPipelineArrowEndpoints(arrow_client).add_node_property(
         "pipe",
@@ -196,7 +227,7 @@ def test_node_regression_train_runs_arrow_job_and_returns_arrow_wired_model() ->
         ) as run_job_and_wait,
         mock.patch(
             "graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints.JobClient.get_summary",
-            return_value={"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}},
+            return_value=_train_summary(),
         ) as get_summary,
     ):
         endpoints = NodeRegressionPipelineArrowEndpoints(arrow_client)

@@ -17,11 +17,41 @@ from graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipe
 )
 
 
+def _info_payload(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureProperties": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "NodeClassification",
+            "pipeline": {"nodePropertySteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_node_classification_train_runs_query() -> None:
     create_row = mock.Mock()
-    create_row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    create_row.to_dict.return_value = _info_payload()
     row = mock.Mock()
-    row.to_dict.return_value = {"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}}
+    row.to_dict.return_value = _train_summary()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
         mock.Mock(squeeze=mock.Mock(return_value=create_row)),
@@ -113,7 +143,7 @@ def test_node_classification_pipeline_train_estimate_delegates_to_trainer() -> N
 
 def test_node_classification_create_returns_info_result() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -282,7 +312,7 @@ def test_node_classification_model_predict_estimate_delegates_to_predict_endpoin
 
 def test_node_classification_add_mlp_runs_query() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -318,7 +348,7 @@ def test_node_classification_add_mlp_runs_query() -> None:
 
 def test_node_classification_add_mlp_uses_default_hidden_layer_sizes() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
