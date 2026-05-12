@@ -80,7 +80,6 @@ def test_node_classification_predict_stream_forces_probability_distribution() ->
         {
             "graphName": "g",
             "modelName": "model",
-            "includePredictedProbabilities": False,
             "logProgress": True,
             "sudo": False,
         },
