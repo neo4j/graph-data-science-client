@@ -7,15 +7,18 @@ from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_
     NodeRegressionPipelineArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.pipeline.pipeline_arrow_endpoints import PipelineArrowEndpoints
+from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
+    PipelineCatalogArrowEndpoints,
+)
 
 
 def test_pipeline_list_returns_created_pipeline(arrow_client: AuthenticatedArrowClient) -> None:
     pipeline_name = f"pipeline-list-arrow-{uuid4().hex[:8]}"
 
     try:
-        NodeRegressionPipelineArrowEndpoints(arrow_client, None, show_progress=False).create(pipeline_name)
+        NodeRegressionPipelineArrowEndpoints(arrow_client, show_progress=False).create(pipeline_name)
 
-        pipelines = PipelineArrowEndpoints(arrow_client, None, show_progress=False).list(pipeline_name)
+        pipelines = PipelineCatalogArrowEndpoints(arrow_client, show_progress=False).list(pipeline_name)
 
         assert len(pipelines) == 1
         assert pipelines[0].pipeline_name == pipeline_name
@@ -32,7 +35,7 @@ def test_pipeline_arrow_exists_and_drop_round_trip(arrow_client: AuthenticatedAr
     pipeline_surface = PipelineArrowEndpoints(arrow_client, None, show_progress=False)
 
     try:
-        NodeRegressionPipelineArrowEndpoints(arrow_client, None, show_progress=False).create(pipeline_name)
+        NodeRegressionPipelineArrowEndpoints(arrow_client, show_progress=False).create(pipeline_name)
 
         exists_result = pipeline_surface.exists(pipeline_name)
         assert exists_result is not None

@@ -1,3 +1,4 @@
+import json
 from typing import Any, cast
 from unittest import mock
 
@@ -23,11 +24,41 @@ def _flight_result(payload: str) -> flight.Result:
     return mock.Mock(body=body, spec=flight.Result)
 
 
+def _info_payload(**overrides: object) -> str:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureProperties": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return json.dumps(payload)
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "NodeRegression",
+            "pipeline": {"nodePropertySteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_node_regression_create_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
-    pipeline, result = NodeRegressionPipelineArrowEndpoints(arrow_client, None).create("pipe")
+    pipeline, result = NodeRegressionPipelineArrowEndpoints(arrow_client).create("pipe")
 
     assert pipeline.name() == "pipe"
     assert result.name == "pipe"
@@ -39,9 +70,9 @@ def test_node_regression_create_runs_arrow_action() -> None:
 
 def test_node_regression_add_random_forest_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
-    result = NodeRegressionPipelineArrowEndpoints(arrow_client, None).add_random_forest(
+    result = NodeRegressionPipelineArrowEndpoints(arrow_client).add_random_forest(
         "pipe",
         number_of_decision_trees=42,
         max_depth=9,
@@ -64,9 +95,9 @@ def test_node_regression_add_random_forest_runs_arrow_action() -> None:
 
 def test_node_regression_add_random_forest_accepts_tuple_range_inputs() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
-    NodeRegressionPipelineArrowEndpoints(arrow_client, None).add_random_forest(
+    NodeRegressionPipelineArrowEndpoints(arrow_client).add_random_forest(
         "pipe",
         max_depth=(3, 9),
         number_of_decision_trees=(10, 50),
@@ -90,7 +121,7 @@ def test_node_regression_add_random_forest_rejects_list_range_inputs() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
 
     with pytest.raises(ValueError, match="max_depth range inputs must be tuples with exactly two values."):
-        NodeRegressionPipelineArrowEndpoints(arrow_client, None).add_random_forest(
+        NodeRegressionPipelineArrowEndpoints(arrow_client).add_random_forest(
             "pipe",
             max_depth=cast(Any, [3, 9]),
         )
@@ -98,9 +129,9 @@ def test_node_regression_add_random_forest_rejects_list_range_inputs() -> None:
 
 def test_node_regression_add_linear_regression_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
-    result = NodeRegressionPipelineArrowEndpoints(arrow_client, None).add_linear_regression(
+    result = NodeRegressionPipelineArrowEndpoints(arrow_client).add_linear_regression(
         "pipe",
         max_epochs=3,
         min_epochs=1,
@@ -126,9 +157,9 @@ def test_node_regression_add_linear_regression_runs_arrow_action() -> None:
 
 def test_node_regression_add_node_property_runs_arrow_action_with_config() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    arrow_client.do_action_with_retry.return_value = [_flight_result('{"name":"pipe","featureProperties":[]}')]
+    arrow_client.do_action_with_retry.return_value = [_flight_result(_info_payload())]
 
-    result = NodeRegressionPipelineArrowEndpoints(arrow_client, None).add_node_property(
+    result = NodeRegressionPipelineArrowEndpoints(arrow_client).add_node_property(
         "pipe",
         "pageRank",
         mutate_property="pr",
@@ -162,13 +193,11 @@ def test_node_regression_get_uses_shared_pipeline_catalog() -> None:
     ) as pipeline_catalog_cls:
         pipeline = NodeRegressionPipelineArrowEndpoints(
             arrow_client,
-            None,
         ).get("pipe")
 
     assert pipeline.name() == "pipe"
     pipeline_catalog_cls.assert_called_once_with(
         arrow_client,
-        None,
         show_progress=True,
     )
     pipeline_catalog.exists.assert_called_once_with("pipe")
@@ -198,10 +227,10 @@ def test_node_regression_train_runs_arrow_job_and_returns_arrow_wired_model() ->
         ) as run_job_and_wait,
         mock.patch(
             "graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints.JobClient.get_summary",
-            return_value={"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}},
+            return_value=_train_summary(),
         ) as get_summary,
     ):
-        endpoints = NodeRegressionPipelineArrowEndpoints(arrow_client, None)
+        endpoints = NodeRegressionPipelineArrowEndpoints(arrow_client)
         model, result = endpoints.train(graph, "pipe", metrics=["MAE"], model_name="model", target_property="y")
 
         assert isinstance(model, NodeRegressionModelV2)

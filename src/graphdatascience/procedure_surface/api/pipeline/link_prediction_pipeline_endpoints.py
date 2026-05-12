@@ -3,35 +3,35 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import NodeClassificationPipeline
-from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
-    NodeClassificationPipelineInfoResult,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import LinkPredictionPipeline
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
+    LinkPredictionPipelineInfoResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
+    LinkPredictionPipelinePredictEndpoints,
 )
-from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
-    NodeClassificationPipelineTrainEndpoints,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpoints import (
+    LinkPredictionPipelineTrainEndpoints,
 )
 
 
-class NodeClassificationPipelineEndpoints(ABC):
+class LinkPredictionPipelineEndpoints(ABC):
     @property
     @abstractmethod
-    def train(self) -> NodeClassificationPipelineTrainEndpoints:
-        """Access training endpoints for node classification pipelines."""
+    def train(self) -> LinkPredictionPipelineTrainEndpoints:
+        """Access training endpoints for link prediction pipelines."""
         pass
 
     @property
     @abstractmethod
-    def predict(self) -> NodeClassificationPipelinePredictEndpoints:
-        """Access prediction endpoints for node classification models trained from this surface."""
+    def predict(self) -> LinkPredictionPipelinePredictEndpoints:
+        """Access prediction endpoints for link prediction models trained from this surface."""
         pass
 
     @abstractmethod
-    def create(self, pipeline_name: str) -> tuple[NodeClassificationPipeline, NodeClassificationPipelineInfoResult]:
+    def create(self, pipeline_name: str) -> tuple[LinkPredictionPipeline, LinkPredictionPipelineInfoResult]:
         """
-        Create a new node classification pipeline.
+        Create a new link prediction pipeline.
 
         Parameters
         ----------
@@ -40,15 +40,15 @@ class NodeClassificationPipelineEndpoints(ABC):
 
         Returns
         -------
-        tuple[NodeClassificationPipeline, NodeClassificationPipelineInfoResult]
+        tuple[LinkPredictionPipeline, LinkPredictionPipelineInfoResult]
             The created pipeline and the corresponding result payload.
         """
         pass
 
     @abstractmethod
-    def get(self, pipeline_name: str) -> NodeClassificationPipeline:
+    def get(self, pipeline_name: str) -> LinkPredictionPipeline:
         """
-        Retrieve an existing node classification pipeline by name.
+        Retrieve an existing link prediction pipeline by name.
 
         Parameters
         ----------
@@ -57,15 +57,13 @@ class NodeClassificationPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeClassificationPipeline
+        LinkPredictionPipeline
             The reconstructed pipeline object.
         """
         pass
 
     @abstractmethod
-    def add_node_property(
-        self, pipeline_name: str, task_name: str, **config: Any
-    ) -> NodeClassificationPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> LinkPredictionPipelineInfoResult:
         """
         Add a node property step to the pipeline.
 
@@ -80,28 +78,34 @@ class NodeClassificationPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeClassificationPipelineInfoResult
+        LinkPredictionPipelineInfoResult
             The updated pipeline state.
         """
         pass
 
     @abstractmethod
-    def select_features(
-        self, pipeline_name: str, node_properties: str | list[str]
-    ) -> NodeClassificationPipelineInfoResult:
+    def add_feature(
+        self,
+        pipeline_name: str,
+        feature_type: str,
+        *,
+        node_properties: list[str],
+    ) -> LinkPredictionPipelineInfoResult:
         """
-        Select the node properties used as input features.
+        Add an relationship feature step to the pipeline.
 
         Parameters
         ----------
         pipeline_name
             Name of the pipeline.
+        feature_type
+            Type of feature step to add.
         node_properties
-            One or more node properties to use as features.
+            Node properties used to compute the feature.
 
         Returns
         -------
-        NodeClassificationPipelineInfoResult
+        LinkPredictionPipelineInfoResult
             The updated pipeline state.
         """
         pass
@@ -120,7 +124,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
         tolerance: float | tuple[float, float] = 0.001,
-    ) -> NodeClassificationPipelineInfoResult:
+    ) -> LinkPredictionPipelineInfoResult:
         """
         Add a logistic regression model candidate to the pipeline.
 
@@ -149,7 +153,7 @@ class NodeClassificationPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeClassificationPipelineInfoResult
+        LinkPredictionPipelineInfoResult
             The updated pipeline state.
         """
         pass
@@ -166,7 +170,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         min_split_size: int | tuple[int, int] = 2,
         number_of_decision_trees: int | tuple[int, int] = 100,
         number_of_samples_ratio: float | tuple[float, float] = 1.0,
-    ) -> NodeClassificationPipelineInfoResult:
+    ) -> LinkPredictionPipelineInfoResult:
         """
         Add a random forest model candidate to the pipeline.
 
@@ -191,7 +195,7 @@ class NodeClassificationPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeClassificationPipelineInfoResult
+        LinkPredictionPipelineInfoResult
             The updated pipeline state.
         """
         pass
@@ -211,7 +215,7 @@ class NodeClassificationPipelineEndpoints(ABC):
         patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
         tolerance: float | tuple[float, float] = 0.001,
-    ) -> NodeClassificationPipelineInfoResult:
+    ) -> LinkPredictionPipelineInfoResult:
         """
         Add a multi-layer perceptron model candidate to the pipeline.
 
@@ -242,15 +246,22 @@ class NodeClassificationPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeClassificationPipelineInfoResult
+        LinkPredictionPipelineInfoResult
             The updated pipeline state.
         """
         pass
 
     @abstractmethod
     def configure_split(
-        self, pipeline_name: str, *, test_fraction: float = 0.3, validation_folds: int = 3
-    ) -> NodeClassificationPipelineInfoResult:
+        self,
+        pipeline_name: str,
+        *,
+        negative_relationship_type: str | None = None,
+        negative_sampling_ratio: float = 1.0,
+        test_fraction: float = 0.1,
+        train_fraction: float = 0.1,
+        validation_folds: int = 3,
+    ) -> LinkPredictionPipelineInfoResult:
         """
         Configure the train-test split used by the pipeline.
 
@@ -258,22 +269,26 @@ class NodeClassificationPipelineEndpoints(ABC):
         ----------
         pipeline_name
             Name of the pipeline.
+        negative_relationship_type
+            Relationship type to use for the negative samples.
+        negative_sampling_ratio
+            Ratio of sampled negative relationships.
         test_fraction
-            Fraction of nodes reserved for testing.
+            Fraction of relationships reserved for testing.
+        train_fraction
+            Fraction of relationships reserved for training.
         validation_folds
             Number of validation folds to use.
 
         Returns
         -------
-        NodeClassificationPipelineInfoResult
+        LinkPredictionPipelineInfoResult
             The updated pipeline state.
         """
         pass
 
     @abstractmethod
-    def configure_auto_tuning(
-        self, pipeline_name: str, *, max_trials: int = 10
-    ) -> NodeClassificationPipelineInfoResult:
+    def configure_auto_tuning(self, pipeline_name: str, *, max_trials: int = 10) -> LinkPredictionPipelineInfoResult:
         """
         Configure auto-tuning for the pipeline.
 
@@ -286,7 +301,7 @@ class NodeClassificationPipelineEndpoints(ABC):
 
         Returns
         -------
-        NodeClassificationPipelineInfoResult
+        LinkPredictionPipelineInfoResult
             The updated pipeline state.
         """
         pass

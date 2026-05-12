@@ -17,11 +17,41 @@ from graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipe
 )
 
 
+def _info_payload(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureProperties": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "NodeClassification",
+            "pipeline": {"nodePropertySteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_node_classification_train_runs_query() -> None:
     create_row = mock.Mock()
-    create_row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    create_row.to_dict.return_value = _info_payload()
     row = mock.Mock()
-    row.to_dict.return_value = {"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}}
+    row.to_dict.return_value = _train_summary()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
         mock.Mock(squeeze=mock.Mock(return_value=create_row)),
@@ -113,7 +143,7 @@ def test_node_classification_pipeline_train_estimate_delegates_to_trainer() -> N
 
 def test_node_classification_create_returns_info_result() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
@@ -187,7 +217,7 @@ def test_node_classification_predict_stream_mutate_and_write_run_queries() -> No
     )
 
     endpoints = NodeClassificationPipelineCypherEndpoints(query_runner)
-    stream_result = endpoints.predict.stream(graph, model_name="model")
+    stream_result = endpoints.predict.stream(graph, model_name="model", include_predicted_probabilities=False)
     mutate_result = endpoints.predict.mutate(
         graph,
         model_name="model",
@@ -216,6 +246,13 @@ def test_node_classification_predict_stream_mutate_and_write_run_queries() -> No
         query_runner.call_procedure.call_args_list[2].kwargs["endpoint"]
         == "gds.beta.pipeline.nodeClassification.predict.write"
     )
+    assert query_runner.call_procedure.call_args_list[0].kwargs["params"]["config"] == {
+        "modelName": "model",
+        "includePredictedProbabilities": False,
+        "logProgress": True,
+        "sudo": False,
+        "jobId": query_runner.call_procedure.call_args_list[0].kwargs["params"]["config"]["jobId"],
+    }
 
 
 def test_node_classification_predict_estimate_runs_query() -> None:
@@ -275,17 +312,47 @@ def test_node_classification_model_predict_estimate_delegates_to_predict_endpoin
 
 def test_node_classification_add_mlp_runs_query() -> None:
     row = mock.Mock()
-    row.to_dict.return_value = {"name": "pipe", "featureProperties": []}
+    row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
 
     result = NodeClassificationPipelineCypherEndpoints(query_runner).add_mlp(
-        "pipe", hidden_layer_sizes=[64, 16, 4], penalty=0.1
+        "pipe",
+        batch_size=256,
+        class_weights=[0.2, 0.8],
+        focus_weight=0.3,
+        hidden_layer_sizes=[64, 16, 4],
+        learning_rate=0.01,
+        max_epochs=12,
+        min_epochs=2,
+        patience=4,
+        penalty=0.1,
+        tolerance=0.0002,
     )
 
     assert result.name == "pipe"
     assert query_runner.call_procedure.call_args.kwargs["endpoint"] == "gds.alpha.pipeline.nodeClassification.addMLP"
     assert query_runner.call_procedure.call_args.kwargs["params"]["config"] == {
+        "batchSize": 256,
+        "classWeights": [0.2, 0.8],
+        "focusWeight": 0.3,
         "hiddenLayerSizes": [64, 16, 4],
+        "learningRate": 0.01,
+        "maxEpochs": 12,
+        "minEpochs": 2,
+        "patience": 4,
         "penalty": 0.1,
+        "tolerance": 0.0002,
     }
+
+
+def test_node_classification_add_mlp_uses_default_hidden_layer_sizes() -> None:
+    row = mock.Mock()
+    row.to_dict.return_value = _info_payload()
+    query_runner = mock.Mock()
+    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+
+    result = NodeClassificationPipelineCypherEndpoints(query_runner).add_mlp("pipe")
+
+    assert result.name == "pipe"
+    assert query_runner.call_procedure.call_args.kwargs["params"]["config"]["hiddenLayerSizes"] == [100]

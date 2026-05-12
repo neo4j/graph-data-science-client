@@ -1,6 +1,5 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
     PipelineCatalogEntry,
     PipelineExistsResult,
@@ -11,11 +10,9 @@ class PipelineCatalogArrowEndpoints:
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None,
         show_progress: bool = True,
     ) -> None:
         self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
         self._show_progress = show_progress
 
     def list(self, pipeline_name: str | None = None) -> list[PipelineCatalogEntry]:

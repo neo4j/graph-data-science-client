@@ -24,7 +24,7 @@ class GraphSageTrainEndpoints(ABC):
         tolerance: float = 0.0001,
         learning_rate: float = 0.1,
         max_iterations: int = 10,
-        sample_sizes: list[int] | None = None,
+        sample_sizes: list[int] = [25, 10],
         aggregator: str = "MEAN",
         penalty_l2: float = 0.0,
         search_depth: int = 5,

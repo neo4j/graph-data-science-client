@@ -6,9 +6,6 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
-from graphdatascience.procedure_surface.api.node_regression_predict_endpoints import (
-    NodeRegressionPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_endpoints import (
@@ -17,6 +14,9 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_en
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
+    NodeRegressionPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
@@ -63,14 +63,12 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
             self._pipeline_catalog,
         )
 
-    def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> NodeRegressionPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.addNodeProperty",
             params=CallParameters(
                 pipeline_name=pipeline_name,
-                procedure_name=procedure_name,
+                task_name=task_name,
                 config=ConfigConverter.convert_to_gds_config(**config),
             ),
         ).squeeze()

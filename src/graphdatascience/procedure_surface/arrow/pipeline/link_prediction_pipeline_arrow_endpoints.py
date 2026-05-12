@@ -5,29 +5,29 @@ from typing import Any
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
-    NodeClassificationPipeline,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import (
+    LinkPredictionPipeline,
 )
-from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_endpoints import (
-    NodeClassificationPipelineEndpoints,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
+    LinkPredictionPipelineEndpoints,
 )
-from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
-    NodeClassificationPipelineInfoResult,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
+    LinkPredictionPipelineInfoResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
+    LinkPredictionPipelinePredictEndpoints,
 )
-from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
-    NodeClassificationPipelineTrainEndpoints,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpoints import (
+    LinkPredictionPipelineTrainEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
-from graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints import (
-    NodeClassificationPredictArrowEndpoints,
+from graphdatascience.procedure_surface.arrow.pipeline.link_prediction_predict_arrow_endpoints import (
+    LinkPredictionPredictArrowEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.pipeline.node_classification_train_arrow_endpoints import (
-    NodeClassificationTrainArrowEndpoints,
+from graphdatascience.procedure_surface.arrow.pipeline.link_prediction_train_arrow_endpoints import (
+    LinkPredictionTrainArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
     PipelineCatalogArrowEndpoints,
@@ -35,7 +35,7 @@ from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_en
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
 
-class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoints):
+class LinkPredictionPipelineArrowEndpoints(LinkPredictionPipelineEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
@@ -45,7 +45,7 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         self._arrow_client = arrow_client
         self._write_back_client = write_back_client
         self._show_progress = show_progress
-        self._predict = NodeClassificationPredictArrowEndpoints(
+        self._predict = LinkPredictionPredictArrowEndpoints(
             arrow_client,
             write_back_client,
             show_progress=show_progress,
@@ -55,7 +55,7 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
             show_progress=show_progress,
         )
         self._model_api = ModelApiArrow(arrow_client)
-        self._train = NodeClassificationTrainArrowEndpoints(
+        self._train = LinkPredictionTrainArrowEndpoints(
             arrow_client=arrow_client,
             model_api=self._model_api,
             predict_endpoints=self._predict,
@@ -63,39 +63,37 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         )
 
     @property
-    def train(self) -> NodeClassificationPipelineTrainEndpoints:
+    def train(self) -> LinkPredictionPipelineTrainEndpoints:
         return self._train
 
     @property
-    def predict(self) -> NodeClassificationPipelinePredictEndpoints:
+    def predict(self) -> LinkPredictionPipelinePredictEndpoints:
         return self._predict
 
-    def create(self, pipeline_name: str) -> tuple[NodeClassificationPipeline, NodeClassificationPipelineInfoResult]:
+    def create(self, pipeline_name: str) -> tuple[LinkPredictionPipeline, LinkPredictionPipelineInfoResult]:
         result = self._call_action("", pipeline_name=pipeline_name)
         return (
-            NodeClassificationPipeline(pipeline_name, self, self, self._pipeline_catalog),
-            NodeClassificationPipelineInfoResult(**result),
+            LinkPredictionPipeline(pipeline_name, self, self, self._pipeline_catalog),
+            LinkPredictionPipelineInfoResult(**result),
         )
 
-    def get(self, pipeline_name: str) -> NodeClassificationPipeline:
+    def get(self, pipeline_name: str) -> LinkPredictionPipeline:
         pipeline_info = self._pipeline_catalog.exists(pipeline_name)
         if not pipeline_info:
             raise ValueError(f"No pipeline named '{pipeline_name}' exists")
-        if pipeline_info.pipeline_type != "Node classification training pipeline":
-            raise ValueError(f"Pipeline '{pipeline_name}' is not a node classification pipeline")
-        return NodeClassificationPipeline(
+        if pipeline_info.pipeline_type != "Link prediction training pipeline":
+            raise ValueError(f"Pipeline '{pipeline_name}' is not a link prediction pipeline")
+        return LinkPredictionPipeline(
             pipeline_info.pipeline_name,
             self,
             self,
             self._pipeline_catalog,
         )
 
-    def add_node_property(
-        self, pipeline_name: str, task_name: str, **config: Any
-    ) -> NodeClassificationPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> LinkPredictionPipelineInfoResult:
         result = deserialize_single(
             self._arrow_client.do_action_with_retry(
-                "v2/pipeline.nodeClassification.nodeProperty.add",
+                "v2/pipeline.linkPrediction.nodeProperty.add",
                 {
                     "pipelineName": pipeline_name,
                     "procedureName": task_name,
@@ -103,13 +101,22 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
                 },
             )
         )
-        return NodeClassificationPipelineInfoResult(**result)
+        return LinkPredictionPipelineInfoResult(**result)
 
-    def select_features(
-        self, pipeline_name: str, node_properties: str | list[str]
-    ) -> NodeClassificationPipelineInfoResult:
-        result = self._call_action("features.select", pipeline_name=pipeline_name, node_properties=node_properties)
-        return NodeClassificationPipelineInfoResult(**result)
+    def add_feature(
+        self,
+        pipeline_name: str,
+        feature_type: str,
+        *,
+        node_properties: list[str],
+    ) -> LinkPredictionPipelineInfoResult:
+        result = self._call_action(
+            "feature.add",
+            pipeline_name=pipeline_name,
+            feature_type=feature_type,
+            node_properties=node_properties,
+        )
+        return LinkPredictionPipelineInfoResult(**result)
 
     def add_logistic_regression(
         self,
@@ -124,7 +131,7 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
         tolerance: float | tuple[float, float] = 0.001,
-    ) -> NodeClassificationPipelineInfoResult:
+    ) -> LinkPredictionPipelineInfoResult:
         config = convert_to_parameter_space_config(
             range_keys={
                 "batch_size",
@@ -148,7 +155,7 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
             tolerance=tolerance,
         )
         result = self._call_action("modelCandidate.add", pipeline_name=pipeline_name, **config)
-        return NodeClassificationPipelineInfoResult(**result)
+        return LinkPredictionPipelineInfoResult(**result)
 
     def add_random_forest(
         self,
@@ -161,7 +168,7 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         min_split_size: int | tuple[int, int] = 2,
         number_of_decision_trees: int | tuple[int, int] = 100,
         number_of_samples_ratio: float | tuple[float, float] = 1.0,
-    ) -> NodeClassificationPipelineInfoResult:
+    ) -> LinkPredictionPipelineInfoResult:
         config = convert_to_parameter_space_config(
             range_keys={
                 "max_depth",
@@ -181,7 +188,7 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
             number_of_samples_ratio=number_of_samples_ratio,
         )
         result = self._call_action("modelCandidate.add", pipeline_name=pipeline_name, **config)
-        return NodeClassificationPipelineInfoResult(**result)
+        return LinkPredictionPipelineInfoResult(**result)
 
     def add_mlp(
         self,
@@ -197,7 +204,7 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
         tolerance: float | tuple[float, float] = 0.001,
-    ) -> NodeClassificationPipelineInfoResult:
+    ) -> LinkPredictionPipelineInfoResult:
         config = convert_to_parameter_space_config(
             range_keys={
                 "batch_size",
@@ -222,26 +229,34 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
             tolerance=tolerance,
         )
         result = self._call_action("modelCandidate.add", pipeline_name=pipeline_name, **config)
-        return NodeClassificationPipelineInfoResult(**result)
+        return LinkPredictionPipelineInfoResult(**result)
 
     def configure_split(
-        self, pipeline_name: str, *, test_fraction: float = 0.3, validation_folds: int = 3
-    ) -> NodeClassificationPipelineInfoResult:
+        self,
+        pipeline_name: str,
+        *,
+        negative_relationship_type: str | None = None,
+        negative_sampling_ratio: float = 1.0,
+        test_fraction: float = 0.1,
+        train_fraction: float = 0.1,
+        validation_folds: int = 3,
+    ) -> LinkPredictionPipelineInfoResult:
         result = self._call_action(
             "split.configure",
             pipeline_name=pipeline_name,
+            negative_relationship_type=negative_relationship_type,
+            negative_sampling_ratio=negative_sampling_ratio,
             test_fraction=test_fraction,
+            train_fraction=train_fraction,
             validation_folds=validation_folds,
         )
-        return NodeClassificationPipelineInfoResult(**result)
+        return LinkPredictionPipelineInfoResult(**result)
 
-    def configure_auto_tuning(
-        self, pipeline_name: str, *, max_trials: int = 10
-    ) -> NodeClassificationPipelineInfoResult:
+    def configure_auto_tuning(self, pipeline_name: str, *, max_trials: int = 10) -> LinkPredictionPipelineInfoResult:
         result = self._call_action("autoTuning.configure", pipeline_name=pipeline_name, max_trials=max_trials)
-        return NodeClassificationPipelineInfoResult(**result)
+        return LinkPredictionPipelineInfoResult(**result)
 
     def _call_action(self, suffix: str, **payload: Any) -> dict[str, Any]:
         config = ConfigConverter.convert_to_gds_config(**payload)
-        endpoint = "v2/pipeline.nodeClassification" if not suffix else f"v2/pipeline.nodeClassification.{suffix}"
+        endpoint = "v2/pipeline.linkPrediction" if not suffix else f"v2/pipeline.linkPrediction.{suffix}"
         return deserialize_single(self._arrow_client.do_action_with_retry(endpoint, config))

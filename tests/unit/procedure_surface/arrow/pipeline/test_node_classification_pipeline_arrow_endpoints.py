@@ -1,7 +1,7 @@
+import json
 from unittest import mock
 
 import pandas as pd
-import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
@@ -13,6 +13,42 @@ from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipel
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints import (
     NodeClassificationPredictArrowEndpoints,
 )
+
+
+def _arrow_result(payload: dict[str, object]) -> mock.Mock:
+    row = mock.Mock()
+    row.body.to_pybytes.return_value = json.dumps(payload).encode("utf-8")
+    return row
+
+
+def _info_payload(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "autoTuningConfig": {},
+        "featureProperties": [],
+        "name": "pipe",
+        "nodePropertySteps": [],
+        "parameterSpace": {},
+        "splitConfig": {},
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _train_summary(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configuration": {},
+        "modelInfo": {
+            "bestParameters": {},
+            "metrics": {},
+            "modelName": "model",
+            "modelType": "NodeClassification",
+            "pipeline": {"nodePropertySteps": []},
+        },
+        "modelSelectionStats": {},
+        "trainMillis": 7,
+    }
+    payload.update(overrides)
+    return payload
 
 
 def test_node_classification_predict_stream_forces_probability_distribution() -> None:
@@ -34,6 +70,7 @@ def test_node_classification_predict_stream_forces_probability_distribution() ->
         result = NodeClassificationPredictArrowEndpoints(arrow_client, None).stream(
             graph,
             model_name="model",
+            include_predicted_probabilities=False,
         )
 
     assert result.equals(expected)
@@ -43,7 +80,6 @@ def test_node_classification_predict_stream_forces_probability_distribution() ->
         {
             "graphName": "g",
             "modelName": "model",
-            "includePredictedProbabilities": True,
             "logProgress": True,
             "sudo": False,
         },
@@ -64,7 +100,7 @@ def test_node_classification_train_runs_arrow_job_and_returns_arrow_wired_model(
         ) as run_job_and_wait,
         mock.patch(
             "graphdatascience.procedure_surface.arrow.pipeline.node_classification_train_arrow_endpoints.JobClient.get_summary",
-            return_value={"trainMillis": 7, "modelInfo": {"modelName": "model"}, "modelSelectionStats": {}},
+            return_value=_train_summary(),
         ) as get_summary,
     ):
         endpoints = NodeClassificationPipelineArrowEndpoints(arrow_client, None)
@@ -104,9 +140,7 @@ def test_node_classification_train_estimate_runs_arrow_job() -> None:
 
 def test_node_classification_select_features_uses_node_properties_payload() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    row = mock.Mock()
-    row.body.to_pybytes.return_value = b'{"name":"pipe","featureProperties":[]}'
-    arrow_client.do_action_with_retry.return_value = [row]
+    arrow_client.do_action_with_retry.return_value = [_arrow_result(_info_payload())]
 
     result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).select_features(
         "pipe",
@@ -142,32 +176,28 @@ def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
     assert pipeline.name() == "pipe"
     pipeline_catalog_cls.assert_called_once_with(
         arrow_client,
-        None,
         show_progress=True,
     )
     pipeline_catalog.exists.assert_called_once_with("pipe")
     arrow_client.do_action_with_retry.assert_not_called()
 
 
-def test_node_classification_endpoints_do_not_accept_pipeline_catalog_constructor_override() -> None:
-    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    constructor = mock.Mock(side_effect=NodeClassificationPipelineArrowEndpoints)
-
-    with mock.patch(
-        "graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints.PipelineCatalogArrowEndpoints"
-    ):
-        with pytest.raises(TypeError, match="pipeline_catalog"):
-            constructor(arrow_client, None, pipeline_catalog=mock.Mock())
-
-
 def test_node_classification_add_mlp_runs_arrow_action() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    row = mock.Mock()
-    row.body.to_pybytes.return_value = b'{"name":"pipe","featureProperties":[]}'
-    arrow_client.do_action_with_retry.return_value = [row]
+    arrow_client.do_action_with_retry.return_value = [_arrow_result(_info_payload())]
 
     result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).add_mlp(
-        "pipe", hidden_layer_sizes=[64, 16, 4], penalty=0.1
+        "pipe",
+        batch_size=256,
+        class_weights=[0.2, 0.8],
+        focus_weight=0.3,
+        hidden_layer_sizes=[64, 16, 4],
+        learning_rate=0.01,
+        max_epochs=12,
+        min_epochs=2,
+        patience=4,
+        penalty=0.1,
+        tolerance=0.0002,
     )
 
     assert result.name == "pipe"
@@ -176,7 +206,25 @@ def test_node_classification_add_mlp_runs_arrow_action() -> None:
         {
             "pipelineName": "pipe",
             "modelType": "MLP",
+            "batchSize": 256,
+            "classWeights": [0.2, 0.8],
+            "focusWeight": 0.3,
             "hiddenLayerSizes": [64, 16, 4],
+            "learningRate": 0.01,
+            "maxEpochs": 12,
+            "minEpochs": 2,
+            "patience": 4,
             "penalty": 0.1,
+            "tolerance": 0.0002,
         },
     )
+
+
+def test_node_classification_add_mlp_uses_default_hidden_layer_sizes() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+    arrow_client.do_action_with_retry.return_value = [_arrow_result(_info_payload())]
+
+    result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).add_mlp("pipe")
+
+    assert result.name == "pipe"
+    assert arrow_client.do_action_with_retry.call_args.args[1]["hiddenLayerSizes"] == [100]

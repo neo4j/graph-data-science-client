@@ -15,5 +15,7 @@
 
 ## Improvements
 
+* Expose pipeline API in v2 (Node Classification, Node Regression and Link Prediction)
+
 
 ## Other changes

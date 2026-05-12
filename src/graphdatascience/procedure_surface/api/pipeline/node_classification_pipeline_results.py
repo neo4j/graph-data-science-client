@@ -4,24 +4,24 @@ from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
 class NodeClassificationPipelineInfoResult(BaseResult):
-    auto_tuning_config: dict[str, Any] | None = None
-    feature_properties: list[Any] | None = None
-    name: str | None = None
-    node_property_steps: list[Any] | None = None
-    parameter_space: dict[str, Any] | None = None
-    split_config: dict[str, Any] | None = None
+    auto_tuning_config: dict[str, Any]
+    feature_properties: list[Any]
+    name: str
+    node_property_steps: list[Any]
+    parameter_space: dict[str, Any]
+    split_config: dict[str, Any]
 
 
 class NodeClassificationModelInfoResult(BaseResult):
-    best_parameters: dict[str, Any] | None = None
-    metrics: dict[str, Any] | None = None
-    model_name: str | None = None
-    model_type: str | None = None
-    pipeline: dict[str, Any] | None = None
+    best_parameters: dict[str, Any]
+    metrics: dict[str, Any]
+    model_name: str
+    model_type: str
+    pipeline: dict[str, Any]
 
 
 class NodeClassificationPipelineTrainResult(BaseResult):
-    configuration: dict[str, Any] | None = None
-    model_info: NodeClassificationModelInfoResult | None = None
-    model_selection_stats: dict[str, Any] | None = None
-    train_millis: int | None = None
+    configuration: dict[str, Any]
+    model_info: NodeClassificationModelInfoResult
+    model_selection_stats: dict[str, Any]
+    train_millis: int

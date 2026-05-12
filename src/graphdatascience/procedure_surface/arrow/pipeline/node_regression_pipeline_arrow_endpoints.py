@@ -5,13 +5,9 @@ from typing import Any
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
-from graphdatascience.procedure_surface.api.node_regression_predict_endpoints import (
-    NodeRegressionPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_endpoints import (
@@ -20,6 +16,9 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_en
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
+    NodeRegressionPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
@@ -37,20 +36,17 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None,
         show_progress: bool = True,
     ) -> None:
         self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
         self._show_progress = show_progress
         self._predict = NodeRegressionPredictArrowEndpoints(
             arrow_client,
-            write_back_client,
+            None,
             show_progress=show_progress,
         )
         self._pipeline_catalog: PipelineCatalogProtocol = PipelineCatalogArrowEndpoints(
             arrow_client,
-            write_back_client,
             show_progress=show_progress,
         )
         self._model_api = ModelApiArrow(arrow_client)
@@ -79,15 +75,13 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
             self._pipeline_catalog,
         )
 
-    def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> NodeRegressionPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         result = deserialize_single(
             self._arrow_client.do_action_with_retry(
                 "v2/pipeline.nodeRegression.nodeProperty.add",
                 {
                     "pipelineName": pipeline_name,
-                    "procedureName": procedure_name,
+                    "procedureName": task_name,
                     "procedureConfiguration": ConfigConverter.convert_to_gds_config(**config),
                 },
             )

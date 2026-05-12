@@ -5,6 +5,9 @@ from datetime import datetime
 from typing import Any
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
+    LinkPredictionPipelineEndpoints,
+)
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_endpoints import (
     NodeClassificationPipelineEndpoints,
 )
@@ -46,6 +49,12 @@ class PipelineEndpoints(ABC):
     @abstractmethod
     def node_classification(self) -> NodeClassificationPipelineEndpoints:
         """Access node classification pipeline procedures."""
+        pass
+
+    @property
+    @abstractmethod
+    def link_prediction(self) -> LinkPredictionPipelineEndpoints:
+        """Access link prediction pipeline procedures."""
         pass
 
     @property

@@ -15,7 +15,7 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_re
 @runtime_checkable
 class NodeRegressionPipelineOps(Protocol):
     def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
+        self, pipeline_name: str, task_name: str, **config: Any
     ) -> NodeRegressionPipelineInfoResult: ...
 
     def select_features(

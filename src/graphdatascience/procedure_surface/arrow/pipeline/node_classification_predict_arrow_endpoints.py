@@ -9,7 +9,7 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
+from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
     NodeClassificationPipelinePredictMutateResult,
     NodeClassificationPipelinePredictWriteResult,
@@ -40,6 +40,7 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
         *,
         relationship_types: list[str] | None = None,
         target_node_labels: list[str] | None = None,
+        include_predicted_probabilities: bool = False,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool = False,
@@ -51,7 +52,9 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
             model_name=model_name,
             relationship_types=relationship_types,
             target_node_labels=target_node_labels,
-            include_predicted_probabilities=True,
+            include_predicted_probabilities=include_predicted_probabilities
+            if include_predicted_probabilities
+            else None,
             username=username,
             log_progress=log_progress,
             sudo=sudo,

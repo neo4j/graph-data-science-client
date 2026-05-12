@@ -6,14 +6,14 @@ from typing import Any
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
-from graphdatascience.procedure_surface.api.node_regression_predict_endpoints import (
-    NodeRegressionPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
     NodeRegressionPipelineInfoResult,
     NodeRegressionPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
+    NodeRegressionPipelinePredictEndpoints,
 )
 
 
@@ -59,9 +59,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         pass
 
     @abstractmethod
-    def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> NodeRegressionPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         """
         Add a node property step to the pipeline.
 
@@ -69,8 +67,8 @@ class NodeRegressionPipelineEndpoints(ABC):
         ----------
         pipeline_name
             Name of the pipeline.
-        procedure_name
-            The procedure name of the node property step to add.
+        task_name
+            The name of the node property step to add.
         config
             Additional configuration for the node property step.
 

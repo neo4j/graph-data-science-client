@@ -3,16 +3,16 @@ from typing import Any
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
-class NodeRegressionPipelineInfoResult(BaseResult):
+class LinkPredictionPipelineInfoResult(BaseResult):
     auto_tuning_config: dict[str, Any]
-    feature_properties: list[Any]
+    feature_steps: list[Any]
     name: str
     node_property_steps: list[Any]
     parameter_space: dict[str, Any]
     split_config: dict[str, Any]
 
 
-class NodeRegressionModelInfoResult(BaseResult):
+class LinkPredictionModelInfoResult(BaseResult):
     best_parameters: dict[str, Any]
     metrics: dict[str, Any]
     model_name: str
@@ -20,8 +20,8 @@ class NodeRegressionModelInfoResult(BaseResult):
     pipeline: dict[str, Any]
 
 
-class NodeRegressionPipelineTrainResult(BaseResult):
+class LinkPredictionPipelineTrainResult(BaseResult):
     configuration: dict[str, Any]
-    model_info: NodeRegressionModelInfoResult
+    model_info: LinkPredictionModelInfoResult
     model_selection_stats: dict[str, Any]
     train_millis: int

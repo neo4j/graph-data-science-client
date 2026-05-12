@@ -5,16 +5,15 @@ from pandas import DataFrame
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
-    NodeClassificationPipelinePredictMutateResult,
-    NodeClassificationPipelinePredictWriteResult,
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
+    LinkPredictionPipelinePredictEndpoints,
+    LinkPredictionPipelinePredictMutateResult,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
-class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredictEndpoints):
+class LinkPredictionPredictCypherEndpoints(LinkPredictionPipelinePredictEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
 
@@ -23,8 +22,9 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         G: GraphV2,
         model_name: str,
         *,
-        relationship_types: list[str] | None = None,
-        target_node_labels: list[str] | None = None,
+        source_node_label: str | None = None,
+        target_node_label: str | None = None,
+        top_n: int | None = None,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool = False,
@@ -33,8 +33,9 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
     ) -> EstimationResult:
         config = ConfigConverter.convert_to_gds_config(
             model_name=model_name,
-            relationship_types=relationship_types,
-            target_node_labels=target_node_labels,
+            source_node_label=source_node_label,
+            target_node_label=target_node_label,
+            top_n=top_n,
             username=username,
             log_progress=log_progress,
             sudo=sudo,
@@ -44,7 +45,7 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
         result = self._query_runner.call_procedure(
-            endpoint="gds.beta.pipeline.nodeClassification.predict.stream.estimate",
+            endpoint="gds.beta.pipeline.linkPrediction.predict.stream.estimate",
             params=params,
         ).squeeze()
         return EstimationResult.from_cypher(result.to_dict())
@@ -55,8 +56,17 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         model_name: str,
         *,
         relationship_types: list[str] | None = None,
-        target_node_labels: list[str] | None = None,
-        include_predicted_probabilities: bool = False,
+        sample_rate: float = 1.0,
+        source_node_label: str | None = None,
+        target_node_label: str | None = None,
+        threshold: float | None = None,
+        top_k: int | None = None,
+        top_n: int | None = None,
+        initial_sampler: str | None = None,
+        delta_threshold: float | None = None,
+        max_iterations: int | None = None,
+        random_joins: int | None = None,
+        random_seed: int | None = None,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool = False,
@@ -66,8 +76,17 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         config = ConfigConverter.convert_to_gds_config(
             model_name=model_name,
             relationship_types=relationship_types,
-            target_node_labels=target_node_labels,
-            include_predicted_probabilities=include_predicted_probabilities,
+            sample_rate=sample_rate,
+            source_node_label=source_node_label,
+            target_node_label=target_node_label,
+            threshold=threshold,
+            top_k=top_k,
+            top_n=top_n,
+            initial_sampler=initial_sampler,
+            delta_threshold=delta_threshold,
+            max_iterations=max_iterations,
+            random_joins=random_joins,
+            random_seed=random_seed,
             username=username,
             log_progress=log_progress,
             sudo=sudo,
@@ -77,30 +96,52 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
         return self._query_runner.call_procedure(
-            endpoint="gds.beta.pipeline.nodeClassification.predict.stream", params=params, logging=log_progress
+            endpoint="gds.beta.pipeline.linkPrediction.predict.stream",
+            params=params,
+            logging=log_progress,
         )
 
     def mutate(
         self,
         G: GraphV2,
         model_name: str,
-        mutate_property: str,
+        mutate_relationship_type: str,
         *,
+        mutate_property: str = "probability",
         relationship_types: list[str] | None = None,
-        target_node_labels: list[str] | None = None,
-        predicted_probability_property: str | None = None,
+        sample_rate: float = 1.0,
+        source_node_label: str | None = None,
+        target_node_label: str | None = None,
+        threshold: float | None = None,
+        top_k: int | None = None,
+        top_n: int | None = None,
+        initial_sampler: str | None = None,
+        delta_threshold: float | None = None,
+        max_iterations: int | None = None,
+        random_joins: int | None = None,
+        random_seed: int | None = None,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> NodeClassificationPipelinePredictMutateResult:
+    ) -> LinkPredictionPipelinePredictMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             model_name=model_name,
             mutate_property=mutate_property,
-            predicted_probability_property=predicted_probability_property,
+            mutate_relationship_type=mutate_relationship_type,
             relationship_types=relationship_types,
-            target_node_labels=target_node_labels,
+            sample_rate=sample_rate,
+            source_node_label=source_node_label,
+            target_node_label=target_node_label,
+            threshold=threshold,
+            top_k=top_k,
+            top_n=top_n,
+            initial_sampler=initial_sampler,
+            delta_threshold=delta_threshold,
+            max_iterations=max_iterations,
+            random_joins=random_joins,
+            random_seed=random_seed,
             username=username,
             log_progress=log_progress,
             sudo=sudo,
@@ -110,42 +151,7 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
         result = self._query_runner.call_procedure(
-            endpoint="gds.beta.pipeline.nodeClassification.predict.mutate", params=params
+            endpoint="gds.beta.pipeline.linkPrediction.predict.mutate",
+            params=params,
         ).squeeze()
-        return NodeClassificationPipelinePredictMutateResult(**result.to_dict())
-
-    def write(
-        self,
-        G: GraphV2,
-        model_name: str,
-        write_property: str,
-        *,
-        relationship_types: list[str] | None = None,
-        target_node_labels: list[str] | None = None,
-        predicted_probability_property: str | None = None,
-        username: str | None = None,
-        log_progress: bool = True,
-        sudo: bool = False,
-        concurrency: int | None = None,
-        write_concurrency: int | None = None,
-        job_id: str | None = None,
-    ) -> NodeClassificationPipelinePredictWriteResult:
-        config = ConfigConverter.convert_to_gds_config(
-            model_name=model_name,
-            write_property=write_property,
-            predicted_probability_property=predicted_probability_property,
-            relationship_types=relationship_types,
-            target_node_labels=target_node_labels,
-            username=username,
-            log_progress=log_progress,
-            sudo=sudo,
-            concurrency=concurrency,
-            write_concurrency=write_concurrency,
-            job_id=job_id,
-        )
-        params = CallParameters(graph_name=G.name(), config=config)
-        params.ensure_job_id_in_config()
-        result = self._query_runner.call_procedure(
-            endpoint="gds.beta.pipeline.nodeClassification.predict.write", params=params
-        ).squeeze()
-        return NodeClassificationPipelinePredictWriteResult(**result.to_dict())
+        return LinkPredictionPipelinePredictMutateResult(**result.to_dict())
