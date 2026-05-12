@@ -124,7 +124,7 @@ class GdsArrowClient:
         )
 
         compute_job = JobClient.run_job_and_wait(self._flight_client, "v2/graph.nodeLabel.stream", config, log_progress)
-        return JobClient.export_result(self._flight_client, graph_name, compute_job)
+        return JobClient.start_export_result(self._flight_client, graph_name, compute_job)
 
     def get_relationships(
         self,

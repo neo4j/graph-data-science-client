@@ -86,12 +86,12 @@ class JobClient:
 
     @staticmethod
     def stream_results(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> DataFrame:
-        export_job_id = JobClient.export_result(client, graph_name, job_id)
+        export_job_id = JobClient.start_export_result(client, graph_name, job_id)
 
         return JobClient.get_stream(client, export_job_id)
 
     @staticmethod
-    def export_result(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> str:
+    def start_export_result(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> str:
         payload = {
             "graphName": graph_name,
             "jobId": job_id,
