@@ -1,7 +1,7 @@
 from typing import Generator
+from unittest import mock
 
 import pytest
-from pytest_mock import MockerFixture
 
 from graphdatascience import ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -13,12 +13,10 @@ from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 
 
 @pytest.fixture(scope="package")
-def gds(
-    arrow_client: AuthenticatedArrowClient, db_query_runner: Neo4jQueryRunner, mocker: MockerFixture
-) -> AuraGraphDataScience:
+def gds(arrow_client: AuthenticatedArrowClient, db_query_runner: Neo4jQueryRunner) -> AuraGraphDataScience:
     return AuraGraphDataScience(
         query_runner=db_query_runner,
-        session_lifecycle_manager=mocker.Mock(spec=SessionLifecycleManager),
+        session_lifecycle_manager=mock.Mock(spec=SessionLifecycleManager),
         gds_version=ServerVersion.from_string("1.2.3"),
         v2_endpoints=SessionV2Endpoints(arrow_client, db_query_runner),
         authenticated_arrow_client=arrow_client,

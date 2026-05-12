@@ -111,7 +111,7 @@ def test_astar_write(
         G=db_graph,
         write_relationship_type="PATH",
         source_node=find_node_by_id(query_runner, 0),
-        target_node=4,
+        target_node=find_node_by_id(query_runner, 4),
         latitude_property="latitude",
         longitude_property="longitude",
         relationship_weight_property="cost",

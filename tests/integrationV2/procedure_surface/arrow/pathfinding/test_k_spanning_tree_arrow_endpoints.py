@@ -12,6 +12,7 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph_from_db,
 )
+from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
 
 graph = """
         CREATE
@@ -62,7 +63,7 @@ def test_k_spanning_tree_write(
         G=db_graph,
         k=3,
         write_property="weight",
-        source_node=0,
+        source_node=find_node_by_id(query_runner, 0),
         relationship_weight_property="cost",
     )
 

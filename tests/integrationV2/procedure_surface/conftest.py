@@ -4,6 +4,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Generator
+from uuid import uuid4
 
 import dotenv
 import pytest
@@ -85,7 +86,7 @@ def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnection
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", default_neo4j_image)
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
-    db_logs_dir = logs_dir / "arrow_surface" / "db_logs"
+    db_logs_dir = logs_dir / str(uuid4()) / "db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
     db_container = (
@@ -129,7 +130,10 @@ def start_gds_plugin_database(
     dotenv.load_dotenv("tests/test.env", override=True)
     GDS_LICENSE_KEY = os.getenv("GDS_LICENSE_KEY")
 
-    db_logs_dir = logs_dir / "cypher_surface" / "db_logs"
+    if GDS_LICENSE_KEY is None:
+        raise ValueError("Trying to start a Plugin database, but no GDS_LICENSE_KEY environment variable was set")
+
+    db_logs_dir = logs_dir / str(uuid4()) / "db_logs"
     db_logs_dir.mkdir(parents=True)
     db_logs_dir.chmod(0o777)
 
@@ -151,18 +155,17 @@ def start_gds_plugin_database(
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
 
-    if GDS_LICENSE_KEY is not None:
-        license_dir = tmp_path_factory.mktemp("gds_license")
-        license_dir.chmod(0o755)
-        license_file = os.path.join(license_dir, "license_key")
-        with open(license_file, "w") as f:
-            f.write(GDS_LICENSE_KEY)
+    license_dir = tmp_path_factory.mktemp("gds_license")
+    license_dir.chmod(0o755)
+    license_file = os.path.join(license_dir, "license_key")
+    with open(license_file, "w") as f:
+        f.write(GDS_LICENSE_KEY)
 
-        neo4j_container.with_volume_mapping(
-            license_dir,
-            "/licenses",
-        )
-        neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
+    neo4j_container.with_volume_mapping(
+        license_dir,
+        "/licenses",
+    )
+    neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
 
     with neo4j_container as neo4j_db:
         try:
