@@ -6,13 +6,12 @@ import pytest
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
 from graphdatascience.procedure_surface.api.pipeline import (
     LinkPredictionPipeline,
-    LinkPredictionPipelineEndpoints,
-    PipelineEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
     PipelineCatalogEntry,
     PipelineExistsResult,
 )
+
 
 def test_link_prediction_pipeline_exists_delegates_to_catalog_endpoint() -> None:
     ops = mock.Mock()

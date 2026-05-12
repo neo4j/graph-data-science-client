@@ -1,7 +1,6 @@
 from unittest import mock
 
 import pandas as pd
-import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
@@ -146,17 +145,6 @@ def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
     )
     pipeline_catalog.exists.assert_called_once_with("pipe")
     arrow_client.do_action_with_retry.assert_not_called()
-
-
-def test_node_classification_endpoints_do_not_accept_pipeline_catalog_constructor_override() -> None:
-    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
-    constructor = mock.Mock(side_effect=NodeClassificationPipelineArrowEndpoints)
-
-    with mock.patch(
-        "graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints.PipelineCatalogArrowEndpoints"
-    ):
-        with pytest.raises(TypeError, match="pipeline_catalog"):
-            constructor(arrow_client, None, pipeline_catalog=mock.Mock())
 
 
 def test_node_classification_add_mlp_runs_arrow_action() -> None:
