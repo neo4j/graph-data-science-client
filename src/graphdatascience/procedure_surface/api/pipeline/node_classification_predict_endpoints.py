@@ -130,7 +130,7 @@ class NodeClassificationPipelinePredictEndpoints(ABC):
         model_name
             Name of the model.
         mutate_property
-            Name of the node property to store the predicted class in.
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
@@ -182,7 +182,7 @@ class NodeClassificationPipelinePredictEndpoints(ABC):
         model_name
             Name of the model.
         write_property
-            Name of the node property to store the predicted class in.
+            Name of the node property to store the results in.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels

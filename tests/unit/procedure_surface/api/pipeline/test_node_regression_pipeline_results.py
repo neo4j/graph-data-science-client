@@ -1,6 +1,3 @@
-import pytest
-from pydantic import ValidationError
-
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
     NodeRegressionModelInfoResult,
     NodeRegressionPipelineTrainResult,
