@@ -7,11 +7,11 @@ from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
-from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
+    NodeClassificationPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
     NodeClassificationPipelineTrainEndpoints,

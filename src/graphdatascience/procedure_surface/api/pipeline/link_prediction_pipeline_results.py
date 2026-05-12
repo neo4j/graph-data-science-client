@@ -4,6 +4,7 @@ from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
 class LinkPredictionPipelineInfoResult(BaseResult):
+    auto_tuning_config: dict[str, Any] | None = None
     feature_steps: list[Any] | None = None
     name: str | None = None
     node_property_steps: list[Any] | None = None

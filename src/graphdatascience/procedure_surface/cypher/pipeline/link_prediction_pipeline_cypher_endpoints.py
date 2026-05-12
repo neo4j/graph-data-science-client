@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.link_prediction_predict_endpoints import (
-    LinkPredictionPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import LinkPredictionPipeline
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
     LinkPredictionPipelineEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
     LinkPredictionPipelineInfoResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
+    LinkPredictionPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpoints import (
     LinkPredictionPipelineTrainEndpoints,
@@ -69,26 +69,30 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
             self._pipeline_catalog,
         )
 
-    def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> LinkPredictionPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> LinkPredictionPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.addNodeProperty",
             params=CallParameters(
                 pipeline_name=pipeline_name,
-                procedure_name=procedure_name,
+                task_name=task_name,
                 config=ConfigConverter.convert_to_gds_config(**config),
             ),
         ).squeeze()
         return LinkPredictionPipelineInfoResult(**result.to_dict())
 
-    def add_feature(self, pipeline_name: str, feature_type: str, **config: Any) -> LinkPredictionPipelineInfoResult:
+    def add_feature(
+        self,
+        pipeline_name: str,
+        feature_type: str,
+        *,
+        node_properties: list[str],
+    ) -> LinkPredictionPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.addFeature",
             params=CallParameters(
                 pipeline_name=pipeline_name,
                 feature_type=feature_type,
-                config=ConfigConverter.convert_to_gds_config(**config),
+                config=ConfigConverter.convert_to_gds_config(node_properties=node_properties),
             ),
         ).squeeze()
         return LinkPredictionPipelineInfoResult(**result.to_dict())
@@ -138,6 +142,7 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
         self,
         pipeline_name: str,
         *,
+        criterion: str | None = "GINI",
         max_depth: int | tuple[int, int] = 2147483647,
         max_features_ratio: float | tuple[float, float] | None = None,
         min_leaf_size: int | tuple[int, int] = 1,
@@ -154,6 +159,7 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
                 "number_of_decision_trees",
                 "number_of_samples_ratio",
             },
+            criterion=criterion,
             max_depth=max_depth,
             max_features_ratio=max_features_ratio,
             min_leaf_size=min_leaf_size,
@@ -171,13 +177,38 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
         self,
         pipeline_name: str,
         *,
-        hidden_layer_sizes: list[int],
+        batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
+        hidden_layer_sizes: list[int] = [100],
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> LinkPredictionPipelineInfoResult:
         config = convert_to_parameter_space_config(
-            range_keys={"penalty"},
+            range_keys={
+                "batch_size",
+                "focus_weight",
+                "learning_rate",
+                "max_epochs",
+                "min_epochs",
+                "patience",
+                "penalty",
+                "tolerance",
+            },
+            batch_size=batch_size,
+            class_weights=class_weights if class_weights is not None else [],
+            focus_weight=focus_weight,
             hidden_layer_sizes=hidden_layer_sizes,
+            learning_rate=learning_rate,
+            max_epochs=max_epochs,
+            min_epochs=min_epochs,
+            patience=patience,
             penalty=penalty,
+            tolerance=tolerance,
         )
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.linkPrediction.addMLP",
@@ -185,12 +216,27 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
         ).squeeze()
         return LinkPredictionPipelineInfoResult(**result.to_dict())
 
-    def configure_split(self, pipeline_name: str, **config: Any) -> LinkPredictionPipelineInfoResult:
+    def configure_split(
+        self,
+        pipeline_name: str,
+        *,
+        negative_relationship_type: str | None = None,
+        negative_sampling_ratio: float = 1.0,
+        test_fraction: float = 0.1,
+        train_fraction: float = 0.1,
+        validation_folds: int = 3,
+    ) -> LinkPredictionPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.configureSplit",
             params=CallParameters(
                 pipeline_name=pipeline_name,
-                config=ConfigConverter.convert_to_gds_config(**config),
+                config=ConfigConverter.convert_to_gds_config(
+                    negative_relationship_type=negative_relationship_type,
+                    negative_sampling_ratio=negative_sampling_ratio,
+                    test_fraction=test_fraction,
+                    train_fraction=train_fraction,
+                    validation_folds=validation_folds,
+                ),
             ),
         ).squeeze()
         return LinkPredictionPipelineInfoResult(**result.to_dict())

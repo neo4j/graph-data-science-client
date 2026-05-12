@@ -63,14 +63,12 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
             self._pipeline_catalog,
         )
 
-    def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> NodeRegressionPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.addNodeProperty",
             params=CallParameters(
                 pipeline_name=pipeline_name,
-                procedure_name=procedure_name,
+                task_name=task_name,
                 config=ConfigConverter.convert_to_gds_config(**config),
             ),
         ).squeeze()

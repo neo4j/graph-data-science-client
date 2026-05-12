@@ -43,21 +43,21 @@ class NodeClassificationPipeline:
         """Return the pipeline name."""
         return self._name
 
-    def add_node_property(self, procedure_name: str, **config: Any) -> NodeClassificationPipelineInfoResult:
+    def add_node_property(self, task_name: str, **config: Any) -> NodeClassificationPipelineInfoResult:
         """
         Add a node property step to the pipeline.
 
         Parameters
         ----------
-        procedure_name
-            The procedure name of the node property step to add.
+        task_name
+            The task name of the node property step to add.
 
         Returns
         -------
         NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
-        return self._ops.add_node_property(self._name, procedure_name, **config)
+        return self._ops.add_node_property(self._name, task_name, **config)
 
     def select_features(self, node_properties: str | list[str]) -> NodeClassificationPipelineInfoResult:
         """
@@ -180,25 +180,61 @@ class NodeClassificationPipeline:
     def add_mlp(
         self,
         *,
-        hidden_layer_sizes: list[int],
+        batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
+        hidden_layer_sizes: list[int] = [100],
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> NodeClassificationPipelineInfoResult:
         """
         Add a multi-layer perceptron model candidate to the pipeline.
 
         Parameters
         ----------
+        batch_size
+            Batch size to use during training. Pass a two-value tuple to define a parameter range.
+        class_weights
+            Optional class weights to use during training.
+        focus_weight
+            Focus weight for optimization. Pass a two-value tuple to define a parameter range.
         hidden_layer_sizes
             Sizes of the hidden layers in the neural network.
+        learning_rate
+            Learning rate for optimization. Pass a two-value tuple to define a parameter range.
+        max_epochs
+            Maximum number of training epochs. Pass a two-value tuple to define a parameter range.
+        min_epochs
+            Minimum number of training epochs. Pass a two-value tuple to define a parameter range.
+        patience
+            Early stopping patience. Pass a two-value tuple to define a parameter range.
         penalty
             Penalty term to use during training. Pass a two-value tuple to define a parameter range.
+        tolerance
+            Convergence tolerance. Pass a two-value tuple to define a parameter range.
 
         Returns
         -------
         NodeClassificationPipelineInfoResult
             The updated pipeline state.
         """
-        return self._ops.add_mlp(self._name, hidden_layer_sizes=hidden_layer_sizes, penalty=penalty)
+        return self._ops.add_mlp(
+            self._name,
+            batch_size=batch_size,
+            class_weights=class_weights,
+            focus_weight=focus_weight,
+            hidden_layer_sizes=hidden_layer_sizes,
+            learning_rate=learning_rate,
+            max_epochs=max_epochs,
+            min_epochs=min_epochs,
+            patience=patience,
+            penalty=penalty,
+            tolerance=tolerance,
+        )
 
     def configure_split(
         self, *, test_fraction: float = 0.3, validation_folds: int = 3

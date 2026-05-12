@@ -75,15 +75,13 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
             self._pipeline_catalog,
         )
 
-    def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> NodeRegressionPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         result = deserialize_single(
             self._arrow_client.do_action_with_retry(
                 "v2/pipeline.nodeRegression.nodeProperty.add",
                 {
                     "pipelineName": pipeline_name,
-                    "procedureName": procedure_name,
+                    "procedureName": task_name,
                     "procedureConfiguration": ConfigConverter.convert_to_gds_config(**config),
                 },
             )

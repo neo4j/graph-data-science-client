@@ -1,13 +1,4 @@
-from graphdatascience.procedure_surface.api.link_prediction_predict_endpoints import (
-    LinkPredictionPipelinePredictEndpoints,
-    LinkPredictionPipelinePredictMutateResult,
-)
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
-from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
-    NodeClassificationPipelinePredictMutateResult,
-    NodeClassificationPipelinePredictWriteResult,
-)
 from graphdatascience.procedure_surface.api.node_regression_predict_endpoints import (
     NodeRegressionPipelinePredictEndpoints,
     NodeRegressionPipelinePredictMutateResult,
@@ -20,6 +11,10 @@ from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_re
     LinkPredictionPipelineInfoResult,
     LinkPredictionPipelineTrainResult,
 )
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
+    LinkPredictionPipelinePredictEndpoints,
+    LinkPredictionPipelinePredictMutateResult,
+)
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
     NodeClassificationPipeline,
 )
@@ -29,6 +24,11 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
     NodeClassificationPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
+    NodeClassificationPipelinePredictEndpoints,
+    NodeClassificationPipelinePredictMutateResult,
+    NodeClassificationPipelinePredictWriteResult,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline

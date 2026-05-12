@@ -3,12 +3,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import NodeClassificationPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
+    NodeClassificationPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
     NodeClassificationPipelineTrainEndpoints,
@@ -64,7 +64,7 @@ class NodeClassificationPipelineEndpoints(ABC):
 
     @abstractmethod
     def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
+        self, pipeline_name: str, task_name: str, **config: Any
     ) -> NodeClassificationPipelineInfoResult:
         """
         Add a node property step to the pipeline.
@@ -73,8 +73,8 @@ class NodeClassificationPipelineEndpoints(ABC):
         ----------
         pipeline_name
             Name of the pipeline.
-        procedure_name
-            The procedure name of the node property step to add.
+        task_name
+            The task name of the node property step to add.
         config
             Additional configuration for the node property step.
 
@@ -201,8 +201,16 @@ class NodeClassificationPipelineEndpoints(ABC):
         self,
         pipeline_name: str,
         *,
-        hidden_layer_sizes: list[int],
+        batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
+        hidden_layer_sizes: list[int] = [100],
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> NodeClassificationPipelineInfoResult:
         """
         Add a multi-layer perceptron model candidate to the pipeline.
@@ -211,10 +219,26 @@ class NodeClassificationPipelineEndpoints(ABC):
         ----------
         pipeline_name
             Name of the pipeline.
+        batch_size
+            Batch size to use during training. Pass a two-value tuple to define a parameter range.
+        class_weights
+            Optional class weights to use during training.
+        focus_weight
+            Focus weight for optimization. Pass a two-value tuple to define a parameter range.
         hidden_layer_sizes
             Sizes of the hidden layers in the neural network.
+        learning_rate
+            Learning rate for optimization. Pass a two-value tuple to define a parameter range.
+        max_epochs
+            Maximum number of training epochs. Pass a two-value tuple to define a parameter range.
+        min_epochs
+            Minimum number of training epochs. Pass a two-value tuple to define a parameter range.
+        patience
+            Early stopping patience. Pass a two-value tuple to define a parameter range.
         penalty
             Penalty term to use during training. Pass a two-value tuple to define a parameter range.
+        tolerance
+            Convergence tolerance. Pass a two-value tuple to define a parameter range.
 
         Returns
         -------

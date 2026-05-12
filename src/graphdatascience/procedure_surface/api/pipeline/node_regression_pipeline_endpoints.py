@@ -59,9 +59,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         pass
 
     @abstractmethod
-    def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
-    ) -> NodeRegressionPipelineInfoResult:
+    def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         """
         Add a node property step to the pipeline.
 
@@ -69,8 +67,8 @@ class NodeRegressionPipelineEndpoints(ABC):
         ----------
         pipeline_name
             Name of the pipeline.
-        procedure_name
-            The procedure name of the node property step to add.
+        task_name
+            The name of the node property step to add.
         config
             Additional configuration for the node property step.
 

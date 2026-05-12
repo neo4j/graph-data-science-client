@@ -43,21 +43,21 @@ class NodeRegressionPipeline:
         """Return the pipeline name."""
         return self._name
 
-    def add_node_property(self, procedure_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
+    def add_node_property(self, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         """
         Add a node property step to the pipeline.
 
         Parameters
         ----------
-        procedure_name
-            The procedure name of the node property step to add.
+        task_name
+            The name of the node property step to add.
 
         Returns
         -------
         NodeRegressionPipelineInfoResult
             The updated pipeline state.
         """
-        return self._ops.add_node_property(self._name, procedure_name, **config)
+        return self._ops.add_node_property(self._name, task_name, **config)
 
     def select_features(self, feature_properties: str | list[str]) -> NodeRegressionPipelineInfoResult:
         """

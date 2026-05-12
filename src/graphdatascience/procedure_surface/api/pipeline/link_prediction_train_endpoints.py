@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_LABEL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
@@ -19,10 +20,11 @@ class LinkPredictionPipelineTrainEndpoints(ABC):
         pipeline_name: str,
         *,
         model_name: str,
-        metrics: list[str] | None = None,
-        source_node_label: str | None = None,
-        target_node_label: str | None = None,
-        target_relationship_type: str | None = None,
+        metrics: list[str] = ["AUCPR"],
+        negative_class_weight: float = 1.0,
+        source_node_label: str = ALL_LABEL,
+        target_node_label: str = ALL_LABEL,
+        target_relationship_type: str,
         store_model_to_disk: bool = False,
         random_seed: Any | None = None,
         username: str | None = None,
@@ -44,6 +46,8 @@ class LinkPredictionPipelineTrainEndpoints(ABC):
             Name of the trained model.
         metrics
             Metrics to optimize for.
+        negative_class_weight
+            Relative weight assigned to negative training examples.
         source_node_label
             Source node label filter.
         target_node_label
@@ -79,10 +83,11 @@ class LinkPredictionPipelineTrainEndpoints(ABC):
         pipeline_name: str,
         *,
         model_name: str,
-        metrics: list[str] | None = None,
-        source_node_label: str | None = None,
-        target_node_label: str | None = None,
-        target_relationship_type: str | None = None,
+        metrics: list[str] = ["AUCPR"],
+        negative_class_weight: float = 1.0,
+        source_node_label: str = ALL_LABEL,
+        target_node_label: str = ALL_LABEL,
+        target_relationship_type: str,
         store_model_to_disk: bool = False,
         random_seed: Any | None = None,
         username: str | None = None,
@@ -104,6 +109,8 @@ class LinkPredictionPipelineTrainEndpoints(ABC):
             Name of the trained model.
         metrics
             Metrics to optimize for.
+        negative_class_weight
+            Relative weight assigned to negative training examples.
         source_node_label
             Source node label filter.
         target_node_label

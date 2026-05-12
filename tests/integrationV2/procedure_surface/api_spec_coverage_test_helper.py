@@ -49,17 +49,17 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("kcore", "k_core_decomposition"),
         ("maxkcut", "max_k_cut"),
         ("fastrp", "fast_rp"),
-        ("graphSage", "graphsage"),
+        ("beta.graphSage", "graph_sage"),
         ("hashgnn", "hash_gnn"),
         ("astar", "a_star"),
         ("kspanning_tree", "k_spanning_tree"),
         ("prizesteiner_tree", "prize_steiner_tree"),
         ("spanning_tree", "spanning_tree"),
         ("steiner_tree", "steiner_tree"),
-        ("beta.pipeline.node_classification", "pipeline.node_classification"),
-        ("alpha.pipeline.node_classification", "pipeline.node_classification"),
-        ("beta.pipeline.link_prediction", "pipeline.link_prediction"),
-        ("alpha.pipeline.link_prediction", "pipeline.link_prediction"),
+        ("beta.pipeline.nodeClassification", "pipeline.node_classification"),
+        ("alpha.pipeline.nodeClassification", "pipeline.node_classification"),
+        ("beta.pipeline.linkPrediction", "pipeline.link_prediction"),
+        ("alpha.pipeline.linkPrediction", "pipeline.link_prediction"),
         ("alpha.pipeline.nodeRegression", "pipeline.node_regression"),
     ]
 )
@@ -86,6 +86,19 @@ IGNORED_PARAMETERS = {
     ],
     r".*scale_properties.*": ["relationship_types"],
     r".*collapse_path.*": ["relationship_types"],
+}
+
+EXPECTED_PARAMETER_NAME_ALIASES = {
+    r"pipeline\.(node_classification|node_regression|link_prediction)\.create$": {
+        "input": "pipeline_name",
+    },
+    r"pipeline\.(node_classification|node_regression|link_prediction)\.train$": {
+        "pipeline": "pipeline_name",
+    },
+}
+
+IGNORED_ACTUAL_PARAMETERS = {
+    r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
 }
 
 ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
@@ -234,7 +247,26 @@ def verify_configuration_fields(
         expected_configuration["G"] = expected_configuration.pop("graph_name")
 
     method_signature = inspect.signature(callable_object)
-    actual_parameters = method_signature.parameters
+    actual_parameters = dict(method_signature.parameters)
+
+    for endpoint_pattern, aliases in EXPECTED_PARAMETER_NAME_ALIASES.items():
+        if re.match(endpoint_pattern, py_endpoint):
+            for old_name, new_name in aliases.items():
+                if old_name in expected_configuration:
+                    expected_configuration[new_name] = expected_configuration.pop(old_name)
+
+    for endpoint_pattern, ignored_params in IGNORED_ACTUAL_PARAMETERS.items():
+        if re.match(endpoint_pattern, py_endpoint):
+            for ignored_param in ignored_params:
+                actual_parameters.pop(ignored_param, None)
+
+    if any(param.kind is inspect.Parameter.VAR_KEYWORD for param in actual_parameters.values()):
+        actual_parameters = {
+            name: param for name, param in actual_parameters.items() if param.kind is not inspect.Parameter.VAR_KEYWORD
+        }
+        expected_configuration = {
+            name: param for name, param in expected_configuration.items() if param.sourceKind is not SourceKind.CONFIG
+        }
 
     missing_params = expected_configuration.keys() - actual_parameters.keys()
     extra_params = actual_parameters.keys() - expected_configuration.keys()
@@ -274,7 +306,7 @@ def verify_configuration_fields(
             actual_default = None
 
         assert actual_default == expected_default, (
-            f"Mismatching default value for parameter `{name}` at endpoint "
+            f"Mismatching default value for parameter `{name}` (got: {actual_default}, spec: {expected_default}) at endpoint "
             f"`{pythonic_endpoint_name(endpoint_spec.name, endpoint_mappings=endpoint_mappings)}`"
         )
 
@@ -288,9 +320,6 @@ def assert_api_spec_coverage(
     available_endpoints: set[str] = set()
 
     for endpoint_with_modes_spec in gds_api_spec:
-        if "alpha." in endpoint_with_modes_spec.name or "beta." in endpoint_with_modes_spec.name:
-            continue
-
         for endpoint_spec in endpoint_with_modes_spec.callable_modes():
             endpoint_name = pythonic_endpoint_name(
                 endpoint_spec.name,
@@ -316,4 +345,4 @@ def assert_api_spec_coverage(
     assert not newly_available_endpoints, (
         f"Endpoints {newly_available_endpoints} now available, please remove from MISSING_ENDPOINTS"
     )
-    assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"
+    assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)} ({missing_endpoints})"

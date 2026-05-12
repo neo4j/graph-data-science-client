@@ -6,7 +6,7 @@ from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.model.v2.model import Model
 from graphdatascience.model.v2.model_api import ModelApi
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
+from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
     NodeClassificationPipelinePredictMutateResult,
     NodeClassificationPipelinePredictWriteResult,
@@ -32,6 +32,7 @@ class NodeClassificationModelV2(Model):
         *,
         relationship_types: list[str] | None = None,
         target_node_labels: list[str] | None = None,
+        include_predicted_probabilities: bool = False,
         username: str | None = None,
         log_progress: bool = True,
         sudo: bool = False,
@@ -70,6 +71,7 @@ class NodeClassificationModelV2(Model):
             model_name=self.name(),
             relationship_types=relationship_types,
             target_node_labels=target_node_labels,
+            include_predicted_probabilities=include_predicted_probabilities,
             username=username,
             log_progress=log_progress,
             sudo=sudo,

@@ -3,9 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
     NodeClassificationPipeline,
 )
@@ -14,6 +11,9 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
+    NodeClassificationPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
     NodeClassificationPipelineTrainEndpoints,
@@ -70,13 +70,13 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
         )
 
     def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
+        self, pipeline_name: str, task_name: str, **config: Any
     ) -> NodeClassificationPipelineInfoResult:
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.addNodeProperty",
             params=CallParameters(
                 pipeline_name=pipeline_name,
-                procedure_name=procedure_name,
+                task_name=task_name,
                 config=ConfigConverter.convert_to_gds_config(**config),
             ),
         ).squeeze()
@@ -171,13 +171,38 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
         self,
         pipeline_name: str,
         *,
-        hidden_layer_sizes: list[int],
+        batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
+        hidden_layer_sizes: list[int] = [100],
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> NodeClassificationPipelineInfoResult:
         config = convert_to_parameter_space_config(
-            range_keys={"penalty"},
+            range_keys={
+                "batch_size",
+                "focus_weight",
+                "learning_rate",
+                "max_epochs",
+                "min_epochs",
+                "patience",
+                "penalty",
+                "tolerance",
+            },
+            batch_size=batch_size,
+            class_weights=class_weights if class_weights is not None else [],
+            focus_weight=focus_weight,
             hidden_layer_sizes=hidden_layer_sizes,
+            learning_rate=learning_rate,
+            max_epochs=max_epochs,
+            min_epochs=min_epochs,
+            patience=patience,
             penalty=penalty,
+            tolerance=tolerance,
         )
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeClassification.addMLP",

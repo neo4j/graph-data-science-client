@@ -2,6 +2,7 @@ from graphdatascience.datasets.graph_constructor_func import GraphConstructorFun
 from graphdatascience.datasets.ogb_loader import OGBLLoader, OGBNLoader
 from graphdatascience.datasets.simple_file_loader import SimpleDatasetLoader
 from graphdatascience.graph.v2 import GraphV2
+from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 
 
 class DatasetEndpoints:
@@ -26,7 +27,7 @@ class DatasetEndpoints:
             A handle to the graph.
         """
         nodes, rels = self._simple_dataset_loader.cora()
-        undirected_relationship_types: list[str] = ["*"] if undirected else []
+        undirected_relationship_types: list[str] = ALL_TYPES if undirected else []
         return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
     def load_karate_club(self, graph_name: str = "karate_club", undirected: bool = False) -> GraphV2:
@@ -46,7 +47,7 @@ class DatasetEndpoints:
             A handle to the graph.
         """
         nodes, rels = self._simple_dataset_loader.karate_club()
-        undirected_relationship_types = ["*"] if undirected else []
+        undirected_relationship_types = ALL_TYPES if undirected else []
 
         return self.construct(graph_name, nodes, rels, undirected_relationship_types=undirected_relationship_types)
 
@@ -71,7 +72,7 @@ class DatasetEndpoints:
         """
         node_dfs, rel_dfs = self._simple_dataset_loader.imdb()
         # Default undirected which matches raw data
-        undirected_relationship_types = ["*"] if undirected else []
+        undirected_relationship_types = ALL_TYPES if undirected else []
 
         return self.construct(
             graph_name, node_dfs, rel_dfs, undirected_relationship_types=undirected_relationship_types

@@ -13,10 +13,16 @@ from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpo
 @runtime_checkable
 class LinkPredictionPipelineOps(Protocol):
     def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
+        self, pipeline_name: str, task_name: str, **config: Any
     ) -> LinkPredictionPipelineInfoResult: ...
 
-    def add_feature(self, pipeline_name: str, feature_type: str, **config: Any) -> LinkPredictionPipelineInfoResult: ...
+    def add_feature(
+        self,
+        pipeline_name: str,
+        feature_type: str,
+        *,
+        node_properties: list[str],
+    ) -> LinkPredictionPipelineInfoResult: ...
 
     def add_logistic_regression(
         self,
@@ -37,6 +43,7 @@ class LinkPredictionPipelineOps(Protocol):
         self,
         pipeline_name: str,
         *,
+        criterion: str | None = "GINI",
         max_depth: int | tuple[int, int] = 2147483647,
         max_features_ratio: float | tuple[float, float] | None = None,
         min_leaf_size: int | tuple[int, int] = 1,
@@ -49,11 +56,28 @@ class LinkPredictionPipelineOps(Protocol):
         self,
         pipeline_name: str,
         *,
-        hidden_layer_sizes: list[int],
+        batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
+        hidden_layer_sizes: list[int] = [100],
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> LinkPredictionPipelineInfoResult: ...
 
-    def configure_split(self, pipeline_name: str, **config: Any) -> LinkPredictionPipelineInfoResult: ...
+    def configure_split(
+        self,
+        pipeline_name: str,
+        *,
+        negative_relationship_type: str | None = None,
+        negative_sampling_ratio: float = 1.0,
+        test_fraction: float = 0.1,
+        train_fraction: float = 0.1,
+        validation_folds: int = 3,
+    ) -> LinkPredictionPipelineInfoResult: ...
 
     def configure_auto_tuning(
         self, pipeline_name: str, *, max_trials: int = 10

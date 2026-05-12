@@ -13,7 +13,7 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_train_e
 @runtime_checkable
 class NodeClassificationPipelineOps(Protocol):
     def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
+        self, pipeline_name: str, task_name: str, **config: Any
     ) -> NodeClassificationPipelineInfoResult: ...
 
     def select_features(
@@ -52,8 +52,16 @@ class NodeClassificationPipelineOps(Protocol):
         self,
         pipeline_name: str,
         *,
-        hidden_layer_sizes: list[int],
+        batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
+        hidden_layer_sizes: list[int] = [100],
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> NodeClassificationPipelineInfoResult: ...
 
     def configure_split(

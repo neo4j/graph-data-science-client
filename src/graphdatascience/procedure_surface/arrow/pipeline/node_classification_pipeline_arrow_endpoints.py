@@ -5,9 +5,6 @@ from typing import Any
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-from graphdatascience.procedure_surface.api.node_classification_predict_endpoints import (
-    NodeClassificationPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
     NodeClassificationPipeline,
 )
@@ -16,6 +13,9 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
+    NodeClassificationPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
     NodeClassificationPipelineTrainEndpoints,
@@ -91,14 +91,14 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         )
 
     def add_node_property(
-        self, pipeline_name: str, procedure_name: str, **config: Any
+        self, pipeline_name: str, task_name: str, **config: Any
     ) -> NodeClassificationPipelineInfoResult:
         result = deserialize_single(
             self._arrow_client.do_action_with_retry(
                 "v2/pipeline.nodeClassification.nodeProperty.add",
                 {
                     "pipelineName": pipeline_name,
-                    "procedureName": procedure_name,
+                    "procedureName": task_name,
                     "procedureConfiguration": ConfigConverter.convert_to_gds_config(**config),
                 },
             )
@@ -187,14 +187,39 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         self,
         pipeline_name: str,
         *,
-        hidden_layer_sizes: list[int],
+        batch_size: int | tuple[int, int] = 100,
+        class_weights: list[float] | None = None,
+        focus_weight: float | tuple[float, float] = 0.0,
+        hidden_layer_sizes: list[int] = [100],
+        learning_rate: float | tuple[float, float] = 0.001,
+        max_epochs: int | tuple[int, int] = 100,
+        min_epochs: int | tuple[int, int] = 1,
+        patience: int | tuple[int, int] = 1,
         penalty: float | tuple[float, float] = 0.0,
+        tolerance: float | tuple[float, float] = 0.001,
     ) -> NodeClassificationPipelineInfoResult:
         config = convert_to_parameter_space_config(
-            range_keys={"penalty"},
+            range_keys={
+                "batch_size",
+                "focus_weight",
+                "learning_rate",
+                "max_epochs",
+                "min_epochs",
+                "patience",
+                "penalty",
+                "tolerance",
+            },
             model_type="MLP",
+            batch_size=batch_size,
+            class_weights=class_weights if class_weights is not None else [],
+            focus_weight=focus_weight,
             hidden_layer_sizes=hidden_layer_sizes,
+            learning_rate=learning_rate,
+            max_epochs=max_epochs,
+            min_epochs=min_epochs,
+            patience=patience,
             penalty=penalty,
+            tolerance=tolerance,
         )
         result = self._call_action("modelCandidate.add", pipeline_name=pipeline_name, **config)
         return NodeClassificationPipelineInfoResult(**result)

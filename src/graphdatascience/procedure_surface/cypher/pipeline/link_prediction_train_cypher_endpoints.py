@@ -5,12 +5,12 @@ from typing import Any
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.link_prediction_predict_endpoints import (
-    LinkPredictionPipelinePredictEndpoints,
-)
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
     LinkPredictionPipelineTrainResult,
+)
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
+    LinkPredictionPipelinePredictEndpoints,
 )
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpoints import (
     LinkPredictionPipelineTrainEndpoints,
@@ -31,10 +31,11 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
         pipeline_name: str,
         *,
         model_name: str,
-        metrics: list[str] | None = None,
-        source_node_label: str | None = None,
-        target_node_label: str | None = None,
-        target_relationship_type: str | None = None,
+        metrics: list[str] = ["AUCPR"],
+        negative_class_weight: float = 1.0,
+        source_node_label: str = "*",
+        target_node_label: str = "*",
+        target_relationship_type: str,
         store_model_to_disk: bool = False,
         random_seed: Any | None = None,
         username: str | None = None,
@@ -46,6 +47,7 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
         config = ConfigConverter.convert_to_gds_config(
             metrics=metrics,
             model_name=model_name,
+            negative_class_weight=negative_class_weight,
             pipeline=pipeline_name,
             source_node_label=source_node_label,
             target_node_label=target_node_label,
@@ -80,10 +82,11 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
         pipeline_name: str,
         *,
         model_name: str,
-        metrics: list[str] | None = None,
-        source_node_label: str | None = None,
-        target_node_label: str | None = None,
-        target_relationship_type: str | None = None,
+        metrics: list[str] = ["AUCPR"],
+        negative_class_weight: float = 1.0,
+        source_node_label: str = "*",
+        target_node_label: str = "*",
+        target_relationship_type: str,
         store_model_to_disk: bool = False,
         random_seed: Any | None = None,
         username: str | None = None,
@@ -95,6 +98,7 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
         config = ConfigConverter.convert_to_gds_config(
             metrics=metrics,
             model_name=model_name,
+            negative_class_weight=negative_class_weight,
             pipeline=pipeline_name,
             source_node_label=source_node_label,
             target_node_label=target_node_label,

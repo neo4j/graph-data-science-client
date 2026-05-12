@@ -33,6 +33,7 @@ def test_node_classification_predict_stream_forces_probability_distribution() ->
         result = NodeClassificationPredictArrowEndpoints(arrow_client, None).stream(
             graph,
             model_name="model",
+            include_predicted_probabilities=False,
         )
 
     assert result.equals(expected)
@@ -42,7 +43,7 @@ def test_node_classification_predict_stream_forces_probability_distribution() ->
         {
             "graphName": "g",
             "modelName": "model",
-            "includePredictedProbabilities": True,
+            "includePredictedProbabilities": False,
             "logProgress": True,
             "sudo": False,
         },
@@ -154,7 +155,17 @@ def test_node_classification_add_mlp_runs_arrow_action() -> None:
     arrow_client.do_action_with_retry.return_value = [row]
 
     result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).add_mlp(
-        "pipe", hidden_layer_sizes=[64, 16, 4], penalty=0.1
+        "pipe",
+        batch_size=256,
+        class_weights=[0.2, 0.8],
+        focus_weight=0.3,
+        hidden_layer_sizes=[64, 16, 4],
+        learning_rate=0.01,
+        max_epochs=12,
+        min_epochs=2,
+        patience=4,
+        penalty=0.1,
+        tolerance=0.0002,
     )
 
     assert result.name == "pipe"
@@ -163,7 +174,27 @@ def test_node_classification_add_mlp_runs_arrow_action() -> None:
         {
             "pipelineName": "pipe",
             "modelType": "MLP",
+            "batchSize": 256,
+            "classWeights": [0.2, 0.8],
+            "focusWeight": 0.3,
             "hiddenLayerSizes": [64, 16, 4],
+            "learningRate": 0.01,
+            "maxEpochs": 12,
+            "minEpochs": 2,
+            "patience": 4,
             "penalty": 0.1,
+            "tolerance": 0.0002,
         },
     )
+
+
+def test_node_classification_add_mlp_uses_default_hidden_layer_sizes() -> None:
+    arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
+    row = mock.Mock()
+    row.body.to_pybytes.return_value = b'{"name":"pipe","featureProperties":[]}'
+    arrow_client.do_action_with_retry.return_value = [row]
+
+    result = NodeClassificationPipelineArrowEndpoints(arrow_client, None).add_mlp("pipe")
+
+    assert result.name == "pipe"
+    assert arrow_client.do_action_with_retry.call_args.args[1]["hiddenLayerSizes"] == [100]
