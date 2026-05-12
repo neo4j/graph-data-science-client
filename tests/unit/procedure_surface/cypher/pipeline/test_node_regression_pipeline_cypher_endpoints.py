@@ -97,7 +97,7 @@ def test_node_regression_add_node_property_runs_query_with_config() -> None:
     )
 
     assert result.name == "pipe"
-    assert query_runner.call_procedure.call_args.kwargs["params"]["procedure_name"] == "pageRank"
+    assert query_runner.call_procedure.call_args.kwargs["params"]["task_name"] == "pageRank"
     assert query_runner.call_procedure.call_args.kwargs["params"]["config"] == {
         "mutateProperty": "pr",
         "maxIterations": 10,
