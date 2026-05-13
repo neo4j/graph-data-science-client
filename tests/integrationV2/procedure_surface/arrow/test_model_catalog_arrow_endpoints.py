@@ -145,6 +145,15 @@ def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
         model_catalog.load("nonexistent-model")
 
 
+def test_publish_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:
+    published = model_catalog.publish(gs_model_name)
+    assert published is not None
+    assert published.published
+
+    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
+        model_catalog.publish("nonexistent-model")
+
+
 def test_delete_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:
     model_catalog.store(gs_model_name)
 

@@ -133,3 +133,18 @@ class ModelCatalogEndpoints(ABC):
         ModelStoreResult
             The store result.
         """
+
+    @abstractmethod
+    def publish(self, model_name: str) -> ModelDetails:
+        """Publish a model so it becomes accessible to other users.
+
+        Parameters
+        ----------
+        model_name: str
+            Name of the model.
+
+        Returns
+        -------
+        ModelDetails
+            The details of the published model.
+        """
