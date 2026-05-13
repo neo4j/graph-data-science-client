@@ -87,6 +87,7 @@ IGNORED_EXPECTED_PARAMETERS = {
     r".*scale_properties.*": ["relationship_types"],
     r".*collapse_path.*": ["relationship_types"],
     r"graph.drop": ["username", "db_name"],
+    r"graph.generate": ["relationship_count", "validate_relationships"],
 }
 
 EXPECTED_PARAMETER_NAME_ALIASES = {
@@ -130,11 +131,16 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
     "pipeline.drop": {
         "fail_if_missing": False,
     },
+    "graph.generate": {
+        "read_concurrency": None,
+    },
+    "graph.list": {"G": None},
 }
 
 # per endpoint from original to actual
 ADJUSTED_RETURN_FIELDS: dict[str, dict[str, str]] = {
-    "graph.drop": {"schema": "graph_schema", "schema_with_orientation": "graph_schema"}
+    "graph.drop": {"schema": "graph_schema", "schema_with_orientation": "graph_schema"},
+    "graph.list": {"schema": "graph_schema", "schema_with_orientation": "graph_schema"},
 }
 
 
@@ -268,7 +274,6 @@ def verify_configuration_fields(
                 if old_name in expected_configuration:
                     expected_configuration[new_name] = expected_configuration.pop(old_name)
 
-
     for endpoint_pattern, ignored_params in IGNORED_ACTUAL_PARAMETERS.items():
         if re.match(endpoint_pattern, py_endpoint):
             for ignored_param in ignored_params:
@@ -282,11 +287,16 @@ def verify_configuration_fields(
             name: param for name, param in expected_configuration.items() if param.sourceKind is not SourceKind.CONFIG
         }
 
-    if "graph_name" in expected_configuration and "from_graph_name" not in expected_configuration:
+    if (
+        "graph_name" in expected_configuration
+        and "from_graph_name" not in expected_configuration
+        and "G" in actual_parameters
+        and "graph_name" not in actual_parameters
+    ):
         expected_configuration["G"] = expected_configuration.pop("graph_name")
-    if "from_graph_name" in expected_configuration:
+    if "from_graph_name" in expected_configuration and "G" in actual_parameters:
         expected_configuration["G"] = expected_configuration.pop("from_graph_name")
-    if "graph_name_or_list_of_graph_names" in expected_configuration:
+    if "graph_name_or_list_of_graph_names" in expected_configuration and "G" in actual_parameters:
         expected_configuration["G"] = expected_configuration.pop("graph_name_or_list_of_graph_names")
 
     missing_params = expected_configuration.keys() - actual_parameters.keys()

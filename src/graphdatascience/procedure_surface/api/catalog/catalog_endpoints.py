@@ -14,7 +14,10 @@ from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo,
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
-from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import RelationshipsEndpoints
+from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
+    Aggregation,
+    RelationshipsEndpoints,
+)
 
 
 class CatalogEndpoints(ABC):
@@ -163,11 +166,12 @@ class CatalogEndpoints(ABC):
         node_count: int,
         average_degree: float,
         *,
-        relationship_distribution: str | None = None,
+        aggregation: Aggregation = Aggregation.NONE,
+        relationship_distribution: str = "UNIFORM",
         relationship_seed: int | None = None,
         relationship_property: RelationshipPropertySpec | None = None,
-        orientation: str | None = None,
-        allow_self_loops: bool | None = None,
+        orientation: str = "NATURAL",
+        allow_self_loops: bool = False,
         read_concurrency: int | None = None,
         job_id: str | None = None,
         sudo: bool = False,
@@ -185,15 +189,17 @@ class CatalogEndpoints(ABC):
             The number of nodes in the generated graph
         average_degree : float
             The average out-degree of the generated nodes
-        relationship_distribution : str | None, default=None
+        aggregation : Aggregation, default=Aggregation.NONE
+            Determines how parallel relationships are aggregated.
+        relationship_distribution : str, default="UNIFORM"
             Determines the relationship distribution strategy.
         relationship_seed : int | None, default=None
             Seed value for generating deterministic relationships.
         relationship_property : RelationshipPropertySpec | None, default=None
             Configure generated relationship properties.
-        orientation : str | None, default=None
+        orientation : str, default="NATURAL"
             Specifies the orientation of the generated relationships.
-        allow_self_loops : bool | None, default=None
+        allow_self_loops : bool, default=False
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         read_concurrency : int | None, default=None
             Number of concurrent threads/processes to use during graph generation.

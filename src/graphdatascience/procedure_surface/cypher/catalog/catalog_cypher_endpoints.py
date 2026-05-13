@@ -12,6 +12,7 @@ from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog import (
+    Aggregation,
     NodeLabelEndpoints,
     NodePropertiesEndpoints,
     RelationshipsEndpoints,
@@ -198,11 +199,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         node_count: int,
         average_degree: float,
         *,
-        relationship_distribution: str | None = None,
+        aggregation: Aggregation = Aggregation.NONE,
+        relationship_distribution: str = "UNIFORM",
         relationship_seed: int | None = None,
         relationship_property: RelationshipPropertySpec | None = None,
-        orientation: str | None = None,
-        allow_self_loops: bool | None = None,
+        orientation: str = "NATURAL",
+        allow_self_loops: bool = False,
         read_concurrency: int | None = None,
         job_id: str | None = None,
         sudo: bool = False,
@@ -210,6 +212,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         username: str | None = None,
     ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(
+            aggregation=aggregation,
             relationship_distribution=relationship_distribution,
             relationship_seed=relationship_seed,
             relationship_property=relationship_property.model_dump(by_alias=True) if relationship_property else None,
