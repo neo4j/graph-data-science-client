@@ -13,7 +13,7 @@ class ModelDetails(BaseModel, alias_generator=to_camel):
     loaded: bool
     stored: bool
     published: bool
-    model_info: dict[str, Any]  # TODO better typing in actual model?
+    model_info: dict[str, Any]
     creation_time: datetime.datetime
 
     def __getitem__(self, item: str) -> Any:

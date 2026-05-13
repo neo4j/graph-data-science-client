@@ -19,20 +19,29 @@ from tests.integrationV2.procedure_surface.gds_api_spec import (
 # endpoints not mapped yet in the v2 endpoints of the python client
 UNMAPPED_ENDPOINTS: set[str] = {
     "dag.topological_sort.stream",
+    "graph.exists",
+    "graph.export",
+    "graph.export.csv",
+    "graph.node_property.stream",  # exposed via node_properties
+    "graph.relationship.write",
+    "graph.relationship_properties.stream",  # exposed via relationships.stream endpoint
+    "graph.relationship_properties.write",  # exposed via relationships.write endpoint
+    "graph.relationship_property.stream",  # exposed via relationships.stream endpoint
     "hits.mutate",
-    "hits.stream",
     "hits.stats",
+    "hits.stream",
     "hits.write",
+    "internal.graph.size_of",  # internal only
+    "list",  # listing only available endpoints
+    "memory.list",
+    "memory.summary",
     "ml.kge.predict.mutate",
     "ml.kge.predict.stream",
     "ml.kge.predict.write",
+    "random_walk.mutate",
     "random_walk.stats",
     "random_walk.stream",
-    "random_walk.mutate",
     "split_relationships.mutate",
-    "memory.summary",
-    "memory.list",
-    "list",  # listing only available endpoints
     "user_log",
 }
 
@@ -53,6 +62,7 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("hashgnn", "hash_gnn"),
         ("astar", "a_star"),
         ("kspanning_tree", "k_spanning_tree"),
+        ("nodeLabel", "node_labels"),
         ("prizesteiner_tree", "prize_steiner_tree"),
         ("spanning_tree", "spanning_tree"),
         ("steiner_tree", "steiner_tree"),
@@ -89,6 +99,7 @@ IGNORED_EXPECTED_PARAMETERS = {
     r"graph.drop": ["username", "db_name"],
     r"graph.generate": ["relationship_count", "validate_relationships"],
     r"graph\.node_properties\.drop": ["log_progress", "sudo"],
+    r"model\.list": ["model_name"],
 }
 
 EXPECTED_PARAMETER_NAME_ALIASES = {
@@ -101,6 +112,7 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
 }
 
 IGNORED_ACTUAL_PARAMETERS = {
+    r"graph\.drop": ["db_name", "username"],
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
     r"graph\.node_properties\.stream": ["db_node_properties", "job_id"],
     r"graph\.relationships\.stream": ["relationship_properties"],
@@ -134,6 +146,9 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
     "pipeline.drop": {
         "fail_if_missing": False,
     },
+    "model.drop": {
+        "fail_if_missing": False,
+    },
     "graph.generate": {
         "read_concurrency": None,
     },
@@ -144,6 +159,8 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
 ADJUSTED_RETURN_FIELDS: dict[str, dict[str, str]] = {
     "graph.drop": {"schema": "graph_schema", "schema_with_orientation": "graph_schema"},
     "graph.list": {"schema": "graph_schema", "schema_with_orientation": "graph_schema"},
+    "model.drop": {"model_name": "name", "model_type": "type"},
+    "model.list": {"model_name": "name", "model_type": "type"},
 }
 
 
