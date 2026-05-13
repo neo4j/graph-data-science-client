@@ -58,7 +58,7 @@ def network() -> Generator[Network, None, None]:
 
 
 def start_session(
-    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, network: Network
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, network: Network, request: pytest.FixtureRequest
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
         uri_parts = session_uri.split(":")
@@ -109,7 +109,11 @@ def start_session(
             if inside_ci():
                 print(f"Session container logs:\n{stdout}")
 
-            out_file = logs_dir / "session_container.log"
+            session_logs_dir = logs_dir / request.node.name
+            session_logs_dir.mkdir(parents=True, exist_ok=True)
+            session_logs_dir.chmod(0o777)
+
+            out_file = session_logs_dir / "session_container.log"
             with open(out_file, "w") as f:
                 f.write(stdout.decode("utf-8"))
 

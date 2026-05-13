@@ -16,9 +16,9 @@ from tests.integrationV2.procedure_surface.conftest import (
 
 @pytest.fixture(scope="package")
 def session_connection(
-    network: Network, tmp_path_factory: pytest.TempPathFactory, logs_dir: Path
+    network: Network, tmp_path_factory: pytest.TempPathFactory, logs_dir: Path, request: pytest.FixtureRequest
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
-    yield from start_session(logs_dir, tmp_path_factory, network)
+    yield from start_session(logs_dir, tmp_path_factory, network, request)
 
 
 @pytest.fixture(scope="package")
@@ -27,8 +27,10 @@ def arrow_client(session_connection: GdsSessionConnectionInfo) -> AuthenticatedA
 
 
 @pytest.fixture(scope="package")
-def neo4j_connection(network: Network, logs_dir: Path) -> Generator[DbmsConnectionInfo, None, None]:
-    yield from start_database(logs_dir, network)
+def neo4j_connection(
+    network: Network, logs_dir: Path, request: pytest.FixtureRequest
+) -> Generator[DbmsConnectionInfo, None, None]:
+    yield from start_database(logs_dir, network, request)
 
 
 @pytest.fixture(scope="package")

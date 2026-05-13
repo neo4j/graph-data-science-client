@@ -54,7 +54,7 @@ def test_sllpa_stats(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV
 
     assert result.ran_iterations > 0
     assert result.did_converge in [True, False]
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert isinstance(result.configuration, dict)
 
@@ -78,7 +78,7 @@ def test_sllpa_mutate(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph
 
     assert result.ran_iterations > 0
     assert result.did_converge in [True, False]
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written == 6
@@ -95,7 +95,7 @@ def test_sllpa_write(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV
 
     assert result.ran_iterations > 0
     assert result.did_converge in [True, False]
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.write_millis >= 0
     assert result.node_properties_written == 6

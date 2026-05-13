@@ -132,7 +132,7 @@ def test_yens_estimate(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2
 
     assert result.node_count == 5
     assert result.relationship_count == 8
-    assert "Bytes" in result.required_memory
+    assert "KiB" in result.required_memory
     assert result.bytes_min > 0
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0

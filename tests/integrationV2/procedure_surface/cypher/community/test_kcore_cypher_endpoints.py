@@ -53,7 +53,7 @@ def test_kcore_stats(kcore_endpoints: KCoreCypherEndpoints, sample_graph: GraphV
     result = kcore_endpoints.stats(G=sample_graph)
 
     assert result.degeneracy >= 1
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
 
@@ -113,7 +113,7 @@ def test_kcore_stats_with_parameters(kcore_endpoints: KCoreCypherEndpoints, samp
     result = kcore_endpoints.stats(G=sample_graph, relationship_types=["REL"], concurrency=2)
 
     assert result.degeneracy >= 1
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
 

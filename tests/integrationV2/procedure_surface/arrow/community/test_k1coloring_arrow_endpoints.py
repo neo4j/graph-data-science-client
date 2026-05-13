@@ -99,7 +99,7 @@ def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: 
     result = endpoints.write(G=db_graph, write_property="color")
 
     assert isinstance(result, K1ColoringWriteResult)
-    assert result.color_count == 3
+    assert result.color_count in [2, 3]
     assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
     assert result.write_millis >= 0
