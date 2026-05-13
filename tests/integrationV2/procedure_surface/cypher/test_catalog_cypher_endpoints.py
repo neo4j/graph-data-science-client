@@ -159,6 +159,44 @@ def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: G
     assert result.project_millis >= 0
 
 
+def test_graph_filter_with_parameters_sudo_and_username(
+    catalog_endpoints: CatalogCypherEndpoints, query_runner: Neo4jQueryRunner
+) -> None:
+    create_statement = """
+    CREATE
+    (a: Node:A {id: 0}),
+    (b: Node:A {id: 1}),
+    (c: Node:B {id: 2}),
+    (a)-[:REL]->(c)
+    """
+
+    query_runner.run_cypher(create_statement, QueryType.USER_ACTION)
+
+    try:
+        sample_graph, _ = catalog_endpoints.project("g_with_props", ["A", "B"], "REL", node_properties=["id"])
+        G, result = catalog_endpoints.filter(
+            sample_graph,
+            graph_name="filtered",
+            node_filter="n.id >= $min_id",
+            relationship_filter="*",
+            parameters={"min_id": 1},
+            sudo=True,
+            username="neo4j",
+        )
+
+        assert G.name() == "filtered"
+        assert result.node_count == 2
+        assert result.relationship_count == 0
+        assert result.from_graph_name == sample_graph.name()
+        assert result.graph_name == "filtered"
+        assert result.node_filter == "n.id >= $min_id"
+        assert result.relationship_filter == "*"
+    finally:
+        catalog_endpoints.drop("filtered", fail_if_missing=False)
+        catalog_endpoints.drop("g_with_props", fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
+
+
 def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
     """Test that the sample property returns GraphSamplingCypherEndpoints."""
     sample_endpoints = catalog_endpoints.sample

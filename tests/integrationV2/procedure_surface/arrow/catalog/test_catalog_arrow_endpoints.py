@@ -155,6 +155,43 @@ def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Gr
             pass
 
 
+def test_graph_filter_with_parameters_sudo_and_username(
+    catalog_endpoints: CatalogArrowEndpoints, arrow_client: AuthenticatedArrowClient
+) -> None:
+    gdl = """
+    (a :Node:A {id: 0})
+    (b :Node:A {id: 1})
+    (c :Node:B {id: 2})
+    (a)-[:REL]->(c)
+    """
+
+    with create_graph(arrow_client, "g_with_props", gdl) as sample_graph:
+        try:
+            G, result = catalog_endpoints.filter(
+                sample_graph,
+                graph_name="filtered",
+                node_filter="n.id >= $min_id",
+                relationship_filter="*",
+                parameters={"min_id": 1},
+                sudo=True,
+                username="neo4j",
+            )
+
+            assert G.name() == "filtered"
+            assert result.node_count == 2
+            assert result.relationship_count == 0
+            assert result.from_graph_name == sample_graph.name()
+            assert result.graph_name == "filtered"
+            assert result.node_filter == "n.id >= $min_id"
+            assert result.relationship_filter == "*"
+        finally:
+            try:
+                catalog_endpoints.drop("filtered", fail_if_missing=False)
+            except FlightServerError:
+                # There is currently a bug in GDS that throws when deleting a GDL graph
+                pass
+
+
 def test_graph_generate_with_relationships_property(catalog_endpoints: CatalogArrowEndpoints) -> None:
     G, result = catalog_endpoints.generate(
         "generated",

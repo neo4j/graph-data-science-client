@@ -122,6 +122,9 @@ class CatalogEndpoints(ABC):
         relationship_filter: str,
         concurrency: int | None = None,
         job_id: str | None = None,
+        parameters: dict[str, Any] | None = None,
+        sudo: bool = False,
+        username: str | None = None,
     ) -> GraphWithFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
@@ -139,6 +142,12 @@ class CatalogEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
+        parameters
+            A map of user-defined query parameters that are passed into the node and relationship filters.
+        sudo
+            Whether to run the operation with elevated privileges.
+        username
+            The user name to impersonate for the operation.
 
         Returns
         -------

@@ -48,10 +48,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     GDS_REMOTE_PROJECTION_PROC_NAME = "gds.arrow.project"
 
     def __init__(
-        self,
-        arrow_client: AuthenticatedArrowClient,
-        query_runner: QueryRunner | None = None,
-        show_progress: bool = False,
+            self,
+            arrow_client: AuthenticatedArrowClient,
+            query_runner: QueryRunner | None = None,
+            show_progress: bool = False,
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
@@ -67,16 +67,16 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         return get_graph(graph_name, self._arrow_client)
 
     def project(
-        self,
-        graph_name: str,
-        query: str,
-        *,
-        job_id: str | None = None,
-        concurrency: int | None = None,
-        undirected_relationship_types: builtins.list[str] | None = None,
-        inverse_indexed_relationship_types: builtins.list[str] | None = None,
-        batch_size: int | None = None,
-        logging: bool = True,
+            self,
+            graph_name: str,
+            query: str,
+            *,
+            job_id: str | None = None,
+            concurrency: int | None = None,
+            undirected_relationship_types: builtins.list[str] | None = None,
+            inverse_indexed_relationship_types: builtins.list[str] | None = None,
+            batch_size: int | None = None,
+            logging: bool = True,
     ) -> GraphWithProjectResult:
         """
         Projects a graph from the Neo4j database into the GDS graph catalog.
@@ -143,12 +143,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
 
     def construct(
-        self,
-        graph_name: str,
-        nodes: DataFrame | list[DataFrame],
-        relationships: DataFrame | list[DataFrame] | None = None,
-        concurrency: int | None = None,
-        undirected_relationship_types: list[str] | None = None,
+            self,
+            graph_name: str,
+            nodes: DataFrame | list[DataFrame],
+            relationships: DataFrame | list[DataFrame] | None = None,
+            concurrency: int | None = None,
+            undirected_relationship_types: list[str] | None = None,
     ) -> GraphV2:
         gds_arrow_client = GdsArrowClient(self._arrow_client)
         job_client = JobClient()
@@ -221,13 +221,17 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         return self._graph_backend.drop(graph_name, fail_if_missing)
 
     def filter(
-        self,
-        G: GraphV2,
-        graph_name: str,
-        node_filter: str,
-        relationship_filter: str,
-        concurrency: int | None = None,
-        job_id: str | None = None,
+            self,
+            G: GraphV2,
+            graph_name: str,
+            node_filter: str,
+            relationship_filter: str,
+            concurrency: int | None = None,
+            job_id: str | None = None,
+            parameters: dict[str, Any] | None = None,
+            sudo: bool = False,
+            username: str | None = None,
+            log_progress: bool = True,
     ) -> GraphWithFilterResult:
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
@@ -236,10 +240,15 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             relationship_filter=relationship_filter,
             concurrency=concurrency,
             job_id=job_id,
+            sudo=sudo,
+            username=username,
+            log_progress=log_progress,
         )
+        if parameters is not None:
+            config["parameters"] = parameters
 
         job_id = JobClient.run_job_and_wait(
-            self._arrow_client, "v2/graph.project.filter", config, show_progress=self._show_progress
+            self._arrow_client, "v2/graph.project.filter", config, show_progress=log_progress and self._show_progress
         )
 
         return GraphWithFilterResult(
@@ -248,21 +257,21 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         )
 
     def generate(
-        self,
-        graph_name: str,
-        node_count: int,
-        average_degree: float,
-        *,
-        relationship_distribution: str | None = None,
-        relationship_seed: int | None = None,
-        relationship_property: RelationshipPropertySpec | None = None,
-        orientation: str | None = None,
-        allow_self_loops: bool | None = None,
-        read_concurrency: int | None = None,
-        job_id: str | None = None,
-        sudo: bool = False,
-        log_progress: bool = True,
-        username: str | None = None,
+            self,
+            graph_name: str,
+            node_count: int,
+            average_degree: float,
+            *,
+            relationship_distribution: str | None = None,
+            relationship_seed: int | None = None,
+            relationship_property: RelationshipPropertySpec | None = None,
+            orientation: str | None = None,
+            allow_self_loops: bool | None = None,
+            read_concurrency: int | None = None,
+            job_id: str | None = None,
+            sudo: bool = False,
+            log_progress: bool = True,
+            username: str | None = None,
     ) -> GraphWithGenerationStats:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
@@ -358,9 +367,9 @@ class GraphWithProjectResult(NamedTuple):
         return self.graph
 
     def __exit__(
-        self,
-        exception_type: Type[BaseException] | None,
-        exception_value: BaseException | None,
-        traceback: TracebackType | None,
+            self,
+            exception_type: Type[BaseException] | None,
+            exception_value: BaseException | None,
+            traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()

@@ -164,12 +164,19 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         relationship_filter: str,
         concurrency: int | None = None,
         job_id: str | None = None,
+        parameters: dict[str, Any] | None = None,
+        sudo: bool = False,
+        username: str | None = None,
         log_progress: bool = True,
     ) -> GraphWithFilterResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             jobId=job_id,
+            sudo=sudo,
+            username=username,
         )
+        if parameters is not None:
+            config["parameters"] = parameters
 
         params = CallParameters(
             graph_name=graph_name,

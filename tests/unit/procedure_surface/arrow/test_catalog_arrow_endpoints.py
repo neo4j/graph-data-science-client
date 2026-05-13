@@ -89,6 +89,59 @@ def test_construct_with_df_lists(mocker: MockerFixture) -> None:
         assert G.name() == "g"
 
 
+def test_filter_passes_parameters_sudo_and_username(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    endpoints = CatalogArrowEndpoints(arrow_client)
+    graph = mocker.Mock()
+    graph.name.return_value = "g"
+
+    run_job_and_wait = mocker.patch(
+        "graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints.JobClient.run_job_and_wait",
+        return_value="job-123",
+    )
+    mocker.patch(
+        "graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints.JobClient.get_summary",
+        return_value={
+            "graphName": "filtered",
+            "fromGraphName": "g",
+            "nodeFilter": "n.id >= $min_id",
+            "relationshipFilter": "*",
+            "nodeCount": 2,
+            "relationshipCount": 1,
+            "projectMillis": 7,
+        },
+    )
+    mocker.patch(
+        "graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints.get_graph",
+        return_value=mocker.Mock(),
+    )
+
+    endpoints.filter(
+        graph,
+        graph_name="filtered",
+        node_filter="n.id >= $min_id",
+        relationship_filter="*",
+        parameters={"min_id": 1},
+        sudo=True,
+        username="alice",
+    )
+
+    run_job_and_wait.assert_called_once_with(
+        arrow_client,
+        "v2/graph.project.filter",
+        {
+            "fromGraphName": "g",
+            "graphName": "filtered",
+            "nodeFilter": "n.id >= $min_id",
+            "relationshipFilter": "*",
+            "parameters": {"min_id": 1},
+            "sudo": True,
+            "username": "alice",
+        },
+        show_progress=False,
+    )
+
+
 def patch_gds_arrow_client(create_graph_job_id: str) -> ExitStack:
     exit_stack = ExitStack()
     patches = [

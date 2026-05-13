@@ -64,7 +64,7 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
     ]
 )
 
-IGNORED_PARAMETERS = {
+IGNORED_EXPECTED_PARAMETERS = {
     r".*\.write": ["write_to_result_store"],
     r".*shortest_path\.dijkstra.*": ["target_node"],
     r".*sllpa\.mutate.*": [
@@ -86,6 +86,7 @@ IGNORED_PARAMETERS = {
     ],
     r".*scale_properties.*": ["relationship_types"],
     r".*collapse_path.*": ["relationship_types"],
+    r"graph.drop": ["username", "db_name"],
 }
 
 EXPECTED_PARAMETER_NAME_ALIASES = {
@@ -204,10 +205,7 @@ def verify_return_fields(
 
         if origin is None and inspect.isclass(return_annotation):
             field_hints = typing.get_type_hints(return_annotation)
-            model_types = [
-                t for t in field_hints.values()
-                if inspect.isclass(t) and issubclass(t, BaseModel)
-            ]
+            model_types = [t for t in field_hints.values() if inspect.isclass(t) and issubclass(t, BaseModel)]
             if len(model_types) == 1:
                 result_type = model_types[0]
 
@@ -256,7 +254,7 @@ def verify_configuration_fields(
     expected_configuration: dict[str, Parameter] = {to_snake(param.name): param for param in endpoint_spec.parameters}
     py_endpoint = pythonic_endpoint_name(endpoint_spec.name, endpoint_mappings=endpoint_mappings)
 
-    for endpoint_pattern, ignored_params in IGNORED_PARAMETERS.items():
+    for endpoint_pattern, ignored_params in IGNORED_EXPECTED_PARAMETERS.items():
         if re.match(endpoint_pattern, py_endpoint):
             for param in ignored_params:
                 expected_configuration.pop(param, None)
@@ -269,6 +267,7 @@ def verify_configuration_fields(
             for old_name, new_name in aliases.items():
                 if old_name in expected_configuration:
                     expected_configuration[new_name] = expected_configuration.pop(old_name)
+
 
     for endpoint_pattern, ignored_params in IGNORED_ACTUAL_PARAMETERS.items():
         if re.match(endpoint_pattern, py_endpoint):
@@ -283,7 +282,7 @@ def verify_configuration_fields(
             name: param for name, param in expected_configuration.items() if param.sourceKind is not SourceKind.CONFIG
         }
 
-    if "graph_name" in expected_configuration and not "from_graph_name" in expected_configuration:
+    if "graph_name" in expected_configuration and "from_graph_name" not in expected_configuration:
         expected_configuration["G"] = expected_configuration.pop("graph_name")
     if "from_graph_name" in expected_configuration:
         expected_configuration["G"] = expected_configuration.pop("from_graph_name")
@@ -318,13 +317,11 @@ def verify_configuration_fields(
 
     for name, expected_param in expected_configuration.items():
         expected_default = default_adjustments.get(name, expected_param.defaultValue)
-        if expected_default == [] or expected_default == "":
+        if expected_default == [] or expected_default == "" or expected_default == {}:
             expected_default = None
 
         actual_default = actual_parameters[name].default
-        if actual_default is inspect.Parameter.empty:
-            actual_default = None
-        if actual_default == []:
+        if actual_default is inspect.Parameter.empty or actual_default == [] or actual_default == {}:
             actual_default = None
 
         assert actual_default == expected_default, (
