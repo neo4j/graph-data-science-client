@@ -46,6 +46,7 @@ class WriteProtocol(ABC):
             ProtocolVersion.V1: RemoteWriteBackV1(),
             ProtocolVersion.V2: RemoteWriteBackV2(),
             ProtocolVersion.V3: RemoteWriteBackV3(),
+            ProtocolVersion.V4: RemoteWriteBackV3(),
         }[protocol_version]
 
 
