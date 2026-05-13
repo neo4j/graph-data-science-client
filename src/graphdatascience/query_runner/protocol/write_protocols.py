@@ -26,10 +26,11 @@ class JobStatus:
     """Protocol-agnostic snapshot of a write-back job's state."""
 
     done: bool
-    raw_status: str
+    status: str
     progress: float
-    error: str | None
-    result_row: dict[str, Any]
+    written_node_properties: int
+    written_node_labels: int
+    written_relationships: int
 
 
 class WriteProtocol(ABC):
@@ -53,7 +54,7 @@ class WriteProtocol(ABC):
         property_overwrites: dict[str, str] | None = None,
         relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
-    ) -> DataFrame:
+    ) -> JobStatus:
         parameters = self._build_call_parameters(
             graph_name, job_id, concurrency, property_overwrites, relationship_type_overwrite
         )
@@ -79,12 +80,9 @@ class WriteProtocol(ABC):
             self._termination_flag.assert_running()
             status = self._get_status(job_id, parameters)
 
-            if status.error is not None:
-                raise Exception(status.error)
-
             if progress_bar is not None:
                 display_progress = 0.0 if status.progress < 0 else status.progress * 100
-                progress_bar.update(status=status.raw_status, progress=display_progress)
+                progress_bar.update(status=status.status, progress=display_progress)
 
             return status
 
@@ -98,7 +96,7 @@ class WriteProtocol(ABC):
         else:
             final = poll(None)
 
-        return DataFrame([final.result_row])
+        return final
 
     @abstractmethod
     def _start_job(self, parameters: CallParameters) -> None:
@@ -160,18 +158,19 @@ class RemoteWriteBackV3(WriteProtocol):
             custom_error=False,
         )
         row = result.iloc[0].to_dict()
-        raw_status = row["status"]
+
         # for self-managed dbs the endpoint doesn't return progress yet
         progress = row.get("progress")
         if progress is None:
             progress = 0.0
 
         return JobStatus(
-            done=raw_status == Status.COMPLETED.name,
-            raw_status=raw_status,
-            progress=progress,
-            error=None,
-            result_row=row,
+            done=row["status"] == Status.COMPLETED.name,
+            status=row["status"], #type: ignore
+            progress=progress, #type: ignore
+            written_node_properties= row.get("writtenNodeProperties"), #type: ignore
+            written_node_labels= row.get("writtenNodeLabels"), #type: ignore
+            written_relationships= row.get("writtenRelationships"), #type: ignore
         )
 
 
@@ -193,17 +192,19 @@ class RemoteWriteBackV4(WriteProtocol):
             QueryType.USER_TRANSPILED,
         ).squeeze()
 
-        raw_status: str = row["status"]
-        progress_value: Any = row.get("progress")
-        progress: float = 0.0 if progress_value is None else float(progress_value)
+        if row.get("error") is not None:
+            raise Exception(row["error"])
 
-        done = raw_status == Status.DONE.name
-        result_row = row["result"] if done else {}
+        status: str = row["status"]
+        done = status == Status.DONE.name
+        progress: float = 0.0 if row.get("progress") is None else float(row.get("progress"))
+        result = row["result"] if done else {}
 
         return JobStatus(
-            done=done,
-            raw_status=raw_status,
+            done= done,
+            status = status,
             progress=progress,
-            error=row["error"],
-            result_row=result_row,
+            written_node_properties= result.get("writtenNodeProperties"), #type: ignore
+            written_node_labels= result.get("writtenNodeLabels"), #type: ignore
+            written_relationships= result.get("writtenRelationships"), #type: ignore
         )

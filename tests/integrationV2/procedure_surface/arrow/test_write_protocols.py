@@ -6,7 +6,6 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.protocol.write_protocols import (
     RemoteWriteBackV3,
     RemoteWriteBackV4,
@@ -75,8 +74,7 @@ def test_v3_run_write_back(
         graph_name=projected_graph.name(), job_id=job_id, log_progress=False
     )
 
-    row = result.iloc[0]
-    assert row["writtenNodeProperties"] == 3
+    assert result.written_node_properties == 3
 
     _assert_properties_written(query_runner)
 
@@ -93,8 +91,7 @@ def test_v4_run_write_back(
         graph_name=projected_graph.name(), job_id=job_id, log_progress=False
     )
 
-    row = result.iloc[0]
-    assert row["writtenNodeProperties"] == 3
+    assert result.written_node_properties == 3
 
     _assert_properties_written(query_runner)
 

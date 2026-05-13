@@ -69,7 +69,7 @@ def test_v3_run_write_back_dispatches_expected_query_and_params(
         log_progress=False,
     )
 
-    assert result.iloc[0]["status"] == Status.COMPLETED.name
+    assert result.status == Status.COMPLETED.name
 
     assert "gds.arrow.write.v3" in qr.queries[0]
     assert qr.params[0] == {
@@ -216,8 +216,8 @@ def test_v4_run_write_back_dispatches_expected_query_and_params(
         log_progress=False,
     )
 
-    assert result.iloc[0]["writtenNodeProperties"] == 5
-    assert result.iloc[0]["status"] == Status.DONE.name
+    assert result.written_node_properties == 5
+    assert result.status == Status.DONE.name
 
     start_query = qr.queries[0]
     assert "gds.arrow.write.v4" in start_query
@@ -278,7 +278,7 @@ def test_v4_run_write_back_polls_until_done(arrow_client: MagicMock, qr: Collect
 
     result = protocol.run_write_back(graph_name="g", job_id="my-job", log_progress=False)
 
-    assert result.iloc[0]["writtenNodeProperties"] == 1
+    assert result.written_node_properties == 1
 
     status_queries = [q for q in qr.queries if "gds.arrow.job.status.v4" in q]
     assert len(status_queries) == 3
