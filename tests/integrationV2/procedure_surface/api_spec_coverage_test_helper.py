@@ -88,6 +88,7 @@ IGNORED_EXPECTED_PARAMETERS = {
     r".*collapse_path.*": ["relationship_types"],
     r"graph.drop": ["username", "db_name"],
     r"graph.generate": ["relationship_count", "validate_relationships"],
+    r"graph\.node_properties\.drop": ["log_progress", "sudo"],
 }
 
 EXPECTED_PARAMETER_NAME_ALIASES = {
@@ -101,6 +102,8 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
 
 IGNORED_ACTUAL_PARAMETERS = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
+    r"graph\.node_properties\.stream": ["db_node_properties", "job_id"],
+    r"graph\.relationships\.stream": ["relationship_properties"],
 }
 
 ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {

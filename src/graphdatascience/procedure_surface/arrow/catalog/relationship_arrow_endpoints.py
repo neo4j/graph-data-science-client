@@ -129,10 +129,8 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         self,
         G: GraphV2,
         relationship_type: str,
-        *,
-        fail_if_missing: bool = True,
     ) -> RelationshipsDropResult:
-        if relationship_type not in G.relationship_types() and fail_if_missing:
+        if relationship_type not in G.relationship_types():
             raise ValueError(f"Relationship type '{relationship_type}' does not exist in graph '{G.name()}'")
 
         config = ConfigConverter.convert_to_gds_config(

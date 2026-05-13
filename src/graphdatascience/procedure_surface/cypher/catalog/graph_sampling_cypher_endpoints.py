@@ -24,6 +24,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         G: GraphV2,
         graph_name: str,
         start_nodes: list[int] | None = None,
+        random_seed: int | None = None,
         restart_probability: float = 0.1,
         sampling_ratio: float = 0.15,
         node_label_stratification: bool = False,
@@ -38,6 +39,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
     ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,
+            random_seed=random_seed,
             restart_probability=restart_probability,
             sampling_ratio=sampling_ratio,
             node_label_stratification=node_label_stratification,
@@ -71,6 +73,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         G: GraphV2,
         graph_name: str,
         start_nodes: list[int] | None = None,
+        random_seed: int | None = None,
         restart_probability: float = 0.1,
         sampling_ratio: float = 0.15,
         node_label_stratification: bool = False,
@@ -85,6 +88,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
     ) -> GraphWithSamplingResult:
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,
+            random_seed=random_seed,
             restart_probability=restart_probability,
             sampling_ratio=sampling_ratio,
             node_label_stratification=node_label_stratification,

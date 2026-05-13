@@ -18,7 +18,7 @@ class NodePropertiesEndpoints(ABC):
         G: GraphV2,
         node_properties: str | list[str],
         *,
-        list_node_labels: bool | None = None,
+        list_node_labels: bool = False,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         sudo: bool = False,
@@ -36,7 +36,7 @@ class NodePropertiesEndpoints(ABC):
            Graph object to use
         node_properties : str | list[str]
             The node properties to stream
-        list_node_labels : boolean | None, default=None
+        list_node_labels : bool, default=False
             Whether to include node labels in the stream
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -113,7 +113,7 @@ class NodePropertiesEndpoints(ABC):
         G: GraphV2,
         node_properties: list[str],
         *,
-        fail_if_missing: bool | None = None,
+        fail_if_missing: bool = True,
         concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:
@@ -126,7 +126,7 @@ class NodePropertiesEndpoints(ABC):
            Graph object to use
         node_properties : list[str]
             The node properties to drop
-        fail_if_missing: bool | None = None,
+        fail_if_missing : bool, default=True
             Whether to fail if any of the node properties are missing
         concurrency
             Number of concurrent threads to use.

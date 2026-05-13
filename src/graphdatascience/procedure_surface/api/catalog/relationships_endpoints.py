@@ -100,8 +100,6 @@ class RelationshipsEndpoints(ABC):
         self,
         G: GraphV2,
         relationship_type: str,
-        *,
-        fail_if_missing: bool = True,
     ) -> RelationshipsDropResult:
         """
         Drops all relationships of the specified relationship type, including all their properties, from the graph.
@@ -112,8 +110,6 @@ class RelationshipsEndpoints(ABC):
            Graph object to use
         relationship_type: str
             The relationship type to drop
-        fail_if_missing: bool, default=True
-            If set to true, the procedure will fail if the relationship type does not exist in the graph.
         Returns
         -------
         RelationshipsDropResult

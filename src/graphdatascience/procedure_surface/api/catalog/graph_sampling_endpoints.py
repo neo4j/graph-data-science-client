@@ -17,6 +17,7 @@ class GraphSamplingEndpoints(ABC):
         G: GraphV2,
         graph_name: str,
         start_nodes: list[int] | None = None,
+        random_seed: int | None = None,
         restart_probability: float = 0.1,
         sampling_ratio: float = 0.15,
         node_label_stratification: bool = False,
@@ -45,6 +46,8 @@ class GraphSamplingEndpoints(ABC):
         start_nodes : list of int, optional
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
             By default, a single node is chosen uniformly at random.
+        random_seed
+            Seed for the random number generator used by the sampling procedure.
         restart_probability : float, optional
             The probability that a sampling random walk restarts from one of the start nodes.
             Default is 0.1.
@@ -84,6 +87,7 @@ class GraphSamplingEndpoints(ABC):
         G: GraphV2,
         graph_name: str,
         start_nodes: list[int] | None = None,
+        random_seed: int | None = None,
         restart_probability: float = 0.1,
         sampling_ratio: float = 0.15,
         node_label_stratification: bool = False,
@@ -114,6 +118,8 @@ class GraphSamplingEndpoints(ABC):
         start_nodes : list of int, optional
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
                 By default, a single node is chosen uniformly at random.
+        random_seed
+            Seed for the random number generator used by the sampling procedure.
         restart_probability : float, optional
             The probability that a sampling random walk restarts from one of the start nodes.
             Default is 0.1.
