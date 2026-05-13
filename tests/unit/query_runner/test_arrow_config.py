@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from graphdatascience.arrow_client.authenticated_flight_client import ConnectionInfo, AuthenticatedArrowClient
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
 
 

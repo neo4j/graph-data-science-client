@@ -11,7 +11,6 @@ from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResol
 
 
 class RemoteWriteBackClient:
-
     @staticmethod
     def create(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> RemoteWriteBackClient:
         protocol_version = ProtocolVersionResolver(query_runner).resolve()

@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-from pandas import DataFrame, Series
+from pandas import Series
 from tenacity import retry, retry_if_result
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -166,11 +166,11 @@ class RemoteWriteBackV3(WriteProtocol):
 
         return JobStatus(
             done=row["status"] == Status.COMPLETED.name,
-            status=row["status"], #type: ignore
-            progress=progress, #type: ignore
-            written_node_properties= row.get("writtenNodeProperties"), #type: ignore
-            written_node_labels= row.get("writtenNodeLabels"), #type: ignore
-            written_relationships= row.get("writtenRelationships"), #type: ignore
+            status=row["status"],  # type: ignore
+            progress=progress,  # type: ignore
+            written_node_properties=row.get("writtenNodeProperties"),  # type: ignore
+            written_node_labels=row.get("writtenNodeLabels"),  # type: ignore
+            written_relationships=row.get("writtenRelationships"),  # type: ignore
         )
 
 
@@ -197,14 +197,14 @@ class RemoteWriteBackV4(WriteProtocol):
 
         status: str = row["status"]
         done = status == Status.DONE.name
-        progress: float = 0.0 if row.get("progress") is None else float(row.get("progress"))
+        progress: float = 0.0 if row.get("progress") is None else float(row.get("progress"))  # type: ignore
         result = row["result"] if done else {}
 
         return JobStatus(
-            done= done,
-            status = status,
+            done=done,
+            status=status,
             progress=progress,
-            written_node_properties= result.get("writtenNodeProperties"), #type: ignore
-            written_node_labels= result.get("writtenNodeLabels"), #type: ignore
-            written_relationships= result.get("writtenRelationships"), #type: ignore
+            written_node_properties=result.get("writtenNodeProperties"),  # type: ignore
+            written_node_labels=result.get("writtenNodeLabels"),  # type: ignore
+            written_relationships=result.get("writtenRelationships"),  # type: ignore
         )

@@ -27,13 +27,11 @@ def projected_graph(
         (b {prop: 43}),
         (c {prop: 44})
     """
-    project_query = (
-        """
+    project_query = """
             MATCH (source)
             WITH gds.graph.project.remote(source, null, {sourceNodeProperties: properties(source), targetNodeProperties: null}) as g
             RETURN g
         """
-    )
 
     with create_graph_from_db(
         arrow_client,
@@ -47,15 +45,13 @@ def projected_graph(
 
 def _start_property_export(arrow_client: AuthenticatedArrowClient, graph_name: str) -> str:
     return JobClient.run_job(
-        arrow_client,
-        "v2/graph.nodeProperties.stream",
-        {"graphName": graph_name, "nodeProperties": ["prop"]}
+        arrow_client, "v2/graph.nodeProperties.stream", {"graphName": graph_name, "nodeProperties": ["prop"]}
     )
 
 
 def _assert_properties_written(query_runner: QueryRunner) -> None:
     written = query_runner.run_cypher(
-        f"MATCH (n) RETURN n.prop AS prop",
+        "MATCH (n) RETURN n.prop AS prop",
         query_type=QueryType.USER_ACTION,
     ).squeeze()
 
@@ -70,9 +66,7 @@ def test_v3_run_write_back(
 
     protocol = RemoteWriteBackV3(arrow_client, query_runner, TerminationFlagNoop())
 
-    result = protocol.run_write_back(
-        graph_name=projected_graph.name(), job_id=job_id, log_progress=False
-    )
+    result = protocol.run_write_back(graph_name=projected_graph.name(), job_id=job_id, log_progress=False)
 
     assert result.written_node_properties == 3
 
@@ -87,9 +81,7 @@ def test_v4_run_write_back(
 
     protocol = RemoteWriteBackV4(arrow_client, query_runner, TerminationFlagNoop())
 
-    result = protocol.run_write_back(
-        graph_name=projected_graph.name(), job_id=job_id, log_progress=False
-    )
+    result = protocol.run_write_back(graph_name=projected_graph.name(), job_id=job_id, log_progress=False)
 
     assert result.written_node_properties == 3
 

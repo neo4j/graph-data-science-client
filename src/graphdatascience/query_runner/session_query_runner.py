@@ -11,7 +11,7 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner import QueryMode, QueryType
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.query_runner.protocol.write_protocols import JobStatus, WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.server_version.server_version import ServerVersion
@@ -208,7 +208,7 @@ class SessionQueryRunner(QueryRunner):
 
         write_back_start = time.time()
 
-        def run_write_back() -> DataFrame:
+        def run_write_back() -> JobStatus:
             return write_protocol.run_write_back(
                 graph_name=graph_name,
                 job_id=job_id,
@@ -231,16 +231,15 @@ class SessionQueryRunner(QueryRunner):
         gds_write_result["writeMillis"] = write_millis
 
         if "nodePropertiesWritten" in gds_write_result:
-            gds_write_result["nodePropertiesWritten"] = database_write_result["writtenNodeProperties"]
+            gds_write_result["nodePropertiesWritten"] = database_write_result.written_node_properties
         if "propertiesWritten" in gds_write_result:
-            gds_write_result["propertiesWritten"] = database_write_result["writtenNodeProperties"]
+            gds_write_result["propertiesWritten"] = database_write_result.written_node_properties
         if "nodeLabelsWritten" in gds_write_result:
-            gds_write_result["nodeLabelsWritten"] = database_write_result["writtenNodeLabels"]
+            gds_write_result["nodeLabelsWritten"] = database_write_result.written_node_labels
         if "relationshipsWritten" in gds_write_result:
-            gds_write_result["relationshipsWritten"] = database_write_result["writtenRelationships"]
+            gds_write_result["relationshipsWritten"] = database_write_result.written_node_properties
 
         return gds_write_result
 
     def _resolve_show_progress(self, show_progress: bool) -> bool:
         return self._show_progress and show_progress
-

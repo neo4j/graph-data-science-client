@@ -249,12 +249,8 @@ def test_v4_run_write_back_polls_until_done(arrow_client: MagicMock, qr: Collect
     qr.add__mock_result(
         "gds.arrow.job.status.v4",
         [
-            DataFrame(
-                [{"status": Status.RUNNING.name, "error": None, "progress": 0.2, "result": None}]
-            ),
-            DataFrame(
-                [{"status": Status.RUNNING.name, "error": None, "progress": 0.6, "result": None}]
-            ),
+            DataFrame([{"status": Status.RUNNING.name, "error": None, "progress": 0.2, "result": None}]),
+            DataFrame([{"status": Status.RUNNING.name, "error": None, "progress": 0.6, "result": None}]),
             DataFrame(
                 [
                     {
@@ -284,9 +280,7 @@ def test_v4_run_write_back_polls_until_done(arrow_client: MagicMock, qr: Collect
     assert len(status_queries) == 3
 
 
-def test_v4_run_write_back_raises_when_status_has_error(
-    arrow_client: MagicMock, qr: CollectingQueryRunner
-) -> None:
+def test_v4_run_write_back_raises_when_status_has_error(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
     qr.add__mock_result(
         "gds.arrow.write.v4",
         DataFrame([{"host": "leader-host", "port": 7777}]),

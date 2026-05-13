@@ -164,7 +164,9 @@ class SessionV2Endpoints:
         self._db_client = db_client
         self._show_progress = show_progress
 
-        self._write_back_client = RemoteWriteBackClient.create(arrow_client, db_client) if db_client is not None else None
+        self._write_back_client = (
+            RemoteWriteBackClient.create(arrow_client, db_client) if db_client is not None else None
+        )
 
     def set_show_progress(self, show_progress: bool) -> None:
         self._show_progress = show_progress

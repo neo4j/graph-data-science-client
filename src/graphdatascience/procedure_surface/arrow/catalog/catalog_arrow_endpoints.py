@@ -367,7 +367,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def node_labels(self) -> NodeLabelEndpoints:
-        write_client = RemoteWriteBackClient.create(self._arrow_client, self._query_runner) if self._query_runner else None
+        write_client = (
+            RemoteWriteBackClient.create(self._arrow_client, self._query_runner) if self._query_runner else None
+        )
 
         return NodeLabelArrowEndpoints(self._arrow_client, write_client, show_progress=self._show_progress)
 

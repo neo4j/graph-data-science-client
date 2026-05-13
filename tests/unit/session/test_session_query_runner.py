@@ -27,9 +27,7 @@ class FakeArrowClient(GdsArrowClient):
 
 def _make_db_query_runner(version: ServerVersion, protocol: str = "v3") -> CollectingQueryRunner:
     db_query_runner = CollectingQueryRunner(version)
-    db_query_runner.add__mock_result(
-        "gds.session.dbms.protocol.version", DataFrame([{"version": protocol}])
-    )
+    db_query_runner.add__mock_result("gds.session.dbms.protocol.version", DataFrame([{"version": protocol}]))
     db_query_runner.add__mock_result(
         "gds.arrow.write",
         DataFrame(

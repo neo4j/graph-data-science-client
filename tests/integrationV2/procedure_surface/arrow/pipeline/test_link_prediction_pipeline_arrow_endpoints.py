@@ -193,7 +193,7 @@ def test_link_prediction_predict_mutate(
 ) -> None:
     endpoints = LinkPredictionPipelineArrowEndpoints(
         arrow_client,
-        RemoteWriteBackClient(arrow_client, query_runner),
+        RemoteWriteBackClient.create(arrow_client, query_runner),
         show_progress=False,
     )
 

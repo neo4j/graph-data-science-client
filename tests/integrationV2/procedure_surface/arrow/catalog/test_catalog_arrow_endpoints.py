@@ -1,7 +1,9 @@
+from datetime import datetime, timezone
 from typing import Generator
 
 import pytest
 from pandas import DataFrame
+from pyarrow import ArrowKeyError
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
@@ -45,12 +47,12 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
         "relationships": {"REL": {"direction": "DIRECTED", "properties": {}}},
     }
 
-    assert result.creation_time < datetime.datetime.now(datetime.timezone.utc)
+    assert result.creation_time < datetime.now(timezone.utc)
     assert result.database == "neo4j"
     assert result.database_location == "local"
     assert result.memory_usage and result.memory_usage.endswith("KiB")
     assert result.size_in_bytes > 20000
-    assert result.modification_time < datetime.datetime.now(datetime.timezone.utc)
+    assert result.modification_time < datetime.now(timezone.utc)
     assert "p50" in result.degree_distribution  # type: ignore
 
 
