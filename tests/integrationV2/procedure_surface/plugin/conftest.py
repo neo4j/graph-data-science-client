@@ -11,9 +11,9 @@ from tests.integrationV2.procedure_surface.conftest import start_gds_plugin_data
 
 @pytest.fixture(scope="package")
 def gds_plugin_container(
-    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
 ) -> Generator[Neo4jContainer, None, None]:
-    yield from start_gds_plugin_database(logs_dir, tmp_path_factory)
+    yield from start_gds_plugin_database(logs_dir, tmp_path_factory, request)
 
 
 @pytest.fixture(scope="package")

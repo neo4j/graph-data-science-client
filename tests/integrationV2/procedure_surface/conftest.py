@@ -4,7 +4,6 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Generator
-from uuid import uuid4
 
 import dotenv
 import pytest
@@ -79,14 +78,16 @@ def latest_neo4j_version() -> str:
     return overrides.get(cal_ver, cal_ver)
 
 
-def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
+def start_database(
+    logs_dir: Path, network: Network, request: pytest.FixtureRequest
+) -> Generator[DbmsConnectionInfo, None, None]:
     default_neo4j_image = (
         f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
     )
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", default_neo4j_image)
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
-    db_logs_dir = logs_dir / str(uuid4()) / "db_logs"
+    db_logs_dir = logs_dir / request.node.name / "db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
     db_container = (
@@ -123,7 +124,7 @@ def start_database(logs_dir: Path, network: Network) -> Generator[DbmsConnection
 
 
 def start_gds_plugin_database(
-    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
 ) -> Generator[Neo4jContainer, None, None]:
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
 
@@ -133,7 +134,7 @@ def start_gds_plugin_database(
     if GDS_LICENSE_KEY is None:
         raise ValueError("Trying to start a Plugin database, but no GDS_LICENSE_KEY environment variable was set")
 
-    db_logs_dir = logs_dir / str(uuid4()) / "db_logs"
+    db_logs_dir = logs_dir / request.node.name / "db_logs"
     db_logs_dir.mkdir(parents=True)
     db_logs_dir.chmod(0o777)
 
