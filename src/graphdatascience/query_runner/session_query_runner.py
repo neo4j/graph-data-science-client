@@ -178,8 +178,8 @@ class SessionQueryRunner(QueryRunner):
 
         config: dict[str, Any] = params.get("config", {})
 
-        # we pop these out so that they are not retained for the GDS proc call
-        db_arrow_config = config.pop("arrowConfiguration", {})
+        # remove so that it isn't retained for the GDS proc call below; the write protocol builds its own arrow config
+        config.pop("arrowConfiguration", None)
 
         job_id = config["jobId"] if "jobId" in config else str(uuid4())
         config["jobId"] = job_id
@@ -197,20 +197,25 @@ class SessionQueryRunner(QueryRunner):
         )
         terminationFlag.assert_running()
 
-        self._inject_arrow_config(db_arrow_config)
-
         graph_name = params["graph_name"]
 
-        write_protocol = WriteProtocol.select(self._resolved_protocol_version)
-        write_back_params = write_protocol.write_back_params(
-            graph_name, job_id, config, db_arrow_config, self._db_query_runner.database()
+        write_protocol = WriteProtocol.select(
+            self._resolved_protocol_version,
+            self._gds_arrow_client.flight_client(),
+            self._db_query_runner,
+            terminationFlag,
         )
 
         write_back_start = time.time()
 
         def run_write_back() -> DataFrame:
             return write_protocol.run_write_back(
-                self._db_query_runner, write_back_params, yields, log_progress=logging, terminationFlag=terminationFlag
+                graph_name=graph_name,
+                job_id=job_id,
+                concurrency=config.get("concurrency"),
+                property_overwrites=config.get("writeProperties"),
+                relationship_type_overwrite=config.get("writeRelationshipType"),
+                log_progress=logging,
             )
 
         try:
@@ -239,13 +244,3 @@ class SessionQueryRunner(QueryRunner):
     def _resolve_show_progress(self, show_progress: bool) -> bool:
         return self._show_progress and show_progress
 
-    def _inject_arrow_config(self, params: dict[str, Any]) -> None:
-        connection_info = self._gds_arrow_client.advertised_connection_info()
-        token = self._gds_arrow_client.request_token()
-        if token is None:
-            token = "IGNORED"
-
-        params["host"] = connection_info.host
-        params["port"] = str(connection_info.port)
-        params["token"] = token
-        params["encrypted"] = connection_info.encrypted
