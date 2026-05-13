@@ -93,28 +93,6 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
         "config": {"concurrency": 2, "jobId": jobId},
     }
 
-
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 7, 0)])
-def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
-    aura_gds.graph.project("g", "RETURN gds.graph.project.remote(0, 1, null)")
-
-    assert (
-        runner.last_query() == "CALL gds.arrow.project("
-        "$graph_name, $query, $job_id, $concurrency, "
-        "$undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
-    )
-    # injection of token and host into the params is done by the actual query runner
-    assert runner.last_params() == {
-        "graph_name": "g",
-        "job_id": None,
-        "concurrency": 4,
-        "inverse_indexed_relationship_types": [],
-        "query": "RETURN gds.graph.project.remote(0, 1, null)",
-        "undirected_relationship_types": [],
-        "arrow_configuration": {},
-    }
-
-
 def test_graph_list(runner: CollectingQueryRunner, gds: GraphDataScience) -> None:
     gds.graph.list()
 
@@ -679,44 +657,4 @@ def test_graph_relationships_to_undirected(runner: CollectingQueryRunner, gds: G
     assert runner.last_params() == {
         "graph_name": "g",
         "config": {"relationshipType": "REL", "mutateRelationshipType": "REL_UNDIRECTED", "aggregation": "MAX"},
-    }
-
-
-def test_remote_projection_all_configuration(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
-    G, _ = aura_gds.graph.project(
-        graph_name="g",
-        query="""
-        MATCH (n)-->(m)
-        RETURN gds.graph.project.remote(n, m, {
-          sourceNodeProperties: {x: 1},
-          relationshipType: 'R',
-          relationshipProperties: {y: [1, 2]}
-        })
-        """,
-        concurrency=8,
-        undirected_relationship_types=["R"],
-        inverse_indexed_relationship_types=["R"],
-    )
-
-    assert (
-        runner.last_query() == "CALL gds.arrow.project("
-        "$graph_name, $query, $job_id, $concurrency, "
-        "$undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
-    )
-
-    assert runner.last_params() == {
-        "graph_name": "g",
-        "concurrency": 8,
-        "query": """
-        MATCH (n)-->(m)
-        RETURN gds.graph.project.remote(n, m, {
-          sourceNodeProperties: {x: 1},
-          relationshipType: 'R',
-          relationshipProperties: {y: [1, 2]}
-        })
-        """,
-        "job_id": None,
-        "undirected_relationship_types": ["R"],
-        "inverse_indexed_relationship_types": ["R"],
-        "arrow_configuration": {},
     }

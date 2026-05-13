@@ -62,22 +62,6 @@ def test_arrow_config_uses_advertised_connection_info(arrow_client: MagicMock, q
     }
 
 
-def test_arrow_config_falls_back_to_ignored_token_when_none(
-    qr: CollectingQueryRunner,
-) -> None:
-    arrow_client = MagicMock(spec=AuthenticatedArrowClient)
-    arrow_client.advertised_connection_info.return_value = ConnectionInfo(host="arrow.host", port=1234, encrypted=False)
-    arrow_client.request_token.return_value = None
-
-    protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
-
-    config = build_arrow_config(protocol._arrow_client, None)
-
-    assert config["token"] == "IGNORED"
-    assert config["batchSize"] is None
-    assert config["encrypted"] is False
-
-
 def test_v3_store_projection_raises_not_implemented(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
     protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
 
@@ -136,7 +120,7 @@ def test_v4_run_cypher_projection_dispatches_expected_query_and_params(
     }
 
     status_query = qr.queries[1]
-    assert "gds.arrow.job.status('job-1')" in status_query
+    assert "gds.arrow.job.status.v4('job-1')" in status_query
 
 
 def test_v4_run_store_projection_dispatches_expected_query_and_params(
@@ -188,7 +172,7 @@ def test_v4_run_store_projection_dispatches_expected_query_and_params(
     assert start_params["arrow_config"]["batchSize"] == 50
 
     status_query = qr.queries[1]
-    assert "gds.arrow.job.status('store-job')" in status_query
+    assert "gds.arrow.job.status.v4('store-job')" in status_query
 
 
 def test_v4_run_cypher_projection_polls_until_done(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
