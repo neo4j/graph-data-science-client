@@ -69,6 +69,11 @@ def download_gds_api_spec(destination: Path) -> None:
 
 def latest_neo4j_version() -> str:
     today = datetime.now()
+
+    # to enable the V4 endpoints we want to use the latest version of Neo4j until June 2026
+    if today < datetime(2026, 6, 1):
+        return "2026.05.0-57564"
+
     previous_month = today - relativedelta(months=1)
 
     overrides = {"2025.12.0": "2025.12.1-1", "2026.01.0": "2026.01.2"}

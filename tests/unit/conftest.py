@@ -27,17 +27,21 @@ from graphdatascience.session.session_lifecycle_manager import SessionLifecycleM
 DEFAULT_SERVER_VERSION = ServerVersion(2, 10, 0)
 
 QueryResult = DataFrame | Exception
-QueryResultMap = dict[str, QueryResult]  # Substring -> QueryResult
+QueryResultOrList = QueryResult | list[QueryResult]
+QueryResultMap = dict[str, QueryResultOrList]  # Substring -> QueryResult or list of QueryResult
 
 
 class CollectingQueryRunner(QueryRunner):
-    def __init__(self, server_version: ServerVersion, result_mock: QueryResult | QueryResultMap | None = None) -> None:
-        self._result_map: dict[str, QueryResult] = {}
-        if isinstance(result_mock, DataFrame) or isinstance(result_mock, Exception):
+    def __init__(
+        self, server_version: ServerVersion, result_mock: QueryResultOrList | QueryResultMap | None = None
+    ) -> None:
+        self._result_map: dict[str, QueryResultOrList] = {}
+        if isinstance(result_mock, (DataFrame, Exception, list)):
             self._result_map = {"": result_mock}
         elif isinstance(result_mock, dict):
             self._result_map = result_mock
 
+        self._call_counts: dict[str, int] = {}
         self.queries: list[str] = []
         self.run_args: list[dict[str, Any]] = []
         self.params: list[dict[str, Any]] = []
@@ -174,12 +178,14 @@ class CollectingQueryRunner(QueryRunner):
     def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
         return self
 
-    def set__mock_result(self, result: QueryResult) -> None:
+    def set__mock_result(self, result: QueryResultOrList) -> None:
         self._result_map.clear()
+        self._call_counts.clear()
         self._result_map[""] = result
 
-    def add__mock_result(self, query_sub_string: str, result: QueryResult) -> None:
+    def add__mock_result(self, query_sub_string: str, result: QueryResultOrList) -> None:
         self._result_map[query_sub_string] = result
+        self._call_counts.pop(query_sub_string, None)
 
     def get_mock_result(self, query: str) -> QueryResult:
         # This "mock" lets us initialize the GDS object without issues.
@@ -196,9 +202,17 @@ class CollectingQueryRunner(QueryRunner):
         if len(matched_results) == 0:
             return DataFrame()
 
-        if isinstance(matched_results[0][1], Exception):
-            raise matched_results[0][1]
-        return matched_results[0][1]
+        sub_string, result = matched_results[0]
+        if isinstance(result, list):
+            if len(result) == 0:
+                raise RuntimeError(f"Empty result list registered for sub_string `{sub_string}`.")
+            index = self._call_counts.get(sub_string, 0)
+            self._call_counts[sub_string] = index + 1
+            result = result[index % len(result)]
+
+        if isinstance(result, Exception):
+            raise result
+        return result
 
 
 @pytest.fixture

@@ -8,11 +8,9 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.arrow.error_handler import handle_flight_error
 from graphdatascience.query_runner import QueryMode, QueryType
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
-from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -95,13 +93,9 @@ class SessionQueryRunner(QueryRunner):
         if params is None:
             params = CallParameters()
 
-        if SessionQueryRunner.GDS_REMOTE_PROJECTION_PROC_NAME in endpoint:
-            terminationFlag = TerminationFlag.create()
-            return self._remote_projection(endpoint, params, terminationFlag, yields, database, logging)
-
         elif endpoint.endswith(".write") and self.is_remote_projected_graph(params["graph_name"]):
-            terminationFlag = TerminationFlag.create()
-            return self._remote_write_back(endpoint, params, terminationFlag, yields, database, logging, custom_error)
+            termination_flag = TerminationFlag.create()
+            return self._remote_write_back(endpoint, params, termination_flag, yields, database, logging, custom_error)
 
         return self._gds_query_runner.call_procedure(
             endpoint,
@@ -168,40 +162,6 @@ class SessionQueryRunner(QueryRunner):
         self._gds_arrow_client.close()
         self._gds_query_runner.close()
         self._db_query_runner.close()
-
-    def _remote_projection(
-        self,
-        endpoint: str,
-        params: CallParameters,
-        terminationFlag: TerminationFlag,
-        yields: list[str] | None = None,
-        database: str | None = None,
-        logging: bool = False,
-    ) -> DataFrame:
-        self._inject_arrow_config(params["arrow_configuration"])
-
-        graph_name = params["graph_name"]
-        query = params["query"]
-        arrow_config = params["arrow_configuration"]
-
-        job_id = params["job_id"] if "job_id" in params and params["job_id"] else str(uuid4())
-        project_protocol = ProjectProtocol.select(self._resolved_protocol_version)
-        project_params = project_protocol.project_params(graph_name, query, job_id, params, arrow_config)
-
-        try:
-
-            def run_projection() -> DataFrame:
-                return project_protocol.run_projection(
-                    self._db_query_runner, endpoint, project_params, terminationFlag, yields, database, logging
-                )
-
-            if self._resolve_show_progress(logging):
-                return self._progress_logger.run_with_progress_logging(run_projection, job_id, database)
-            else:
-                return run_projection()
-        except Exception as e:
-            handle_flight_error(e)
-            raise e  # above should already raise
 
     def _remote_write_back(
         self,
