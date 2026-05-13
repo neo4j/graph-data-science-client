@@ -234,6 +234,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         username: str | None = None,
         log_progress: bool = True,
     ) -> GraphWithFilterResult:
+        show_progress = self._show_progress and log_progress
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -243,13 +244,13 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             job_id=job_id,
             sudo=sudo,
             username=username,
-            log_progress=log_progress,
+            log_progress=show_progress,
         )
         if parameters is not None:
             config["parameters"] = parameters
 
         job_id = JobClient.run_job_and_wait(
-            self._arrow_client, "v2/graph.project.filter", config, show_progress=log_progress and self._show_progress
+            self._arrow_client, "v2/graph.project.filter", config, show_progress=show_progress
         )
 
         return GraphWithFilterResult(

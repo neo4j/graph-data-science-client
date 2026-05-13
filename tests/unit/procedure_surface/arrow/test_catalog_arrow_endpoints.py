@@ -134,6 +134,7 @@ def test_filter_passes_parameters_sudo_and_username(mocker: MockerFixture) -> No
             "graphName": "filtered",
             "nodeFilter": "n.id >= $min_id",
             "relationshipFilter": "*",
+            "logProgress": False,
             "parameters": {"min_id": 1},
             "sudo": True,
             "username": "alice",
