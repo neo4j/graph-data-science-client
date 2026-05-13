@@ -1,10 +1,7 @@
-import datetime
 from typing import Generator
 
 import pytest
 from pandas import DataFrame
-from pyarrow import ArrowKeyError
-from pyarrow.flight import FlightServerError
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
@@ -178,11 +175,7 @@ def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Gr
         assert result.graph_name == "filtered"
         assert result.project_millis >= 0
     finally:
-        try:
-            catalog_endpoints.drop("filtered", fail_if_missing=False)
-        except FlightServerError:
-            # There is currently a bug in GDS that throws when deleting a GDL graph
-            pass
+        catalog_endpoints.drop("filtered", fail_if_missing=False)
 
 
 def test_graph_generate_with_relationships_property(catalog_endpoints: CatalogArrowEndpoints) -> None:

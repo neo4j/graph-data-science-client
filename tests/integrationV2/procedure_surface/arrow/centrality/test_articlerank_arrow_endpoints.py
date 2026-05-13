@@ -97,7 +97,7 @@ def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sa
 def test_articlerank_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    endpoints = ArticleRankArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = ArticleRankArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="write")
 
     assert result.did_converge

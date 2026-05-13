@@ -108,7 +108,7 @@ def test_triangle_count_write(
 ) -> None:
     """Test Triangle Count write operation."""
     endpoints = TriangleCountArrowEndpoints(
-        arrow_client, RemoteWriteBackClient(arrow_client, query_runner), show_progress=True
+        arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner), show_progress=True
     )
     result = endpoints.write(
         G=db_graph,

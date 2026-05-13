@@ -113,7 +113,7 @@ def test_knn_filtered_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
     endpoints = KnnFilteredArrowEndpoints(
-        arrow_client, write_back_client=RemoteWriteBackClient(arrow_client, query_runner), show_progress=False
+        arrow_client, write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner), show_progress=False
     )
 
     result = endpoints.write(

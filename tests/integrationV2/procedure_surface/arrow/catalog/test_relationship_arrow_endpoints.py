@@ -82,7 +82,7 @@ def relationship_endpoints(
 def relationship_endpoints_with_db(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
 ) -> Generator[RelationshipArrowEndpoints, None, None]:
-    yield RelationshipArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    yield RelationshipArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
 
 
 def test_stream_relationships(relationship_endpoints: RelationshipArrowEndpoints, sample_graph: GraphV2) -> None:

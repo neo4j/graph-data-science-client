@@ -100,7 +100,7 @@ def test_max_flow_mutate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph
 
 @pytest.mark.db_integration
 def test_max_flow_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    endpoints = MaxFlowArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = MaxFlowArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(
         db_graph,
         [find_node_by_id(query_runner, 0)],

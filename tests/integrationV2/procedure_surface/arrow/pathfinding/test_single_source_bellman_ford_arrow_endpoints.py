@@ -123,7 +123,7 @@ def test_bellman_ford_write(
 ) -> None:
     endpoints_with_writeback = BellmanFordArrowEndpoints(
         arrow_client=arrow_client,
-        write_back_client=RemoteWriteBackClient(arrow_client, query_runner),
+        write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner),
     )
 
     result = endpoints_with_writeback.write(

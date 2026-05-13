@@ -95,7 +95,7 @@ def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sa
 def test_betweenness_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    endpoints = BetweennessArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = BetweennessArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="betweenness")
 
     assert isinstance(result, BetweennessWriteResult)

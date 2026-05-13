@@ -55,7 +55,7 @@ def node_label_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[No
 def node_label_endpoints_with_db(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
 ) -> Generator[NodeLabelArrowEndpoints, None, None]:
-    yield NodeLabelArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    yield NodeLabelArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
 
 
 def test_mutate_node_label(node_label_endpoints: NodeLabelArrowEndpoints, sample_graph: GraphV2) -> None:

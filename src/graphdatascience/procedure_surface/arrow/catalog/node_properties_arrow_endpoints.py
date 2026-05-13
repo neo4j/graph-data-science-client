@@ -28,7 +28,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
         self._write_back_client: RemoteWriteBackClient | None = (
-            RemoteWriteBackClient(arrow_client, query_runner) if query_runner is not None else None
+            RemoteWriteBackClient.create(arrow_client, query_runner) if query_runner is not None else None
         )
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, self._write_back_client, show_progress=show_progress

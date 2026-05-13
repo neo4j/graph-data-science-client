@@ -100,7 +100,7 @@ def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
 def test_pagerank_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test PageRank write operation."""
     endpoints = PageRankArrowEndpoints(
-        arrow_client, RemoteWriteBackClient(arrow_client, query_runner), show_progress=True
+        arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner), show_progress=True
     )
     result = endpoints.write(
         G=db_graph, write_property="pagerank", source_nodes=[(find_node_by_id(query_runner, 0), 0.7)]

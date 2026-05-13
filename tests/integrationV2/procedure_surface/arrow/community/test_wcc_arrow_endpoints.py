@@ -88,7 +88,7 @@ def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> 
 
 @pytest.mark.db_integration
 def test_wcc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    endpoints = WccArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = WccArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="componentId")
 
     assert isinstance(result, WccWriteResult)

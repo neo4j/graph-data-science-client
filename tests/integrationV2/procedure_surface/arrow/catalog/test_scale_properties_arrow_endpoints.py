@@ -101,7 +101,7 @@ def test_scale_properties_mutate(
 def test_scale_properties_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    endpoints = ScalePropertiesArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = ScalePropertiesArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(
         G=db_graph, write_property="scaledProp", node_properties=["prop1"], scaler={"type": "MinMax"}
     )

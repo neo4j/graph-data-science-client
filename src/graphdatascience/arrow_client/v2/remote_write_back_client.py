@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import time
-from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -13,12 +11,15 @@ from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResol
 
 
 class RemoteWriteBackClient:
-    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner):
-        self._arrow_client = arrow_client
-        self._query_runner = query_runner
 
+    @staticmethod
+    def create(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> RemoteWriteBackClient:
         protocol_version = ProtocolVersionResolver(query_runner).resolve()
-        self._write_protocol = WriteProtocol.select(protocol_version)
+        write_protocol = WriteProtocol.select(protocol_version, arrow_client, query_runner, TerminationFlag.create())
+        return RemoteWriteBackClient(write_protocol)
+
+    def __init__(self, write_protocol: WriteProtocol) -> None:
+        self._write_protocol = write_protocol
 
     def write(
         self,
@@ -29,49 +30,27 @@ class RemoteWriteBackClient:
         relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
     ) -> WriteBackResult:
-        arrow_config = self._arrow_configuration()
-
-        configuration: dict[str, Any] = {}
-        if concurrency is not None:
-            configuration["concurrency"] = concurrency
-        if property_overwrites is not None:
-            configuration["writeProperties"] = property_overwrites
-        if relationship_type_overwrite is not None:
-            configuration["writeRelationshipType"] = relationship_type_overwrite
-
-        write_back_params = CallParameters(
-            graphName=graph_name,
-            jobId=job_id,
-            arrowConfiguration=arrow_config,
-            configuration=configuration,
-        )
-
         start_time = time.time()
 
         result = self._write_protocol.run_write_back(
-            self._query_runner,
-            write_back_params,
-            None,
+            graph_name=graph_name,
+            job_id=job_id,
+            concurrency=concurrency,
+            property_overwrites=property_overwrites,
+            relationship_type_overwrite=relationship_type_overwrite,
             log_progress=log_progress,
-            terminationFlag=TerminationFlag.create(),
-        ).squeeze()
+        )
+
         write_millis = int((time.time() - start_time) * 1000)
 
-        return WriteBackResult(writeMillis=write_millis, **result.squeeze())
-
-    def _arrow_configuration(self) -> dict[str, Any]:
-        connection_info = self._arrow_client.advertised_connection_info()
-        token = self._arrow_client.request_token()
-        if token is None:
-            token = "IGNORED"
-        arrow_config = {
-            "host": connection_info.host,
-            "port": connection_info.port,
-            "token": token,
-            "encrypted": connection_info.encrypted,
-        }
-
-        return arrow_config
+        return WriteBackResult(
+            writtenNodeProperties=result.written_node_properties,
+            writtenNodeLabels=result.written_node_labels,
+            writtenRelationships=result.written_relationships,
+            writeMillis=write_millis,
+            status=result.status,
+            progress=result.progress,
+        )
 
 
 class WriteBackResult(BaseResult):

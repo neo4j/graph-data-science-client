@@ -89,7 +89,7 @@ def test_hdbscan_mutate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: 
 
 @pytest.mark.db_integration
 def test_hdbscan_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
-    endpoints = HdbscanArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = HdbscanArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(
         G=db_graph,
         node_property="prop",
