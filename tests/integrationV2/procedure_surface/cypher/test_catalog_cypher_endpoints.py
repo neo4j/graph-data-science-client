@@ -126,6 +126,14 @@ def test_drop_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, 
     assert len(catalog_endpoints.list()) == 0
 
 
+def test_drop_with_username_and_db_name(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
+    res = catalog_endpoints.drop("g", username="neo4j", db_name="neo4j")
+
+    assert res is not None
+    assert res.graph_name == "g"
+    assert len(catalog_endpoints.list()) == 0
+
+
 def test_drop_nonexistent_fail_if_missing_true(catalog_endpoints: CatalogCypherEndpoints) -> None:
     with pytest.raises(Exception):  # Should raise some kind of exception
         catalog_endpoints.drop("nonexistent", fail_if_missing=True)

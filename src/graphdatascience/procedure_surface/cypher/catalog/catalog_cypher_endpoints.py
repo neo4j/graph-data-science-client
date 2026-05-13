@@ -96,14 +96,23 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         result = self._cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
         return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
 
-    def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
+    def drop(
+        self,
+        G: GraphV2 | str,
+        fail_if_missing: bool = True,
+        username: str | None = None,
+        db_name: str | None = None,
+    ) -> GraphInfo | None:
         graph_name = G if isinstance(G, str) else G.name()
 
-        params = (
-            CallParameters(graphName=graph_name, failIfMissing=fail_if_missing)
-            if fail_if_missing is not None
-            else CallParameters(graphName=graph_name)
-        )
+        params = CallParameters(graphName=graph_name)
+
+        if fail_if_missing is not None:
+            params["failIfMissing"] = fail_if_missing
+        if username is not None:
+            params["username"] = username
+        if db_name is not None:
+            params["dbName"] = db_name
 
         result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
         if len(result) > 0:

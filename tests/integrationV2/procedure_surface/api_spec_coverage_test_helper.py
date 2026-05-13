@@ -3,7 +3,7 @@ import re
 import typing
 from collections import OrderedDict
 from types import MethodType, UnionType
-from typing import Any
+from typing import Any, NamedTuple
 
 from pandas import DataFrame
 from pydantic import BaseModel
@@ -131,6 +131,11 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
     },
 }
 
+# per endpoint from original to actual
+ADJUSTED_RETURN_FIELDS: dict[str, dict[str, str]] = {
+    "graph.drop": {"schema": "graph_schema", "schema_with_orientation": "graph_schema"}
+}
+
 
 def method_str(method: MethodType) -> str:
     return f"{method.__self__.__class__.__name__}.{method.__name__}"
@@ -177,7 +182,9 @@ def resolve_callable_object(endpoints: object, endpoint: str) -> MethodType | No
     raise ValueError(f"Resolved callable object {resolved_object} for endpoint {endpoint} is not a method")
 
 
-def verify_return_fields(callable_object: MethodType, expected_return_fields: list[ReturnField]) -> None:
+def verify_return_fields(
+    callable_object: MethodType, endpoint_name: str, expected_return_fields: list[ReturnField]
+) -> None:
     return_annotation: Any | None = typing.get_type_hints(callable_object).get("return")
 
     if not return_annotation:
@@ -195,11 +202,20 @@ def verify_return_fields(callable_object: MethodType, expected_return_fields: li
         origin = typing.get_origin(return_annotation)
         args = typing.get_args(return_annotation)
 
-        if origin is list:
+        if origin is None and inspect.isclass(return_annotation):
+            field_hints = typing.get_type_hints(return_annotation)
+            model_types = [
+                t for t in field_hints.values()
+                if inspect.isclass(t) and issubclass(t, BaseModel)
+            ]
+            if len(model_types) == 1:
+                result_type = model_types[0]
+
+        elif origin is list:
             item_type = args[0] if args else None
             if inspect.isclass(item_type) and issubclass(item_type, BaseModel):
                 result_type = item_type
-        elif origin is tuple:
+        elif origin is tuple or origin is NamedTuple:
             model_types = [arg for arg in args if inspect.isclass(arg) and issubclass(arg, BaseModel)]
             if len(model_types) == 1:
                 result_type = model_types[0]
@@ -207,10 +223,6 @@ def verify_return_fields(callable_object: MethodType, expected_return_fields: li
             model_types = [arg for arg in args if inspect.isclass(arg) and issubclass(arg, BaseModel)]
             if len(model_types) == 1:
                 result_type = model_types[0]
-        else:
-            raise ValueError(
-                f"Return annotation {return_annotation} has unsupported origin {origin}. Please add support here for testing."
-            )
 
     if not result_type:
         raise ValueError(
@@ -218,7 +230,13 @@ def verify_return_fields(callable_object: MethodType, expected_return_fields: li
         )
 
     actual_return_fields = set(result_type.model_fields.keys())
+
     expected_return_field_keys = {to_snake(field.name) for field in expected_return_fields}
+    field_mappings = ADJUSTED_RETURN_FIELDS.get(endpoint_name, {})
+    for spec_field, new_field in field_mappings.items():
+        if spec_field in expected_return_field_keys:
+            expected_return_field_keys.remove(spec_field)
+            expected_return_field_keys.add(new_field)
 
     missing_fields = expected_return_field_keys - actual_return_fields
     extra_fields = actual_return_fields - expected_return_field_keys
@@ -243,9 +261,6 @@ def verify_configuration_fields(
             for param in ignored_params:
                 expected_configuration.pop(param, None)
 
-    if "graph_name" in expected_configuration:
-        expected_configuration["G"] = expected_configuration.pop("graph_name")
-
     method_signature = inspect.signature(callable_object)
     actual_parameters = dict(method_signature.parameters)
 
@@ -267,6 +282,13 @@ def verify_configuration_fields(
         expected_configuration = {
             name: param for name, param in expected_configuration.items() if param.sourceKind is not SourceKind.CONFIG
         }
+
+    if "graph_name" in expected_configuration and not "from_graph_name" in expected_configuration:
+        expected_configuration["G"] = expected_configuration.pop("graph_name")
+    if "from_graph_name" in expected_configuration:
+        expected_configuration["G"] = expected_configuration.pop("from_graph_name")
+    if "graph_name_or_list_of_graph_names" in expected_configuration:
+        expected_configuration["G"] = expected_configuration.pop("graph_name_or_list_of_graph_names")
 
     missing_params = expected_configuration.keys() - actual_parameters.keys()
     extra_params = actual_parameters.keys() - expected_configuration.keys()
@@ -296,7 +318,7 @@ def verify_configuration_fields(
 
     for name, expected_param in expected_configuration.items():
         expected_default = default_adjustments.get(name, expected_param.defaultValue)
-        if expected_default == []:
+        if expected_default == [] or expected_default == "":
             expected_default = None
 
         actual_default = actual_parameters[name].default
@@ -330,7 +352,7 @@ def assert_api_spec_coverage(
                 missing_endpoints.add(endpoint_name)
             elif callable_object:
                 available_endpoints.add(endpoint_name)
-                verify_return_fields(callable_object, expected_return_fields=endpoint_spec.returnFields)
+                verify_return_fields(callable_object, endpoint_name, expected_return_fields=endpoint_spec.returnFields)
                 verify_configuration_fields(
                     callable_object,
                     endpoint_spec=endpoint_spec,
