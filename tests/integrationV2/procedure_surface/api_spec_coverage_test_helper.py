@@ -299,14 +299,6 @@ def verify_configuration_fields(
             for ignored_param in ignored_params:
                 actual_parameters.pop(ignored_param, None)
 
-    if any(param.kind is inspect.Parameter.VAR_KEYWORD for param in actual_parameters.values()):
-        actual_parameters = {
-            name: param for name, param in actual_parameters.items() if param.kind is not inspect.Parameter.VAR_KEYWORD
-        }
-        expected_configuration = {
-            name: param for name, param in expected_configuration.items() if param.sourceKind is not SourceKind.CONFIG
-        }
-
     if (
         "graph_name" in expected_configuration
         and "from_graph_name" not in expected_configuration
