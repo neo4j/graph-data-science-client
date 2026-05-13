@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import builtins
 import time
+import typing
 import uuid
 from types import TracebackType
 from typing import Any, NamedTuple, Type
@@ -76,8 +76,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         *,
         job_id: str | None = None,
         concurrency: int | None = None,
-        undirected_relationship_types: builtins.list[str] | None = None,
-        inverse_indexed_relationship_types: builtins.list[str] | None = None,
+        undirected_relationship_types: typing.List[str] | None = None,
+        inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
     ) -> GraphWithProjectResult:
@@ -131,15 +131,15 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     def project_native(
         self,
         graph_name: str,
-        node_label_filter: builtins.list[str],
-        relationship_type_filter: builtins.list[str],
+        node_label_filter: typing.List[str],
+        relationship_type_filter: typing.List[str],
         *,
-        node_properties: builtins.list[str] | None = None,
-        relationship_properties: builtins.list[str] | None = None,
+        node_properties: typing.List[str] | None = None,
+        relationship_properties: typing.List[str] | None = None,
         job_id: str | None = None,
         concurrency: int | None = None,
-        undirected_relationship_types: builtins.list[str] | None = None,
-        inverse_indexed_relationship_types: builtins.list[str] | None = None,
+        undirected_relationship_types: typing.List[str] | None = None,
+        inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
     ) -> GraphWithProjectResult:
@@ -410,7 +410,7 @@ class ProjectionResult(BaseResult):
 
 
 class StoreProjectionResult(BaseResult):
-    """Result object for graph projection jobs."""
+    """Result object for native graph projection jobs."""
 
     graph_name: str
     node_count: int

@@ -17,7 +17,6 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
         super().__init__(query_runner, namespace, server_version)
         self._arrow_client = arrow_client
 
-    # The parameters need to be in camelCase to not break the api
     def project(
         self,
         graph_name: str,
