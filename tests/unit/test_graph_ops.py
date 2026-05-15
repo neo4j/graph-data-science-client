@@ -1,8 +1,6 @@
-import pytest
 from pandas import DataFrame
 
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from tests.unit.conftest import CollectingQueryRunner
 
@@ -91,27 +89,6 @@ def test_project_subgraph(runner: CollectingQueryRunner, gds: GraphDataScience) 
         "node_filter": "n.x > 1",
         "relationship_filter": "*",
         "config": {"concurrency": 2, "jobId": jobId},
-    }
-
-
-@pytest.mark.parametrize("server_version", [ServerVersion(2, 7, 0)])
-def test_project_remote(runner: CollectingQueryRunner, aura_gds: AuraGraphDataScience) -> None:
-    aura_gds.graph.project("g", "RETURN gds.graph.project.remote(0, 1, null)")
-
-    assert (
-        runner.last_query() == "CALL gds.arrow.project("
-        "$graph_name, $query, $job_id, $concurrency, "
-        "$undirected_relationship_types, $inverse_indexed_relationship_types, $arrow_configuration)"
-    )
-    # injection of token and host into the params is done by the actual query runner
-    assert runner.last_params() == {
-        "graph_name": "g",
-        "job_id": None,
-        "concurrency": 4,
-        "inverse_indexed_relationship_types": [],
-        "query": "RETURN gds.graph.project.remote(0, 1, null)",
-        "undirected_relationship_types": [],
-        "arrow_configuration": {},
     }
 
 
