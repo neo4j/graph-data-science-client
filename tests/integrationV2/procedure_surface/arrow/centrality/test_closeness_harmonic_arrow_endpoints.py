@@ -100,7 +100,7 @@ def test_closeness_harmonic_mutate(
 def test_closeness_harmonic_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    endpoints = ClosenessHarmonicArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = ClosenessHarmonicArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="harmonic_closeness")
 
     assert isinstance(result, ClosenessHarmonicWriteResult)

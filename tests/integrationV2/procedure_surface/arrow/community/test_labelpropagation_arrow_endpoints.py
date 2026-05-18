@@ -113,7 +113,7 @@ def test_labelpropagation_mutate(
 def test_labelpropagation_write(
     arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
-    endpoints = LabelPropagationArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = LabelPropagationArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
 
     result = endpoints.write(G=db_graph, write_property="lp_community", max_iterations=10)
 

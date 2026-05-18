@@ -96,7 +96,7 @@ def test_fastrp_mutate(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Gra
 
 @pytest.mark.db_integration
 def test_fastrp_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    endpoints = FastRPArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = FastRPArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="fastrp_embedding", embedding_dimension=32)
 
     assert isinstance(result, FastRPWriteResult)

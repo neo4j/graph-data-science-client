@@ -122,7 +122,7 @@ def test_node_similarity_filtered_write(
     """Test NodeSimilarity filtered write operation."""
     endpoints_with_writeback = NodeSimilarityFilteredArrowEndpoints(
         arrow_client=arrow_client,
-        write_back_client=RemoteWriteBackClient(arrow_client, query_runner),
+        write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner),
     )
 
     result = endpoints_with_writeback.write(

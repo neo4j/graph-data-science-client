@@ -105,7 +105,7 @@ def test_spanning_tree_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
     spanning_tree_endpoints = SpanningTreeArrowEndpoints(
-        arrow_client, write_back_client=RemoteWriteBackClient(arrow_client, query_runner)
+        arrow_client, write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner)
     )
     result = spanning_tree_endpoints.write(
         G=db_graph,

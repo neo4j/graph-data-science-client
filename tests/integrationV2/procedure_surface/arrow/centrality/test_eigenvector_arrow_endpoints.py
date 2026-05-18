@@ -101,7 +101,7 @@ def test_eigenvector_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
     """Test Eigenvector write operation."""
-    endpoints = EigenvectorArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = EigenvectorArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="eigenvector")
 
     assert isinstance(result, EigenvectorWriteResult)

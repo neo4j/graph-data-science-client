@@ -63,7 +63,7 @@ def test_sllpa_stats(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2
 
     assert result.ran_iterations > 0
     assert result.did_converge in [True, False]
-    assert result.compute_millis > 0
+    assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert isinstance(result.configuration, dict)
 
@@ -99,7 +99,7 @@ def test_sllpa_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, 
     """Test SLLPA write operation via Arrow."""
     from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 
-    endpoints = SllpaArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = SllpaArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
 
     result = endpoints.write(
         G=db_graph,

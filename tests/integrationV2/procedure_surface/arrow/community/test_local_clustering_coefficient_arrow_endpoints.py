@@ -113,7 +113,7 @@ def test_local_clustering_coefficient_write(
     from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 
     endpoints = LocalClusteringCoefficientArrowEndpoints(
-        arrow_client, RemoteWriteBackClient(arrow_client, query_runner)
+        arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner)
     )
 
     result = endpoints.write(

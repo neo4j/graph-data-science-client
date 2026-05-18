@@ -113,7 +113,7 @@ def test_leiden_mutate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Gra
 
 @pytest.mark.db_integration
 def test_leiden_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
-    endpoints = LeidenArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = LeidenArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
 
     result = endpoints.write(G=db_graph, write_property="leiden_community", max_levels=10)
 

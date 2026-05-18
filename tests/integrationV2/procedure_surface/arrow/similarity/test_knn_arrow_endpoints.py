@@ -100,7 +100,7 @@ def test_knn_mutate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> 
 def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test KNN write operation."""
     endpoints = KnnArrowEndpoints(
-        arrow_client, write_back_client=RemoteWriteBackClient(arrow_client, query_runner), show_progress=False
+        arrow_client, write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner), show_progress=False
     )
 
     result = endpoints.write(

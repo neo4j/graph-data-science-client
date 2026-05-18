@@ -154,7 +154,7 @@ def test_louvain_stream_with_parameters(louvain_endpoints: LouvainArrowEndpoints
 @pytest.mark.db_integration
 def test_louvain_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test Louvain write operation."""
-    endpoints = LouvainArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = LouvainArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="communityId")
 
     assert isinstance(result, LouvainWriteResult)

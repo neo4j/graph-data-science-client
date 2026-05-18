@@ -63,7 +63,7 @@ def test_node_classification_train_and_predict_write(
     db_graph: GraphV2,
 ) -> None:
     endpoints = NodeClassificationPipelineArrowEndpoints(
-        arrow_client, RemoteWriteBackClient(arrow_client, query_runner), show_progress=False
+        arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner), show_progress=False
     )
 
     pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"

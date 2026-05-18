@@ -97,7 +97,7 @@ def test_articulationpoints_stream_not_implemented(
 def test_articulationpoints_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    endpoints = ArticulationPointsArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = ArticulationPointsArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="articulationPoint")
 
     assert isinstance(result, ArticulationPointsWriteResult)

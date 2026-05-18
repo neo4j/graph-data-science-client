@@ -86,7 +86,7 @@ def test_node2vec_stream(node2vec_endpoints: Node2VecArrowEndpoints, sample_grap
 @pytest.mark.db_integration
 def test_node2vec_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test Node2Vec write operation."""
-    endpoints = Node2VecArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = Node2VecArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(
         G=db_graph,
         write_property="node2vec_embedding",

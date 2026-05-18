@@ -109,7 +109,9 @@ def test_modularity_optimization_write(
 ) -> None:
     from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 
-    endpoints = ModularityOptimizationArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = ModularityOptimizationArrowEndpoints(
+        arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner)
+    )
 
     result = endpoints.write(
         G=db_graph,

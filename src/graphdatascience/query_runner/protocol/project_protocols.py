@@ -11,6 +11,7 @@ from tenacity import retry, retry_if_result
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
@@ -70,25 +71,6 @@ class ProjectProtocol(ABC):
             ProtocolVersion.V4: ProjectProtocolV4(arrow_client, query_runner, termination_flag),
         }[protocol_version]
 
-    def _arrow_config(self, batch_size: int | None) -> dict[str, Any]:
-        connection_info = self._arrow_client.advertised_connection_info()
-
-        token = self._arrow_client.request_token()
-        if token is None:
-            token = "IGNORED"
-
-        config = {
-            "host": connection_info.host,
-            "port": connection_info.port,
-            "token": token,
-            "encrypted": connection_info.encrypted,
-        }
-
-        if batch_size is not None:
-            config["batchSize"] = batch_size
-
-        return config
-
     def _show_progress(self, job_id: str, show_progress: bool, termination_flag: TerminationFlag) -> None:
         job_client = JobClient()
 
@@ -127,7 +109,7 @@ class ProjectProtocolV3(ProjectProtocol):
             "query": query,
             "jobId": job_id,
             "configuration": configuration,
-            "arrow_config": self._arrow_config(batch_size),
+            "arrow_config": build_arrow_config(self._arrow_client, batch_size),
         }
 
         # We need to pin the driver to a specific cluster member
@@ -203,7 +185,7 @@ class ProjectProtocolV4(ProjectProtocol):
             "query": query,
             "jobId": job_id,
             "configuration": configuration,
-            "arrow_config": self._arrow_config(batch_size),
+            "arrow_config": build_arrow_config(self._arrow_client, batch_size),
         }
 
         actual_job_id, projection_query_runner = self._start_job(
@@ -241,7 +223,7 @@ class ProjectProtocolV4(ProjectProtocol):
             "node_labels": node_label_filter,
             "relationship_types": relationship_type_filter,
             "configuration": configuration,
-            "arrow_config": self._arrow_config(batch_size),
+            "arrow_config": build_arrow_config(self._arrow_client, batch_size),
         }
 
         actual_job_id, projection_query_runner = self._start_job(

@@ -88,7 +88,7 @@ def test_clique_counting_mutate(clique_counting_endpoints: CliqueCountingArrowEn
 def test_clique_counting_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    endpoints = CliqueCountingArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = CliqueCountingArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="cliqueCount")
 
     assert isinstance(result, CliqueCountingWriteResult)

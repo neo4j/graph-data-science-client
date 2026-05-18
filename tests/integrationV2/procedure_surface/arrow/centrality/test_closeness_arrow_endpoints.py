@@ -87,7 +87,7 @@ def test_closeness_mutate(closeness_endpoints: ClosenessArrowEndpoints, sample_g
 
 @pytest.mark.db_integration
 def test_closeness_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    endpoints = ClosenessArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = ClosenessArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="closeness")
 
     assert isinstance(result, ClosenessWriteResult)

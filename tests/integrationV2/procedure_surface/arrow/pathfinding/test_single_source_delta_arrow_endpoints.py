@@ -114,7 +114,7 @@ def test_delta_stepping_write(
 ) -> None:
     endpoints_with_writeback = DeltaSteppingArrowEndpoints(
         arrow_client=arrow_client,
-        write_back_client=RemoteWriteBackClient(arrow_client, query_runner),
+        write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner),
     )
 
     result = endpoints_with_writeback.write(

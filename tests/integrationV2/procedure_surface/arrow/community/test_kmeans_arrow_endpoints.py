@@ -98,7 +98,7 @@ def test_kmeans_mutate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Gra
 
 @pytest.mark.db_integration
 def test_kmeans_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
-    endpoints = KMeansArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = KMeansArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
 
     result = endpoints.write(G=db_graph, node_property="kmeans", write_property="community", k=3)
 

@@ -88,7 +88,7 @@ def test_mutate(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
 
 @pytest.mark.db_integration
 def test_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    model, _ = GraphSageTrainArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))(
+    model, _ = GraphSageTrainArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))(
         G=db_graph,
         model_name="gs-model-write",
         feature_properties=["feature"],

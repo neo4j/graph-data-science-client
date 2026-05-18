@@ -117,7 +117,7 @@ def test_min_cost_mutate(min_cost_endpoints: MaxFlowMinCostArrowEndpoints, sampl
 
 @pytest.mark.db_integration
 def test_min_cost_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    endpoints = MaxFlowMinCostArrowEndpoints(arrow_client, RemoteWriteBackClient(arrow_client, query_runner))
+    endpoints = MaxFlowMinCostArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
     result = endpoints.write(
         db_graph,
         [find_node_by_id(query_runner, 0)],
