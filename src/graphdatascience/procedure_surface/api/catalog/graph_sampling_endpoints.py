@@ -62,7 +62,7 @@ class GraphSamplingEndpoints(ABC):
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed
-            The seed used for the random number generator. If not specified, a random seed will be used.
+            Seed for random number generation to ensure reproducible results.
         sudo
             Disable the memory guard.
         log_progress
@@ -134,7 +134,7 @@ class GraphSamplingEndpoints(ABC):
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         random_seed
-            The seed used for the random number generator. If not specified, a random seed will be used.
+            Seed for random number generation to ensure reproducible results.
         sudo
             Disable the memory guard.
         log_progress

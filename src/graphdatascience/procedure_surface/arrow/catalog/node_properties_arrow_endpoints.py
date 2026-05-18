@@ -135,7 +135,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             node_properties=node_properties,
-            fail_if_missing=fail_if_missing,
+            # fail_if_missing=fail_if_missing, TODO: Enable once this is fixed in the session
             concurrency=concurrency,
             username=username,
         )

@@ -4,7 +4,6 @@ from uuid import uuid4
 import pytest
 
 from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipeline_cypher_endpoints import (
     NodeClassificationPipelineCypherEndpoints,
 )
@@ -66,7 +65,6 @@ def test_node_classification_train_estimate_cypher_pipeline(
         assert estimate.required_memory is not None
         assert estimate.bytes_max is None or estimate.bytes_max >= 0
     finally:
-        ModelCatalogCypherEndpoints(query_runner).drop(model_name)
         query_runner.run_cypher(
             "CALL gds.pipeline.drop($name, false)",
             query_type=QueryType.USER_ACTION,
@@ -97,7 +95,6 @@ def test_node_classification_predict_estimate_cypher_pipeline(
         assert estimate.required_memory is not None
         assert estimate.bytes_max is None or estimate.bytes_max >= 0
     finally:
-        ModelCatalogCypherEndpoints(query_runner).drop(model_name)
         query_runner.run_cypher(
             "CALL gds.pipeline.drop($name, false)",
             query_type=QueryType.USER_ACTION,

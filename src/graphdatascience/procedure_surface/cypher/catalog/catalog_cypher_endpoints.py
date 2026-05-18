@@ -163,6 +163,10 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             jobId=job_id,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+            parameters=parameters,
         )
 
         params = CallParameters(
@@ -170,11 +174,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             from_graph_name=G.name(),
             node_filter=node_filter,
             relationship_filter=relationship_filter,
-            parameters=parameters,
             config=config,
-            sudo=sudo,
-            log_progress=log_progress,
-            username=username,
         )
         params.ensure_job_id_in_config()
 

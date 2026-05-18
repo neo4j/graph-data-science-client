@@ -139,7 +139,6 @@ def test_link_prediction_train_estimate_cypher_pipeline(
         assert estimate.required_memory is not None
         assert estimate.bytes_max is None or estimate.bytes_max >= 0
     finally:
-        ModelCatalogCypherEndpoints(query_runner).drop(model_name)
         PipelineCatalogCypherEndpoints(query_runner).drop(pipeline_name)
 
 
