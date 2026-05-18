@@ -69,7 +69,7 @@ class ModelCatalogEndpoints(ABC):
         """
 
     @abstractmethod
-    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails | None:
+    def drop(self, model_name: str, *, fail_if_missing: bool = True) -> ModelDetails | None:
         """Drop a model from the in-memory catalog.
 
         Parameters

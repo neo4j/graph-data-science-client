@@ -149,7 +149,6 @@ def test_node_classification_train_estimate(
         assert estimate.required_memory is not None
         assert estimate.bytes_max is None or estimate.bytes_max >= 0
     finally:
-        ModelCatalogArrowEndpoints(arrow_client).drop(model_name)
         PipelineCatalogArrowEndpoints(arrow_client).drop(pipeline_name)
 
 

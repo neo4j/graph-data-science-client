@@ -16,6 +16,7 @@ from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
 def gds(arrow_client: AuthenticatedArrowClient, db_query_runner: Neo4jQueryRunner) -> AuraGraphDataScience:
     return AuraGraphDataScience(
         query_runner=db_query_runner,
+        db_query_runner=db_query_runner,
         session_lifecycle_manager=mock.Mock(spec=SessionLifecycleManager),
         gds_version=ServerVersion.from_string("1.2.3"),
         v2_endpoints=SessionV2Endpoints(arrow_client, db_query_runner),

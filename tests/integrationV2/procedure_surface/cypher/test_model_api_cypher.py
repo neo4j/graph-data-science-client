@@ -62,8 +62,8 @@ def model_api(query_runner: QueryRunner) -> Generator[ModelApiCypher, None, None
 def test_model_get(gs_model: str, model_api: ModelApiCypher) -> None:
     model = model_api.get(gs_model)
 
-    assert model.name == gs_model
-    assert model.type == "graphSage"
+    assert model.model_name == gs_model
+    assert model.model_type == "graphSage"
 
     with pytest.raises(ValueError, match="There is no 'nonexistent-model' in the model catalog"):
         model_api.get("nonexistent-model")
@@ -78,7 +78,7 @@ def test_model_drop(gs_model: str, model_api: ModelApiCypher) -> None:
     model_details = model_api.drop(gs_model, fail_if_missing=False)
 
     assert model_details is not None
-    assert model_details.name == gs_model
+    assert model_details.model_name == gs_model
 
     # Check that the model no longer exists
     assert not model_api.exists(gs_model)

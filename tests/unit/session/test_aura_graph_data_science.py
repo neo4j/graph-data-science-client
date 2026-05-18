@@ -14,6 +14,7 @@ def test_run_cypher_write(mocker: MockerFixture) -> None:
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
+        db_query_runner=None,
         session_lifecycle_manager=mocker.Mock(spec=SessionLifecycleManager),
         gds_version=v,
         v2_endpoints=mocker.Mock(),
@@ -32,6 +33,7 @@ def test_run_cypher_read(mocker: MockerFixture) -> None:
     query_runner = CollectingQueryRunner(v)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
+        db_query_runner=None,
         session_lifecycle_manager=mocker.Mock(spec=SessionLifecycleManager),
         gds_version=v,
         v2_endpoints=mocker.Mock(),
@@ -58,6 +60,7 @@ def test_verify_connectivity(mocker: MockerFixture) -> None:
     v2_endpoints = mocker.Mock(spec=SessionV2Endpoints)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
+        db_query_runner=None,
         session_lifecycle_manager=session_lifecycle_manager,
         gds_version=v,
         v2_endpoints=v2_endpoints,
@@ -77,6 +80,7 @@ def test_delete(mocker: MockerFixture) -> None:
     session_lifecycle_manager = mocker.Mock(spec=SessionLifecycleManager)
     gds = AuraGraphDataScience(
         query_runner=query_runner,
+        db_query_runner=query_runner,
         session_lifecycle_manager=session_lifecycle_manager,
         gds_version=v,
         v2_endpoints=mocker.Mock(),
