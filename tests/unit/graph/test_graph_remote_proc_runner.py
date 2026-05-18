@@ -3,11 +3,9 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-from pandas import Series
+from pandas import DataFrame, Series
 from pyarrow import flight
 from pytest_mock import MockerFixture
-
-from pandas import DataFrame
 
 from graphdatascience import GraphCreateResult, ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
