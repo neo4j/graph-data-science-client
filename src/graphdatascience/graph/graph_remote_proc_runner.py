@@ -8,6 +8,7 @@ from graphdatascience.graph.base_graph_proc_runner import BaseGraphProcRunner
 from graphdatascience.procedure_surface.arrow.error_handler import handle_flight_error
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 
 
 class GraphRemoteProcRunner(BaseGraphProcRunner):
@@ -16,6 +17,7 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
     ):
         super().__init__(query_runner, namespace, server_version)
         self._arrow_client = arrow_client
+        self._resolved_protocol_version = ProtocolVersionResolver(query_runner).resolve()
 
     def project(
         self,
