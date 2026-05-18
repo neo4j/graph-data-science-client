@@ -7,6 +7,8 @@ from pandas import Series
 from pyarrow import flight
 from pytest_mock import MockerFixture
 
+from pandas import DataFrame
+
 from graphdatascience import GraphCreateResult, ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
@@ -25,12 +27,13 @@ def _make_runner(
     db_query_runner: CollectingQueryRunner | None = None,
     protocol_version: ProtocolVersion = ProtocolVersion.V4,
 ) -> GraphRemoteProcRunner:
+    # The constructor eagerly resolves the protocol version via a Cypher query;
+    # provide a mock result so the resolver succeeds.
+    query_runner.add__mock_result("protocol.version", DataFrame([{"version": protocol_version.value}]))
     runner = GraphRemoteProcRunner(query_runner, arrow_client, "gds.graph", SERVER_VERSION)
-    # GraphRemoteProcRunner.project() reads `_db_query_runner` and `_resolved_protocol_version`
-    # off `self`; in production these come from the wrapping SessionQueryRunner. The unit tests
-    # set them explicitly to isolate the runner from session wiring.
+    # GraphRemoteProcRunner.project() reads `_db_query_runner` off `self`;
+    # in production this comes from the wrapping SessionQueryRunner.
     runner._db_query_runner = db_query_runner if db_query_runner is not None else query_runner  # type: ignore[attr-defined]
-    runner._resolved_protocol_version = protocol_version  # type: ignore[attr-defined]
     return runner
 
 
