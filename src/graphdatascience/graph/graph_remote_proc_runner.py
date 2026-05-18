@@ -33,7 +33,7 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
         project_protocol = ProjectProtocol.select(
             self._resolved_protocol_version,
             self._arrow_client.flight_client(),
-            self._db_query_runner,
+            self._query_runner,
             TerminationFlag.create(),
         )
 
