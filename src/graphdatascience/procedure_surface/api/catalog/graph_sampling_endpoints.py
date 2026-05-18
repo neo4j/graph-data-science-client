@@ -23,6 +23,7 @@ class GraphSamplingEndpoints(ABC):
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
+        random_seed: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -60,6 +61,8 @@ class GraphSamplingEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        random_seed
+            The seed used for the random number generator. If not specified, a random seed will be used.
         sudo
             Disable the memory guard.
         log_progress
@@ -90,6 +93,7 @@ class GraphSamplingEndpoints(ABC):
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
+        random_seed: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
@@ -129,6 +133,8 @@ class GraphSamplingEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        random_seed
+            The seed used for the random number generator. If not specified, a random seed will be used.
         sudo
             Disable the memory guard.
         log_progress

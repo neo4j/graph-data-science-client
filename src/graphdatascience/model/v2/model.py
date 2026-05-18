@@ -49,7 +49,7 @@ class Model(ABC):
         return self._model_api.drop(self._name, failIfMissing)
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}(name={self.name()}, type={self.details().type})"
+        return f"{self.__class__.__name__}(name={self.name()}, type={self.details().model_type})"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.details().model_dump()})"

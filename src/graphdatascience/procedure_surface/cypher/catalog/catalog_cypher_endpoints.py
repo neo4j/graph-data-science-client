@@ -153,9 +153,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
+        parameters: dict[str, Any] | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        sudo: bool = False,
         log_progress: bool = True,
+        username: str | None = None,
     ) -> GraphWithFilterResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -167,7 +170,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             from_graph_name=G.name(),
             node_filter=node_filter,
             relationship_filter=relationship_filter,
+            parameters=parameters,
             config=config,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
         )
         params.ensure_job_id_in_config()
 
@@ -182,11 +189,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         node_count: int,
         average_degree: float,
         *,
-        relationship_distribution: str | None = None,
+        relationship_distribution: str | None = "UNIFORM",
         relationship_seed: int | None = None,
         relationship_property: RelationshipPropertySpec | None = None,
-        orientation: str | None = None,
-        allow_self_loops: bool | None = None,
+        orientation: str | None = "NATURAL",
+        aggregation: str | None = "NONE",
+        allow_self_loops: bool | None = False,
         read_concurrency: int | None = None,
         job_id: str | None = None,
         sudo: bool = False,
@@ -198,6 +206,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             relationship_seed=relationship_seed,
             relationship_property=relationship_property.model_dump(by_alias=True) if relationship_property else None,
             orientation=orientation,
+            aggregation=aggregation,
             allow_self_loops=allow_self_loops,
             read_concurrency=read_concurrency,
             job_id=job_id,

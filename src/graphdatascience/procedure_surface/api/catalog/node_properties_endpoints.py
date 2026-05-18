@@ -18,7 +18,7 @@ class NodePropertiesEndpoints(ABC):
         G: GraphV2,
         node_properties: str | list[str],
         *,
-        list_node_labels: bool | None = None,
+        list_node_labels: bool | None = False,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,
         sudo: bool = False,
@@ -113,7 +113,7 @@ class NodePropertiesEndpoints(ABC):
         G: GraphV2,
         node_properties: list[str],
         *,
-        fail_if_missing: bool | None = None,
+        fail_if_missing: bool | None = True,
         concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:

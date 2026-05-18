@@ -8,6 +8,16 @@ from typing import Any
 from pandas import DataFrame
 from pydantic import BaseModel
 
+from graphdatascience.procedure_surface.api.catalog import (
+    GraphFilterResult,
+    GraphGenerationStats,
+    GraphInfo,
+    GraphInfoWithDegrees,
+    GraphSamplingResult,
+    GraphWithFilterResult,
+    GraphWithGenerationStats,
+    GraphWithSamplingResult,
+)
 from tests.integrationV2.procedure_surface.gds_api_spec import (
     EndpointSpec,
     EndpointWithModesSpec,
@@ -34,6 +44,17 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "memory.list",
     "list",  # listing only available endpoints
     "user_log",
+    "graph.export",
+    "internal.graph.size_of",
+    "graph.node_property.stream",
+    "graph.relationship_properties.write",
+    "graph.exists",
+    "graph.node_label.write",
+    "graph.export.csv",
+    "graph.relationship.write",
+    "graph.relationship_property.stream",
+    "graph.node_label.mutate",
+    "graph.relationship_properties.stream",
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(
@@ -64,6 +85,7 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
     ]
 )
 
+
 IGNORED_PARAMETERS = {
     r".*\.write": ["write_to_result_store"],
     r".*shortest_path\.dijkstra.*": ["target_node"],
@@ -86,6 +108,13 @@ IGNORED_PARAMETERS = {
     ],
     r".*scale_properties.*": ["relationship_types"],
     r".*collapse_path.*": ["relationship_types"],
+    r".*graph.drop": ["username", "db_name"],
+    r".*graph.filter": ["graph_name"],
+    r".*cnarw": ["graph_name"],
+    r".*rwr": ["graph_name"],
+    r".*graph.generate": ["validate_relationships", "relationship_count", "graph_name"],
+    r".*node_properties.drop": ["sudo", "log_progress"],
+    r".*model.list": ["model_name"],
 }
 
 EXPECTED_PARAMETER_NAME_ALIASES = {
@@ -95,10 +124,17 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.train$": {
         "pipeline": "pipeline_name",
     },
+    r".*graph.drop": {"graph_name_or_list_of_graph_names": "G"},
+    r".*graph.filter": {"from_graph_name": "G"},
+    r".*cnarw": {"from_graph_name": "G"},
+    r".*rwr": {"from_graph_name": "G"},
 }
 
 IGNORED_ACTUAL_PARAMETERS = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
+    r".*graph.node_properties.stream": ["job_id", "db_node_properties"],
+    r".*graph.relationships.stream": ["relationship_properties"],
+    r".*graph.relationships.drop": ["fail_if_missing"],
 }
 
 ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
@@ -106,6 +142,7 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
         "concurrency": None,
         "job_id": None,
         "write_concurrency": None,
+        "read_concurrency": None,
     },
     ".*(knn|node_similarity).filtered.*": {
         "source_node_filter": None,
@@ -129,7 +166,23 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
     "pipeline.drop": {
         "fail_if_missing": False,
     },
+    r".*graph.filter": {"parameters": None},
+    r".*graph.generate": {"relationship_property": None},
+    r".*graph.list": {"G": None},
 }
+
+
+RETURN_CLASS_OVERRIDES = {
+    GraphWithFilterResult: GraphFilterResult,
+    GraphWithGenerationStats: GraphGenerationStats,
+    GraphWithSamplingResult: GraphSamplingResult,
+}
+
+EXPECTED_RETURN_FIELD_ALIASES = {
+    "schema_with_orientation": "graph_schema",
+}
+
+EXPECTED_IGNORED_RETURN_FIELDS = {GraphInfo: ["schema"], GraphInfoWithDegrees: ["schema"]}
 
 
 def method_str(method: MethodType) -> str:
@@ -180,6 +233,10 @@ def resolve_callable_object(endpoints: object, endpoint: str) -> MethodType | No
 def verify_return_fields(callable_object: MethodType, expected_return_fields: list[ReturnField]) -> None:
     return_annotation: Any | None = typing.get_type_hints(callable_object).get("return")
 
+    for expected, override in RETURN_CLASS_OVERRIDES.items():
+        if return_annotation is expected:
+            return_annotation = override
+
     if not return_annotation:
         raise ValueError(
             f"Callable object {method_str(callable_object)} has no return annotation. Mypy should complain :/"
@@ -218,7 +275,16 @@ def verify_return_fields(callable_object: MethodType, expected_return_fields: li
         )
 
     actual_return_fields = set(result_type.model_fields.keys())
-    expected_return_field_keys = {to_snake(field.name) for field in expected_return_fields}
+    expected_return_field_keys = set({to_snake(field.name) for field in expected_return_fields})
+
+    for aliased_field, alias in EXPECTED_RETURN_FIELD_ALIASES.items():
+        if aliased_field in expected_return_field_keys:
+            expected_return_field_keys.add(alias)
+            expected_return_field_keys.remove(aliased_field)
+
+    for klass, ignored_fields in EXPECTED_IGNORED_RETURN_FIELDS.items():
+        if result_type == klass:
+            expected_return_field_keys -= set(ignored_fields)
 
     missing_fields = expected_return_field_keys - actual_return_fields
     extra_fields = actual_return_fields - expected_return_field_keys
@@ -248,6 +314,11 @@ def verify_configuration_fields(
 
     method_signature = inspect.signature(callable_object)
     actual_parameters = dict(method_signature.parameters)
+
+    for endpoint_pattern, ignored_params in IGNORED_PARAMETERS.items():
+        if re.match(endpoint_pattern, py_endpoint):
+            for param in ignored_params:
+                actual_parameters.pop(param, None)
 
     for endpoint_pattern, aliases in EXPECTED_PARAMETER_NAME_ALIASES.items():
         if re.match(endpoint_pattern, py_endpoint):

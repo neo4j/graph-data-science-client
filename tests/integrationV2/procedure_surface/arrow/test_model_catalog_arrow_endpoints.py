@@ -64,14 +64,14 @@ def test_model_list(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     assert len(models) == 1
     model = models[0]
 
-    assert model_catalog.get(model.name) == model
+    assert model_catalog.get(model.model_name) == model
 
 
 def test_model_get(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:
     model = model_catalog.get(gs_model_name)
     assert model is not None
-    assert model.name == gs_model_name
-    assert model.type == "graphSage"
+    assert model.model_name == gs_model_name
+    assert model.model_type == "graphSage"
     assert model.loaded
     assert model.creation_time.date() == datetime.date.today()
     assert not model.stored
@@ -93,7 +93,7 @@ def test_model_drop(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     model_details = model_catalog.drop(gs_model_name, fail_if_missing=False)
 
     assert model_details is not None
-    assert model_details.name == gs_model_name
+    assert model_details.model_name == gs_model_name
 
     # Check that the model no longer exists
     assert model_catalog.exists(gs_model_name) is None

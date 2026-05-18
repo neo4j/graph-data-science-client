@@ -45,7 +45,7 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
             raise ValueError(f"Model with name `{model_name}` does not exist")
         return self._to_model_details(items[0])
 
-    def drop(self, model_name: str, *, fail_if_missing: bool = False) -> ModelDetails | None:
+    def drop(self, model_name: str, *, fail_if_missing: bool = True) -> ModelDetails | None:
         raw = self._arrow_client.do_action_with_retry(
             "v2/model.drop",
             payload=json.dumps({"modelName": model_name, "failIfMissing": fail_if_missing}).encode("utf-8"),

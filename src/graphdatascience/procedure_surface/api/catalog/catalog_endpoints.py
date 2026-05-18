@@ -120,8 +120,12 @@ class CatalogEndpoints(ABC):
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
+        parameters: dict[str, Any] | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
     ) -> GraphWithFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
@@ -135,10 +139,18 @@ class CatalogEndpoints(ABC):
             Filter expression for nodes
         relationship_filter (str):
             Filter expression for relationships
+        parameters
+            A map of user-defined query parameters that are passed into the node and relationship filters.
         concurrency
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
+        sudo
+            Disable the memory guard.
+        log_progress
+            Display progress logging.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
 
         Returns
         -------
@@ -154,11 +166,12 @@ class CatalogEndpoints(ABC):
         node_count: int,
         average_degree: float,
         *,
-        relationship_distribution: str | None = None,
+        relationship_distribution: str | None = "UNIFORM",
         relationship_seed: int | None = None,
         relationship_property: RelationshipPropertySpec | None = None,
-        orientation: str | None = None,
-        allow_self_loops: bool | None = None,
+        orientation: str | None = "NATURAL",
+        aggregation: str | None = "NONE",
+        allow_self_loops: bool | None = False,
         read_concurrency: int | None = None,
         job_id: str | None = None,
         sudo: bool = False,
@@ -170,23 +183,25 @@ class CatalogEndpoints(ABC):
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             Name of the generated graph.
-        node_count : int
+        node_count
             The number of nodes in the generated graph
-        average_degree : float
+        average_degree
             The average out-degree of the generated nodes
-        relationship_distribution : str | None, default=None
+        relationship_distribution
             Determines the relationship distribution strategy.
-        relationship_seed : int | None, default=None
+        relationship_seed
             Seed value for generating deterministic relationships.
-        relationship_property : RelationshipPropertySpec | None, default=None
+        relationship_property
             Configure generated relationship properties.
-        orientation : str | None, default=None
+        orientation
             Specifies the orientation of the generated relationships.
-        allow_self_loops : bool | None, default=None
+        aggregation
+            The relationship aggregation method of Relationship Projection.
+        allow_self_loops
             Whether nodes in the graph can have relationships where start and end nodes are the same.
-        read_concurrency : int | None, default=None
+        read_concurrency
             Number of concurrent threads/processes to use during graph generation.
         job_id
             Identifier for the computation.
