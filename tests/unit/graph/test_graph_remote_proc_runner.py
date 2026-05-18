@@ -22,16 +22,12 @@ SERVER_VERSION = ServerVersion(2, 10, 0)
 def _make_runner(
     query_runner: CollectingQueryRunner,
     arrow_client: GdsArrowClient,
-    db_query_runner: CollectingQueryRunner | None = None,
     protocol_version: ProtocolVersion = ProtocolVersion.V4,
 ) -> GraphRemoteProcRunner:
     # The constructor eagerly resolves the protocol version via a Cypher query;
     # provide a mock result so the resolver succeeds.
     query_runner.add__mock_result("protocol.version", DataFrame([{"version": protocol_version.value}]))
-    runner = GraphRemoteProcRunner(query_runner, arrow_client, "gds.graph", SERVER_VERSION)
-    # GraphRemoteProcRunner.project() reads `_db_query_runner` off `self`;
-    # in production this comes from the wrapping SessionQueryRunner.
-    runner._db_query_runner = db_query_runner if db_query_runner is not None else query_runner  # type: ignore[attr-defined]
+    runner = GraphRemoteProcRunner(query_runner, arrow_client, query_runner, "gds.graph", SERVER_VERSION)
     return runner
 
 

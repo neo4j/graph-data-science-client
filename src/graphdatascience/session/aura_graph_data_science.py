@@ -92,6 +92,7 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
             )
             return cls(
                 query_runner=session_query_runner,
+                db_query_runner=db_bolt_query_runner,
                 session_lifecycle_manager=session_lifecycle_manager,
                 gds_version=gds_version,
                 v2_endpoints=SessionV2Endpoints(
@@ -103,6 +104,7 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
             standalone_query_runner = StandaloneSessionQueryRunner(session_arrow_query_runner)
             return cls(
                 query_runner=standalone_query_runner,
+                db_query_runner=None,
                 session_lifecycle_manager=session_lifecycle_manager,
                 gds_version=gds_version,
                 v2_endpoints=SessionV2Endpoints(session_auth_arrow_client, None, show_progress=show_progress),
@@ -112,12 +114,14 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
     def __init__(
         self,
         query_runner: QueryRunner,
+        db_query_runner: QueryRunner | None,
         session_lifecycle_manager: SessionLifecycleManager,
         gds_version: ServerVersion,
         v2_endpoints: SessionV2Endpoints,
         authenticated_arrow_client: AuthenticatedArrowClient,
     ):
         self._query_runner = query_runner
+        self._db_query_runner = db_query_runner
         self._session_lifecycle_manager = session_lifecycle_manager
         self._server_version = gds_version
         self._v2_endpoints = v2_endpoints
@@ -177,7 +181,11 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
     @property
     def graph(self) -> GraphRemoteProcRunner:
         return GraphRemoteProcRunner(
-            self._query_runner, self.arrow_client(), f"{self._namespace}.graph", self._server_version
+            self._query_runner,
+            self.arrow_client(),
+            self._db_query_runner,
+            f"{self._namespace}.graph",
+            self._server_version,
         )
 
     @property

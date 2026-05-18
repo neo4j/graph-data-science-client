@@ -13,11 +13,16 @@ from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResol
 
 class GraphRemoteProcRunner(BaseGraphProcRunner):
     def __init__(
-        self, query_runner: QueryRunner, arrow_client: GdsArrowClient, namespace: str, server_version: ServerVersion
+        self,
+        query_runner: QueryRunner,
+        arrow_client: GdsArrowClient,
+        db_query_runner: QueryRunner | None,
+        namespace: str,
+        server_version: ServerVersion,
     ):
         super().__init__(query_runner, namespace, server_version)
         self._arrow_client = arrow_client
-        self._resolved_protocol_version = ProtocolVersionResolver(query_runner).resolve()
+        self._db_query_runner = db_query_runner
 
     def project(
         self,
@@ -30,10 +35,15 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
         batch_size: int | None = None,
         logging: bool = True,
     ) -> GraphCreateResult:
+        if not self._db_query_runner:
+            raise Exception("Projections from a database are not supported for standalone sessions")
+
+        resolved_protocol_version = ProtocolVersionResolver(self._query_runner).resolve()
+
         project_protocol = ProjectProtocol.select(
-            self._resolved_protocol_version,
+            resolved_protocol_version,
             self._arrow_client.flight_client(),
-            self._query_runner,
+            self._db_query_runner,
             TerminationFlag.create(),
         )
 
