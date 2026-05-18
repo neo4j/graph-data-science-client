@@ -6,6 +6,7 @@
 
 ## New features
 
+* Added `gds.v2.graph.project_native` to support native remote projections.
 
 ## Bug fixes
 
