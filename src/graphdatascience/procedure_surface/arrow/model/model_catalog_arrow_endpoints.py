@@ -88,6 +88,15 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
             raise ValueError(f"Model with name `{model_name}` does not exist")
         return ModelStoreResult(**items[0])
 
+    def publish(self, model_name: str) -> ModelDetails:
+        raw = self._arrow_client.do_action_with_retry(
+            "v2/model.publish", payload=json.dumps({"modelName": model_name}).encode("utf-8")
+        )
+        items = deserialize(raw)
+        if not items:
+            raise ValueError(f"Model with name `{model_name}` does not exist")
+        return self._to_model_details(items[0])
+
     def _to_model_details(self, item: dict[str, Any]) -> ModelDetails:
         # Normalize creationTime from ISO-8601 string with 9-digit micros to Python datetime
         creation_time = item.get("creationTime")
