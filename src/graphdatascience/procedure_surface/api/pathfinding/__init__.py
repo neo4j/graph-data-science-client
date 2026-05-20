@@ -39,6 +39,11 @@ from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpo
     PrizeSteinerTreeStatsResult,
     PrizeSteinerTreeWriteResult,
 )
+from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import (
+    RandomWalkEndpoints,
+    RandomWalkMutateResult,
+    RandomWalkStatsResult,
+)
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
     BellmanFordMutateResult,
@@ -119,6 +124,9 @@ __all__ = [
     "PrizeSteinerTreeMutateResult",
     "PrizeSteinerTreeStatsResult",
     "PrizeSteinerTreeWriteResult",
+    "RandomWalkEndpoints",
+    "RandomWalkMutateResult",
+    "RandomWalkStatsResult",
     "ShortestPathEndpoints",
     "SingleSourceBellmanFordEndpoints",
     "SingleSourceDeltaEndpoints",

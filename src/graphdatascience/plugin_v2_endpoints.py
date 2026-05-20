@@ -46,6 +46,7 @@ from graphdatascience.procedure_surface.api.pathfinding.dfs_endpoints import DFS
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import RandomWalkEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
     SingleSourceBellmanFordEndpoints,
@@ -128,6 +129,9 @@ from graphdatascience.procedure_surface.cypher.pathfinding.k_spanning_tree_cyphe
 from graphdatascience.procedure_surface.cypher.pathfinding.max_flow_cypher_endpoints import MaxFlowCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pathfinding.prize_steiner_tree_cypher_endpoints import (
     PrizeSteinerTreeCypherEndpoints,
+)
+from graphdatascience.procedure_surface.cypher.pathfinding.random_walk_cypher_endpoints import (
+    RandomWalkCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.pathfinding.shortest_path_cypher_endpoints import (
     ShortestPathCypherEndpoints,
@@ -457,6 +461,13 @@ class PluginV2Endpoints:
         Return endpoints for the prize-collecting Steiner tree algorithm.
         """
         return PrizeSteinerTreeCypherEndpoints(self._db_client)
+
+    @property
+    def random_walk(self) -> RandomWalkEndpoints:
+        """
+        Return endpoints for the Random Walk algorithm.
+        """
+        return RandomWalkCypherEndpoints(self._db_client)
 
     @property
     def scc(self) -> SccEndpoints:
