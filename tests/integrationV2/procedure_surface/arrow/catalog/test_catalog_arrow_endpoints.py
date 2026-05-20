@@ -102,6 +102,29 @@ def test_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
 
 
 @pytest.mark.db_integration
+def test_projection_with_query_parameters(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
+    try:
+        endpoints = CatalogArrowEndpoints(arrow_client, query_runner)
+        G, result = endpoints.project(
+            graph_name="g",
+            query="UNWIND range(1, $LIMIT) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
+            query_parameters={"LIMIT": 10},
+        )
+
+        assert isinstance(result, ProjectionResult)
+
+        assert G.name() == "g"
+        assert result.graph_name == "g"
+        assert result.node_count == 10
+        assert result.relationship_count == 0
+        assert result.project_millis >= 0
+
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+
+
+@pytest.mark.db_integration
 def test_store_projection(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
     try:
         query_runner.run_cypher(

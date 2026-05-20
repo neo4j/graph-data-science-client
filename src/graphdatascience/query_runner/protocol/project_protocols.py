@@ -34,6 +34,7 @@ class ProjectProtocol(ABC):
         graph_name: str,
         query: str,
         job_id: str,
+        query_parameters: dict[str, Any] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
@@ -86,6 +87,7 @@ class ProjectProtocolV3(ProjectProtocol):
         graph_name: str,
         query: str,
         job_id: str,
+        query_parameters: dict[str, Any] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
@@ -99,6 +101,7 @@ class ProjectProtocolV3(ProjectProtocol):
         logger = getLogger()
 
         configuration = ConfigConverter.convert_to_gds_config(
+            queryParameters=query_parameters,
             undirectedRelationshipTypes=undirected_relationship_types,
             inverseIndexedRelationshipTypes=inverse_indexed_relationship_types,
             concurrency=concurrency,
@@ -168,6 +171,7 @@ class ProjectProtocolV4(ProjectProtocol):
         graph_name: str,
         query: str,
         job_id: str,
+        query_parameters: dict[str, Any] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
@@ -175,6 +179,7 @@ class ProjectProtocolV4(ProjectProtocol):
         logging: bool = True,
     ) -> dict[str, Any]:
         configuration = ConfigConverter.convert_to_gds_config(
+            queryParameters=query_parameters,
             undirectedRelationshipTypes=undirected_relationship_types,
             inverseIndexedRelationshipTypes=inverse_indexed_relationship_types,
             concurrency=concurrency,

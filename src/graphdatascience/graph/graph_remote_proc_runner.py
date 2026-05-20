@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import uuid4
 
 import pandas as pd
@@ -29,6 +30,7 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
         graph_name: str,
         query: str,
         job_id: str | None = None,
+        query_parameters: dict[str, Any] | None = None,
         concurrency: int = 4,
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
@@ -52,6 +54,7 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
                 graph_name,
                 query,
                 job_id or str(uuid4()),
+                query_parameters,
                 concurrency,
                 undirected_relationship_types,
                 inverse_indexed_relationship_types,

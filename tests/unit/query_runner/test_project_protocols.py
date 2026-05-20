@@ -91,6 +91,7 @@ def test_v4_run_cypher_projection_dispatches_expected_query_and_params(
         graph_name="myGraph",
         query="MATCH (n) RETURN n",
         job_id="my-job",
+        query_parameters={"foo": "bar"},
         concurrency=4,
         undirected_relationship_types=["REL"],
         inverse_indexed_relationship_types=["REL2"],
@@ -107,6 +108,7 @@ def test_v4_run_cypher_projection_dispatches_expected_query_and_params(
     assert start_params["query"] == "MATCH (n) RETURN n"
     assert start_params["jobId"] == "my-job"
     assert start_params["configuration"] == {
+        "queryParameters": {"foo": "bar"},
         "undirectedRelationshipTypes": ["REL"],
         "inverseIndexedRelationshipTypes": ["REL2"],
         "concurrency": 4,
@@ -234,6 +236,7 @@ def test_v3_run_cypher_projection_dispatches_expected_query_and_params(
         graph_name="myGraph",
         query="MATCH (n) RETURN n",
         job_id="my-job",
+        query_parameters={"foo": "bar"},
         concurrency=4,
         undirected_relationship_types=["REL"],
         inverse_indexed_relationship_types=["REL2"],
@@ -250,6 +253,7 @@ def test_v3_run_cypher_projection_dispatches_expected_query_and_params(
         "query": "MATCH (n) RETURN n",
         "jobId": "my-job",
         "configuration": {
+            "queryParameters": {"foo": "bar"},
             "undirectedRelationshipTypes": ["REL"],
             "inverseIndexedRelationshipTypes": ["REL2"],
             "concurrency": 4,
