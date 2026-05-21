@@ -150,7 +150,7 @@ def test_project_uses_default_argument_values(
 
     args = protocol.run_cypher_projection.call_args.args
     # graph_name, query, job_id, concurrency, undirected, inverse_indexed, batch_size, logging
-    assert args == ("g", "MATCH (n) RETURN n", 'job-1', None, 4, None, None, None, True)
+    assert args == ("g", "MATCH (n) RETURN n", "job-1", None, 4, None, None, None, True)
 
 
 def test_project_selects_protocol_v3(
