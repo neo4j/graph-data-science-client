@@ -74,6 +74,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         graph_name: str,
         query: str,
         *,
+        query_parameters: dict[str, Any] | None = None,
         job_id: str | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: typing.List[str] | None = None,
@@ -86,11 +87,13 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             Name of the graph to be created in the catalog.
-        query : str
+        query
             Cypher query to select nodes and relationships for the graph projection.
             Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
+        query_parameters
+            Parameters that will be passed to the Cypher query.
         job_id
             Identifier for the computation.
         concurrency
@@ -117,6 +120,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             graph_name,
             query,
             job_id,
+            query_parameters,
             concurrency,
             undirected_relationship_types,
             inverse_indexed_relationship_types,

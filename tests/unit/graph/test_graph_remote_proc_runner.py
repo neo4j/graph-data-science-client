@@ -61,6 +61,7 @@ def test_project_invokes_protocol_with_expected_arguments(
         graph_name="myGraph",
         query="MATCH (n) RETURN n",
         job_id="my-job",
+        query_parameters={"foo": 42},
         concurrency=8,
         undirected_relationship_types=["REL"],
         inverse_indexed_relationship_types=["REL2"],
@@ -78,6 +79,7 @@ def test_project_invokes_protocol_with_expected_arguments(
         "myGraph",
         "MATCH (n) RETURN n",
         "my-job",
+        {"foo": 42},
         8,
         ["REL"],
         ["REL2"],
@@ -148,7 +150,7 @@ def test_project_uses_default_argument_values(
 
     args = protocol.run_cypher_projection.call_args.args
     # graph_name, query, job_id, concurrency, undirected, inverse_indexed, batch_size, logging
-    assert args == ("g", "MATCH (n) RETURN n", "job-1", 4, None, None, None, True)
+    assert args == ("g", "MATCH (n) RETURN n", "job-1", None, 4, None, None, None, True)
 
 
 def test_project_selects_protocol_v3(
