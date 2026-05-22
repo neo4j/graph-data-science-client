@@ -5,7 +5,6 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
@@ -14,6 +13,7 @@ from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipel
 from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
     PipelineCatalogArrowEndpoints,
 )
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph, create_graph_from_db
 
 graph = """
@@ -63,7 +63,7 @@ def test_node_classification_train_and_predict_write(
     db_graph: GraphV2,
 ) -> None:
     endpoints = NodeClassificationPipelineArrowEndpoints(
-        arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner), show_progress=False
+        arrow_client, WriteProtocol.select(arrow_client, query_runner), show_progress=False
     )
 
     pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"

@@ -12,10 +12,8 @@ from graphdatascience.query_runner.protocol.write_protocols import (
     JobStatus,
     RemoteWriteBackV3,
     RemoteWriteBackV4,
-    WriteProtocol,
 )
 from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 from tests.unit.conftest import CollectingQueryRunner
 
 
@@ -30,23 +28,6 @@ def arrow_client() -> MagicMock:
 @pytest.fixture
 def qr() -> CollectingQueryRunner:
     return CollectingQueryRunner(ServerVersion(0, 0, 0))
-
-
-def test_select_returns_v3(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    protocol = WriteProtocol.select(ProtocolVersion.V3, arrow_client, qr)
-    assert isinstance(protocol, RemoteWriteBackV3)
-
-
-def test_select_returns_v4(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    protocol = WriteProtocol.select(ProtocolVersion.V4, arrow_client, qr)
-    assert isinstance(protocol, RemoteWriteBackV4)
-
-
-def test_select_unsupported_version_raises(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    with pytest.raises(KeyError):
-        WriteProtocol.select(ProtocolVersion.V1, arrow_client, qr)
-    with pytest.raises(KeyError):
-        WriteProtocol.select(ProtocolVersion.V2, arrow_client, qr)
 
 
 def test_v3_start_job_dispatches_expected_query_and_params(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:

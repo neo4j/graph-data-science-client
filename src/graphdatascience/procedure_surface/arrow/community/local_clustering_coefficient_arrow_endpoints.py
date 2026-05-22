@@ -1,7 +1,6 @@
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
     LocalClusteringCoefficientEndpoints,
@@ -12,18 +11,19 @@ from graphdatascience.procedure_surface.api.community.local_clustering_coefficie
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
 
 class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoints):
     def __init__(
         self,
         client: AuthenticatedArrowClient,
-        remote_write_back_client: RemoteWriteBackClient | None = None,
+        write_protocol: WriteProtocol | None = None,
         show_progress: bool = True,
     ):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             client,
-            remote_write_back_client,
+            write_protocol,
             show_progress,
         )
 

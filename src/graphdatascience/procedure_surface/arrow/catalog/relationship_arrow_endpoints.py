@@ -3,7 +3,6 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
@@ -15,19 +14,22 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
     RelationshipsWriteResult,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 
 
 class RelationshipArrowEndpoints(RelationshipsEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None,
+        write_protocol: WriteProtocol | None,
         show_progress: bool = False,
     ):
         self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
+        self._write_protocol = write_protocol
         self._show_progress = show_progress
         self._collapse_path_endpoints = CollapsePathArrowEndpoints(
             self._arrow_client,
@@ -79,7 +81,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         username: str | None = None,
         job_id: str | None = None,
     ) -> RelationshipsWriteResult:
-        if self._write_back_client is None:
+        if self._write_protocol is None:
             raise ValueError("Write back is only available if a database connection is provided.")
 
         config_input = {
@@ -101,13 +103,16 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
         job_id = JobClient.run_job(self._arrow_client, endpoint, config)
 
-        write_result = self._write_back_client.write(
+        write_job = WriteJobHandle.create(
+            self._write_protocol,
             G.name(),
             job_id,
+            TerminationFlag.create(),
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             relationship_type_overwrite=relationship_type,
             log_progress=log_progress and self._show_progress,
         )
+        write_result = write_job.result(wait=True)
 
         written_relationships = (
             write_result.written_relationships if hasattr(write_result, "written_relationships") else 0

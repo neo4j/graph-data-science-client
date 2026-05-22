@@ -10,7 +10,6 @@ from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.write_job_handle import JobNotFinishedError, WriteJobHandle
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
-from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph, create_graph_from_db
 
 GDL = """
@@ -175,7 +174,7 @@ def test_write_without_protocol_raises(arrow_client: AuthenticatedArrowClient, s
 def test_write_returns_write_job_handle(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    write_protocol = WriteProtocol.select(ProtocolVersionResolver(query_runner).resolve(), arrow_client, query_runner)
+    write_protocol = WriteProtocol.select(arrow_client, query_runner)
     handle = _make_handle(arrow_client, db_graph, write_protocol=write_protocol)
     handle.wait()
 

@@ -11,7 +11,6 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog import (
@@ -40,6 +39,7 @@ from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoin
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.progress.progress_bar import NoOpProgressBar, ProgressBar, TqdmProgressBar
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
@@ -58,11 +58,13 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         self._query_runner = query_runner
         self._graph_backend = GraphOpsArrow(arrow_client)
         self._show_progress = show_progress
+        self._write_protocol: WriteProtocol | None = None
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
             self._project_protocol = ProjectProtocol.select(
                 protocol_version, arrow_client, query_runner, TerminationFlag.create()
             )
+            self._write_protocol = WriteProtocol.select(arrow_client, query_runner)
 
     def get(self, graph_name: str) -> GraphV2:
         if not self.list(graph_name):
@@ -381,9 +383,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def node_labels(self) -> NodeLabelEndpoints:
-        write_client = (
-            RemoteWriteBackClient.create(self._arrow_client, self._query_runner) if self._query_runner else None
-        )
+        write_client = self._write_protocol
 
         return NodeLabelArrowEndpoints(self._arrow_client, write_client, show_progress=self._show_progress)
 
@@ -395,7 +395,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     def relationships(self) -> RelationshipsEndpoints:
         return RelationshipArrowEndpoints(
             self._arrow_client,
-            RemoteWriteBackClient.create(self._arrow_client, self._query_runner) if self._query_runner else None,
+            self._write_protocol,
             show_progress=self._show_progress,
         )
 

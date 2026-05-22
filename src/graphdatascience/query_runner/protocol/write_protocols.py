@@ -13,6 +13,7 @@ from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
@@ -55,10 +56,11 @@ class WriteProtocol(ABC):
 
     @staticmethod
     def select(
-        protocol_version: ProtocolVersion,
         arrow_client: AuthenticatedArrowClient,
         query_runner: QueryRunner,
     ) -> "WriteProtocol":
+        protocol_version = ProtocolVersionResolver(query_runner).resolve()
+
         return {
             ProtocolVersion.V3: RemoteWriteBackV3(arrow_client, query_runner),
             ProtocolVersion.V4: RemoteWriteBackV4(arrow_client, query_runner),

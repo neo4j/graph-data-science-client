@@ -3,11 +3,11 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.pathfinding.prize_steiner_tree_arrow_endpoints import (
     PrizeSteinerTreeArrowEndpoints,
 )
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -119,7 +119,7 @@ def test_prize_steiner_tree_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
     prize_steiner_tree_endpoints = PrizeSteinerTreeArrowEndpoints(
-        arrow_client=arrow_client, write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner)
+        arrow_client=arrow_client, write_protocol=WriteProtocol.select(arrow_client, query_runner)
     )
     result = prize_steiner_tree_endpoints.write(
         G=db_graph,

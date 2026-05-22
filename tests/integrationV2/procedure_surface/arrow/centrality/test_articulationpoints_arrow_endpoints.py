@@ -4,7 +4,6 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
@@ -15,6 +14,7 @@ from graphdatascience.procedure_surface.arrow.centrality.articulationpoints_arro
     ArticulationPointsArrowEndpoints,
 )
 from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -97,7 +97,7 @@ def test_articulationpoints_stream_not_implemented(
 def test_articulationpoints_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
-    endpoints = ArticulationPointsArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
+    endpoints = ArticulationPointsArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="articulationPoint")
 
     assert isinstance(result, ArticulationPointsWriteResult)

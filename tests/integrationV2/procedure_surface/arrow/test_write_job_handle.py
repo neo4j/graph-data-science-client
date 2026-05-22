@@ -19,7 +19,6 @@ from graphdatascience.query_runner.protocol.write_protocols import (
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
-from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph_from_db
 
 
@@ -116,7 +115,7 @@ def test_write_job_handle_id_matches_provided_id(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
-    protocol = WriteProtocol.select(ProtocolVersionResolver(query_runner).resolve(), arrow_client, query_runner)
+    protocol = WriteProtocol.select(arrow_client, query_runner)
 
     write_handle = _create_write_handle(protocol, projected_graph.name(), job_id)
 
@@ -130,7 +129,7 @@ def test_write_job_handle_done_and_status_after_wait(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
-    protocol = WriteProtocol.select(ProtocolVersionResolver(query_runner).resolve(), arrow_client, query_runner)
+    protocol = WriteProtocol.select(arrow_client, query_runner)
 
     write_handle = _create_write_handle(protocol, projected_graph.name(), job_id)
     write_handle.wait()
@@ -147,7 +146,7 @@ def test_write_job_handle_status_is_cached_when_terminal(
     mocker: pytest.FixtureRequest,
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
-    protocol = WriteProtocol.select(ProtocolVersionResolver(query_runner).resolve(), arrow_client, query_runner)
+    protocol = WriteProtocol.select(arrow_client, query_runner)
 
     write_handle = _create_write_handle(protocol, projected_graph.name(), job_id)
     write_handle.wait()
@@ -168,7 +167,7 @@ def test_write_job_handle_result_no_wait_raises_when_not_done(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
-    protocol = WriteProtocol.select(ProtocolVersionResolver(query_runner).resolve(), arrow_client, query_runner)
+    protocol = WriteProtocol.select(arrow_client, query_runner)
 
     write_handle = _create_write_handle(protocol, projected_graph.name(), job_id)
 
@@ -185,6 +184,5 @@ def test_select_returns_v3_or_v4_for_running_server(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
 ) -> None:
     """Sanity check: the resolver against a real DBMS gives a supported protocol."""
-    protocol_version = ProtocolVersionResolver(query_runner).resolve()
-    protocol = WriteProtocol.select(protocol_version, arrow_client, query_runner)
+    protocol = WriteProtocol.select(arrow_client, query_runner)
     assert isinstance(protocol, (RemoteWriteBackV3, RemoteWriteBackV4))

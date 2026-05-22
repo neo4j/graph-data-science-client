@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from uuid import uuid4
 
 from pandas import DataFrame
@@ -14,6 +14,7 @@ from graphdatascience.procedure_surface.api.write_job_handle import JobNotFinish
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+
 
 class JobHandle:
     def __init__(

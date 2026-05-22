@@ -199,9 +199,7 @@ class SessionQueryRunner(QueryRunner):
 
         graph_name = params["graph_name"]
 
-        write_protocol = WriteProtocol.select(
-            self._resolved_protocol_version, self._gds_arrow_client.flight_client(), self._db_query_runner
-        )
+        write_protocol = WriteProtocol.select(self._gds_arrow_client.flight_client(), self._db_query_runner)
 
         write_handle = WriteJobHandle.create(
             write_protocol, graph_name, job_id, terminationFlag, concurrency=config.get("concurrency")

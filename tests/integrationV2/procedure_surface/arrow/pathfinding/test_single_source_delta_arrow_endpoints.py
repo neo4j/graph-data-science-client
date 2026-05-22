@@ -4,12 +4,12 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import DeltaSteppingWriteResult
 from graphdatascience.procedure_surface.arrow.pathfinding.single_source_delta_arrow_endpoints import (
     DeltaSteppingArrowEndpoints,
 )
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -114,7 +114,7 @@ def test_delta_stepping_write(
 ) -> None:
     endpoints_with_writeback = DeltaSteppingArrowEndpoints(
         arrow_client=arrow_client,
-        write_back_client=RemoteWriteBackClient.create(arrow_client, query_runner),
+        write_protocol=WriteProtocol.select(arrow_client, query_runner),
     )
 
     result = endpoints_with_writeback.write(

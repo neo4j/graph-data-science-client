@@ -4,11 +4,11 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecWriteResult
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
 from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -86,7 +86,7 @@ def test_node2vec_stream(node2vec_endpoints: Node2VecArrowEndpoints, sample_grap
 @pytest.mark.db_integration
 def test_node2vec_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
     """Test Node2Vec write operation."""
-    endpoints = Node2VecArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
+    endpoints = Node2VecArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(
         G=db_graph,
         write_property="node2vec_embedding",
@@ -117,7 +117,7 @@ def test_node2vec_write_without_write_back_client(
     node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2
 ) -> None:
     """Test Node2Vec write operation without write back client."""
-    with pytest.raises(Exception, match="Write back client is not initialized"):
+    with pytest.raises(Exception, match="Write back is not supported by this session."):
         node2vec_endpoints.write(
             G=sample_graph,
             write_property="node2vec_embedding",

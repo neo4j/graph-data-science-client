@@ -4,11 +4,11 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.celf_endpoints import CelfWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.celf_arrow_endpoints import CelfArrowEndpoints
 from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -86,7 +86,7 @@ def test_celf_mutate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) 
 
 @pytest.mark.db_integration
 def test_celf_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    endpoints = CelfArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
+    endpoints = CelfArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, seed_set_size=2, write_property="celf_spread")
 
     assert isinstance(result, CelfWriteResult)
@@ -105,7 +105,7 @@ def test_celf_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
 
 
 def test_celf_write_without_write_back_client(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
-    with pytest.raises(Exception, match="Write back client is not initialized"):
+    with pytest.raises(Exception, match="Write back is not supported by this session."):
         celf_endpoints.write(
             G=sample_graph,
             seed_set_size=2,

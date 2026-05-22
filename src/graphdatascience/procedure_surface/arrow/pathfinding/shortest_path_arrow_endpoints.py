@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import (
     ShortestPathEndpoints,
 )
@@ -23,18 +22,19 @@ from graphdatascience.procedure_surface.arrow.pathfinding.source_target_dijkstra
 from graphdatascience.procedure_surface.arrow.pathfinding.source_target_yens_arrow_endpoints import (
     YensArrowEndpoints,
 )
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
 
 class ShortestPathArrowEndpoints(ShortestPathEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None = None,
+        write_protocol: WriteProtocol | None = None,
         show_progress: bool = False,
     ):
-        self._dijkstra = SourceTargetDijkstraArrowEndpoints(arrow_client, write_back_client, show_progress)
-        self._astar = AStarArrowEndpoints(arrow_client, write_back_client, show_progress)
-        self._yens = YensArrowEndpoints(arrow_client, write_back_client, show_progress)
+        self._dijkstra = SourceTargetDijkstraArrowEndpoints(arrow_client, write_protocol, show_progress)
+        self._astar = AStarArrowEndpoints(arrow_client, write_protocol, show_progress)
+        self._yens = YensArrowEndpoints(arrow_client, write_protocol, show_progress)
 
     @property
     def dijkstra(self) -> SourceTargetDijkstraEndpoints:

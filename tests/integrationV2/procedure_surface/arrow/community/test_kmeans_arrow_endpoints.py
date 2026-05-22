@@ -4,11 +4,11 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansWriteResult
 from graphdatascience.procedure_surface.arrow.community.kmeans_arrow_endpoints import KMeansArrowEndpoints
 from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -98,7 +98,7 @@ def test_kmeans_mutate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Gra
 
 @pytest.mark.db_integration
 def test_kmeans_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
-    endpoints = KMeansArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
+    endpoints = KMeansArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
     result = endpoints.write(G=db_graph, node_property="kmeans", write_property="community", k=3)
 

@@ -4,7 +4,6 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
     NodeRegressionPipelinePredictEndpoints,
@@ -12,19 +11,20 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_end
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
 
 class NodeRegressionPredictArrowEndpoints(NodeRegressionPipelinePredictEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None,
+        write_protocol: WriteProtocol | None,
         show_progress: bool = True,
     ) -> None:
         self._arrow_client = arrow_client
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client,
-            write_back_client,
+            write_protocol,
             show_progress=show_progress,
         )
         self._show_progress = show_progress
