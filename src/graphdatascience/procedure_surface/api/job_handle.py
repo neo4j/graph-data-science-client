@@ -1,0 +1,134 @@
+from __future__ import annotations
+
+from collections import OrderedDict
+from typing import TYPE_CHECKING, Any
+from uuid import uuid4
+
+from pandas import DataFrame
+
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.api_types import JobStatus
+from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.graph.v2 import GraphV2
+from graphdatascience.procedure_surface.api.write_job_handle import JobNotFinishedError, WriteJobHandle
+from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.query_runner.termination_flag import TerminationFlag
+
+class JobHandle:
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        write_protocol: WriteProtocol | None,
+        job_id: str,
+        graph: GraphV2,
+        log_progress: bool,
+        show_progress: bool,
+    ):
+        self._arrow_client = arrow_client
+        self._job_id = job_id
+        self._graph = graph
+        self._log_progress = log_progress
+        self._show_progress = show_progress
+        self._is_done = False
+        self._write_protocol = write_protocol
+        self._endpoints_helper = EndpointsHelperBase(arrow_client, write_protocol)
+
+    def job_id(self) -> str:
+        return self._job_id
+
+    def status(self) -> JobStatus:
+        status = JobClient.get_job_status(self._arrow_client, self._job_id)
+        if status.succeeded() or status.aborted():
+            self._is_done = True
+        return status
+
+    def done(self) -> bool:
+        if self._is_done:
+            return True
+        status = self.status()
+        return status.succeeded() or status.aborted()
+
+    def wait(self, *, termination_flag: TerminationFlag | None = None) -> None:
+        if self._is_done:
+            return
+        effective_progress = self._log_progress and self._show_progress
+        JobClient().wait_for_job(
+            self._arrow_client,
+            self._job_id,
+            show_progress=effective_progress,
+            termination_flag=termination_flag,
+        )
+        self._is_done = True
+
+    def cancel(self) -> None:
+        JobClient.cancel_job(self._arrow_client, self._job_id)
+
+    def summary(
+        self,
+        *,
+        wait: bool = True,
+        termination_flag: TerminationFlag | None = None,
+    ) -> dict[str, Any]:
+        self._ensure_done(wait=wait, termination_flag=termination_flag)
+        result = JobClient.get_summary(self._arrow_client, self._job_id)
+        if nested_config := result.get("configuration", None):
+            self._endpoints_helper.drop_write_internals(nested_config)
+        return result
+
+    def stream(
+        self,
+        *,
+        G: GraphV2,
+        wait: bool = True,
+        termination_flag: TerminationFlag | None = None,
+    ) -> DataFrame:
+        self._ensure_done(wait=wait, termination_flag=termination_flag)
+        return JobClient.stream_results(self._arrow_client, self._graph.name(), self._job_id)
+
+    def mutate(
+        self,
+        *,
+        mutate_property: str | None = None,
+        mutate_relationship_type: str | None = None,
+        mutate_property_overwrites: OrderedDict[str, str] | None = None,
+        wait: bool = True,
+        termination_flag: TerminationFlag | None = None,
+    ) -> dict[str, Any]:
+        self._ensure_done(wait=wait, termination_flag=termination_flag)
+        return self._endpoints_helper.run_mutation(
+            self._job_id,
+            mutate_property=mutate_property,
+            mutate_relationship_type=mutate_relationship_type,
+            mutate_property_overwrites=mutate_property_overwrites,
+        )
+
+    def write(
+        self,
+        *,
+        job_id: str | None = None,
+        write_properties: str | dict[str, str] | None = None,
+        write_relationship_types: str | None = None,
+        concurrency: int | None = None,
+    ) -> WriteJobHandle:
+        if self._write_protocol is None:
+            raise ValueError("This session does not support write operations.")
+
+        return WriteJobHandle.create(
+            self._write_protocol,
+            self._graph.name(),
+            job_id or str(uuid4()),
+            TerminationFlag.create(),
+            concurrency,
+            write_properties,
+            write_relationship_types,
+            self._show_progress,
+        )
+
+    def _ensure_done(self, *, wait: bool, termination_flag: TerminationFlag | None) -> None:
+        if self._is_done:
+            return
+        if wait:
+            self.wait(termination_flag=termination_flag)
+        elif not self.done():
+            raise JobNotFinishedError(f"Job '{self._job_id}' is not finished yet.")

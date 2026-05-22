@@ -414,7 +414,7 @@ class GdsArrowClient:
         job_id : str
             The job id of the process
         """
-        self._flight_client.do_action_with_retry("v2/jobs.cancel", {"jobId": job_id})
+        JobClient.cancel_job(self._flight_client, job_id)
 
     def job_status(self, job_id: str) -> JobStatus:
         """
