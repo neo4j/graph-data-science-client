@@ -48,6 +48,7 @@ from graphdatascience.procedure_surface.api.pathfinding.dfs_endpoints import DFS
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import RandomWalkEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
     SingleSourceBellmanFordEndpoints,
@@ -130,6 +131,9 @@ from graphdatascience.procedure_surface.arrow.pathfinding.k_spanning_tree_arrow_
 from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_arrow_endpoints import MaxFlowArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pathfinding.prize_steiner_tree_arrow_endpoints import (
     PrizeSteinerTreeArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.pathfinding.random_walk_arrow_endpoints import (
+    RandomWalkArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.shortest_path_arrow_endpoints import (
     ShortestPathArrowEndpoints,
@@ -508,6 +512,13 @@ class SessionV2Endpoints:
         return PrizeSteinerTreeArrowEndpoints(
             self._arrow_client, self._write_back_client, show_progress=self._show_progress
         )
+
+    @property
+    def random_walk(self) -> RandomWalkEndpoints:
+        """
+        Return endpoints for the Random Walk algorithm.
+        """
+        return RandomWalkArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
 
     @property
     def scc(self) -> SccEndpoints:
