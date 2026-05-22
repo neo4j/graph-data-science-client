@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from typing import Any
 from uuid import uuid4
 
@@ -8,10 +7,11 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.query_runner import QueryMode, QueryType
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
-from graphdatascience.query_runner.protocol.write_protocols import JobStatus, WriteProtocol
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.server_version.server_version import ServerVersion
@@ -200,35 +200,15 @@ class SessionQueryRunner(QueryRunner):
         graph_name = params["graph_name"]
 
         write_protocol = WriteProtocol.select(
-            self._resolved_protocol_version,
-            self._gds_arrow_client.flight_client(),
-            self._db_query_runner,
-            terminationFlag,
+            self._resolved_protocol_version, self._gds_arrow_client.flight_client(), self._db_query_runner
         )
 
-        write_back_start = time.time()
+        write_handle = WriteJobHandle.create(
+            write_protocol, graph_name, job_id, terminationFlag, concurrency=config.get("concurrency")
+        )
+        database_write_result = write_handle.result(wait=True)
 
-        def run_write_back() -> JobStatus:
-            return write_protocol.run_write_back(
-                graph_name=graph_name,
-                job_id=job_id,
-                concurrency=config.get("concurrency"),
-                property_overwrites=config.get("writeProperties"),
-                relationship_type_overwrite=config.get("writeRelationshipType"),
-                log_progress=logging,
-            )
-
-        try:
-            database_write_result = run_write_back()
-        except Exception as e:
-            # catch the case nothing was needed to write-back (empty graph)
-            # once we have the Arrow Endpoints V2, we could catch by first checking the jobs summary
-            if "No entry with job id" in str(e) and gds_write_result.iloc[0].get("writeMillis", -1) == 0:
-                return gds_write_result
-            raise e
-
-        write_millis = (time.time() - write_back_start) * 1000
-        gds_write_result["writeMillis"] = write_millis
+        gds_write_result["writeMillis"] = database_write_result.write_millis
 
         if "nodePropertiesWritten" in gds_write_result:
             gds_write_result["nodePropertiesWritten"] = database_write_result.written_node_properties

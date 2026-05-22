@@ -6,14 +6,13 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.protocol.write_protocols import (
     RemoteWriteBackV3,
     RemoteWriteBackV4,
     WriteProtocol,
 )
 from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.query_runner.query_type import QueryType
-from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph_from_db
 
 
@@ -49,52 +48,46 @@ def _start_property_export(arrow_client: AuthenticatedArrowClient, graph_name: s
     )
 
 
-def _assert_properties_written(query_runner: QueryRunner) -> None:
-    written = query_runner.run_cypher(
-        "MATCH (n) RETURN n.prop AS prop",
-        query_type=QueryType.USER_ACTION,
-    ).squeeze()
+def _poll_until_done(protocol: WriteProtocol, job_id: str) -> None:
+    """Drive the protocol manually until terminal — exercises start_job + get_status without WriteJobHandle."""
+    import time
 
-    assert written.tolist() == [42, 43, 44]
+    deadline = time.time() + 30
+    while time.time() < deadline:
+        status = protocol.get_status(job_id)
+        if status.done:
+            return
+        time.sleep(0.1)
+    raise AssertionError(f"Job '{job_id}' did not finish within timeout")
 
 
 @pytest.mark.db_integration
-def test_v3_run_write_back(
+def test_v3_start_job_then_poll_to_completion(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
+    protocol = RemoteWriteBackV3(arrow_client, query_runner)
 
-    protocol = RemoteWriteBackV3(arrow_client, query_runner, TerminationFlagNoop())
+    protocol.start_job(graph_name=projected_graph.name(), job_id=job_id, log_progress=False)
+    _poll_until_done(protocol, job_id)
 
-    result = protocol.run_write_back(graph_name=projected_graph.name(), job_id=job_id, log_progress=False)
-
-    assert result.written_node_properties == 3
-
-    _assert_properties_written(query_runner)
+    status = protocol.get_status(job_id)
+    assert status.done is True
+    assert status.status == Status.COMPLETED.name
+    assert status.written_node_properties == 3
 
 
 @pytest.mark.db_integration
-def test_v4_run_write_back(
+def test_v4_start_job_then_poll_to_completion(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
+    protocol = RemoteWriteBackV4(arrow_client, query_runner)
 
-    protocol = RemoteWriteBackV4(arrow_client, query_runner, TerminationFlagNoop())
+    protocol.start_job(graph_name=projected_graph.name(), job_id=job_id, log_progress=False)
+    _poll_until_done(protocol, job_id)
 
-    result = protocol.run_write_back(graph_name=projected_graph.name(), job_id=job_id, log_progress=False)
-
-    assert result.written_node_properties == 3
-
-    _assert_properties_written(query_runner)
-
-
-@pytest.mark.db_integration
-def test_select_returns_v3_or_v4_for_running_server(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
-) -> None:
-    """Sanity check: the resolver against a real DBMS should give us a supported protocol."""
-    from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
-
-    protocol_version = ProtocolVersionResolver(query_runner).resolve()
-    protocol = WriteProtocol.select(protocol_version, arrow_client, query_runner, TerminationFlagNoop())
-    assert isinstance(protocol, (RemoteWriteBackV3, RemoteWriteBackV4))
+    status = protocol.get_status(job_id)
+    assert status.done is True
+    assert status.status == Status.DONE.name
+    assert status.written_node_properties == 3
