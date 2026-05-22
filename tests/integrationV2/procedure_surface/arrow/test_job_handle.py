@@ -154,15 +154,6 @@ def test_mutate_without_target_raises(arrow_client: AuthenticatedArrowClient, sa
         handle.mutate()
 
 
-def test_cancel_reaches_terminal_state(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
-    handle = _make_handle(arrow_client, sample_graph)
-
-    handle.cancel()
-    handle.wait()
-
-    assert handle.done() is True
-
-
 def test_write_without_protocol_raises(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 

@@ -91,6 +91,10 @@ class WriteProtocol(ABC):
 
 
 class RemoteWriteBackV3(WriteProtocol):
+    def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner):
+        super().__init__(arrow_client, query_runner)
+        self._parameter_cache: dict[str, CallParameters] = {}
+
     def start_job(
         self,
         graph_name: str,
@@ -100,11 +104,14 @@ class RemoteWriteBackV3(WriteProtocol):
         relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
     ) -> None:
+        parameters = self._build_call_parameters(
+            graph_name, job_id, concurrency, property_overwrites, relationship_type_overwrite
+        )
+        self._parameter_cache[job_id] = parameters
+
         self._query_runner.call_procedure(
             ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
-            params=self._build_call_parameters(
-                graph_name, job_id, concurrency, property_overwrites, relationship_type_overwrite
-            ),
+            params=parameters,
             retryable=True,
             logging=False,
             mode=QueryMode.WRITE,
@@ -114,7 +121,7 @@ class RemoteWriteBackV3(WriteProtocol):
     def get_status(self, job_id: str) -> JobStatus:
         result = self._query_runner.call_procedure(
             ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
-            params=CallParameters(),
+            params=self._parameter_cache[job_id],
             retryable=True,
             logging=False,
             mode=QueryMode.WRITE,

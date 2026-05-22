@@ -88,6 +88,7 @@ def test_v3_get_status_returns_completed_job_status(arrow_client: MagicMock, qr:
     )
 
     protocol = RemoteWriteBackV3(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job")
     status = protocol.get_status("my-job")
 
     assert isinstance(status, JobStatus)
@@ -106,6 +107,7 @@ def test_v3_get_status_running_is_not_done(arrow_client: MagicMock, qr: Collecti
     )
 
     protocol = RemoteWriteBackV3(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job")
     status = protocol.get_status("my-job")
 
     assert status.done is False
@@ -120,6 +122,7 @@ def test_v3_get_status_defaults_missing_progress_to_zero(arrow_client: MagicMock
     )
 
     protocol = RemoteWriteBackV3(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job")
     status = protocol.get_status("my-job")
 
     assert status.progress == 0.0

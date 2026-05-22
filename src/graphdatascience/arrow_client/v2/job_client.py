@@ -2,7 +2,7 @@ import json
 from typing import Any
 
 from pandas import ArrowDtype, DataFrame
-from pyarrow.flight import Ticket
+from pyarrow.flight import FlightCancelledError, Ticket
 from tenacity import Retrying, retry_if_result
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -80,7 +80,11 @@ class JobClient:
 
     @staticmethod
     def get_job_status(client: AuthenticatedArrowClient, job_id: str) -> JobStatus:
-        arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
+        try:
+            arrow_res = client.do_action_with_retry(JOB_STATUS_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
+        except FlightCancelledError:
+            # temporary fix until session no longer throws here
+            return JobStatus(jobId=job_id, status="aborted", progress=1.0, description="")
         job_status = JobStatus(**deserialize_single(arrow_res))
         return job_status
 

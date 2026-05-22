@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from typing import Any
-from uuid import uuid4
 
 from pandas import DataFrame
 
@@ -107,7 +106,6 @@ class JobHandle:
     def write(
         self,
         *,
-        job_id: str | None = None,
         write_properties: str | dict[str, str] | None = None,
         write_relationship_types: str | None = None,
         concurrency: int | None = None,
@@ -118,7 +116,7 @@ class JobHandle:
         return WriteJobHandle.create(
             self._write_protocol,
             self._graph.name(),
-            job_id or str(uuid4()),
+            self._job_id,
             TerminationFlag.create(),
             concurrency,
             write_properties,

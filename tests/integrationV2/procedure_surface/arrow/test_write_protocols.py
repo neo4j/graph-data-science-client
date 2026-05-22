@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.protocol.write_protocols import (
+    JobStatus,
     RemoteWriteBackV3,
     RemoteWriteBackV4,
     WriteProtocol,
@@ -48,7 +49,7 @@ def _start_property_export(arrow_client: AuthenticatedArrowClient, graph_name: s
     )
 
 
-def _poll_until_done(protocol: WriteProtocol, job_id: str) -> None:
+def _poll_until_done(protocol: WriteProtocol, job_id: str) -> JobStatus:
     """Drive the protocol manually until terminal — exercises start_job + get_status without WriteJobHandle."""
     import time
 
@@ -56,7 +57,7 @@ def _poll_until_done(protocol: WriteProtocol, job_id: str) -> None:
     while time.time() < deadline:
         status = protocol.get_status(job_id)
         if status.done:
-            return
+            return status
         time.sleep(0.1)
     raise AssertionError(f"Job '{job_id}' did not finish within timeout")
 
@@ -69,9 +70,8 @@ def test_v3_start_job_then_poll_to_completion(
     protocol = RemoteWriteBackV3(arrow_client, query_runner)
 
     protocol.start_job(graph_name=projected_graph.name(), job_id=job_id, log_progress=False)
-    _poll_until_done(protocol, job_id)
+    status = _poll_until_done(protocol, job_id)
 
-    status = protocol.get_status(job_id)
     assert status.done is True
     assert status.status == Status.COMPLETED.name
     assert status.written_node_properties == 3
