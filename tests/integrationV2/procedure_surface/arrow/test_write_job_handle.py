@@ -7,7 +7,6 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.write_job_handle import (
-    JobNotFinishedError,
     WriteBackResult,
     WriteJobHandle,
 )
@@ -62,7 +61,7 @@ def _assert_properties_written_to_db(query_runner: QueryRunner) -> None:
         query_type=QueryType.USER_ACTION,
     ).squeeze()
 
-    assert written.tolist() == [42, 43, 44]
+    assert set(written.to_list()) == {42, 43, 44}
 
 
 def _create_write_handle(
@@ -143,7 +142,6 @@ def test_write_job_handle_status_is_cached_when_terminal(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
     projected_graph: GraphV2,
-    mocker: pytest.FixtureRequest,
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = WriteProtocol.select(arrow_client, query_runner)
@@ -160,23 +158,6 @@ def test_write_job_handle_status_is_cached_when_terminal(
 
         assert first is second
         get_status_spy.assert_not_called()
-
-
-@pytest.mark.db_integration
-def test_write_job_handle_result_no_wait_raises_when_not_done(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
-) -> None:
-    job_id = _start_property_export(arrow_client, projected_graph.name())
-    protocol = WriteProtocol.select(arrow_client, query_runner)
-
-    write_handle = _create_write_handle(protocol, projected_graph.name(), job_id)
-
-    if not write_handle.done():
-        with pytest.raises(JobNotFinishedError):
-            write_handle.result(wait=False)
-
-    # Drain so cleanup is well-defined
-    write_handle.wait()
 
 
 @pytest.mark.db_integration

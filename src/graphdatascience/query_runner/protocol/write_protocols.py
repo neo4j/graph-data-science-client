@@ -94,6 +94,7 @@ class RemoteWriteBackV3(WriteProtocol):
     def __init__(self, arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner):
         super().__init__(arrow_client, query_runner)
         self._parameter_cache: dict[str, CallParameters] = {}
+        self._result_cache: dict[str, JobStatus] = {}
 
     def start_job(
         self,
@@ -104,21 +105,21 @@ class RemoteWriteBackV3(WriteProtocol):
         relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
     ) -> None:
+        self._result_cache.pop(job_id, None)
+
         parameters = self._build_call_parameters(
             graph_name, job_id, concurrency, property_overwrites, relationship_type_overwrite
         )
+
         self._parameter_cache[job_id] = parameters
 
-        self._query_runner.call_procedure(
-            ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
-            params=parameters,
-            retryable=True,
-            logging=False,
-            mode=QueryMode.WRITE,
-            custom_error=False,
-        )
+        self.get_status(job_id)
 
     def get_status(self, job_id: str) -> JobStatus:
+        print(f"Called status for job {job_id}")
+        if job_id in self._result_cache:
+            return self._result_cache[job_id]
+
         result = self._query_runner.call_procedure(
             ProtocolVersion.V3.versioned_procedure_name("gds.arrow.write"),
             params=self._parameter_cache[job_id],
@@ -133,7 +134,7 @@ class RemoteWriteBackV3(WriteProtocol):
         if progress is None:
             progress = 0.0
 
-        return JobStatus(
+        status = JobStatus(
             done=row["status"] == Status.COMPLETED.name,
             status=row["status"],  # type: ignore
             progress=progress,  # type: ignore
@@ -141,6 +142,13 @@ class RemoteWriteBackV3(WriteProtocol):
             written_node_labels=row.get("writtenNodeLabels"),  # type: ignore
             written_relationships=row.get("writtenRelationships"),  # type: ignore
         )
+
+        if status.done:
+            self._result_cache[job_id] = status
+
+        print(f"status: {status}")
+
+        return status
 
 
 class RemoteWriteBackV4(WriteProtocol):
