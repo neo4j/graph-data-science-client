@@ -42,3 +42,15 @@ def test_conductance_stream(conductance_endpoints: ConductanceArrowEndpoints, sa
 
     assert set(result.columns) == {"community", "conductance"}
     assert len(result) == 2
+
+
+def test_compute(conductance_endpoints: ConductanceArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = conductance_endpoints.compute(G=sample_graph, community_property="community")
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"community", "conductance"}
+    assert len(df) == 2

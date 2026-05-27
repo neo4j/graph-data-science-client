@@ -156,3 +156,15 @@ def test_bellman_ford_estimate(bellman_ford_endpoints: BellmanFordArrowEndpoints
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = bellman_ford_endpoints.compute(G=sample_graph, source_node=0, relationship_weight_property="cost")
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert summary["containsNegativeCycle"] is False
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert len(df) == 5

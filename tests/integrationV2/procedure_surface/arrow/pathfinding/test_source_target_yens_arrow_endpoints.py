@@ -136,3 +136,16 @@ def test_yens_estimate(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = yens_endpoints.compute(
+        G=sample_graph, source_node=0, target_node=4, k=3, relationship_weight_property="cost"
+    )
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert len(df) == 3

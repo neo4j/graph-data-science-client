@@ -168,3 +168,17 @@ def test_labelpropagation_with_min_community_size(
     assert "nodeId" in result.columns
     assert "communityId" in result.columns
     assert len(result) <= 4  # Some nodes might be filtered out due to min community size
+
+
+def test_compute(labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = labelpropagation_endpoints.compute(G=sample_graph, max_iterations=10)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert summary["communityCount"] > 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "communityId" in df.columns
+    assert len(df) == 4

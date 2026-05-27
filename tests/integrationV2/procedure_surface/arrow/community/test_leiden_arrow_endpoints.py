@@ -188,3 +188,18 @@ def test_leiden_with_tolerance_parameter(leiden_endpoints: LeidenArrowEndpoints,
     assert result.compute_millis >= 0
     assert result.community_count > 0
     assert isinstance(result.modularity, float)
+
+
+def test_compute(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = leiden_endpoints.compute(G=sample_graph, max_levels=10)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert summary["communityCount"] > 0
+    assert summary["nodeCount"] == 6
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "communityId" in df.columns
+    assert len(df) == 6

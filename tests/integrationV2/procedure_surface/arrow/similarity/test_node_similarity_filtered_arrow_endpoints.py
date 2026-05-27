@@ -160,3 +160,23 @@ def test_node_similarity_filtered_estimate(
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: GraphV2
+) -> None:
+    handle = node_similarity_filtered_endpoints.compute(
+        G=sample_graph,
+        source_node_filter="SourceNode",
+        target_node_filter="TargetNode",
+        top_k=2,
+    )
+    summary = handle.summary()
+
+    assert summary["nodesCompared"] > 0
+    assert "p50" in summary["similarityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"node1", "node2", "similarity"}
+    assert len(df) >= 1

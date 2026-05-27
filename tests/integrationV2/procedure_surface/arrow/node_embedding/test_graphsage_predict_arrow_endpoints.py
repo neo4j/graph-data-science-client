@@ -7,6 +7,9 @@ from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
+    GraphSagePredictArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arrow_endpoints import (
     GraphSageTrainArrowEndpoints,
 )
@@ -130,3 +133,16 @@ def test_estimate(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(arrow_client: AuthenticatedArrowClient, gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
+    endpoints = GraphSagePredictArrowEndpoints(arrow_client, None, show_progress=False)
+    handle = endpoints.compute(G=sample_graph, model_name=gs_model.name(), concurrency=4)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "embedding"}
+    assert len(df) == 4

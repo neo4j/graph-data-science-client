@@ -47,3 +47,14 @@ def test_longest_path_stream(longest_path_endpoints: LongestPathArrowEndpoints, 
 
     assert len(result_df) == 6
     assert {"index", "sourceNode", "targetNode", "totalCost", "nodeIds", "costs"} == set(result_df.columns)
+
+
+def test_compute(longest_path_endpoints: LongestPathArrowEndpoints, sample_dag: GraphV2) -> None:
+    handle = longest_path_endpoints.compute(G=sample_dag, relationship_weight_property="cost")
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert len(df) >= 1

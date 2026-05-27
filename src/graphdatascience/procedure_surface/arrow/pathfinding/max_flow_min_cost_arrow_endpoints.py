@@ -6,6 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoints import (
     MaxFlowMinCostEndpoints,
     MaxFlowMinCostMutateResult,
@@ -29,6 +30,42 @@ class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
         self._relationship_endpoints = RelationshipEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        source_nodes: list[int],
+        target_nodes: list[int],
+        *,
+        capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
+        cost_property: str | None = None,
+        alpha: int = 6,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._relationship_endpoints.create_base_config(
+            G,
+            capacityProperty=capacity_property,
+            nodeCapacityProperty=node_capacity_property,
+            costProperty=cost_property,
+            alpha=alpha,
+            concurrency=concurrency,
+            jobId=job_id,
+            logProgress=log_progress,
+            nodeLabels=node_labels,
+            relationshipTypes=relationship_types,
+            sourceNodes=source_nodes,
+            sudo=sudo,
+            targetNodes=target_nodes,
+            username=username,
+        )
+        return self._relationship_endpoints.run_job(G, "v2/pathfinding.maxFlow.minCost", config)
 
     def mutate(
         self,

@@ -118,3 +118,16 @@ def test_clique_counting_estimate(
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(clique_counting_endpoints: CliqueCountingArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = clique_counting_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert summary["globalCount"] == [4, 1]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "cliqueCount" in df.columns

@@ -159,3 +159,17 @@ def test_kcore_write_without_write_back_client(kcore_endpoints: KCoreArrowEndpoi
             G=sample_graph,
             write_property="coreValue",
         )
+
+
+def test_compute(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = kcore_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["degeneracy"] >= 1
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "coreValue" in df.columns
+    assert len(df) == 6

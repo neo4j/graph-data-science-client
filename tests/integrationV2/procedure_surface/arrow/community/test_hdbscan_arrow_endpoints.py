@@ -121,3 +121,16 @@ def test_hdbscan_estimate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = hdbscan_endpoints.compute(G=sample_graph, node_property="prop", min_cluster_size=2)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert summary["numberOfClusters"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "label"}
+    assert len(df) == 4

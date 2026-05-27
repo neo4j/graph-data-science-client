@@ -198,3 +198,17 @@ def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainArrowEndpoints
     assert result.post_processing_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written == 6
+
+
+def test_compute(louvain_endpoints: LouvainArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = louvain_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["communityCount"] == 2
+    assert summary["computeMillis"] >= 0
+    assert "p10" in summary["communityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "communityId" in df.columns

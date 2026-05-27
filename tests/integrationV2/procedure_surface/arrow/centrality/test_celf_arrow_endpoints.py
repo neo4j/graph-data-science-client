@@ -123,3 +123,17 @@ def test_celf_estimate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = celf_endpoints.compute(G=sample_graph, seed_set_size=2)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert summary["totalSpread"] >= 0.0
+    assert summary["nodeCount"] == 5
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "spread"}
+    assert len(df) == 5

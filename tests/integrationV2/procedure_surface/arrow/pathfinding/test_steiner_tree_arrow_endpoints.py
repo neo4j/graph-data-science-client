@@ -156,3 +156,18 @@ def test_steiner_tree_estimate(steiner_tree_endpoints: SteinerTreeArrowEndpoints
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = steiner_tree_endpoints.compute(
+        G=sample_graph, source_node=0, target_nodes=[3, 4], relationship_weight_property="cost"
+    )
+    summary = handle.summary()
+
+    assert summary["effectiveNodeCount"] == 5
+    assert summary["totalWeight"] == 4
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "parentId", "weight"}
+    assert len(df) == 4

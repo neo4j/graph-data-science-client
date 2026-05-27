@@ -134,3 +134,16 @@ def test_fastrp_estimate(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: G
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = fastrp_endpoints.compute(G=sample_graph, embedding_dimension=64)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "embedding"}
+    assert len(df) == 4
+    assert len(df["embedding"].iloc[0]) == 64

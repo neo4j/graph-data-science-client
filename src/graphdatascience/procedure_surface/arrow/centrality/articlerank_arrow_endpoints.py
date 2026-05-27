@@ -14,6 +14,7 @@ from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints imp
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -28,6 +29,42 @@ class ArticleRankArrowEndpoints(ArticleRankEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        damping_factor: float = 0.85,
+        tolerance: float = 1.0e-7,
+        max_iterations: int = 20,
+        scaler: str | dict[str, str | int | float] | ScalerConfig = "NONE",
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        relationship_weight_property: str | None = None,
+        source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
+    ) -> JobHandle:
+        scaler_value = scaler.model_dump() if isinstance(scaler, BaseModel) else scaler
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            damping_factor=damping_factor,
+            job_id=job_id,
+            log_progress=log_progress,
+            max_iterations=max_iterations,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            scaler=scaler_value,
+            source_nodes=source_nodes,
+            sudo=sudo,
+            tolerance=tolerance,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/centrality.articleRank", config)
 
     def mutate(
         self,

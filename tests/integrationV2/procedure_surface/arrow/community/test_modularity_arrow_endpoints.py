@@ -58,3 +58,16 @@ def test_modularity_estimate(modularity_endpoints: ModularityArrowEndpoints, sam
 
     assert result.bytes_min > 0
     assert result.bytes_max >= result.bytes_min
+
+
+def test_compute(modularity_endpoints: ModularityArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = modularity_endpoints.compute(G=sample_graph, community_property="community")
+    summary = handle.summary()
+
+    assert summary["communityCount"] == 2
+    assert summary["nodeCount"] == 6
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"communityId", "modularity"}
+    assert len(df) == 2

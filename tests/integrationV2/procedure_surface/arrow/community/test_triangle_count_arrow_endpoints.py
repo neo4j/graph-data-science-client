@@ -135,3 +135,18 @@ def test_triangle_count_estimate(triangle_count_endpoints: TriangleCountArrowEnd
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = triangle_count_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["globalTriangleCount"] >= 0
+    assert summary["nodeCount"] == 6
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "triangleCount" in df.columns
+    assert len(df) == 6

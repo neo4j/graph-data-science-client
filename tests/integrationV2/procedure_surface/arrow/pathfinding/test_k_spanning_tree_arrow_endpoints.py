@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.arrow.pathfinding.k_spanning_tree_arrow_
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
+    create_graph,
     create_graph_from_db,
 )
 from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_by_id
@@ -29,6 +30,12 @@ graph = """
             (d)-[:LINK {cost: 1.0}]->(f),
             (e)-[:LINK {cost: 1.0}]->(f)
         """
+
+
+@pytest.fixture
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+    with create_graph(arrow_client, "g", graph, undirected=("LINK", "UNDIRECTED_LINK")) as G:
+        yield G
 
 
 @pytest.fixture
@@ -72,3 +79,12 @@ def test_k_spanning_tree_write(
     assert result.compute_millis >= 0
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
+
+
+def test_compute(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+    endpoints = KSpanningTreeArrowEndpoints(arrow_client)
+    handle = endpoints.compute(G=sample_graph, k=3, source_node=0, relationship_weight_property="cost")
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]

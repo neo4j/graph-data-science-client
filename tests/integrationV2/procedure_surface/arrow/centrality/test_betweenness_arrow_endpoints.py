@@ -134,3 +134,16 @@ def test_betweenness_estimate(betweenness_endpoints: BetweennessArrowEndpoints, 
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = betweenness_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert "p50" in summary["centralityDistribution"]
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert {"nodeId", "score"} == set(df.columns.to_list())
+    assert len(df) == 3

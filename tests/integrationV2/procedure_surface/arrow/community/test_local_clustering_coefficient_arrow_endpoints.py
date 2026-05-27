@@ -143,3 +143,19 @@ def test_local_clustering_coefficient_estimate(
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: GraphV2
+) -> None:
+    handle = local_clustering_coefficient_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["nodeCount"] == 5
+    assert summary["computeMillis"] > 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "localClusteringCoefficient" in df.columns
+    assert len(df) == 5

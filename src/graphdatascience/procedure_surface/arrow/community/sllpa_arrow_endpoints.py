@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.community.sllpa_endpoints import (
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -26,6 +27,36 @@ class SllpaArrowEndpoints(SllpaEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        max_iterations: int,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        log_progress: bool = True,
+        min_association_strength: float = 0.2,
+        node_labels: list[str] = ALL_LABELS,
+        partitioning: str = "RANGE",
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            max_iterations=max_iterations,
+            concurrency=concurrency,
+            job_id=job_id,
+            log_progress=log_progress,
+            min_association_strength=min_association_strength,
+            node_labels=node_labels,
+            partitioning=partitioning,
+            relationship_types=relationship_types,
+            sudo=sudo,
+            username=username,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/community.sllpa", config)
 
     def mutate(
         self,

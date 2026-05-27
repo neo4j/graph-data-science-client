@@ -6,6 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding import MaxFlowMinCostEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import (
     MaxFlowEndpoints,
@@ -40,6 +41,38 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
     @property
     def min_cost(self) -> MaxFlowMinCostEndpoints:
         return self._min_cost_endpoints
+
+    def compute(
+        self,
+        G: GraphV2,
+        source_nodes: list[int],
+        target_nodes: list[int],
+        *,
+        capacity_property: str | None = None,
+        node_capacity_property: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._relationship_endpoints.create_base_config(
+            G,
+            capacityProperty=capacity_property,
+            nodeCapacityProperty=node_capacity_property,
+            concurrency=concurrency,
+            jobId=job_id,
+            logProgress=log_progress,
+            nodeLabels=node_labels,
+            relationshipTypes=relationship_types,
+            sourceNodes=source_nodes,
+            sudo=sudo,
+            targetNodes=target_nodes,
+            username=username,
+        )
+        return self._relationship_endpoints.run_job(G, "v2/pathfinding.maxFlow", config)
 
     def mutate(
         self,

@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.community.kmeans_endpoints import (
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -26,6 +27,48 @@ class KMeansArrowEndpoints(KMeansEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        node_property: str,
+        *,
+        compute_silhouette: bool = False,
+        concurrency: int | None = None,
+        delta_threshold: float = 0.05,
+        initial_sampler: str = "UNIFORM",
+        job_id: str | None = None,
+        k: int = 10,
+        log_progress: bool = True,
+        max_iterations: int = 10,
+        node_labels: list[str] = ALL_LABELS,
+        number_of_restarts: int = 1,
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        seed_centroids: list[list[float]] | None = None,
+        sudo: bool = False,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            node_property=node_property,
+            compute_silhouette=compute_silhouette,
+            concurrency=concurrency,
+            delta_threshold=delta_threshold,
+            initial_sampler=initial_sampler,
+            job_id=job_id,
+            k=k,
+            log_progress=log_progress,
+            max_iterations=max_iterations,
+            node_labels=node_labels,
+            number_of_restarts=number_of_restarts,
+            random_seed=random_seed,
+            relationship_types=relationship_types,
+            seed_centroids=seed_centroids,
+            sudo=sudo,
+            username=username,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/community.kmeans", config)
 
     def mutate(
         self,

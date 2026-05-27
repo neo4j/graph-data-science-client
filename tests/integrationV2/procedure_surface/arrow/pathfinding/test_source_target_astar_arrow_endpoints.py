@@ -143,3 +143,22 @@ def test_astar_estimate(astar_endpoints: AStarArrowEndpoints, sample_graph: Grap
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = astar_endpoints.compute(
+        G=sample_graph,
+        source_node=0,
+        target_node=4,
+        latitude_property="latitude",
+        longitude_property="longitude",
+        relationship_weight_property="cost",
+    )
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert len(df) > 0
+    assert "totalCost" in df.columns

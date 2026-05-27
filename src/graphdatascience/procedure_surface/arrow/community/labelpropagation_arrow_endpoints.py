@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -26,6 +27,40 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        concurrency: int | None = None,
+        consecutive_ids: bool = False,
+        job_id: str | None = None,
+        log_progress: bool = True,
+        max_iterations: int = 10,
+        node_labels: list[str] = ALL_LABELS,
+        node_weight_property: str | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        relationship_weight_property: str | None = None,
+        seed_property: str | None = None,
+        sudo: bool = False,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+            job_id=job_id,
+            log_progress=log_progress,
+            max_iterations=max_iterations,
+            node_labels=node_labels,
+            node_weight_property=node_weight_property,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            seed_property=seed_property,
+            sudo=sudo,
+            username=username,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/community.labelPropagation", config)
 
     def mutate(
         self,

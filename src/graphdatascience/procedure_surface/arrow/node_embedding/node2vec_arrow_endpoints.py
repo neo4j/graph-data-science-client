@@ -6,6 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import (
     Node2VecEndpoints,
     Node2VecMutateResult,
@@ -25,6 +26,62 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        iterations: int = 1,
+        negative_sampling_rate: int = 5,
+        positive_sampling_factor: float = 0.001,
+        embedding_dimension: int = 128,
+        embedding_initializer: str = "NORMALIZED",
+        initial_learning_rate: float = 0.025,
+        min_learning_rate: float = 0.0001,
+        window_size: int = 10,
+        negative_sampling_exponent: float = 0.75,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        walk_length: int = 80,
+        walks_per_node: int = 10,
+        in_out_factor: float = 1.0,
+        return_factor: float = 1.0,
+        walk_buffer_size: int = 1000,
+        relationship_weight_property: str | None = None,
+        random_seed: int | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            iterations=iterations,
+            negative_sampling_rate=negative_sampling_rate,
+            positive_sampling_factor=positive_sampling_factor,
+            embedding_dimension=embedding_dimension,
+            embedding_initializer=embedding_initializer,
+            initial_learning_rate=initial_learning_rate,
+            min_learning_rate=min_learning_rate,
+            window_size=window_size,
+            negative_sampling_exponent=negative_sampling_exponent,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            username=username,
+            log_progress=log_progress,
+            sudo=sudo,
+            concurrency=concurrency,
+            job_id=job_id,
+            walk_length=walk_length,
+            walks_per_node=walks_per_node,
+            in_out_factor=in_out_factor,
+            return_factor=return_factor,
+            walk_buffer_size=walk_buffer_size,
+            relationship_weight_property=relationship_weight_property,
+            random_seed=random_seed,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/embeddings.node2vec", config)
 
     def mutate(
         self,

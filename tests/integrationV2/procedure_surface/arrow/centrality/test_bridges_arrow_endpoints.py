@@ -44,3 +44,15 @@ def test_bridges_estimate(bridges_endpoints: BridgesArrowEndpoints, sample_graph
     assert result.node_count == 3
     assert result.relationship_count == 4
     assert "Bytes" in result.required_memory
+
+
+def test_compute(bridges_endpoints: BridgesArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = bridges_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"from", "to", "remainingSizes"}
+    assert len(df) == 2

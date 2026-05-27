@@ -92,3 +92,17 @@ def test_maxkcut_estimate(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = maxkcut_endpoints.compute(G=sample_graph, k=2)
+    summary = handle.summary()
+
+    assert summary["cutCost"] >= 0.0
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "communityId" in df.columns
+    assert len(df) == 6

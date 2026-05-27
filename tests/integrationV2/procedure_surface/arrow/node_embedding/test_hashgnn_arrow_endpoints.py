@@ -157,3 +157,17 @@ def test_hashgnn_estimate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = hashgnn_endpoints.compute(
+        G=sample_graph, iterations=2, embedding_density=4, feature_properties=["feature"]
+    )
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "embedding"}
+    assert len(df) == 4

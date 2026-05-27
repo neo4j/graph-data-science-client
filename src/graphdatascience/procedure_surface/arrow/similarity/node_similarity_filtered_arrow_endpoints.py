@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.similarity.node_similarity_filtered_endpoints import (
     NodeSimilarityFilteredEndpoints,
 )
@@ -31,6 +32,54 @@ class NodeSimilarityFilteredArrowEndpoints(NodeSimilarityFilteredEndpoints):
         self._endpoints_helper = RelationshipEndpointsHelper(
             arrow_client, write_protocol=write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        source_node_filter: str | list[int],
+        target_node_filter: str | list[int],
+        *,
+        top_k: int = 10,
+        bottom_k: int = 10,
+        top_n: int = 0,
+        bottom_n: int = 0,
+        similarity_cutoff: float = 1.0e-42,
+        degree_cutoff: int = 1,
+        upper_degree_cutoff: int = 2147483647,
+        similarity_metric: str = "JACCARD",
+        use_components: bool | str = False,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> JobHandle:
+        config = self._endpoints_helper.create_base_config(
+            G,
+            sourceNodeFilter=source_node_filter,
+            targetNodeFilter=target_node_filter,
+            topK=top_k,
+            bottomK=bottom_k,
+            topN=top_n,
+            bottomN=bottom_n,
+            similarityCutoff=similarity_cutoff,
+            degreeCutoff=degree_cutoff,
+            upperDegreeCutoff=upper_degree_cutoff,
+            similarityMetric=similarity_metric,
+            useComponents=use_components,
+            relationshipWeightProperty=relationship_weight_property,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        return self._endpoints_helper.run_job(G, "v2/similarity.nodeSimilarity.filtered", config)
 
     def mutate(
         self,

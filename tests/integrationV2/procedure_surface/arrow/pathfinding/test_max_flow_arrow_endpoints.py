@@ -132,3 +132,17 @@ def test_max_flow_estimate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_gra
     assert result.bytes_max >= 0
     assert result.heap_percentage_min >= 0
     assert result.heap_percentage_max >= 0
+
+
+def test_compute(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = max_flow_endpoints.compute(
+        G=sample_graph, source_nodes=[0], target_nodes=[5], capacity_property="capacity"
+    )
+    summary = handle.summary()
+
+    assert summary["totalFlow"] >= 0
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"source", "target", "flow"}
