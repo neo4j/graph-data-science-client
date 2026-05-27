@@ -60,7 +60,6 @@ def _make_handle(
         write_protocol=write_protocol,
         job_id=job_id,
         graph=graph,
-        log_progress=False,
         show_progress=False,
     )
 
@@ -72,7 +71,6 @@ def test_job_id_matches_started_job(arrow_client: AuthenticatedArrowClient, samp
         write_protocol=None,
         job_id=job_id,
         graph=sample_graph,
-        log_progress=False,
         show_progress=False,
     )
 
@@ -117,7 +115,6 @@ def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowCl
         write_protocol=None,
         job_id=job_id,
         graph=sample_graph,
-        log_progress=False,
         show_progress=False,
     )
 
@@ -130,7 +127,7 @@ def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowCl
 def test_stream_returns_dataframe(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
-    df = handle.stream(G=sample_graph)
+    df = handle.stream()
 
     assert isinstance(df, pd.DataFrame)
     assert "nodeId" in df.columns
