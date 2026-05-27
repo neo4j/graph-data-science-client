@@ -2,7 +2,7 @@ import json
 from typing import Any
 
 from pandas import ArrowDtype, DataFrame
-from pyarrow.flight import FlightCancelledError, Ticket
+from pyarrow.flight import Ticket
 from tenacity import Retrying, retry_if_result
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
