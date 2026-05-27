@@ -61,6 +61,7 @@ def _make_handle(
         job_id=job_id,
         graph=graph,
         show_progress=False,
+        endpoint="v2/centrality.pageRank",
     )
 
 
@@ -72,6 +73,7 @@ def test_job_id_matches_started_job(arrow_client: AuthenticatedArrowClient, samp
         job_id=job_id,
         graph=sample_graph,
         show_progress=False,
+        endpoint="v2/centrality.pageRank",
     )
 
     assert handle.job_id() == job_id
@@ -116,6 +118,7 @@ def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowCl
         job_id=job_id,
         graph=sample_graph,
         show_progress=False,
+        endpoint="v2/centrality.pageRank",
     )
 
     # Best-effort: if the tiny pagerank finished too quickly, just skip this assertion.

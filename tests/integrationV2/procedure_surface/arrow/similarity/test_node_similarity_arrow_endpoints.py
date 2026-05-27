@@ -135,8 +135,10 @@ def test_node_similarity_estimate(
     assert result.heap_percentage_max > 0
 
 
-def test_compute_summary_and_stream(ns_endpoints: NodeSimilarityArrowEndpoints, sample_graph: GraphV2) -> None:
-    handle = ns_endpoints.compute(G=sample_graph, top_k=2)
+def test_compute_summary_and_stream(
+    node_similarity_endpoints: NodeSimilarityArrowEndpoints, sample_graph: GraphV2
+) -> None:
+    handle = node_similarity_endpoints.compute(G=sample_graph, top_k=2)
     summary = handle.summary()
     assert summary["nodesCompared"] > 0
     assert "p50" in summary["similarityDistribution"]

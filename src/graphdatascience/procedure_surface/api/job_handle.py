@@ -11,6 +11,7 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2 import GraphV2
 from graphdatascience.procedure_surface.api.write_job_handle import JobNotFinishedError, WriteJobHandle
 from graphdatascience.procedure_surface.arrow.mutation_runner import MutationRunner
+from graphdatascience.procedure_surface.arrow.stream_result_mapper import apply_stream_mapper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 
@@ -23,6 +24,7 @@ class JobHandle:
         job_id: str,
         graph: GraphV2,
         show_progress: bool,
+        endpoint: str,
     ):
         self._arrow_client = arrow_client
         self._job_id = job_id
@@ -30,6 +32,7 @@ class JobHandle:
         self._show_progress = show_progress
         self._is_done = False
         self._write_protocol = write_protocol
+        self._endpoint = endpoint
         self._mutation_runner = MutationRunner(arrow_client)
 
     def job_id(self) -> str:
@@ -80,7 +83,10 @@ class JobHandle:
         termination_flag: TerminationFlag | None = None,
     ) -> DataFrame:
         self._ensure_done(wait=wait, termination_flag=termination_flag)
-        return JobClient.stream_results(self._arrow_client, self._graph.name(), self._job_id)
+        result = JobClient.stream_results(self._arrow_client, self._graph.name(), self._job_id)
+        if self._endpoint is not None:
+            result = apply_stream_mapper(self._endpoint, result)
+        return result
 
     def mutate(
         self,

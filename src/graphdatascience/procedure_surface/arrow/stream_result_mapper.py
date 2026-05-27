@@ -1,3 +1,5 @@
+from typing import Callable
+
 from pandas import DataFrame
 
 
@@ -50,6 +52,14 @@ def aggregate_traversal_rels(result: DataFrame, source_node: int) -> DataFrame:
     )
 
 
+def aggregate_traversal_rels_from_result(result: DataFrame) -> DataFrame:
+    """Aggregate traversal relationships, reading the source node from the result rows."""
+    if len(result) == 0:
+        return DataFrame(data={"sourceNode": [], "nodeIds": []})
+    source_node = int(result["sourceNodeId"].iloc[0])
+    return aggregate_traversal_rels(result, source_node)
+
+
 def map_steiner_tree_stream_result(result: DataFrame) -> None:
     result.rename(
         columns={
@@ -67,3 +77,39 @@ def map_conductance_stream_result(result: DataFrame) -> None:
         columns={"communityId": "community"},
         inplace=True,
     )
+
+
+_STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame | None]] = {
+    "v2/similarity.knn": rename_similarity_stream_result,
+    "v2/similarity.knn.filtered": rename_similarity_stream_result,
+    "v2/similarity.nodeSimilarity": rename_similarity_stream_result,
+    "v2/similarity.nodeSimilarity.filtered": rename_similarity_stream_result,
+    "v2/pathfinding.sourceTarget.dijkstra": map_shortest_path_stream_result,
+    "v2/pathfinding.sourceTarget.aStar": map_shortest_path_stream_result,
+    "v2/pathfinding.sourceTarget.yens": map_shortest_path_stream_result,
+    "v2/pathfinding.singleSource.dijkstra": map_shortest_path_stream_result,
+    "v2/pathfinding.singleSource.deltaStepping": map_shortest_path_stream_result,
+    "v2/pathfinding.singleSource.bellmanFord": map_shortest_path_stream_result,
+    "v2/pathfinding.longestPath": map_shortest_path_stream_result,
+    "v2/pathfinding.maxFlow": map_max_flow_stream_result,
+    "v2/pathfinding.maxFlow.minCost": map_max_flow_stream_result,
+    "v2/pathfinding.allShortestPaths": map_all_shortest_path_stream_result,
+    "v2/pathfinding.spanningTree": map_steiner_tree_stream_result,
+    "v2/pathfinding.steinerTree": map_steiner_tree_stream_result,
+    "v2/pathfinding.prizeSteinerTree": map_steiner_tree_stream_result,
+    "v2/pathfinding.bfs": aggregate_traversal_rels_from_result,
+    "v2/pathfinding.dfs": aggregate_traversal_rels_from_result,
+    "v2/community.conductance": map_conductance_stream_result,
+}
+
+
+def apply_stream_mapper(endpoint: str, result: DataFrame) -> DataFrame:
+    """Apply the endpoint-specific stream result mapper.
+
+    Mappers may mutate the DataFrame in place (returning ``None``) or return a new one.
+    """
+    mapper = _STREAM_MAPPERS.get(endpoint)
+    if mapper is None:
+        return result
+    mapped = mapper(result)
+    return mapped if mapped is not None else result

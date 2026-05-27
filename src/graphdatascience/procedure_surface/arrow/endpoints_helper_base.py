@@ -36,7 +36,7 @@ class EndpointsHelperBase:
         show_progress: bool = config.get("logProgress", True) and self._show_progress
 
         job_id = JobClient.run_job(self._arrow_client, endpoint, config)
-        return JobHandle(self._arrow_client, self._write_protocol, job_id, G, show_progress)
+        return JobHandle(self._arrow_client, self._write_protocol, job_id, G, show_progress, endpoint=endpoint)
 
     def run_job_and_get_summary(self, endpoint: str, config: dict[str, Any]) -> dict[str, Any]:
         """Run a job and return the computation summary."""
