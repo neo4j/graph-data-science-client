@@ -204,7 +204,15 @@ class SessionQueryRunner(QueryRunner):
         write_handle = WriteJobHandle.create(
             write_protocol, graph_name, job_id, terminationFlag, concurrency=config.get("concurrency")
         )
-        database_write_result = write_handle.result(wait=True)
+
+        try:
+            database_write_result = write_handle.result(wait=True)
+        except Exception as e:
+            # catch the case nothing was needed to write-back (empty graph)
+            # once we have the Arrow Endpoints V2, we could catch by first checking the jobs summary
+            if "No entry with job id" in str(e) and gds_write_result.iloc[0].get("writeMillis", -1) == 0:
+                return gds_write_result
+            raise e
 
         gds_write_result["writeMillis"] = database_write_result.write_millis
 

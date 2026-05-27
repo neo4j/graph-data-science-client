@@ -48,7 +48,7 @@ class WriteProtocol(ABC):
         relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
     ) -> None:
-        """Optional initial call to start the write-back job. No-op for protocols that combine start+poll."""
+        """Initial call to start the write-back job. No-op for protocols that combine start+poll."""
 
     @abstractmethod
     def get_status(self, job_id: str) -> JobStatus:

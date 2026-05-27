@@ -45,7 +45,7 @@ it-v2 filter="" extra_options="":
     uv run pytest tests/integrationV2 --include-integration-v2 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 
-# runs the
+# runs the session related v1 integration tests
 session-v1-it:
     #!/usr/bin/env bash
     set -e
