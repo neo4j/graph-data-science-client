@@ -134,3 +134,19 @@ def test_pagerank_estimate(pagerank_endpoints: PageRankArrowEndpoints, sample_gr
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = pagerank_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["ranIterations"] > 0
+    assert summary["didConverge"] is True
+    assert summary["computeMillis"] >= 0
+    assert "p50" in summary["centralityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "score" in df.columns
+    assert len(df) == 3
