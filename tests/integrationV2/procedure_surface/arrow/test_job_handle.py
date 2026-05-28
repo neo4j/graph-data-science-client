@@ -93,7 +93,7 @@ def test_status_returns_terminal_after_wait(arrow_client: AuthenticatedArrowClie
 
     status = handle.status()
 
-    assert status.succeeded() or status.aborted()
+    assert status.succeeded()
 
 
 def test_summary_waits_and_returns_dict_with_internals_stripped(
