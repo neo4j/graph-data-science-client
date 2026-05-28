@@ -4,7 +4,6 @@ from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
     NodeClassificationPipeline,
 )
@@ -33,21 +32,22 @@ from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_en
     PipelineCatalogArrowEndpoints,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
 
 class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None,
+        write_protocol: WriteProtocol | None,
         show_progress: bool = True,
     ) -> None:
         self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
+        self._write_protocol = write_protocol
         self._show_progress = show_progress
         self._predict = NodeClassificationPredictArrowEndpoints(
             arrow_client,
-            write_back_client,
+            write_protocol,
             show_progress=show_progress,
         )
         self._pipeline_catalog: PipelineCatalogProtocol = PipelineCatalogArrowEndpoints(

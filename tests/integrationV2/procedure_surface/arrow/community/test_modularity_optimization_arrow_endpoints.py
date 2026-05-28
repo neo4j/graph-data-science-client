@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.community.modularity_optimization_en
 from graphdatascience.procedure_surface.arrow.community.modularity_optimization_arrow_endpoints import (
     ModularityOptimizationArrowEndpoints,
 )
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -107,11 +108,7 @@ def test_modularity_optimization_mutate(
 def test_modularity_optimization_write(
     arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner
 ) -> None:
-    from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
-
-    endpoints = ModularityOptimizationArrowEndpoints(
-        arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner)
-    )
+    endpoints = ModularityOptimizationArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
     result = endpoints.write(
         G=db_graph,

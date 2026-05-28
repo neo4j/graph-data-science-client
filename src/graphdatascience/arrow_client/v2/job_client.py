@@ -13,6 +13,7 @@ from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import job_wait_strategy
 
 JOB_STATUS_ENDPOINT = "v2/jobs.status"
+JOBS_CANCEL_ENDPOINT = "v2/jobs.cancel"
 RESULTS_SUMMARY_ENDPOINT = "v2/results.summary"
 
 
@@ -72,6 +73,10 @@ class JobClient:
                             )
                     if progress_bar:
                         progress_bar.update(job_status.status, job_status.progress_percent(), job_status.sub_tasks())
+
+    @staticmethod
+    def cancel_job(client: AuthenticatedArrowClient, job_id: str) -> None:
+        client.do_action_with_retry(JOBS_CANCEL_ENDPOINT, JobIdConfig(jobId=job_id).dump_camel())
 
     @staticmethod
     def get_job_status(client: AuthenticatedArrowClient, job_id: str) -> JobStatus:

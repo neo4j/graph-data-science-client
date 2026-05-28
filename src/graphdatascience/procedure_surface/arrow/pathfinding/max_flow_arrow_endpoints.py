@@ -3,7 +3,6 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -21,20 +20,21 @@ from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper impo
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import (
     map_max_flow_stream_result,
 )
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
 
 class MaxFlowArrowEndpoints(MaxFlowEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None = None,
+        write_protocol: WriteProtocol | None = None,
         show_progress: bool = True,
     ):
         self._min_cost_endpoints = MaxFlowMinCostArrowEndpoints(
-            arrow_client, write_back_client, show_progress=show_progress
+            arrow_client, write_protocol, show_progress=show_progress
         )
         self._relationship_endpoints = RelationshipEndpointsHelper(
-            arrow_client, write_back_client, show_progress=show_progress
+            arrow_client, write_protocol, show_progress=show_progress
         )
 
     @property

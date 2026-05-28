@@ -4,11 +4,11 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.eigenvector_arrow_endpoints import EigenvectorArrowEndpoints
 from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -101,7 +101,7 @@ def test_eigenvector_write(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
 ) -> None:
     """Test Eigenvector write operation."""
-    endpoints = EigenvectorArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
+    endpoints = EigenvectorArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="eigenvector")
 
     assert isinstance(result, EigenvectorWriteResult)

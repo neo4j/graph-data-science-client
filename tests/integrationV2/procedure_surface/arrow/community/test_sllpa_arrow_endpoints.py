@@ -7,6 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaWriteResult
 from graphdatascience.procedure_surface.arrow.community.sllpa_arrow_endpoints import SllpaArrowEndpoints
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -97,9 +98,8 @@ def test_sllpa_mutate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV
 @pytest.mark.db_integration
 def test_sllpa_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
     """Test SLLPA write operation via Arrow."""
-    from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 
-    endpoints = SllpaArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
+    endpoints = SllpaArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
     result = endpoints.write(
         G=db_graph,

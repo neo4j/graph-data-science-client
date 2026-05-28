@@ -17,7 +17,7 @@ class LongestPathArrowEndpoints(LongestPathEndpoints):
         show_progress: bool = False,
     ):
         self._endpoints_helper = RelationshipEndpointsHelper(
-            arrow_client, write_back_client=None, show_progress=show_progress
+            arrow_client, write_protocol=None, show_progress=show_progress
         )
 
     def stream(

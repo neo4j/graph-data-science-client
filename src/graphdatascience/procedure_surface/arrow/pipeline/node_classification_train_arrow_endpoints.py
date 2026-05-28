@@ -36,7 +36,7 @@ class NodeClassificationTrainArrowEndpoints(NodeClassificationPipelineTrainEndpo
         self._show_progress = show_progress
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client,
-            write_back_client=None,
+            write_protocol=None,
             show_progress=show_progress,
         )
 

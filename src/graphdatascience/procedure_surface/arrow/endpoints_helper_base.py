@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections import OrderedDict
 from typing import Any
 
@@ -9,8 +11,10 @@ from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.data_mapper_utils import deserialize_single
 from ...arrow_client.v2.job_client import JobClient
 from ...arrow_client.v2.mutation_client import MutationClient
-from ...arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
+from ...query_runner.protocol.write_protocols import WriteProtocol
+from ...query_runner.termination_flag import TerminationFlag
 from ..api.estimation_result import EstimationResult
+from ..api.write_job_handle import WriteJobHandle
 from ..utils.config_converter import ConfigConverter
 
 
@@ -18,11 +22,11 @@ class EndpointsHelperBase:
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
-        write_back_client: RemoteWriteBackClient | None = None,
+        write_protocol: WriteProtocol | None = None,
         show_progress: bool = True,
     ):
         self._arrow_client = arrow_client
-        self._write_back_client = write_back_client
+        self._write_protocol = write_protocol
         self._show_progress = show_progress
 
     def run_job_and_get_summary(self, endpoint: str, config: dict[str, Any]) -> dict[str, Any]:
@@ -32,7 +36,7 @@ class EndpointsHelperBase:
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
         result = JobClient.get_summary(self._arrow_client, job_id)
         if nested_config := result.get("configuration", None):
-            self._drop_write_internals(nested_config)
+            self.drop_write_internals(nested_config)
         return result
 
     def _run_job_and_mutate(
@@ -47,9 +51,22 @@ class EndpointsHelperBase:
         """Run a job, mutate node properties, and return summary with mutation result."""
         show_progress = config.get("logProgress", True) and self._show_progress
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress)
+        return self.run_mutation(
+            job_id,
+            mutate_property=mutate_property,
+            mutate_relationship_type=mutate_relationship_type,
+            mutate_property_overwrites=mutate_property_overwrites,
+        )
 
-        computation_result = JobClient.get_summary(self._arrow_client, job_id)
-
+    def run_mutation(
+        self,
+        job_id: str,
+        *,
+        mutate_property: str | None = None,
+        mutate_relationship_type: str | None = None,
+        mutate_property_overwrites: OrderedDict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """Mutate the in-memory graph from a completed job and return the augmented summary."""
         if mutate_relationship_type:
             mutate_result = MutationClient.mutate_relationship_property(
                 self._arrow_client, job_id, mutate_relationship_type, mutate_property
@@ -61,11 +78,13 @@ class EndpointsHelperBase:
                 self._arrow_client, job_id, mutate_property_overwrites
             )
         else:
-            raise ValueError("Either mutate_property or mutate_relationship_type must be provided for mutation.")
+            raise ValueError(
+                "Provide one of: mutate_property, mutate_relationship_type, or mutate_property_overwrites."
+            )
 
+        computation_result = JobClient.get_summary(self._arrow_client, job_id)
         computation_result["mutateMillis"] = mutate_result.mutate_millis
         if mutate_property or mutate_property_overwrites:
-            # modify computation result to include mutation details
             computation_result["nodePropertiesWritten"] = mutate_result.node_properties_written
         if mutate_relationship_type:
             computation_result["relationshipsWritten"] = mutate_result.relationships_written
@@ -74,11 +93,10 @@ class EndpointsHelperBase:
             if mutate_property:
                 nested_config["mutateProperty"] = mutate_property
             if mutate_property_overwrites:
-                # expect first entry is the mutate property
-                nested_config["mutateProperty"] = mutate_property_overwrites.popitem(last=False)[1]
+                nested_config["mutateProperty"] = next(iter(mutate_property_overwrites.values()))
             if mutate_relationship_type is not None:
                 nested_config["mutateRelationshipType"] = mutate_relationship_type
-            self._drop_write_internals(nested_config)
+            self.drop_write_internals(nested_config)
 
         return computation_result
 
@@ -104,21 +122,21 @@ class EndpointsHelperBase:
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
         computation_result = JobClient.get_summary(self._arrow_client, job_id)
 
-        if self._write_back_client is None:
-            raise Exception("Write back client is not initialized")
+        if self._write_protocol is None:
+            raise Exception("Write back is not supported by this session.")
 
-        if isinstance(property_overwrites, str):
-            # The remote write back procedure allows specifying a single overwrite. The key is ignored.
-            property_overwrites = {property_overwrites: property_overwrites}
-
-        write_result = self._write_back_client.write(
+        job_handle = WriteJobHandle.create(
+            self._write_protocol,
             G.name(),
             job_id,
+            TerminationFlag.create(),
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             property_overwrites=property_overwrites,
             relationship_type_overwrite=relationship_type_overwrite,
             log_progress=show_progress,
         )
+
+        write_result = job_handle.result(wait=True)
 
         # modify computation result to include write details
         computation_result["writeMillis"] = write_result.write_millis
@@ -158,7 +176,8 @@ class EndpointsHelperBase:
 
         return EstimationResult(**deserialize_single(res))
 
-    def _drop_write_internals(self, config: dict[str, Any]) -> None:
+    @staticmethod
+    def drop_write_internals(config: dict[str, Any]) -> None:
         config.pop("writeConcurrency", None)
         config.pop("writeToResultStore", None)
         config.pop("writeProperty", None)

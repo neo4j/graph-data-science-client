@@ -3,9 +3,9 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.community.maxkcut_arrow_endpoints import MaxKCutArrowEndpoints
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
 )
@@ -43,9 +43,9 @@ def maxkcut_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[MaxKC
 
 @pytest.fixture
 def maxkcut_endpoints_with_write_back(
-    arrow_client: AuthenticatedArrowClient, write_back_client: RemoteWriteBackClient
+    arrow_client: AuthenticatedArrowClient, write_protocol: WriteProtocol
 ) -> Generator[MaxKCutArrowEndpoints, None, None]:
-    yield MaxKCutArrowEndpoints(arrow_client, write_back_client, show_progress=False)
+    yield MaxKCutArrowEndpoints(arrow_client, write_protocol, show_progress=False)
 
 
 def test_maxkcut_stream(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: GraphV2) -> None:

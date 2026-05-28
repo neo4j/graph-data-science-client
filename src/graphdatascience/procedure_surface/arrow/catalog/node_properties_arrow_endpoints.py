@@ -3,7 +3,6 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import (
     NodePropertiesDropResult,
@@ -12,10 +11,13 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
     NodePropertySpec,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
+from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 
 
 class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
@@ -27,11 +29,11 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._write_back_client: RemoteWriteBackClient | None = (
-            RemoteWriteBackClient.create(arrow_client, query_runner) if query_runner is not None else None
+        self._write_protocol: WriteProtocol | None = (
+            WriteProtocol.select(arrow_client, query_runner) if query_runner is not None else None
         )
         self._node_property_endpoints = NodePropertyEndpointsHelper(
-            arrow_client, self._write_back_client, show_progress=show_progress
+            arrow_client, self._write_protocol, show_progress=show_progress
         )
         self._show_progress = show_progress
 
@@ -89,7 +91,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         username: str | None = None,
         job_id: str | None = None,
     ) -> NodePropertiesWriteResult:
-        if self._write_back_client is None:
+        if self._write_protocol is None:
             raise ValueError("Write back is only available if a database connection is provided.")
 
         node_property_spec = NodePropertySpec(node_properties)
@@ -107,13 +109,16 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
         job_id = JobClient.run_job(self._arrow_client, "v2/graph.nodeProperties.stream", config)
 
-        write_result = self._write_back_client.write(
+        write_job = WriteJobHandle.create(
+            self._write_protocol,
             G.name(),
             job_id,
+            TerminationFlag.create(),
             concurrency=write_concurrency if write_concurrency is not None else concurrency,
             property_overwrites=node_property_spec.to_dict(),
             log_progress=self._show_progress and log_progress,
         )
+        write_result = write_job.result(wait=True)
 
         return NodePropertiesWriteResult(
             graphName=G.name(),

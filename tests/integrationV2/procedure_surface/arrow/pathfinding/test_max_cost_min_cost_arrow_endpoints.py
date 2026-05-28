@@ -4,7 +4,6 @@ import pytest
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.remote_write_back_client import RemoteWriteBackClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoints import (
     MaxFlowMinCostMutateResult,
@@ -14,6 +13,7 @@ from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoi
 from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_min_cost_arrow_endpoints import (
     MaxFlowMinCostArrowEndpoints,
 )
+from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
@@ -117,7 +117,7 @@ def test_min_cost_mutate(min_cost_endpoints: MaxFlowMinCostArrowEndpoints, sampl
 
 @pytest.mark.db_integration
 def test_min_cost_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
-    endpoints = MaxFlowMinCostArrowEndpoints(arrow_client, RemoteWriteBackClient.create(arrow_client, query_runner))
+    endpoints = MaxFlowMinCostArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(
         db_graph,
         [find_node_by_id(query_runner, 0)],
