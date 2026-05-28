@@ -1,11 +1,13 @@
 import logging
 import os
+import socket
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any, Generator, Optional
 
 import pytest
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.network import Network
 from testcontainers.core.wait_strategies import HttpWaitStrategy
 
@@ -23,12 +25,6 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             # otherwise would also skip lots of other test
             if "integrationV2" in str(item.fspath):
                 item.add_marker(skip_v2)
-
-    if inside_ci():
-        skip_ci = pytest.mark.skip(reason="Skipping db_integration tests in CI")
-        for item in items:
-            if "db_integration" in item.keywords:
-                item.add_marker(skip_ci)
 
 
 # best used with pytest --basetemp=tmp/pytest for easy access to logs
@@ -51,10 +47,55 @@ class GdsSessionConnectionInfo:
     bolt_port: int
 
 
+def _current_container_id() -> Optional[str]:
+    """Detect: are we running inside a docker container that the sibling docker
+    daemon knows about? Returns its id, or None for host runs.
+
+    TeamCity is expected to set TEST_CONTAINER_ID explicitly (e.g. via
+    `--cidfile` or a fixed `--name`); we also try `socket.gethostname()` as a
+    fallback because docker sets the short container id as the hostname by
+    default. Errors are logged (not swallowed silently) so a misconfigured CI
+    environment fails loudly rather than hanging.
+    """
+    candidate = os.environ.get("TEST_CONTAINER_ID") or socket.gethostname()
+    print(f"[v2-it] resolving self container id via candidate={candidate!r}", flush=True)
+    if not candidate:
+        return None
+    try:
+        container = DockerClient().client.containers.get(candidate)
+    except Exception as e:
+        print(f"[v2-it] daemon could not find container {candidate!r}: {e}", flush=True)
+        return None
+    print(f"[v2-it] resolved current container id: {container.id}", flush=True)
+    return str(container.id)
+
+
 @pytest.fixture(scope="package")
 def network() -> Generator[Network, None, None]:
     with Network() as network:
-        yield network
+        self_id = _current_container_id()
+        if self_id is not None:
+            print(f"[v2-it] attaching {self_id[:12]} to test network {network.name}", flush=True)
+            network.connect(self_id)
+        elif inside_ci():
+            raise RuntimeError(
+                "Running inside CI (BUILD_NUMBER is set) but could not determine "
+                "this process's docker container id; the test container must be "
+                "attachable to the testcontainers network. Set TEST_CONTAINER_ID "
+                "in the build step or run the test container with a `--name` that "
+                "matches its hostname."
+            )
+        try:
+            yield network
+        finally:
+            # Detach ourselves so the testcontainers `Network.remove()` on
+            # context exit isn't blocked by an "active endpoints" error.
+            if self_id is not None:
+                try:
+                    network._unwrap_network.disconnect(self_id)
+                    print(f"[v2-it] detached {self_id[:12]} from test network {network.name}", flush=True)
+                except Exception as e:
+                    print(f"[v2-it] failed to detach {self_id[:12]} from test network: {e}", flush=True)
 
 
 def start_session(
@@ -88,13 +129,23 @@ def start_session(
         .with_exposed_ports(8491, 8080)
         .waiting_for(HttpWaitStrategy(8080, path="/available"))
     )
-    if not inside_ci():
-        session_container = session_container.with_network(network).with_network_aliases("gds-session")
+    session_container = session_container.with_network(network).with_network_aliases("gds-session")
     with session_container as session_container:
         try:
+            # When the test process itself is attached to the test network (CI),
+            # reach the session by its alias + internal port. Otherwise we are
+            # on the docker host and must use the exposed host port.
+            if _current_container_id() is not None:
+                host, arrow_port = "gds-session", 8491
+            else:
+                host, arrow_port = (
+                    session_container.get_container_host_ip(),
+                    int(session_container.get_exposed_port(8491)),
+                )
+            print(f"[v2-it] session reachable at {host}:{arrow_port}", flush=True)
             yield GdsSessionConnectionInfo(
-                host=session_container.get_container_host_ip(),
-                arrow_port=session_container.get_exposed_port(8491),
+                host=host,
+                arrow_port=arrow_port,
                 bolt_port=-1,  # not used in tests
             )
         finally:
