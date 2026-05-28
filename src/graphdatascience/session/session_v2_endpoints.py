@@ -510,7 +510,7 @@ class SessionV2Endpoints:
         """
         Return endpoints for the Random Walk algorithm.
         """
-        return RandomWalkArrowEndpoints(self._arrow_client, self._write_back_client, show_progress=self._show_progress)
+        return RandomWalkArrowEndpoints(self._arrow_client, self._write_protocol, show_progress=self._show_progress)
 
     @property
     def scc(self) -> SccEndpoints:
