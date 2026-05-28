@@ -54,3 +54,14 @@ def test_random_walk_estimate(random_walk_endpoints: RandomWalkArrowEndpoints, s
     assert result.node_count == 3
     assert result.relationship_count == 3
     assert "Bytes" in result.required_memory
+
+
+def test_compute(random_walk_endpoints: RandomWalkArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = random_walk_endpoints.compute(G=sample_graph, walks_per_node=1, walk_length=3, random_seed=42)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+
+    df = handle.stream()
+    assert set(df.columns) == {"walk"}
+    assert len(df) == 3
