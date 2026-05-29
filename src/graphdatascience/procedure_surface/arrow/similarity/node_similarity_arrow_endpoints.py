@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_filtered_endpoints import (
     NodeSimilarityFilteredEndpoints,
@@ -43,6 +44,97 @@ class NodeSimilarityArrowEndpoints(NodeSimilarityEndpoints):
             self._endpoints_helper._write_protocol,
             self._endpoints_helper._show_progress,
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        top_k: int = 10,
+        bottom_k: int = 10,
+        top_n: int = 0,
+        bottom_n: int = 0,
+        similarity_cutoff: float = 1.0e-42,
+        degree_cutoff: int = 1,
+        upper_degree_cutoff: int = 2147483647,
+        similarity_metric: str = "JACCARD",
+        use_components: bool | str = False,
+        relationship_weight_property: str | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> JobHandle:
+        """
+        Kick off a non-blocking NodeSimilarity computation and return a :class:`JobHandle`.
+
+        Parameters
+        ----------
+        G
+           Graph object to use
+        top_k
+            Number of most similar nodes to return for each node.
+        bottom_k : int, default=10
+            The maximum number of neighbors with the lowest similarity scores to compute per node.
+        top_n : int, default=0
+            The maximum number of neighbors to select globally based on similarity scores.
+        bottom_n : int, default=0
+            The maximum number of neighbors to select globally based on lowest similarity scores.
+        similarity_cutoff
+            The threshold for similarity scores.
+        degree_cutoff : int, default=1
+            The minimum degree a node must have to be considered.
+        upper_degree_cutoff : int, default=2147483647
+            The maximum degree a node can have to be considered.
+        similarity_metric : str, default="JACCARD"
+            The similarity metric to use for computation.
+        use_components : bool | str, default=False
+            Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
+        relationship_weight_property
+            Name of the property to be used as weights.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        sudo
+            Disable the memory guard.
+        log_progress
+            Display progress logging.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
+        concurrency
+            Number of concurrent threads to use.
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        JobHandle
+            Non-blocking handle to the running computation.
+        """
+
+        config = self._endpoints_helper.create_base_config(
+            G,
+            topK=top_k,
+            bottomK=bottom_k,
+            topN=top_n,
+            bottomN=bottom_n,
+            similarityCutoff=similarity_cutoff,
+            degreeCutoff=degree_cutoff,
+            upperDegreeCutoff=upper_degree_cutoff,
+            similarityMetric=similarity_metric,
+            useComponents=use_components,
+            relationshipWeightProperty=relationship_weight_property,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        return self._endpoints_helper.run_job(G, "v2/similarity.nodeSimilarity", config)
 
     def mutate(
         self,

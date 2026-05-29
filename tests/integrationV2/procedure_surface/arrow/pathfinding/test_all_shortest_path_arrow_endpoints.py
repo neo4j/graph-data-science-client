@@ -58,3 +58,15 @@ def test_all_shortest_paths_estimate(
     assert result.bytes_max >= 0
     assert result.heap_percentage_min >= 0
     assert result.heap_percentage_max >= 0
+
+
+def test_compute(all_shortest_path_endpoints: AllShortestPathArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = all_shortest_path_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"sourceNodeId", "targetNodeId", "distance"}
+    assert len(df) > 0

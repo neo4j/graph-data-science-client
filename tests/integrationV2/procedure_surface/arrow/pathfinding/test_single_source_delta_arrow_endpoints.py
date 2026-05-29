@@ -149,3 +149,16 @@ def test_delta_stepping_estimate(delta_stepping_endpoints: DeltaSteppingArrowEnd
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = delta_stepping_endpoints.compute(
+        G=sample_graph, source_node=0, delta=3.0, relationship_weight_property="cost"
+    )
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert len(df) == 5

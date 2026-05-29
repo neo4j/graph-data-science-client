@@ -136,3 +136,18 @@ def test_scc_estimate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -
     assert result.bytes_max >= 0
     assert result.heap_percentage_min >= 0
     assert result.heap_percentage_max >= 0
+
+
+def test_compute(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = scc_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["componentCount"] == 3
+    assert summary["computeMillis"] >= 0
+    assert "p10" in summary["componentDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "componentId" in df.columns
+    assert len(df) == 9

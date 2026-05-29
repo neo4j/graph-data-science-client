@@ -6,6 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_results import (
     KnnMutateResult,
@@ -27,6 +28,56 @@ class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):
         self._endpoints_helper = RelationshipEndpointsHelper(
             arrow_client, write_protocol=write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        node_properties: str | list[str] | dict[str, str],
+        source_node_filter: str,
+        target_node_filter: str,
+        *,
+        seed_target_nodes: bool = False,
+        top_k: int = 10,
+        similarity_cutoff: float = 0.0,
+        delta_threshold: float = 0.001,
+        max_iterations: int = 100,
+        sample_rate: float = 0.5,
+        perturbation_rate: float = 0.0,
+        random_joins: int = 10,
+        random_seed: int | None = None,
+        initial_sampler: str = "UNIFORM",
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> JobHandle:
+        config = self._endpoints_helper.create_base_config(
+            G,
+            nodeProperties=node_properties,
+            sourceNodeFilter=source_node_filter,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            targetNodeFilter=target_node_filter,
+            seedTargetNodes=seed_target_nodes,
+            similarityCutoff=similarity_cutoff,
+            perturbationRate=perturbation_rate,
+            deltaThreshold=delta_threshold,
+            sampleRate=sample_rate,
+            randomJoins=random_joins,
+            initialSampler=initial_sampler,
+            maxIterations=max_iterations,
+            topK=top_k,
+            randomSeed=random_seed,
+            concurrency=concurrency,
+            jobId=job_id,
+            logProgress=log_progress,
+            sudo=sudo,
+            username=username,
+        )
+        return self._endpoints_helper.run_job(G, "v2/similarity.knn.filtered", config)
 
     def mutate(
         self,

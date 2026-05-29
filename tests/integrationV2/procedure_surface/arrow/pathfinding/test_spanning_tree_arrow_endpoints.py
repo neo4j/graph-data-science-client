@@ -130,3 +130,16 @@ def test_spanning_tree_estimate(spanning_tree_endpoints: SpanningTreeArrowEndpoi
 
     assert result.bytes_min > 0
     assert result.bytes_max > 0
+
+
+def test_compute(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = spanning_tree_endpoints.compute(G=sample_graph, source_node=0, relationship_weight_property="cost")
+    summary = handle.summary()
+
+    assert summary["totalWeight"] == 5.0
+    assert summary["effectiveNodeCount"] == 6
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "parentId", "weight"}
+    assert len(df) == 5

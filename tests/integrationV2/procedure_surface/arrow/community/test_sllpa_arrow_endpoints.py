@@ -128,3 +128,17 @@ def test_sllpa_estimate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Grap
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = sllpa_endpoints.compute(G=sample_graph, max_iterations=1)
+    summary = handle.summary()
+
+    assert summary["ranIterations"] > 0
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "community" in df.columns
+    assert len(df) == 6

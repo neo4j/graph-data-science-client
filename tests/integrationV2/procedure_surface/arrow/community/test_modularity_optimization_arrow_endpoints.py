@@ -137,3 +137,19 @@ def test_modularity_optimization_estimate(
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(
+    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: GraphV2
+) -> None:
+    handle = modularity_optimization_endpoints.compute(G=sample_graph, max_iterations=1)
+    summary = handle.summary()
+
+    assert summary["ranIterations"] > 0
+    assert summary["computeMillis"] > 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "communityId" in df.columns
+    assert len(df) == 6

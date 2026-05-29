@@ -132,3 +132,16 @@ def test_closeness_harmonic_estimate(
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = closeness_harmonic_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "p50" in summary["centralityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "score" in df.columns

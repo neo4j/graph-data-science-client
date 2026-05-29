@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.spanning_tree_endpoints import (
     SpanningTreeEndpoints,
     SpanningTreeMutateResult,
@@ -29,6 +30,36 @@ class SpanningTreeArrowEndpoints(SpanningTreeEndpoints):
         self._endpoints_helper = RelationshipEndpointsHelper(
             arrow_client, write_protocol=write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        source_node: int,
+        *,
+        relationship_weight_property: str | None = None,
+        objective: str = "minimum",
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> JobHandle:
+        config = self._endpoints_helper.create_base_config(
+            G,
+            sourceNode=source_node,
+            relationshipWeightProperty=relationship_weight_property,
+            objective=objective,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            sudo=sudo,
+            logProgress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            jobId=job_id,
+        )
+        return self._endpoints_helper.run_job(G, "v2/pathfinding.spanningTree", config)
 
     def stream(
         self,

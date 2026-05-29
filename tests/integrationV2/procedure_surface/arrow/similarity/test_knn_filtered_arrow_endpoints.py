@@ -153,3 +153,24 @@ def test_knn_filtered_estimate(knn_filtered_endpoints: KnnFilteredArrowEndpoints
     assert result.required_memory is not None
     assert result.tree_view is not None
     assert result.map_view is not None
+
+
+def test_compute(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = knn_filtered_endpoints.compute(
+        G=sample_graph,
+        node_properties=["prop"],
+        source_node_filter="SourceNode",
+        target_node_filter="TargetNode",
+        top_k=2,
+        concurrency=1,
+        random_seed=42,
+    )
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "p50" in summary["similarityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"node1", "node2", "similarity"}
+    assert len(df) == 4

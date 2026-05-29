@@ -6,6 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import (
     FastRPEndpoints,
     FastRPMutateResult,
@@ -26,6 +27,45 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        embedding_dimension: int,
+        *,
+        iteration_weights: list[float] = [0.0, 1.0, 1.0],
+        normalization_strength: float = 0.0,
+        node_self_influence: float = 0.0,
+        property_ratio: float = 0.0,
+        feature_properties: list[str] | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        relationship_weight_property: str | None = None,
+        random_seed: int | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            embedding_dimension=embedding_dimension,
+            feature_properties=feature_properties,
+            iteration_weights=iteration_weights,
+            job_id=job_id,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            node_self_influence=node_self_influence,
+            normalization_strength=normalization_strength,
+            property_ratio=property_ratio,
+            random_seed=random_seed,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            sudo=sudo,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/embeddings.fastrp", config)
 
     def mutate(
         self,

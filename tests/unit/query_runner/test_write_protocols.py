@@ -44,6 +44,7 @@ def test_v3_start_job_dispatches_expected_query_and_params(arrow_client: MagicMo
         log_progress=False,
     )
 
+    assert len(qr.queries) == 1
     assert "gds.arrow.write.v3" in qr.queries[0]
     assert qr.params[0] == {
         "graphName": "myGraph",
@@ -126,6 +127,70 @@ def test_v3_get_status_defaults_missing_progress_to_zero(arrow_client: MagicMock
     status = protocol.get_status("my-job")
 
     assert status.progress == 0.0
+
+
+def test_v3_get_status_after_completion_uses_cached_result(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+    qr.add__mock_result(
+        "gds.arrow.write.v3",
+        DataFrame(
+            [
+                {
+                    "status": Status.COMPLETED.name,
+                    "progress": 1.0,
+                    "writtenNodeProperties": 5,
+                    "writtenNodeLabels": 1,
+                    "writtenRelationships": 2,
+                }
+            ]
+        ),
+    )
+
+    protocol = RemoteWriteBackV3(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job")
+
+    assert len(qr.queries) == 1
+
+    first = protocol.get_status("my-job")
+    second = protocol.get_status("my-job")
+
+    assert len(qr.queries) == 1
+    assert first == second
+    assert first.done is True
+    assert first.written_node_properties == 5
+
+
+def test_v3_get_status_while_running_is_not_cached(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+    qr.add__mock_result(
+        "gds.arrow.write.v3",
+        DataFrame([{"status": Status.RUNNING.name, "progress": 0.5}]),
+    )
+
+    protocol = RemoteWriteBackV3(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job")
+
+    assert len(qr.queries) == 1
+
+    protocol.get_status("my-job")
+    protocol.get_status("my-job")
+
+    assert len(qr.queries) == 3
+
+
+def test_v3_start_job_resets_cached_result_for_same_job_id(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+    qr.add__mock_result(
+        "gds.arrow.write.v3",
+        DataFrame([{"status": Status.COMPLETED.name, "progress": 1.0}]),
+    )
+
+    protocol = RemoteWriteBackV3(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job")
+    protocol.get_status("my-job")
+
+    assert len(qr.queries) == 1
+
+    protocol.start_job(graph_name="g", job_id="my-job")
+
+    assert len(qr.queries) == 2
 
 
 def test_v4_start_job_dispatches_expected_query_and_params(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:

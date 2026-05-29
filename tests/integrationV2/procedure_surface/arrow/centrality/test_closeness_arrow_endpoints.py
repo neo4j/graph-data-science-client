@@ -129,3 +129,16 @@ def test_closeness_with_wasserman_faust(closeness_endpoints: ClosenessArrowEndpo
     assert result.pre_processing_millis >= 0
     assert result.post_processing_millis >= 0
     assert "p50" in result.centrality_distribution
+
+
+def test_compute(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = closeness_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "p50" in summary["centralityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "score"}
+    assert len(df) == 4

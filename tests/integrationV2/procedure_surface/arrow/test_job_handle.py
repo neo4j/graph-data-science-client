@@ -60,8 +60,8 @@ def _make_handle(
         write_protocol=write_protocol,
         job_id=job_id,
         graph=graph,
-        log_progress=False,
         show_progress=False,
+        endpoint="v2/centrality.pageRank",
     )
 
 
@@ -72,8 +72,8 @@ def test_job_id_matches_started_job(arrow_client: AuthenticatedArrowClient, samp
         write_protocol=None,
         job_id=job_id,
         graph=sample_graph,
-        log_progress=False,
         show_progress=False,
+        endpoint="v2/centrality.pageRank",
     )
 
     assert handle.job_id() == job_id
@@ -93,7 +93,7 @@ def test_status_returns_terminal_after_wait(arrow_client: AuthenticatedArrowClie
 
     status = handle.status()
 
-    assert status.succeeded() or status.aborted()
+    assert status.succeeded()
 
 
 def test_summary_waits_and_returns_dict_with_internals_stripped(
@@ -117,8 +117,8 @@ def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowCl
         write_protocol=None,
         job_id=job_id,
         graph=sample_graph,
-        log_progress=False,
         show_progress=False,
+        endpoint="v2/centrality.pageRank",
     )
 
     # Best-effort: if the tiny pagerank finished too quickly, just skip this assertion.
@@ -130,7 +130,7 @@ def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowCl
 def test_stream_returns_dataframe(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
-    df = handle.stream(G=sample_graph)
+    df = handle.stream()
 
     assert isinstance(df, pd.DataFrame)
     assert "nodeId" in df.columns

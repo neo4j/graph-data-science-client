@@ -147,3 +147,19 @@ def test_prize_steiner_tree_estimate(
 
     assert result.bytes_min > 0
     assert result.bytes_max > 0
+
+
+def test_compute(prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = prize_steiner_tree_endpoints.compute(
+        G=sample_graph, prize_property="prize", relationship_weight_property="cost"
+    )
+    summary = handle.summary()
+
+    assert summary["totalWeight"] == 7.0
+    assert summary["sumOfPrizes"] == 50.0
+    assert summary["effectiveNodeCount"] == 5
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "parentId", "weight"}
+    assert len(df) == 4

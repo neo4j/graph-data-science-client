@@ -132,3 +132,14 @@ def test_dijkstra_estimate(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoint
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = dijkstra_endpoints.compute(G=sample_graph, source_node=0, relationship_weight_property="cost")
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert len(df) == 5

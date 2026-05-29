@@ -105,6 +105,7 @@ from graphdatascience.procedure_surface.arrow.community.triangle_count_arrow_end
 from graphdatascience.procedure_surface.arrow.community.triangles_arrow_endpoints import TrianglesArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.arrow.config_arrow_endpoints import ConfigArrowEndpoints
+from graphdatascience.procedure_surface.arrow.jobs_arrow_endpoints import JobsArrowEndpoints
 from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint import ListProgressArrowEndpoint
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import (
     ModelCatalogArrowEndpoints,
@@ -215,6 +216,13 @@ class SessionV2Endpoints:
         Return system-related endpoints.
         """
         return ListProgressArrowEndpoint(self._arrow_client)
+
+    @property
+    def jobs(self) -> JobsArrowEndpoints:
+        """
+        Return endpoints for inspecting and controlling jobs (get/list).
+        """
+        return JobsArrowEndpoints(self._arrow_client, self._write_protocol, show_progress=self._show_progress)
 
     @property
     def collapse_path(self) -> CollapsePathEndpoints:

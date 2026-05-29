@@ -10,7 +10,8 @@ from graphdatascience.arrow_client.v2.api_types import JobStatus
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2 import GraphV2
 from graphdatascience.procedure_surface.api.write_job_handle import JobNotFinishedError, WriteJobHandle
-from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
+from graphdatascience.procedure_surface.arrow.mutation_runner import MutationRunner
+from graphdatascience.procedure_surface.arrow.stream_result_mapper import apply_stream_mapper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 
@@ -22,17 +23,17 @@ class JobHandle:
         write_protocol: WriteProtocol | None,
         job_id: str,
         graph: GraphV2,
-        log_progress: bool,
         show_progress: bool,
+        endpoint: str,
     ):
         self._arrow_client = arrow_client
         self._job_id = job_id
         self._graph = graph
-        self._log_progress = log_progress
         self._show_progress = show_progress
         self._is_done = False
         self._write_protocol = write_protocol
-        self._endpoints_helper = EndpointsHelperBase(arrow_client, write_protocol)
+        self._endpoint = endpoint
+        self._mutation_runner = MutationRunner(arrow_client)
 
     def job_id(self) -> str:
         return self._job_id
@@ -52,11 +53,10 @@ class JobHandle:
     def wait(self, *, termination_flag: TerminationFlag | None = None) -> None:
         if self._is_done:
             return
-        effective_progress = self._log_progress and self._show_progress
         JobClient().wait_for_job(
             self._arrow_client,
             self._job_id,
-            show_progress=effective_progress,
+            show_progress=self._show_progress,
             termination_flag=termination_flag,
         )
         self._is_done = True
@@ -73,18 +73,19 @@ class JobHandle:
         self._ensure_done(wait=wait, termination_flag=termination_flag)
         result = JobClient.get_summary(self._arrow_client, self._job_id)
         if nested_config := result.get("configuration", None):
-            self._endpoints_helper.drop_write_internals(nested_config)
+            MutationRunner.drop_write_internals(nested_config)
         return result
 
     def stream(
         self,
         *,
-        G: GraphV2,
         wait: bool = True,
         termination_flag: TerminationFlag | None = None,
     ) -> DataFrame:
         self._ensure_done(wait=wait, termination_flag=termination_flag)
-        return JobClient.stream_results(self._arrow_client, self._graph.name(), self._job_id)
+        result = JobClient.stream_results(self._arrow_client, self._graph.name(), self._job_id)
+        result = apply_stream_mapper(self._endpoint, result)
+        return result
 
     def mutate(
         self,
@@ -96,7 +97,7 @@ class JobHandle:
         termination_flag: TerminationFlag | None = None,
     ) -> dict[str, Any]:
         self._ensure_done(wait=wait, termination_flag=termination_flag)
-        return self._endpoints_helper.run_mutation(
+        return self._mutation_runner.run_mutation(
             self._job_id,
             mutate_property=mutate_property,
             mutate_relationship_type=mutate_relationship_type,

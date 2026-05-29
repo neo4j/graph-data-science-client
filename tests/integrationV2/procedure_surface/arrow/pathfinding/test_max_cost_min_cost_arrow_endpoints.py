@@ -150,3 +150,21 @@ def test_min_cost_estimate(min_cost_endpoints: MaxFlowMinCostArrowEndpoints, sam
     assert result.bytes_max >= 0
     assert result.heap_percentage_min >= 0
     assert result.heap_percentage_max >= 0
+
+
+def test_compute(min_cost_endpoints: MaxFlowMinCostArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = min_cost_endpoints.compute(
+        G=sample_graph,
+        source_nodes=[0],
+        target_nodes=[5],
+        capacity_property="capacity",
+        cost_property="cost",
+    )
+    summary = handle.summary()
+
+    assert summary["totalFlow"] >= 0
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"source", "target", "flow"}

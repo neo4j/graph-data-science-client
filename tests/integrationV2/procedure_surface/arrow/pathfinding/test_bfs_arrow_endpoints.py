@@ -54,3 +54,14 @@ def test_bfs_stats(bfs_endpoints: BFSArrowEndpoints, sample_graph: GraphV2) -> N
 
     assert result.compute_millis >= 0
     assert result.post_processing_millis >= 0
+
+
+def test_compute(bfs_endpoints: BFSArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = bfs_endpoints.compute(G=sample_graph, source_node=0)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"sourceNode", "nodeIds"}

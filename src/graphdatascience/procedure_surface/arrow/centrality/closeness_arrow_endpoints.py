@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_endpoints impor
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -28,6 +29,32 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        use_wasserman_faust: bool = False,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            use_wasserman_faust=use_wasserman_faust,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            sudo=sudo,
+            log_progress=log_progress,
+            username=username,
+            concurrency=concurrency,
+            job_id=job_id,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/centrality.closeness", config)
 
     def mutate(
         self,

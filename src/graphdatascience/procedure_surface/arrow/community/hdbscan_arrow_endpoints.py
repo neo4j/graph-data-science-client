@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import (
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -27,6 +28,38 @@ class HdbscanArrowEndpoints(HdbscanEndpoints):
         self._write_protocol = write_protocol
         self._show_progress = show_progress
         self._node_property_endpoints = NodePropertyEndpointsHelper(arrow_client, write_protocol, show_progress)
+
+    def compute(
+        self,
+        G: GraphV2,
+        node_property: str,
+        *,
+        leaf_size: int = 1,
+        samples: int = 10,
+        min_cluster_size: int = 5,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        concurrency: int | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        job_id: str | None = None,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            node_property=node_property,
+            leaf_size=leaf_size,
+            samples=samples,
+            min_cluster_size=min_cluster_size,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            concurrency=concurrency,
+            log_progress=log_progress,
+            sudo=sudo,
+            job_id=job_id,
+            username=username,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/community.hdbscan", config)
 
     def mutate(
         self,

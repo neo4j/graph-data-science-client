@@ -139,3 +139,15 @@ def test_node2vec_estimate(node2vec_endpoints: Node2VecArrowEndpoints, sample_gr
     assert result.node_count == 3
     assert result.relationship_count == 2
     assert "KiB" in result.required_memory or "Bytes" in result.required_memory
+
+
+def test_compute(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = node2vec_endpoints.compute(G=sample_graph, embedding_dimension=64, walks_per_node=1, walk_length=2)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "embedding"}
+    assert len(df) == 3

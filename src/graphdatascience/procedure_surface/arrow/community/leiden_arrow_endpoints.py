@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.community.leiden_endpoints import (
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -27,6 +28,48 @@ class LeidenArrowEndpoints(LeidenEndpoints):
         self._write_protocol = write_protocol
         self._show_progress = show_progress
         self._node_property_endpoints = NodePropertyEndpointsHelper(arrow_client, write_protocol, show_progress)
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        concurrency: int | None = None,
+        consecutive_ids: bool = False,
+        gamma: float = 1.0,
+        include_intermediate_communities: bool = False,
+        job_id: str | None = None,
+        log_progress: bool = True,
+        max_levels: int = 10,
+        node_labels: list[str] = ALL_LABELS,
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        relationship_weight_property: str | None = None,
+        seed_property: str | None = None,
+        sudo: bool = False,
+        theta: float = 0.01,
+        tolerance: float = 0.0001,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            consecutive_ids=consecutive_ids,
+            gamma=gamma,
+            include_intermediate_communities=include_intermediate_communities,
+            job_id=job_id,
+            log_progress=log_progress,
+            max_levels=max_levels,
+            node_labels=node_labels,
+            random_seed=random_seed,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            seed_property=seed_property,
+            sudo=sudo,
+            theta=theta,
+            tolerance=tolerance,
+            username=username,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/community.leiden", config)
 
     def mutate(
         self,

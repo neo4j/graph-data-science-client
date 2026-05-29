@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import SingleSourceDeltaEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_endpoints import (
@@ -38,6 +39,31 @@ class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
         self._dijkstra = SingleSourceDijkstraArrowEndpoints(arrow_client, write_protocol, show_progress)
         self._bellman_ford = BellmanFordArrowEndpoints(arrow_client, write_protocol, show_progress)
         self._endpoint_helper = TableEndpointsHelper(arrow_client, show_progress=show_progress)
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        relationship_weight_property: str | None = None,
+        sudo: bool = False,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._endpoint_helper.create_base_config(
+            G,
+            concurrency=concurrency,
+            job_id=job_id,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            sudo=sudo,
+            relationship_weight_property=relationship_weight_property,
+        )
+        return self._endpoint_helper.run_job(G, "v2/pathfinding.allShortestPaths", config)
 
     def stream(
         self,

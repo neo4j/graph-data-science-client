@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import (
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -25,6 +26,40 @@ class MaxKCutArrowEndpoints(MaxKCutEndpoints):
         self._write_protocol = write_protocol
         self._show_progress = show_progress
         self._node_property_endpoints = NodePropertyEndpointsHelper(arrow_client, write_protocol, show_progress)
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        concurrency: int | None = None,
+        iterations: int = 8,
+        job_id: str | None = None,
+        k: int = 2,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        relationship_weight_property: str | None = None,
+        sudo: bool = False,
+        username: str | None = None,
+        vns_max_neighborhood_order: int = 0,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            iterations=iterations,
+            job_id=job_id,
+            k=k,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            random_seed=random_seed,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            sudo=sudo,
+            username=username,
+            vns_max_neighborhood_order=vns_max_neighborhood_order,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/community.maxkcut", config)
 
     def mutate(
         self,

@@ -131,3 +131,17 @@ def test_kmeans_estimate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: G
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = kmeans_endpoints.compute(G=sample_graph, node_property="kmeans", k=3)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert len(summary["centroids"]) == 3
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "communityId" in df.columns
+    assert len(df) == 4

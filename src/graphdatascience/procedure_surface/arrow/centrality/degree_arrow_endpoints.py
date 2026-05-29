@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.centrality.degree_endpoints import (
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -26,6 +27,33 @@ class DegreeArrowEndpoints(DegreeEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        orientation: str = "NATURAL",
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        sudo: bool = False,
+        log_progress: bool = True,
+        username: str | None = None,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        relationship_weight_property: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            job_id=job_id,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            orientation=orientation,
+            relationship_types=relationship_types,
+            relationship_weight_property=relationship_weight_property,
+            sudo=sudo,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/centrality.degree", config)
 
     def mutate(
         self,

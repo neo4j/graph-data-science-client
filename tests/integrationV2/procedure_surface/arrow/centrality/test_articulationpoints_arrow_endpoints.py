@@ -126,3 +126,12 @@ def test_articulationpoints_estimate(
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = articulationpoints_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["articulationPointCount"] >= 0
+    assert summary["computeMillis"] >= 0
+    assert "writeProperty" not in summary["configuration"]

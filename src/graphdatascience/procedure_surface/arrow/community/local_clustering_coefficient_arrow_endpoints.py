@@ -10,6 +10,7 @@ from graphdatascience.procedure_surface.api.community.local_clustering_coefficie
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
@@ -26,6 +27,32 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
             write_protocol,
             show_progress,
         )
+
+    def compute(
+        self,
+        G: GraphV2,
+        *,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        log_progress: bool = True,
+        node_labels: list[str] = ALL_LABELS,
+        relationship_types: list[str] = ALL_TYPES,
+        sudo: bool = False,
+        triangle_count_property: str | None = None,
+        username: str | None = None,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            job_id=job_id,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            sudo=sudo,
+            triangle_count_property=triangle_count_property,
+            username=username,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/community.localClusteringCoefficient", config)
 
     def mutate(
         self,

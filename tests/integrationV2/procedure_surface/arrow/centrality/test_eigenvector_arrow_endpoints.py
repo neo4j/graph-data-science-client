@@ -132,3 +132,17 @@ def test_eigenvector_estimate(eigenvector_endpoints: EigenvectorArrowEndpoints, 
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = eigenvector_endpoints.compute(G=sample_graph)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
+    assert summary["ranIterations"] >= 1
+    assert "p50" in summary["centralityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert "nodeId" in df.columns
+    assert "score" in df.columns

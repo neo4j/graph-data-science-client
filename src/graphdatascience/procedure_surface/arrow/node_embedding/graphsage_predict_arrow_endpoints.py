@@ -6,6 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
     GraphSagePredictEndpoints,
@@ -28,6 +29,34 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
             arrow_client, write_protocol, show_progress=show_progress
         )
         self._model_api = ModelApiArrow(arrow_client)
+
+    def compute(
+        self,
+        G: GraphV2,
+        model_name: str,
+        *,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        username: str | None = None,
+        log_progress: bool = True,
+        sudo: bool = False,
+        concurrency: int | None = None,
+        job_id: str | None = None,
+        batch_size: int = 100,
+    ) -> JobHandle:
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            modelName=model_name,
+            relationshipTypes=relationship_types,
+            nodeLabels=node_labels,
+            username=username,
+            logProgress=log_progress,
+            sudo=sudo,
+            concurrency=concurrency,
+            jobId=job_id,
+            batchSize=batch_size,
+        )
+        return self._node_property_endpoints.run_job(G, "v2/embeddings.graphSage", config)
 
     def stream(
         self,

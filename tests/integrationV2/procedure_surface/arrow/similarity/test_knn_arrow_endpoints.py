@@ -136,3 +136,18 @@ def test_knn_estimate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -
     assert result.bytes_max > 0
     assert result.heap_percentage_min > 0
     assert result.heap_percentage_max > 0
+
+
+def test_compute(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:
+    handle = knn_endpoints.compute(G=sample_graph, node_properties=["prop"], top_k=2)
+    summary = handle.summary()
+
+    assert summary["ranIterations"] > 0
+    assert summary["didConverge"] is True
+    assert summary["nodesCompared"] > 0
+    assert "p50" in summary["similarityDistribution"]
+    assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"node1", "node2", "similarity"}
+    assert len(df) == 8
