@@ -67,7 +67,7 @@ class NodeSimilarityArrowEndpoints(NodeSimilarityEndpoints):
         job_id: str | None = None,
     ) -> JobHandle:
         """
-        Kick off a non-blocking PageRank computation and return a :class:`JobHandle`.
+        Kick off a non-blocking NodeSimilarity computation and return a :class:`JobHandle`.
 
         Parameters
         ----------

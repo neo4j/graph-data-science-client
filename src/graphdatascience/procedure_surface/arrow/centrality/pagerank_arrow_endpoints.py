@@ -47,7 +47,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> JobHandle:
         """
-        Starts the PageRank algorithm and returns a a :class:`JobHandle`.
+        Starts the PageRank algorithm and returns  a :class:`JobHandle`.
 
         The PageRank algorithm measures the importance of each node within the graph, based on the number of incoming relationships and the importance of the corresponding source nodes.
         The underlying assumption roughly speaking is that a page is only as important as the pages that link to it.
@@ -56,7 +56,6 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         ----------
         G
            Graph object to use
-            Name of the node property to store the results in.
         damping_factor : float
             Probability of a jump to a random node.
         tolerance

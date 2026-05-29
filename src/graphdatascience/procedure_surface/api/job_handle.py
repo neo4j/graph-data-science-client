@@ -84,8 +84,7 @@ class JobHandle:
     ) -> DataFrame:
         self._ensure_done(wait=wait, termination_flag=termination_flag)
         result = JobClient.stream_results(self._arrow_client, self._graph.name(), self._job_id)
-        if self._endpoint is not None:
-            result = apply_stream_mapper(self._endpoint, result)
+        result = apply_stream_mapper(self._endpoint, result)
         return result
 
     def mutate(

@@ -10,6 +10,17 @@ from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
 
+class JobInfo(BaseResult):
+    job_id: str
+    name: str
+
+
+class JobNotFoundException(Exception):
+    """Exception raised when a job with the specified ID is not found."""
+
+    pass
+
+
 class JobsArrowEndpoints:
     """Endpoints for inspecting and controlling jobs on the GDS Arrow server."""
 
@@ -65,14 +76,3 @@ class JobsArrowEndpoints:
 
         rows = deserialize(self._arrow_client.do_action_with_retry(self.LIST_ENDPOINT, {}))
         return [JobInfo(**row) for row in rows]
-
-
-class JobInfo(BaseResult):
-    job_id: str
-    name: str
-
-
-class JobNotFoundException(Exception):
-    """Exception raised when a job with the specified ID is not found."""
-
-    pass

@@ -116,7 +116,6 @@ class RemoteWriteBackV3(WriteProtocol):
         self.get_status(job_id)
 
     def get_status(self, job_id: str) -> JobStatus:
-        print(f"Called status for job {job_id}")
         if job_id in self._result_cache:
             return self._result_cache[job_id]
 
@@ -145,8 +144,6 @@ class RemoteWriteBackV3(WriteProtocol):
 
         if status.done:
             self._result_cache[job_id] = status
-
-        print(f"status: {status}")
 
         return status
 
