@@ -15,7 +15,7 @@ from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integrationV2.conftest import inside_ci
+from tests.integrationV2.conftest import _current_container_id, inside_ci
 from tests.integrationV2.procedure_surface.gds_api_spec import (
     EndpointWithModesSpec,
     resolve_spec_from_file,
@@ -92,6 +92,9 @@ def start_database(
     neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", default_neo4j_image)
     if neo4j_image is None:
         raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
+
+    advertise_address = "neo4j-db" if inside_ci() else "localhost"
+
     db_logs_dir = logs_dir / request.node.name / "db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
@@ -100,7 +103,7 @@ def start_database(
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
-        .with_env("NEO4J_server_bolt_advertised__address", "localhost:7687")
+        .with_env("NEO4J_server_bolt_advertised__address", f"{advertise_address}:7687")
         .with_network_aliases("neo4j-db")
         .with_network(network)
         .with_bind_ports(7687, 7687)
@@ -109,8 +112,13 @@ def start_database(
     )
     with db_container as db_container:
         try:
+            if _current_container_id() is not None:
+                uri = "neo4j-db:7687"
+            else:
+                uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
+            print(f"[v2-it] neo4j reachable at {uri}", flush=True)
             yield DbmsConnectionInfo(
-                uri=f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}",
+                uri=uri,
                 username="neo4j",
                 password="password",
             )

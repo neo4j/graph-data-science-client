@@ -11,7 +11,6 @@ from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from tests.integrationV2.conftest import (
     GdsSessionConnectionInfo,
     create_arrow_client,
-    inside_ci,
     start_session,
 )
 from tests.integrationV2.procedure_surface.conftest import (
@@ -38,8 +37,6 @@ def arrow_client(session_connection: GdsSessionConnectionInfo) -> AuthenticatedA
 def neo4j_connection(
     network: Network, logs_dir: Path, request: pytest.FixtureRequest
 ) -> Generator[DbmsConnectionInfo, None, None]:
-    if inside_ci():
-        raise RuntimeError("Communication between Session and DB is not supported yet in CI.")
     yield from start_database(logs_dir, network, request)
 
 
