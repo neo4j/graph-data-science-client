@@ -5,7 +5,12 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
-from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocolV3, ProjectProtocolV4
+from graphdatascience.query_runner.protocol.project_protocols import (
+    ProjectProtocol,
+    ProjectProtocolV3,
+    ProjectProtocolV4,
+)
+from graphdatascience.query_runner.protocol.projection_runner import ProjectionRunner
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
@@ -21,6 +26,10 @@ def populated_db(query_runner: QueryRunner) -> Generator[None, None, None]:
     query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
 
 
+def _runner(protocol: ProjectProtocol, arrow_client: AuthenticatedArrowClient) -> ProjectionRunner:
+    return ProjectionRunner(protocol, arrow_client, TerminationFlagNoop())
+
+
 @pytest.mark.db_integration
 def test_v3_run_cypher_projection(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, populated_db: None
@@ -30,7 +39,7 @@ def test_v3_run_cypher_projection(
     protocol = ProjectProtocolV3(arrow_client, query_runner, TerminationFlagNoop())
 
     try:
-        result = protocol.run_cypher_projection(
+        result = _runner(protocol, arrow_client).run_cypher_projection(
             graph_name=graph_name,
             query="MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)",
             job_id=str(uuid.uuid4()),
@@ -55,7 +64,7 @@ def test_v4_run_cypher_projection(
     protocol = ProjectProtocolV4(arrow_client, query_runner, TerminationFlagNoop())
 
     try:
-        result = protocol.run_cypher_projection(
+        result = _runner(protocol, arrow_client).run_cypher_projection(
             graph_name=graph_name,
             query="MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)",
             job_id=str(uuid.uuid4()),
@@ -80,7 +89,7 @@ def test_v4_run_store_projection(
     protocol = ProjectProtocolV4(arrow_client, query_runner, TerminationFlagNoop())
 
     try:
-        result = protocol.run_store_projection(
+        result = _runner(protocol, arrow_client).run_store_projection(
             graph_name=graph_name,
             node_label_filter=["Person"],
             relationship_type_filter=["KNOWS"],

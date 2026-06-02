@@ -1,22 +1,16 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from concurrent.futures.thread import ThreadPoolExecutor
-from logging import DEBUG, getLogger
 from typing import Any, Tuple
 
-from pandas import DataFrame, Series
-from tenacity import retry, retry_if_result
-
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlag
-from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 
 
@@ -29,7 +23,7 @@ class ProjectProtocol(ABC):
         self._termination_flag = termination_flag
 
     @abstractmethod
-    def run_cypher_projection(
+    def start_cypher_projection(
         self,
         graph_name: str,
         query: str,
@@ -39,12 +33,15 @@ class ProjectProtocol(ABC):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        logging: bool = True,
-    ) -> dict[str, Any]:
+    ) -> Tuple[str, QueryRunner]:
+        """Kick off a cypher projection without polling for completion.
+
+        Returns the job id to poll the Arrow job status with.
+        """
         pass
 
     @abstractmethod
-    def run_store_projection(
+    def start_store_projection(
         self,
         graph_name: str,
         node_label_filter: list[str],
@@ -56,7 +53,18 @@ class ProjectProtocol(ABC):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        logging: bool = True,
+    ) -> Tuple[str, QueryRunner]:
+        """Kick off a native store projection without polling for completion.
+
+        Returns the server-assigned job id.
+        """
+        pass
+
+    @abstractmethod
+    def get_status(
+        self,
+        job_id: str,
+        query_runner: QueryRunner,
     ) -> dict[str, Any]:
         pass
 
@@ -72,17 +80,16 @@ class ProjectProtocol(ABC):
             ProtocolVersion.V4: ProjectProtocolV4(arrow_client, query_runner, termination_flag),
         }[protocol_version]
 
-    def _show_progress(self, job_id: str, show_progress: bool, termination_flag: TerminationFlag) -> None:
-        job_client = JobClient()
-
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            executor.submit(
-                job_client.wait_for_job, self._arrow_client, job_id, show_progress, Status.DONE.name, termination_flag
-            )
-
 
 class ProjectProtocolV3(ProjectProtocol):
-    def run_cypher_projection(
+    def __init__(
+        self, arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, termination_flag: TerminationFlag
+    ):
+        super().__init__(arrow_client, query_runner, termination_flag)
+        self._parameter_cache: dict[str, CallParameters] = {}
+        self._result_cache: dict[str, dict[str, Any]] = {}
+
+    def start_cypher_projection(
         self,
         graph_name: str,
         query: str,
@@ -92,13 +99,8 @@ class ProjectProtocolV3(ProjectProtocol):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        logging: bool = True,
-    ) -> dict[str, Any]:
-        def is_not_done(result: DataFrame) -> bool:
-            status: str = result.squeeze()["status"]
-            return status != Status.DONE.name
-
-        logger = getLogger()
+    ) -> Tuple[str, QueryRunner]:
+        self._result_cache.pop(job_id, None)
 
         configuration = ConfigConverter.convert_to_gds_config(
             queryParameters=query_parameters,
@@ -115,7 +117,8 @@ class ProjectProtocolV3(ProjectProtocol):
             "arrow_config": build_arrow_config(self._arrow_client, batch_size),
         }
 
-        # We need to pin the driver to a specific cluster member
+        self._parameter_cache[job_id] = CallParameters(params)
+
         response = self._query_runner.run_cypher(
             "CALL gds.arrow.project.v3($graph_name, $query, $jobId, $arrow_config, $configuration)",
             QueryType.USER_TRANSPILED,
@@ -124,29 +127,47 @@ class ProjectProtocolV3(ProjectProtocol):
 
         member_host = response["host"]
         member_port = response["port"] if ("port" in response.index) else 7687
+
         projection_query_runner = self._query_runner.cloneWithoutRouting(member_host, member_port)
 
-        @retry(
-            reraise=True,
-            before=before_log(f"Projection (graph: `{params['graph_name']}`)", logger, DEBUG),
-            retry=retry_if_result(is_not_done),
-            wait=job_wait_strategy(),
-        )
-        def project_fn() -> DataFrame:
-            self._termination_flag.assert_running()
-            return projection_query_runner.run_cypher(
+        return job_id, projection_query_runner
+
+    def start_store_projection(
+        self,
+        graph_name: str,
+        node_label_filter: list[str],
+        relationship_type_filter: list[str],
+        node_properties: list[str] | None = None,
+        relationship_properties: list[str] | None = None,
+        job_id: str | None = None,
+        concurrency: int | None = None,
+        undirected_relationship_types: list[str] | None = None,
+        inverse_indexed_relationship_types: list[str] | None = None,
+        batch_size: int | None = None,
+    ) -> Tuple[str, QueryRunner]:
+        raise NotImplementedError("Store projection is not supported by the databases")
+
+    def get_status(self, job_id: str, query_runner: QueryRunner) -> dict[str, Any]:
+        if self._result_cache.get(job_id) is not None:
+            return self._result_cache[job_id]
+
+        params = self._parameter_cache[job_id]
+
+        self._termination_flag.assert_running()
+        projection_result: dict[str, Any] = (
+            query_runner.run_cypher(
                 "CALL gds.arrow.project.v3($graph_name, $query, $jobId, $arrow_config, $configuration)",
                 QueryType.USER_TRANSPILED,
                 params,
             )
+            .squeeze()
+            .to_dict()
+        )
 
-        self._show_progress(job_id, logging, self._termination_flag)
+        if projection_result["status"] == Status.DONE.name:
+            self._result_cache[job_id] = projection_result
 
-        projection_result = project_fn()
-
-        projection_query_runner.close()
-
-        return projection_result.squeeze().to_dict()  # type: ignore
+        return projection_result
 
     def run_store_projection(
         self,
@@ -166,7 +187,7 @@ class ProjectProtocolV3(ProjectProtocol):
 
 
 class ProjectProtocolV4(ProjectProtocol):
-    def run_cypher_projection(
+    def start_cypher_projection(
         self,
         graph_name: str,
         query: str,
@@ -176,8 +197,7 @@ class ProjectProtocolV4(ProjectProtocol):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        logging: bool = True,
-    ) -> dict[str, Any]:
+    ) -> Tuple[str, QueryRunner]:
         configuration = ConfigConverter.convert_to_gds_config(
             queryParameters=query_parameters,
             undirectedRelationshipTypes=undirected_relationship_types,
@@ -198,9 +218,9 @@ class ProjectProtocolV4(ProjectProtocol):
             params,
         )
 
-        return self._await_completion(actual_job_id, projection_query_runner, logging)
+        return actual_job_id, projection_query_runner
 
-    def run_store_projection(
+    def start_store_projection(
         self,
         graph_name: str,
         node_label_filter: list[str],
@@ -212,8 +232,7 @@ class ProjectProtocolV4(ProjectProtocol):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        logging: bool = True,
-    ) -> dict[str, Any]:
+    ) -> Tuple[str, QueryRunner]:
         configuration = ConfigConverter.convert_to_gds_config(
             nodeProperties=node_properties,
             relationshipProperties=relationship_properties,
@@ -236,7 +255,24 @@ class ProjectProtocolV4(ProjectProtocol):
             params,
         )
 
-        return self._await_completion(actual_job_id, projection_query_runner, logging)
+        return actual_job_id, projection_query_runner
+
+    def get_status(self, job_id: str, query_runner: QueryRunner) -> dict[str, Any]:
+        self._termination_flag.assert_running()
+
+        status_result: dict[str, Any] = (
+            query_runner.run_cypher(
+                f"CALL gds.arrow.job.status.v4('{job_id}')",
+                QueryType.USER_TRANSPILED,
+            )
+            .squeeze()
+            .to_dict()
+        )
+
+        if status_result["error"] is not None:
+            raise Exception(status_result["error"])
+
+        return status_result
 
     def _start_job(self, query: str, params: dict[str, Any]) -> Tuple[str, QueryRunner]:
         start_response = self._query_runner.run_cypher(
@@ -252,34 +288,3 @@ class ProjectProtocolV4(ProjectProtocol):
         projection_query_runner = self._query_runner.cloneWithoutRouting(member_host, member_port)
 
         return actual_job_id, projection_query_runner
-
-    def _await_completion(self, job_id: str, query_runner: QueryRunner, show_progress: bool) -> dict[str, Any]:
-        def is_not_done(r: Series[Any]) -> bool:
-            status: str = r["status"]
-            return status != Status.DONE.name
-
-        @retry(
-            reraise=True,
-            before=before_log(f"Awaiting completion for job {job_id}", getLogger(), DEBUG),
-            retry=retry_if_result(is_not_done),
-            wait=job_wait_strategy(),
-        )
-        def poll_result() -> Series[Any]:
-            self._termination_flag.assert_running()
-            status_result = query_runner.run_cypher(
-                f"CALL gds.arrow.job.status.v4('{job_id}')",
-                QueryType.USER_TRANSPILED,
-            ).squeeze()
-
-            if status_result["error"] is not None:
-                raise Exception(status_result["error"])
-
-            return status_result  # type: ignore
-
-        self._show_progress(job_id, show_progress, self._termination_flag)
-
-        result = poll_result()
-
-        query_runner.close()
-
-        return result["result"]  # type: ignore
