@@ -47,7 +47,7 @@ class ProjectionRunner:
             batch_size,
         )
 
-        return self._await_result(job_id, query_runner, show_progress)
+        return self._await_result(actual_job_id, query_runner, show_progress)
 
     def run_store_projection(
         self,

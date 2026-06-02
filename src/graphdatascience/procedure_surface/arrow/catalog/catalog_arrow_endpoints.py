@@ -148,7 +148,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a cypher graph projection and return a :class:`CatalogJobHandle`.
+        """Kick off a cypher graph projection and return a :class:`ProjectionJobHandle`.
 
         Unlike :meth:`project`, this method does not block on completion. Use the
         returned handle to query status or retrieve the projected graph and result.
@@ -265,7 +265,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a native graph projection and return a :class:`CatalogJobHandle`.
+        """Kick off a native graph projection and return a :class:`ProjectionJobHandle`.
 
         Unlike :meth:`project_native`, this method does not block on completion.
         The returned handle can be used to await completion and retrieve the
@@ -420,7 +420,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a graph filter operation and return a :class:`CatalogJobHandle`.
+        """Kick off a graph filter operation and return a :class:`ProjectionJobHandle`.
 
         Unlike :meth:`filter`, this method does not block on completion.
         """
@@ -504,7 +504,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a graph generation and return a :class:`CatalogJobHandle`.
+        """Kick off a graph generation and return a :class:`ProjectionJobHandle`.
 
         Unlike :meth:`generate`, this method does not block on completion.
         """

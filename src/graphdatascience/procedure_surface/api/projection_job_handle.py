@@ -47,13 +47,14 @@ class ProjectionJobHandle:
         return _poll()
 
     def done(self) -> bool:
-        return self.status().succeeded() or self.status().aborted()
+        status = self.status()
+        return status.succeeded() or status.aborted()
 
     def wait(self, log_progress: bool = True) -> None:
         if self.done():
             return
 
-        JobClient().wait_for_job(
+        self._job_client.wait_for_job(
             self._arrow_client,
             self._job_id,
             show_progress=log_progress,

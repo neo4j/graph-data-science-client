@@ -169,22 +169,6 @@ class ProjectProtocolV3(ProjectProtocol):
 
         return projection_result
 
-    def run_store_projection(
-        self,
-        graph_name: str,
-        node_label_filter: list[str],
-        relationship_type_filter: list[str],
-        node_properties: list[str] | None = None,
-        relationship_properties: list[str] | None = None,
-        job_id: str | None = None,
-        concurrency: int | None = None,
-        undirected_relationship_types: list[str] | None = None,
-        inverse_indexed_relationship_types: list[str] | None = None,
-        batch_size: int | None = None,
-        logging: bool = True,
-    ) -> dict[str, Any]:
-        raise NotImplementedError("Store projection is not supported in protocol version 3")
-
 
 class ProjectProtocolV4(ProjectProtocol):
     def start_cypher_projection(
