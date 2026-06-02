@@ -7,6 +7,10 @@ from ..caller_base import CallerBase
 F = TypeVar("F", bound=Callable[..., Any])
 
 
+def deprecated_endpoint_message(old_endpoint: str, new_endpoint: str) -> str:
+    return f"Deprecated `{old_endpoint}` in favor of `{new_endpoint}`"
+
+
 def client_only_endpoint(expected_namespace_prefix: str) -> Callable[[F], F]:
     def decorator(func: F) -> F:
         wraps(func)
@@ -35,7 +39,7 @@ def client_deprecated(
 
         @wraps(func)
         def wrapper(self: CallerBase, *args: Any, **kwargs: Any) -> Any:
-            warnings.warn(f"Deprecated `{old_endpoint}` in favor of `{new_endpoint}`", DeprecationWarning)
+            warnings.warn(deprecated_endpoint_message(old_endpoint, new_endpoint), DeprecationWarning)
             return func(self, *args, **kwargs)
 
         return cast(F, wrapper)

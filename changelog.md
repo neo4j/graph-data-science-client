@@ -20,3 +20,5 @@
 
 
 ## Other changes
+
+* Add deprecation warning for `gds.pipeline` calls if in a GDS Session. Instead the `gds.v2.pipeline` endpoints should be used. 

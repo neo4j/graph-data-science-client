@@ -13,6 +13,9 @@ from .pipeline.pipeline_endpoints import (
     PipelineAlphaEndpoints,
     PipelineBetaEndpoints,
     PipelineEndpoints,
+    SessionPipelineAlphaEndpoints,
+    SessionPipelineBetaEndpoints,
+    SessionPipelineEndpoints,
 )
 from .query_runner.query_runner import QueryRunner
 from .server_version.server_version import ServerVersion
@@ -47,7 +50,7 @@ class DirectSessionEndpoints(
     SingleModeAlgoEndpoints,
     DirectSystemEndpoints,
     DirectUtilEndpoints,
-    PipelineEndpoints,
+    SessionPipelineEndpoints,
     ConfigEndpoints,
 ):
     def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
@@ -78,7 +81,7 @@ class AlphaEndpoints(
 
 class AlphaRemoteEndpoints(
     GraphAlphaEndpoints,
-    PipelineAlphaEndpoints,
+    SessionPipelineAlphaEndpoints,
     ModelAlphaEndpoints,
     SingleModeAlphaAlgoEndpoints,
     SystemAlphaEndpoints,
@@ -89,6 +92,14 @@ class AlphaRemoteEndpoints(
 
     def __getattr__(self, attr: str) -> IndirectAlphaCallBuilder:
         return IndirectAlphaCallBuilder(self._query_runner, f"{self._namespace}.{attr}", self._server_version)
+
+
+class BetaSessionEndpoints(GraphBetaEndpoints, SessionPipelineBetaEndpoints, ModelBetaEndpoints, SystemBetaEndpoints):
+    def __init__(self, query_runner: QueryRunner, namespace: str, server_version: ServerVersion):
+        super().__init__(query_runner, namespace, server_version)
+
+    def __getattr__(self, attr: str) -> IndirectBetaCallBuilder:
+        return IndirectBetaCallBuilder(self._query_runner, f"{self._namespace}.{attr}", self._server_version)
 
 
 """
