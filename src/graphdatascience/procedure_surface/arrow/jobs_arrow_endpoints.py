@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 import typing
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -7,13 +8,15 @@ from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
+from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.query_runner.termination_flag import TerminationFlag
 
 
 class JobInfo(BaseResult):
     job_id: str
-    name: str
+    job_name: str
 
 
 class JobNotFoundException(Exception):
@@ -37,9 +40,9 @@ class JobsArrowEndpoints:
         self._write_protocol = write_protocol
         self._show_progress = show_progress
 
-    def get(self, G: GraphV2, job_id: str) -> JobHandle | WriteJobHandle:
+    def get(self, G: GraphV2, job_id: str) -> JobHandle | WriteJobHandle | ProjectionJobHandle:
         """
-        Return a :class:`JobHandle` for an existing job.
+        Returns the appropriate job handle for an existing job.
 
         Parameters
         ----------
@@ -56,13 +59,24 @@ class JobsArrowEndpoints:
 
         job = matching_jobs[0]
 
+        if job.job_name == G.name():
+            return ProjectionJobHandle(self._arrow_client, G.name(), job_id, TerminationFlag.create())
+        elif self._write_protocol is not None:
+            # currently there is no good way of checking if a job is a write job.
+            # We can only try to check the job status and fall back to a regular job handle if it fails.
+            try:
+                self._write_protocol.get_status(job.job_id)
+                return WriteJobHandle(self._write_protocol, G.name(), job_id, time.time(), TerminationFlag.create())
+            except Exception:
+                pass
+
         return JobHandle(
             arrow_client=self._arrow_client,
             write_protocol=self._write_protocol,
             job_id=job_id,
             graph=G,
             show_progress=self._show_progress,
-            endpoint=job.name,
+            endpoint=job.job_name,
         )
 
     def list(self) -> typing.List[JobInfo]:
