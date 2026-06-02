@@ -7,9 +7,13 @@ from pyarrow import ArrowKeyError
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
+from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
+    RelationshipPropertySpec,
+)
 from graphdatascience.procedure_surface.arrow.catalog import ProjectionResult
-from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
+from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import (
+    CatalogArrowEndpoints,
+)
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
@@ -228,6 +232,115 @@ def test_graph_generate_with_relationships_property(catalog_endpoints: CatalogAr
         assert result.relationship_distribution == "UNIFORM"
         assert result.relationship_property == RelationshipPropertySpec.fixed("weight", 42)
 
+        assert catalog_endpoints.list("generated") is not None
+
+
+@pytest.mark.db_integration
+def test_projection_async(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
+    try:
+        endpoints = CatalogArrowEndpoints(arrow_client, query_runner)
+        handle = endpoints.project_async(
+            graph_name="g",
+            query="UNWIND range(1, 10) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
+        )
+
+        assert handle.job_id()
+
+        handle.wait()
+        assert handle.done()
+
+        G, result = handle.result()
+
+        assert G.name() == "g"
+        assert result["graphName"] == "g"
+        assert result["nodeCount"] == 10
+        assert result["relationshipCount"] == 0
+        assert result["projectMillis"] >= 0
+
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+
+
+@pytest.mark.db_integration
+def test_store_projection_async(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> None:
+    try:
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x CREATE (:Person)-[:KNOWS]->(:Person)",
+            QueryType.USER_ACTION,
+        )
+
+        endpoints = CatalogArrowEndpoints(arrow_client, query_runner)
+        handle = endpoints.project_native_async(
+            graph_name="g",
+            node_label_filter=["Person"],
+            relationship_type_filter=["KNOWS"],
+        )
+
+        assert handle.job_id()
+
+        G, result = handle.result()
+
+        assert G.name() == "g"
+        assert result["graphName"] == "g"
+        assert result["nodeCount"] == 10
+        assert result["relationshipCount"] == 5
+
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
+
+
+def test_graph_filter_async(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
+    try:
+        handle = catalog_endpoints.filter_async(
+            sample_graph,
+            graph_name="filtered",
+            node_filter="n:A",
+            relationship_filter="*",
+        )
+
+        assert handle.job_id()
+
+        G, result = handle.result()
+
+        assert G.name() == "filtered"
+        assert result["nodeCount"] == 2
+        assert result["relationshipCount"] == 0
+        assert result["fromGraphName"] == sample_graph.name()
+        assert result["graphName"] == "filtered"
+        assert result["projectMillis"] >= 0
+    finally:
+        catalog_endpoints.drop("filtered", fail_if_missing=False)
+
+
+def test_graph_generate_async(catalog_endpoints: CatalogArrowEndpoints) -> None:
+    handle = catalog_endpoints.generate_async(
+        "generated",
+        node_count=10,
+        average_degree=5,
+        relationship_distribution="UNIFORM",
+        relationship_seed=42,
+        orientation="UNDIRECTED",
+        allow_self_loops=False,
+        read_concurrency=1,
+        sudo=True,
+        log_progress=False,
+        username="neo4j",
+    )
+
+    assert handle.job_id()
+
+    G, result = handle.result()
+
+    with G:
+        assert G.name() == "generated"
+        assert result["name"] == "generated"
+        assert result["nodes"] == 10
+        assert result["relationships"] > 5
+        assert result["generateMillis"] >= 0
+        assert result["relationshipDistribution"] == "UNIFORM"
         assert catalog_endpoints.list("generated") is not None
 
 
