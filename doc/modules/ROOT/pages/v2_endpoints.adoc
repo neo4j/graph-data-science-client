@@ -73,3 +73,66 @@ result: FastRPWriteResult = gds.v2.fast_rp.write(G, write_property="fastRP", emb
 millis = result.write_millis
 ----
 |===
+
+== Asynchronous execution
+
+Most long-running operations in the V2 API have a non-blocking variant that returns a handle instead of blocking until the work is finished.
+The handle exposes the job id, lets you poll status, wait for completion, and retrieve results when ready.
+This is useful when you want to kick off work, do something else, and pick up the result later — possibly from a different process by looking the job up via its id.
+
+Three handle types are returned across the API:
+
+* `ProjectionJobHandle` — returned by the async endpoints that produce new graphs. It yields the projected graph and a summary.
+* `JobHandle` — returned by every algorithm's `compute(...)` method. `stream()`, `mutate(...)`, and `write(...)` consume the result, blocking on completion if needed.
+* `WriteJobHandle` — Write back operations started from a generic `JobHandle` yield a `WriteBackResult` .
+
+All handles share the same shape:
+
+[source, python]
+----
+handle.job_id()              # the server-assigned job identifier
+handle.status()              # current status without blocking
+handle.done()                # True once the job has reached a terminal state
+handle.wait()                # block until the job finishes
+handle.result(wait=False)    # raises JobNotFinishedError if not yet done
+----
+
+=== Example: project, compute, and write asynchronously
+
+The following snippet kicks off a remote projection, runs PageRank on the result without blocking, streams the scores, and writes them back — all using handles.
+
+[source, python]
+----
+projection_handle = gds.v2.graph.project_native_async(
+    "people",
+    "*",
+    "*"
+)
+projection_handle.wait()  # waits for projection to finish
+G, _ = projection_handle.result()
+
+compute_handle = gds.v2.page_rank.compute(G, damping_factor=0.85)
+# ... do other work here ...
+
+scores = compute_handle.stream()         # blocks on completion, returns a DataFrame
+write_handle = compute_handle.write(write_properties="pagerank")
+write_result = write_handle.result()     # WriteBackResult once the write-back is done
+----
+
+=== Recovering a handle via the jobs endpoint
+
+If you lose the original handle — for example, after restarting your client — you can look find jobs via `gds.v2.jobs.list()` and get the job handle by its id via `gds.v2.jobs.get(G, job_id)`.
+The returned handle has the correct concrete type for the underlying job: a `ProjectionJobHandle` for projection jobs, a `WriteJobHandle` for write-back jobs, and a plain `JobHandle` for everything else.
+
+[source, python]
+----
+# List all known jobs
+handles = gds.v2.jobs.list()
+# A previous session started a projection and we kept just the id around.
+projection_handle = gds.v2.jobs.get(G, known_projection_job_id)
+G, summary = projection_handle.result()   # waits if necessary
+
+# Same flow for a write-back job that was started earlier.
+write_handle = gds.v2.jobs.get(G, known_write_job_id)
+write_result = write_handle.result()
+----
