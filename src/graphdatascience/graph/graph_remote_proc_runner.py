@@ -62,7 +62,9 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
                 logging,
             )
 
-            return GraphCreateResult(Graph(graph_name, self._query_runner), pd.Series(result))
+            # explicitly specify empty dtype to avoid pandas 1.x FutureWarning
+            result_series = pd.Series(result) if result else pd.Series(result, dtype=object)
+            return GraphCreateResult(Graph(graph_name, self._query_runner), result_series)
 
         except Exception as e:
             handle_flight_error(e)
