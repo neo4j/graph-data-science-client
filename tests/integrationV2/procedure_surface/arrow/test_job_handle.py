@@ -8,7 +8,8 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from graphdatascience.procedure_surface.api.write_job_handle import JobNotFinishedError, WriteJobHandle
+from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
+from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph, create_graph_from_db
 

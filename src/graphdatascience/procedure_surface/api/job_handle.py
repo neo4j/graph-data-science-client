@@ -9,7 +9,8 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.api_types import JobStatus
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2 import GraphV2
-from graphdatascience.procedure_surface.api.write_job_handle import JobNotFinishedError, WriteJobHandle
+from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
+from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.procedure_surface.arrow.mutation_runner import MutationRunner
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import apply_stream_mapper
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
@@ -22,13 +23,13 @@ class JobHandle:
         arrow_client: AuthenticatedArrowClient,
         write_protocol: WriteProtocol | None,
         job_id: str,
-        graph: GraphV2,
+        graph: GraphV2 | str,
         show_progress: bool,
         endpoint: str,
     ):
         self._arrow_client = arrow_client
         self._job_id = job_id
-        self._graph = graph
+        self._graph_name = graph.name() if isinstance(graph, GraphV2) else graph
         self._show_progress = show_progress
         self._is_done = False
         self._write_protocol = write_protocol
@@ -83,7 +84,7 @@ class JobHandle:
         termination_flag: TerminationFlag | None = None,
     ) -> DataFrame:
         self._ensure_done(wait=wait, termination_flag=termination_flag)
-        result = JobClient.stream_results(self._arrow_client, self._graph.name(), self._job_id)
+        result = JobClient.stream_results(self._arrow_client, self._graph_name, self._job_id)
         result = apply_stream_mapper(self._endpoint, result)
         return result
 
@@ -112,11 +113,11 @@ class JobHandle:
         concurrency: int | None = None,
     ) -> WriteJobHandle:
         if self._write_protocol is None:
-            raise ValueError("This session does not support write operations.")
+            raise ValueError("This session or job does not support write operations.")
 
         return WriteJobHandle.create(
             self._write_protocol,
-            self._graph.name(),
+            self._graph_name,
             self._job_id,
             TerminationFlag.create(),
             concurrency,
@@ -131,4 +132,4 @@ class JobHandle:
         if wait:
             self.wait(termination_flag=termination_flag)
         elif not self.done():
-            raise JobNotFinishedError(f"Job '{self._job_id}' is not finished yet.")
+            raise JobNotFinishedError(self._job_id)

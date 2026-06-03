@@ -8,6 +8,7 @@ from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.graph.base_graph_proc_runner import BaseGraphProcRunner
 from graphdatascience.procedure_surface.arrow.error_handler import handle_flight_error
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
+from graphdatascience.query_runner.protocol.projection_runner import ProjectionRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 
@@ -50,7 +51,11 @@ class GraphRemoteProcRunner(BaseGraphProcRunner):
         )
 
         try:
-            result = project_protocol.run_cypher_projection(
+            result = ProjectionRunner(
+                project_protocol,
+                self._arrow_client.flight_client(),
+                TerminationFlag.create(),
+            ).run_cypher_projection(
                 graph_name,
                 query,
                 job_id or str(uuid4()),

@@ -33,19 +33,18 @@ def qr() -> CollectingQueryRunner:
     return CollectingQueryRunner(ServerVersion(2, 10, 0))
 
 
-def test_select_returns_v3(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    protocol = ProjectProtocol.select(ProtocolVersion.V3, arrow_client, qr, TerminationFlagNoop())
-    assert isinstance(protocol, ProjectProtocolV3)
+class TestSelect:
+    def test_select_returns_v3(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        protocol = ProjectProtocol.select(ProtocolVersion.V3, arrow_client, qr, TerminationFlagNoop())
+        assert isinstance(protocol, ProjectProtocolV3)
 
+    def test_select_returns_v4(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        protocol = ProjectProtocol.select(ProtocolVersion.V4, arrow_client, qr, TerminationFlagNoop())
+        assert isinstance(protocol, ProjectProtocolV4)
 
-def test_select_returns_v4(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    protocol = ProjectProtocol.select(ProtocolVersion.V4, arrow_client, qr, TerminationFlagNoop())
-    assert isinstance(protocol, ProjectProtocolV4)
-
-
-def test_select_unsupported_version_raises(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    with pytest.raises(KeyError):
-        ProjectProtocol.select(ProtocolVersion.V1, arrow_client, qr, TerminationFlagNoop())
+    def test_select_unsupported_version_raises(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        with pytest.raises(KeyError):
+            ProjectProtocol.select(ProtocolVersion.V1, arrow_client, qr, TerminationFlagNoop())
 
 
 def test_arrow_config_uses_advertised_connection_info(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
@@ -62,248 +61,287 @@ def test_arrow_config_uses_advertised_connection_info(arrow_client: MagicMock, q
     }
 
 
-def test_v3_store_projection_raises_not_implemented(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
-
-    with pytest.raises(NotImplementedError):
-        protocol.run_store_projection(
-            graph_name="g",
-            node_label_filter=["Person"],
-            relationship_type_filter=["KNOWS"],
+class TestProjectProtocolV3:
+    def test_start_cypher_projection_dispatches_expected_query_and_params(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.v3",
+            DataFrame([{"host": "member-host", "port": 7777}]),
         )
 
+        protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
 
-def test_v4_run_cypher_projection_dispatches_expected_query_and_params(
-    arrow_client: MagicMock, qr: CollectingQueryRunner
-) -> None:
-    qr.add__mock_result(
-        "gds.arrow.project.cypher.v4",
-        DataFrame([{"jobId": "job-1", "host": "member-host", "port": 7777}]),
-    )
-    qr.add__mock_result(
-        "gds.arrow.job.status",
-        DataFrame([{"status": Status.DONE.name, "error": None, "result": {"nodeCount": 42}}]),
-    )
+        job_id, projection_runner = protocol.start_cypher_projection(
+            graph_name="myGraph",
+            query="MATCH (n) RETURN n",
+            job_id="my-job",
+            query_parameters={"foo": "bar"},
+            concurrency=4,
+            undirected_relationship_types=["REL"],
+            inverse_indexed_relationship_types=["REL2"],
+            batch_size=200,
+        )
 
-    protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+        assert job_id == "my-job"
+        assert projection_runner is qr  # CollectingQueryRunner.cloneWithoutRouting returns self
 
-    result = protocol.run_cypher_projection(
-        graph_name="myGraph",
-        query="MATCH (n) RETURN n",
-        job_id="my-job",
-        query_parameters={"foo": "bar"},
-        concurrency=4,
-        undirected_relationship_types=["REL"],
-        inverse_indexed_relationship_types=["REL2"],
-        batch_size=200,
-    )
+        assert len(qr.queries) == 1
+        assert "gds.arrow.project.v3" in qr.queries[0]
+        assert qr.params[0] == {
+            "graph_name": "myGraph",
+            "query": "MATCH (n) RETURN n",
+            "jobId": "my-job",
+            "configuration": {
+                "queryParameters": {"foo": "bar"},
+                "undirectedRelationshipTypes": ["REL"],
+                "inverseIndexedRelationshipTypes": ["REL2"],
+                "concurrency": 4,
+            },
+            "arrow_config": {
+                "host": "arrow.host",
+                "port": 1234,
+                "token": "some-token",
+                "encrypted": True,
+                "batchSize": 200,
+            },
+        }
 
-    assert result == {"nodeCount": 42}
-
-    start_query = qr.queries[0]
-    assert "gds.arrow.project.cypher.v4" in start_query
-
-    start_params = qr.params[0]
-    assert start_params["graph_name"] == "myGraph"
-    assert start_params["query"] == "MATCH (n) RETURN n"
-    assert start_params["jobId"] == "my-job"
-    assert start_params["configuration"] == {
-        "queryParameters": {"foo": "bar"},
-        "undirectedRelationshipTypes": ["REL"],
-        "inverseIndexedRelationshipTypes": ["REL2"],
-        "concurrency": 4,
-    }
-    assert start_params["arrow_config"] == {
-        "host": "arrow.host",
-        "port": 1234,
-        "token": "some-token",
-        "encrypted": True,
-        "batchSize": 200,
-    }
-
-    status_query = qr.queries[1]
-    assert "gds.arrow.job.status.v4('job-1')" in status_query
-
-
-def test_v4_run_store_projection_dispatches_expected_query_and_params(
-    arrow_client: MagicMock, qr: CollectingQueryRunner
-) -> None:
-    qr.add__mock_result(
-        "gds.arrow.project.store.v4",
-        DataFrame([{"jobId": "store-job", "host": "member-host", "port": 7777}]),
-    )
-    qr.add__mock_result(
-        "gds.arrow.job.status",
-        DataFrame([{"status": Status.DONE.name, "error": None, "result": {"nodeCount": 7}}]),
-    )
-
-    protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
-
-    result = protocol.run_store_projection(
-        graph_name="myGraph",
-        node_label_filter=["Person", "Movie"],
-        relationship_type_filter=["ACTED_IN"],
-        node_properties=["age"],
-        relationship_properties=["weight"],
-        job_id="store-job",
-        concurrency=8,
-        undirected_relationship_types=["ACTED_IN"],
-        inverse_indexed_relationship_types=[],
-        batch_size=50,
-    )
-
-    assert result == {"nodeCount": 7}
-
-    start_query = qr.queries[0]
-    assert "gds.arrow.project.store.v4" in start_query
-
-    start_params = qr.params[0]
-    assert start_params["graph_name"] == "myGraph"
-    assert start_params["node_labels"] == ["Person", "Movie"]
-    assert start_params["relationship_types"] == ["ACTED_IN"]
-    assert start_params["configuration"] == {
-        "nodeProperties": ["age"],
-        "relationshipProperties": ["weight"],
-        "jobId": "store-job",
-        "undirectedRelationshipTypes": ["ACTED_IN"],
-        "inverseIndexedRelationshipTypes": [],
-        "readConcurrency": 8,
-    }
-    assert start_params["arrow_config"]["host"] == "arrow.host"
-    assert start_params["arrow_config"]["port"] == 1234
-    assert start_params["arrow_config"]["batchSize"] == 50
-
-    status_query = qr.queries[1]
-    assert "gds.arrow.job.status.v4('store-job')" in status_query
-
-
-def test_v4_run_cypher_projection_polls_until_done(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    qr.add__mock_result(
-        "gds.arrow.project.cypher.v4",
-        DataFrame([{"jobId": "job-1", "host": "member-host", "port": 7777}]),
-    )
-    qr.add__mock_result(
-        "gds.arrow.job.status",
-        [
-            DataFrame([{"status": Status.RUNNING.name, "error": None, "result": None}]),
-            DataFrame([{"status": Status.RUNNING.name, "error": None, "result": None}]),
-            DataFrame([{"status": Status.DONE.name, "error": None, "result": {"nodeCount": 1}}]),
-        ],
-    )
-
-    protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
-
-    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
-
-    assert result == {"nodeCount": 1}
-
-    status_queries = [q for q in qr.queries if "gds.arrow.job.status" in q]
-    assert len(status_queries) == 3
-
-
-def test_v4_run_cypher_projection_raises_when_status_has_error(
-    arrow_client: MagicMock, qr: CollectingQueryRunner
-) -> None:
-    qr.add__mock_result(
-        "gds.arrow.project.cypher.v4",
-        DataFrame([{"jobId": "job-1", "host": "member-host", "port": 7777}]),
-    )
-    qr.add__mock_result(
-        "gds.arrow.job.status",
-        DataFrame([{"status": Status.RUNNING.name, "error": "boom", "result": None}]),
-    )
-
-    protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
-
-    with pytest.raises(Exception, match="boom"):
-        protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
-
-
-def test_v3_run_cypher_projection_dispatches_expected_query_and_params(
-    arrow_client: MagicMock, qr: CollectingQueryRunner
-) -> None:
-    qr.add__mock_result(
-        "gds.arrow.project.v3",
-        [
-            DataFrame([{"host": "member-host", "port": 7777}]),
-            DataFrame([{"status": Status.DONE.name, "nodeCount": 42}]),
-        ],
-    )
-
-    protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
-
-    result = protocol.run_cypher_projection(
-        graph_name="myGraph",
-        query="MATCH (n) RETURN n",
-        job_id="my-job",
-        query_parameters={"foo": "bar"},
-        concurrency=4,
-        undirected_relationship_types=["REL"],
-        inverse_indexed_relationship_types=["REL2"],
-        batch_size=200,
-    )
-
-    assert result == {"status": Status.DONE.name, "nodeCount": 42}
-
-    assert len(qr.queries) == 2
-    assert all("gds.arrow.project.v3" in q for q in qr.queries)
-
-    expected_params = {
-        "graph_name": "myGraph",
-        "query": "MATCH (n) RETURN n",
-        "jobId": "my-job",
-        "configuration": {
-            "queryParameters": {"foo": "bar"},
-            "undirectedRelationshipTypes": ["REL"],
-            "inverseIndexedRelationshipTypes": ["REL2"],
-            "concurrency": 4,
-        },
-        "arrow_config": {
-            "host": "arrow.host",
-            "port": 1234,
-            "token": "some-token",
-            "encrypted": True,
-            "batchSize": 200,
-        },
-    }
-    assert qr.params[0] == expected_params
-    assert qr.params[1] == expected_params
-
-
-def test_v3_run_cypher_projection_polls_until_done(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
-    qr.add__mock_result(
-        "gds.arrow.project.v3",
-        [
-            DataFrame([{"host": "member-host", "port": 7777}]),
-            DataFrame([{"status": Status.RUNNING.name, "nodeCount": 0}]),
-            DataFrame([{"status": Status.RUNNING.name, "nodeCount": 0}]),
-            DataFrame([{"status": Status.DONE.name, "nodeCount": 1}]),
-        ],
-    )
-
-    protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
-
-    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
-
-    assert result == {"status": Status.DONE.name, "nodeCount": 1}
-    assert len(qr.queries) == 4
-    assert all("gds.arrow.project.v3" in q for q in qr.queries)
-
-
-def test_v3_run_cypher_projection_defaults_port_when_missing(
-    arrow_client: MagicMock, qr: CollectingQueryRunner
-) -> None:
-    qr.add__mock_result(
-        "gds.arrow.project.v3",
-        [
+    def test_start_cypher_projection_defaults_port_when_missing(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.v3",
             DataFrame([{"host": "member-host", "other": "x"}]),
-            DataFrame([{"status": Status.DONE.name, "nodeCount": 0}]),
-        ],
-    )
+        )
 
-    protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
+        protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
 
-    result = protocol.run_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
+        job_id, _ = protocol.start_cypher_projection(
+            graph_name="g",
+            query="MATCH (n) RETURN n",
+            job_id="my-job",
+        )
 
-    assert result == {"status": Status.DONE.name, "nodeCount": 0}
-    assert len(qr.queries) == 2
+        assert job_id == "my-job"
+        assert len(qr.queries) == 1
+
+    def test_get_status_replays_start_query(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.v3",
+            [
+                DataFrame([{"host": "member-host", "port": 7777}]),
+                DataFrame([{"status": Status.RUNNING.name, "nodeCount": 0}]),
+            ],
+        )
+
+        protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
+
+        _, projection_runner = protocol.start_cypher_projection(
+            graph_name="g",
+            query="MATCH (n) RETURN n",
+            job_id="my-job",
+        )
+
+        status = protocol.get_status("my-job", projection_runner)
+
+        assert status == {"status": Status.RUNNING.name, "nodeCount": 0}
+        assert len(qr.queries) == 2
+        assert all("gds.arrow.project.v3" in q for q in qr.queries)
+        assert qr.params[0] == qr.params[1]
+
+    def test_get_status_caches_done_result_and_does_not_requery(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.v3",
+            [
+                DataFrame([{"host": "member-host", "port": 7777}]),
+                DataFrame([{"status": Status.DONE.name, "nodeCount": 42}]),
+            ],
+        )
+
+        protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
+
+        _, projection_runner = protocol.start_cypher_projection(
+            graph_name="g",
+            query="MATCH (n) RETURN n",
+            job_id="my-job",
+        )
+
+        first = protocol.get_status("my-job", projection_runner)
+        second = protocol.get_status("my-job", projection_runner)
+
+        assert first == {"status": Status.DONE.name, "nodeCount": 42}
+        assert second == first
+        # Start + first status call only — second status call must hit the cache.
+        assert len(qr.queries) == 2
+
+    def test_start_cypher_projection_clears_cached_result_on_restart(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.v3",
+            [
+                DataFrame([{"host": "member-host", "port": 7777}]),
+                DataFrame([{"status": Status.DONE.name, "nodeCount": 1}]),
+                DataFrame([{"host": "member-host", "port": 7777}]),
+                DataFrame([{"status": Status.DONE.name, "nodeCount": 2}]),
+            ],
+        )
+
+        protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
+
+        _, runner_1 = protocol.start_cypher_projection(graph_name="g", query="q", job_id="my-job")
+        first = protocol.get_status("my-job", runner_1)
+
+        _, runner_2 = protocol.start_cypher_projection(graph_name="g", query="q", job_id="my-job")
+        second = protocol.get_status("my-job", runner_2)
+
+        assert first == {"status": Status.DONE.name, "nodeCount": 1}
+        assert second == {"status": Status.DONE.name, "nodeCount": 2}
+
+    def test_start_store_projection_raises_not_implemented(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
+
+        with pytest.raises(NotImplementedError):
+            protocol.start_store_projection(
+                graph_name="g",
+                node_label_filter=["Person"],
+                relationship_type_filter=["KNOWS"],
+            )
+
+
+class TestProjectProtocolV4:
+    def test_start_cypher_projection_dispatches_expected_query_and_params(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.cypher.v4",
+            DataFrame([{"jobId": "server-job", "host": "member-host", "port": 7777}]),
+        )
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        job_id, projection_runner = protocol.start_cypher_projection(
+            graph_name="myGraph",
+            query="MATCH (n) RETURN n",
+            job_id="my-job",
+            query_parameters={"foo": "bar"},
+            concurrency=4,
+            undirected_relationship_types=["REL"],
+            inverse_indexed_relationship_types=["REL2"],
+            batch_size=200,
+        )
+
+        assert job_id == "server-job"
+        assert projection_runner is qr
+
+        assert len(qr.queries) == 1
+        assert "gds.arrow.project.cypher.v4" in qr.queries[0]
+        assert qr.params[0] == {
+            "graph_name": "myGraph",
+            "query": "MATCH (n) RETURN n",
+            "jobId": "my-job",
+            "configuration": {
+                "queryParameters": {"foo": "bar"},
+                "undirectedRelationshipTypes": ["REL"],
+                "inverseIndexedRelationshipTypes": ["REL2"],
+                "concurrency": 4,
+            },
+            "arrow_config": {
+                "host": "arrow.host",
+                "port": 1234,
+                "token": "some-token",
+                "encrypted": True,
+                "batchSize": 200,
+            },
+        }
+
+    def test_start_store_projection_dispatches_expected_query_and_params(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.store.v4",
+            DataFrame([{"jobId": "store-job", "host": "member-host", "port": 7777}]),
+        )
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        job_id, projection_runner = protocol.start_store_projection(
+            graph_name="myGraph",
+            node_label_filter=["Person", "Movie"],
+            relationship_type_filter=["ACTED_IN"],
+            node_properties=["age"],
+            relationship_properties=["weight"],
+            job_id="store-job",
+            concurrency=8,
+            undirected_relationship_types=["ACTED_IN"],
+            inverse_indexed_relationship_types=[],
+            batch_size=50,
+        )
+
+        assert job_id == "store-job"
+        assert projection_runner is qr
+
+        assert len(qr.queries) == 1
+        assert "gds.arrow.project.store.v4" in qr.queries[0]
+        assert qr.params[0] == {
+            "graph_name": "myGraph",
+            "node_labels": ["Person", "Movie"],
+            "relationship_types": ["ACTED_IN"],
+            "configuration": {
+                "nodeProperties": ["age"],
+                "relationshipProperties": ["weight"],
+                "jobId": "store-job",
+                "undirectedRelationshipTypes": ["ACTED_IN"],
+                "inverseIndexedRelationshipTypes": [],
+                "readConcurrency": 8,
+            },
+            "arrow_config": {
+                "host": "arrow.host",
+                "port": 1234,
+                "token": "some-token",
+                "encrypted": True,
+                "batchSize": 50,
+            },
+        }
+
+    def test_start_defaults_port_when_missing(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.cypher.v4",
+            DataFrame([{"jobId": "server-job", "host": "member-host"}]),
+        )
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        job_id, _ = protocol.start_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
+
+        assert job_id == "server-job"
+
+    def test_get_status_dispatches_status_query(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        qr.add__mock_result(
+            "gds.arrow.job.status",
+            DataFrame([{"status": Status.RUNNING.name, "error": None, "result": None}]),
+        )
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        status = protocol.get_status("server-job", qr)
+
+        assert status == {"status": Status.RUNNING.name, "error": None, "result": None}
+        assert len(qr.queries) == 1
+        assert "gds.arrow.job.status.v4('server-job')" in qr.queries[0]
+
+    def test_get_status_raises_when_error_present(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        qr.add__mock_result(
+            "gds.arrow.job.status",
+            DataFrame([{"status": Status.RUNNING.name, "error": "boom", "result": None}]),
+        )
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        with pytest.raises(Exception, match="boom"):
+            protocol.get_status("server-job", qr)

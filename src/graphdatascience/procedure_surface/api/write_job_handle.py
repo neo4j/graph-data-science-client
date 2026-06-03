@@ -6,6 +6,7 @@ import time
 from tenacity import retry, retry_if_result
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
 from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.protocol.write_protocols import JobStatus, WriteProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -78,7 +79,7 @@ class WriteJobHandle:
     def result(self, *, wait: bool = True) -> WriteBackResult:
         if not self.done():
             if not wait:
-                raise JobNotFinishedError(f"Write-back job '{self._job_id}' is not finished yet.")
+                raise JobNotFinishedError(self._job_id)
             self.wait()
 
         status = self._terminal_status
@@ -131,10 +132,6 @@ class WriteJobHandle:
             final = poll(None)
 
         return final
-
-
-class JobNotFinishedError(RuntimeError):
-    """Raised when a non-blocking consumption call is made on a job that hasn't finished yet."""
 
 
 class WriteBackResult(BaseResult):

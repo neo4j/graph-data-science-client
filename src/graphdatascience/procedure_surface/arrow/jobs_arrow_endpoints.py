@@ -7,6 +7,7 @@ from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
+from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 
 
@@ -36,7 +37,7 @@ class JobsArrowEndpoints:
         self._write_protocol = write_protocol
         self._show_progress = show_progress
 
-    def get(self, G: GraphV2, job_id: str) -> JobHandle:
+    def get(self, G: GraphV2, job_id: str) -> JobHandle | WriteJobHandle:
         """
         Return a :class:`JobHandle` for an existing job.
 
