@@ -59,7 +59,7 @@ class JobsArrowEndpoints:
 
         job = matching_jobs[0]
 
-        if job.job_name == G.name():
+        if self._is_projection(job.job_name, G.name()):
             return ProjectionJobHandle(self._arrow_client, G.name(), job_id, TerminationFlag.create())
         elif self._write_protocol is not None:
             # currently there is no good way of checking if a job is a write job.
@@ -91,3 +91,15 @@ class JobsArrowEndpoints:
 
         rows = deserialize(self._arrow_client.do_action_with_retry(self.LIST_ENDPOINT, {}))
         return [JobInfo(**row) for row in rows]
+
+    def _is_projection(self, job_name: str, graph_name: str) -> bool:
+        projection_endpoints = [
+            "v2/graph.project.fromTables",
+            "v2/graph.project.fromTriplets",
+            "v2/graph.project.filter",
+            "v2/graph.sample.rwr",
+            "v2/graph.sample.cnarw",
+            "v2/graph.generate",
+        ]
+
+        return job_name in projection_endpoints or job_name == graph_name
