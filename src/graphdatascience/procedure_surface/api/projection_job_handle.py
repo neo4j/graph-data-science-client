@@ -64,7 +64,7 @@ class ProjectionJobHandle:
     def result(self, *, wait: bool = True) -> Tuple[GraphV2, dict[str, Any]]:
         if not self.done():
             if not wait:
-                raise JobNotFinishedError(f"Projection job '{self._job_id}' is not finished yet.")
+                raise JobNotFinishedError(self._job_id)
             self.wait()
 
         summary = self._job_client.get_summary(self._arrow_client, self._job_id)

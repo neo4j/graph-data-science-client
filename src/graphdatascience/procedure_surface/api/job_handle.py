@@ -132,4 +132,4 @@ class JobHandle:
         if wait:
             self.wait(termination_flag=termination_flag)
         elif not self.done():
-            raise JobNotFinishedError(f"Job '{self._job_id}' is not finished yet.")
+            raise JobNotFinishedError(self._job_id)

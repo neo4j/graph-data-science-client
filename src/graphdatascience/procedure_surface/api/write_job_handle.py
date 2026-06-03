@@ -79,7 +79,7 @@ class WriteJobHandle:
     def result(self, *, wait: bool = True) -> WriteBackResult:
         if not self.done():
             if not wait:
-                raise JobNotFinishedError(f"Write-back job '{self._job_id}' is not finished yet.")
+                raise JobNotFinishedError(self._job_id)
             self.wait()
 
         status = self._terminal_status
