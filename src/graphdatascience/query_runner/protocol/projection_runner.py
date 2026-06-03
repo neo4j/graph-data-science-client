@@ -1,3 +1,5 @@
+from concurrent.futures import Future
+from concurrent.futures import TimeoutError as FuturesTimeoutError
 from concurrent.futures.thread import ThreadPoolExecutor
 from logging import DEBUG, getLogger
 from typing import Any
@@ -81,6 +83,20 @@ class ProjectionRunner:
         return result["result"]  # type: ignore
 
     def _await_result(self, job_id: str, query_runner: QueryRunner, show_progress: bool) -> dict[str, Any]:
+        executor = ThreadPoolExecutor(max_workers=1)
+        progress_future = self._start_progress(job_id, executor, show_progress)
+
+        try:
+            return self._poll_until_done(job_id, query_runner)
+        finally:
+            try:
+                progress_future.result(timeout=10)
+            except FuturesTimeoutError:
+                pass
+            finally:
+                executor.shutdown(wait=False)
+
+    def _poll_until_done(self, job_id: str, query_runner: QueryRunner) -> dict[str, Any]:
         def is_not_done(r: dict[str, Any]) -> bool:
             status: str = r["status"]
             return status != Status.DONE.name
@@ -91,21 +107,20 @@ class ProjectionRunner:
             retry=retry_if_result(is_not_done),
             wait=job_wait_strategy(),
         )
-        def poll_result() -> dict[str, Any]:
+        def poll() -> dict[str, Any]:
             self._termination_flag.assert_running()
             return self._project_protocol.get_status(job_id, query_runner)
 
-        self._show_progress(job_id, show_progress, self._termination_flag)
-
         try:
-            result = poll_result()
+            return poll()
         finally:
             query_runner.close()
 
-        return result
-
-    def _show_progress(self, job_id: str, show_progress: bool, termination_flag: TerminationFlag) -> None:
+    def _start_progress(self, job_id: str, executor: ThreadPoolExecutor, show_progress: bool) -> Future[None]:
         job_client = JobClient()
 
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            executor.submit(job_client.wait_for_job, self._arrow_client, job_id, show_progress, None, termination_flag)
+        future = executor.submit(
+            job_client.wait_for_job, self._arrow_client, job_id, show_progress, None, self._termination_flag
+        )
+
+        return future
