@@ -12,9 +12,9 @@ from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
 
 
 @pytest.fixture(autouse=True)
-def stub_wait_for_job(mocker: MockerFixture) -> None:
+def stub_poll_progress(mocker: MockerFixture) -> None:
     mocker.patch(
-        "graphdatascience.query_runner.protocol.projection_runner.JobClient.wait_for_job",
+        "graphdatascience.query_runner.protocol.projection_runner.ProjectionRunner._poll_progress",
         return_value=None,
     )
 

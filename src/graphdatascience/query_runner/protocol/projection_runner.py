@@ -1,14 +1,14 @@
-from concurrent.futures import Future
-from concurrent.futures import TimeoutError as FuturesTimeoutError
 from concurrent.futures.thread import ThreadPoolExecutor
 from logging import DEBUG, getLogger
 from typing import Any
 
-from tenacity import retry, retry_if_result
+from pyarrow import ArrowKeyError
+from tenacity import Retrying, retry, retry_if_result
 
 from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -83,18 +83,20 @@ class ProjectionRunner:
         return result["result"]  # type: ignore
 
     def _await_result(self, job_id: str, query_runner: QueryRunner, show_progress: bool) -> dict[str, Any]:
-        executor = ThreadPoolExecutor(max_workers=1)
-        progress_future = self._start_progress(job_id, executor, show_progress)
+        if show_progress:
+            executor = ThreadPoolExecutor(max_workers=1)
+            progress_future = executor.submit(self._poll_progress, job_id)
 
         try:
             return self._poll_until_done(job_id, query_runner)
         finally:
-            try:
-                progress_future.result(timeout=10)
-            except FuturesTimeoutError:
-                pass
-            finally:
-                executor.shutdown(wait=False)
+            if show_progress:
+                try:
+                    progress_future.result(timeout=10)
+                except Exception:
+                    pass
+                finally:
+                    executor.shutdown(wait=False)
 
     def _poll_until_done(self, job_id: str, query_runner: QueryRunner) -> dict[str, Any]:
         def is_not_done(r: dict[str, Any]) -> bool:
@@ -116,11 +118,30 @@ class ProjectionRunner:
         finally:
             query_runner.close()
 
-    def _start_progress(self, job_id: str, executor: ThreadPoolExecutor, show_progress: bool) -> Future[None]:
+    def _poll_progress(self, job_id: str) -> None:
+        progress_bar: TqdmProgressBar | None = None
         job_client = JobClient()
 
-        future = executor.submit(
-            job_client.wait_for_job, self._arrow_client, job_id, show_progress, None, self._termination_flag
-        )
+        for attempt in Retrying(retry=retry_if_result(lambda _: True), wait=job_wait_strategy(), reraise=True):
+            with attempt:
+                self._termination_flag.assert_running()
 
-        return future
+                try:
+                    job_status = job_client.get_job_status(self._arrow_client, job_id)
+                except ArrowKeyError:
+                    continue
+
+                if job_status.succeeded() or job_status.aborted():
+                    if progress_bar:
+                        progress_bar.finish(success=job_status.succeeded())
+                    return
+
+                if progress_bar is None:
+                    base_task = job_status.base_task()
+                    if base_task:
+                        progress_bar = TqdmProgressBar(
+                            task_name=base_task,
+                            relative_progress=job_status.progress_percent(),
+                        )
+                if progress_bar:
+                    progress_bar.update(job_status.status, job_status.progress_percent(), job_status.sub_tasks())
