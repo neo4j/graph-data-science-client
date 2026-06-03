@@ -16,6 +16,8 @@ SessionV2Endpoints
    ../v2_endpoints/model_endpoints
    ../v2_endpoints/config_endpoints
    ../v2_endpoints/system_endpoints
+   ../v2_endpoints/job_endpoints
+
 
 .. autoclass:: graphdatascience.session.session_v2_endpoints.SessionV2Endpoints
     :members:

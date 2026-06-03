@@ -9,6 +9,7 @@ GDS Sessions
    cloud_location
    dbms_connection_info
    aura_graphdatascience
+   job_handles
    session_v2_endpoints
 
 
