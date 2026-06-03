@@ -108,6 +108,4 @@ class ProjectionRunner:
         job_client = JobClient()
 
         with ThreadPoolExecutor(max_workers=1) as executor:
-            executor.submit(
-                job_client.wait_for_job, self._arrow_client, job_id, show_progress, Status.DONE.name, termination_flag
-            )
+            executor.submit(job_client.wait_for_job, self._arrow_client, job_id, show_progress, None, termination_flag)
