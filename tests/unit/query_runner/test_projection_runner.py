@@ -33,7 +33,7 @@ def test_run_cypher_projection_starts_job_and_returns_done_result(
     arrow_client: MagicMock, projection_qr: MagicMock
 ) -> None:
     protocol = MagicMock(spec=ProjectProtocol)
-    protocol.start_cypher_projection.return_value = ("server-job", projection_qr)
+    protocol.start_cypher_projection.return_value = ("my-job", projection_qr)
     protocol.get_status.return_value = {"status": Status.DONE.name, "nodeCount": 42}
 
     runner = ProjectionRunner(protocol, arrow_client, TerminationFlagNoop())
