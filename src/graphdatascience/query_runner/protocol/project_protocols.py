@@ -151,6 +151,11 @@ class ProjectProtocolV3(ProjectProtocol):
         if self._result_cache.get(job_id) is not None:
             return self._result_cache[job_id]
 
+        if job_id not in self._parameter_cache:
+            # This means that the protocol was recreated, and the job_id is no longer in the cache.
+            # There is nothing we can do about this.
+            raise Exception(f"Status for projection with id {job_id} cannot be retrieved")
+
         params = self._parameter_cache[job_id]
 
         self._termination_flag.assert_running()

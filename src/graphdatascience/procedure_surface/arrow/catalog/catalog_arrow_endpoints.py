@@ -592,7 +592,7 @@ class StoreProjectionResult(BaseResult):
     graph_name: str
     node_count: int
     relationship_count: int
-    project_millis: int | None = None
+    project_millis: int
 
 
 class GraphWithProjectResult(NamedTuple):
