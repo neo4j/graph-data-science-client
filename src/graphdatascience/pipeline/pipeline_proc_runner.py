@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
 from pandas import DataFrame, Series
 
 from ..call_parameters import CallParameters
-from ..error.client_only_endpoint import client_only_endpoint
+from ..error.client_only_endpoint import client_only_endpoint, deprecated_endpoint_message
 from ..error.illegal_attr_checker import IllegalAttrChecker
 from ..error.uncallable_namespace import UncallableNamespace
 from ..model.pipeline_model import PipelineModel
@@ -60,3 +61,28 @@ class PipelineProcRunner(UncallableNamespace, IllegalAttrChecker):
             return NRTrainingPipeline(pipeline_name, self._query_runner, self._server_version)
 
         raise ValueError(f"Unknown model type encountered: '{pipeline_type}'")
+
+
+class SessionPipelineProcRunner(PipelineProcRunner):
+    def get(self, pipeline_name: str) -> TrainingPipeline[PipelineModel]:
+        warnings.warn(
+            deprecated_endpoint_message("gds.pipeline.get", "gds.v2.pipeline.<pipeline_type>.get"),
+            DeprecationWarning,
+        )
+        result = PipelineProcRunner.exists(self, pipeline_name)
+        if result["exists"]:
+            return self._resolve_pipeline(result["pipelineType"], result["pipelineName"])
+
+        raise ValueError(f"No pipeline named '{pipeline_name}' exists")
+
+    def list(self, pipeline: TrainingPipeline[PipelineModel] | None = None) -> DataFrame:
+        warnings.warn(deprecated_endpoint_message("gds.pipeline.list", "gds.v2.pipeline.list"), DeprecationWarning)
+        return super().list(pipeline)
+
+    def exists(self, pipeline_name: str) -> Series[Any]:
+        warnings.warn(deprecated_endpoint_message("gds.pipeline.exists", "gds.v2.pipeline.exists"), DeprecationWarning)
+        return super().exists(pipeline_name)
+
+    def drop(self, pipeline: TrainingPipeline[PipelineModel]) -> Series[Any]:
+        warnings.warn(deprecated_endpoint_message("gds.pipeline.drop", "gds.v2.pipeline.drop"), DeprecationWarning)
+        return super().drop(pipeline)

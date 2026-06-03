@@ -9,7 +9,7 @@ from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_builder import IndirectCallBuilder
 from graphdatascience.endpoints import (
     AlphaRemoteEndpoints,
-    BetaEndpoints,
+    BetaSessionEndpoints,
     DirectSessionEndpoints,
 )
 from graphdatascience.error.uncallable_namespace import UncallableNamespace
@@ -197,8 +197,8 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
         return AlphaRemoteEndpoints(self._query_runner, "gds.alpha", self._server_version)
 
     @property
-    def beta(self) -> BetaEndpoints:
-        return BetaEndpoints(self._query_runner, "gds.beta", self._server_version)
+    def beta(self) -> BetaSessionEndpoints:
+        return BetaSessionEndpoints(self._query_runner, "gds.beta", self._server_version)
 
     @property
     def v2(self) -> SessionV2Endpoints:
