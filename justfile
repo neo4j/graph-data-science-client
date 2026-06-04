@@ -77,5 +77,23 @@ update-test-images:
     just update-neo4j-image
     just update-neo4j-aura-image
 
+doc-tests enterprise="true":
+    #!/usr/bin/env bash
+    set -e
+    if [ "{{enterprise}}" = "true" ]; then
+        ENV_DIR="scripts/test_envs/gds_plugin_enterprise"
+        if [ ! -f "${HOME}/.gds_license" ]; then
+            echo "Error: GDS enterprise license file not found at ${HOME}/.gds_license"
+            exit 1
+        fi
+    else
+        ENV_DIR="scripts/test_envs/gds_plugin_community"
+    fi
+    trap "cd $ENV_DIR && docker compose down" EXIT
+    cd $ENV_DIR && docker compose up -d
+    cd -
+    PYTHON=$(uv run which python)
+    cd doc/tests && bundle install && bundle exec ruby test_docs.rb $PYTHON {{ if enterprise != "true" { "-n test_community" } else { "" } }}
+
 prs:
     gh pr list --author "@me"
