@@ -88,14 +88,11 @@ Three handle types are returned across the API:
 
 All handles share the same shape:
 
-[source, python]
-----
-handle.job_id()              # the server-assigned job identifier
-handle.status()              # current status without blocking
-handle.done()                # True once the job has reached a terminal state
-handle.wait()                # block until the job finishes
-handle.result(wait=False)    # raises JobNotFinishedError if not yet done
-----
+* `handle.job_id()` — the server-assigned job identifier
+* `handle.status()` — current status without blocking
+* `handle.done()` — True once the job has reached a terminal state
+* `handle.wait()` — block until the job finishes
+* `handle.result(wait=False)` — raises JobNotFinishedError if not yet done
 
 === Example: project, compute, and write asynchronously
 
