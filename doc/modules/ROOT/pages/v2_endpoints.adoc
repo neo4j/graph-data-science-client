@@ -98,7 +98,7 @@ All handles share the same shape:
 
 The following snippet kicks off a remote projection, runs PageRank on the result without blocking, streams the scores, and writes them back — all using handles.
 
-[source, python]
+[source, python, session=true]
 ----
 projection_handle = gds.v2.graph.project_native_async(
     "people",
@@ -121,7 +121,7 @@ write_result = write_handle.result()     # WriteBackResult once the write-back i
 If you lose the original handle — for example, after restarting your client — you can look find jobs via `gds.v2.jobs.list()` and get the job handle by its id via `gds.v2.jobs.get(G, job_id)`.
 The returned handle has the correct concrete type for the underlying job: a `ProjectionJobHandle` for projection jobs, a `WriteJobHandle` for write-back jobs, and a plain `JobHandle` for everything else.
 
-[source, python]
+[source, python, session=true]
 ----
 # List all known jobs
 handles = gds.v2.jobs.list()

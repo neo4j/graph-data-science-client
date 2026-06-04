@@ -80,8 +80,9 @@ def block_to_raw_code(block)
 end
 
 def filter_source_blocks(source_blocks, scope)
-  testable_source_blocks = source_blocks.select { |b| !b.has_role?('no-test') && b.attr('language') == 'python' }
+  testable_source_blocks = source_blocks.select { |b| !b.has_role?('no-test') && b.attr('language') == 'python'}
   testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'enterprise' } unless scope == :enterprise
+  testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'session' }
 
   if scope == :networkx
     testable_source_blocks.select { |b| b.attr? 'networkx' }
