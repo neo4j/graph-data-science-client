@@ -7,6 +7,11 @@
 ## New features
 
 * Added `gds.v2.graph.project_native` to support native remote projections.
+* New none-blocking API for sessions
+  * Added `_async` variants of projection methods for non blocking projection
+  * `compute` methods start computations and return `JobHandle`
+  * Write back from job handles returns a `WriteJobHandle`
+  * Added `gds.v2.jobs.list()` and `gds.v2.jobs.get()` to list and retrieve jobs
 
 ## Bug fixes
 
