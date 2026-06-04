@@ -118,6 +118,14 @@ class AuthenticatedArrowClient:
 
         self._flight_client: flight.FlightClient = self._instantiate_flight_client()
 
+    def _reconnect(self) -> None:
+        try:
+            self._flight_client.close()
+        except Exception:
+            pass
+
+        self._flight_client = self._instantiate_flight_client()
+
     def connection_info(self) -> ConnectionInfo:
         """
         Returns the host and port of the GDS Arrow server.
@@ -156,10 +164,14 @@ class AuthenticatedArrowClient:
 
         @self._retry_config.decorator(operation_name="Request token", logger=self._logger)
         def auth_with_retry() -> None:
-            client = self._flight_client
-            if self._auth:
-                auth_pair = self._auth.auth_pair()
-                client.authenticate_basic_token(auth_pair[0], auth_pair[1])
+            try:
+                client = self._flight_client
+                if self._auth:
+                    auth_pair = self._auth.auth_pair()
+                    client.authenticate_basic_token(auth_pair[0], auth_pair[1])
+            except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+                self._reconnect()
+                raise
 
         if self._auth:
             auth_with_retry()
@@ -178,9 +190,13 @@ class AuthenticatedArrowClient:
     def do_action_with_retry(self, endpoint: str, payload: bytes | dict[str, Any]) -> list[Result]:
         @self._retry_config.decorator(operation_name="Send action", logger=self._logger)
         def run_with_retry() -> list[Result]:
-            # the Flight response error code is only checked on iterator consumption
-            # we eagerly collect iterator here to trigger retry in case of an error
-            return list(self.do_action(endpoint, payload))
+            try:
+                # the Flight response error code is only checked on iterator consumption
+                # we eagerly collect iterator here to trigger retry in case of an error
+                return list(self.do_action(endpoint, payload))
+            except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+                self._reconnect()
+                raise
 
         return run_with_retry()
 
@@ -192,7 +208,11 @@ class AuthenticatedArrowClient:
     ) -> tuple[flight.FlightStreamWriter, flight.FlightMetadataReader]:
         @self._retry_config.decorator(operation_name="Do put", logger=self._logger)
         def run_with_retry() -> tuple[flight.FlightStreamWriter, flight.FlightMetadataReader]:
-            return self._flight_client.do_put(descriptor, schema)  # type: ignore
+            try:
+                return self._flight_client.do_put(descriptor, schema)  # type: ignore
+            except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+                self._reconnect()
+                raise
 
         return run_with_retry()
 

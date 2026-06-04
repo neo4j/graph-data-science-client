@@ -1,5 +1,6 @@
 import certifi
 import pytest
+from pyarrow.flight import FlightUnavailableError
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
@@ -58,3 +59,28 @@ def test_create_windows(
 
     assert spy.call_count == 1
     assert client.connection_info()
+
+
+def test_do_action_with_retry_reconnects_on_retryable_error(
+    retry_config_v2: RetryConfigV2, mocker: MockerFixture
+) -> None:
+    first_client = mocker.Mock()
+    first_client.do_action.side_effect = FlightUnavailableError("Flight server is unavailable")
+
+    second_client = mocker.Mock()
+    expected_result = mocker.Mock()
+    second_client.do_action.return_value = iter([expected_result])
+
+    instantiate = mocker.patch.object(
+        AuthenticatedArrowClient,
+        "_instantiate_flight_client",
+        side_effect=[first_client, second_client],
+    )
+
+    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
+
+    result = client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
+
+    assert result == [expected_result]
+    assert instantiate.call_count == 2
+    first_client.close.assert_called_once()
