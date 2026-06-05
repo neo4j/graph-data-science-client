@@ -188,7 +188,7 @@ def test_wait_for_job_progress_bar_quantive(mocker: MockerFixture) -> None:
     mock_client.do_action_with_retry = do_action_with_retry
 
     with StringIO() as pbarOutputStream:
-        client = JobClient(progress_bar_options={"file": pbarOutputStream, "mininterval": 0})
+        client = JobClient(progress_bar_options={"file": pbarOutputStream, "mininterval": 0, "ascii": True})
         client.wait_for_job(mock_client, job_id, show_progress=True)
 
         progress_output = pbarOutputStream.getvalue().split("\r")
