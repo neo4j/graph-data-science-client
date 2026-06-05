@@ -1,4 +1,4 @@
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
+from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.session.aura_api import AuraApi
 
 

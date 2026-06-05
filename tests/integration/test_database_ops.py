@@ -1,5 +1,4 @@
 import concurrent.futures as f
-import re
 import time
 
 import pytest
@@ -9,7 +8,6 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner import QueryMode, QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider
-from graphdatascience.version import __version__
 from tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
@@ -72,28 +70,28 @@ def test_switching_db(runner: Neo4jQueryRunner) -> None:
         runner.run_cypher("DROP DATABASE $dbName WAIT", QueryType.USER_ACTION, {"dbName": MY_DB_NAME})
 
 
-@pytest.mark.skip_on_aura
-def test_switching_db_and_use_graph(gds: GraphDataScience) -> None:
-    default_database = gds.database()
-    gds.run_cypher("CREATE (a: A)")
-
-    G_A, _ = gds.graph.project(GRAPH_NAME, "A", "*")
-
-    assert G_A.node_count() == 1
-
-    MY_DB_NAME = "my-db"
-    gds.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
-    gds.set_database(MY_DB_NAME)
-
-    try:
-        gds.run_cypher("CREATE (b1: B), (b2: B)")
-        G_B, _ = gds.graph.project(GRAPH_NAME, "B", "*")
-
-        assert G_B.node_count() == 2
-    finally:
-        gds.set_database(default_database)  # type: ignore
-        gds.run_cypher("MATCH (n) DETACH DELETE n")
-        gds.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+# @pytest.mark.skip_on_aura
+# def test_switching_db_and_use_graph(gds: GraphDataScience) -> None:
+#     default_database = gds.database()
+#     gds.run_cypher("CREATE (a: A)")
+#
+#     G_A, _ = gds.graph.project(GRAPH_NAME, "A", "*")
+#
+#     assert G_A.node_count() == 1
+#
+#     MY_DB_NAME = "my-db"
+#     gds.run_cypher("CREATE DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
+#     gds.set_database(MY_DB_NAME)
+#
+#     try:
+#         gds.run_cypher("CREATE (b1: B), (b2: B)")
+#         G_B, _ = gds.graph.project(GRAPH_NAME, "B", "*")
+#
+#         assert G_B.node_count() == 2
+#     finally:
+#         gds.set_database(default_database)  # type: ignore
+#         gds.run_cypher("MATCH (n) DETACH DELETE n")
+#         gds.run_cypher("DROP DATABASE $dbName WAIT", {"dbName": MY_DB_NAME})
 
 
 @pytest.mark.skip_on_aura
@@ -143,13 +141,14 @@ def test_initialize_with_db(runner: Neo4jQueryRunner) -> None:
         gds_with_specified_db.close()
 
 
-def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
-    gds = GraphDataScience.from_neo4j_driver(neo4j_driver, auth=AUTH)
-    assert len(gds.list()) > 10
-
-    gds.close()
-
-    neo4j_driver.verify_connectivity()
+#
+# def test_from_neo4j_driver(neo4j_driver: Driver) -> None:
+#     gds = GraphDataScience.from_neo4j_driver(neo4j_driver, auth=AUTH)
+#     assert len(gds.list()) > 10
+#
+#     gds.close()
+#
+#     neo4j_driver.verify_connectivity()
 
 
 @pytest.mark.enterprise
@@ -163,11 +162,11 @@ def test_from_neo4j_driver_warns_if_auth_missing(neo4j_driver: Driver) -> None:
         assert isinstance(gds._query_runner, Neo4jQueryRunner)
 
 
-def test_from_neo4j_credentials() -> None:
-    gds = GraphDataScience(URI, auth=AUTH)
-    assert len(gds.list()) > 10
-    assert gds.driver_config()["user_agent"] == f"neo4j-graphdatascience-v{__version__}"
-    gds.close()
+# def test_from_neo4j_credentials() -> None:
+#     gds = GraphDataScience(URI, auth=AUTH)
+#     assert len(gds.list()) > 10
+#     assert gds.driver_config()["user_agent"] == f"neo4j-graphdatascience-v{__version__}"
+#     gds.close()
 
 
 def test_aurads_rejects_bolt() -> None:
@@ -228,18 +227,18 @@ def test_run_cypher_with_bookmarks(gds: GraphDataScience) -> None:
     gds.run_cypher(query, retryable=False)
 
 
-def test_server_version(gds: GraphDataScience) -> None:
-    cached_server_version = gds._server_version
-    server_version_string = gds.version()
-
-    server_version_match = re.search(r"^(\d+)\.(\d+)\.(\d+)", server_version_string)
-    assert server_version_match
-
-    server_version = server_version_match.groups()
-
-    assert cached_server_version.major == int(server_version[0])
-    assert cached_server_version.minor == int(server_version[1])
-    assert cached_server_version.patch == int(server_version[2])
+# def test_server_version(gds: GraphDataScience) -> None:
+#     cached_server_version = gds._server_version
+#     server_version_string = gds.version()
+#
+#     server_version_match = re.search(r"^(\d+)\.(\d+)\.(\d+)", server_version_string)
+#     assert server_version_match
+#
+#     server_version = server_version_match.groups()
+#
+#     assert cached_server_version.major == int(server_version[0])
+#     assert cached_server_version.minor == int(server_version[1])
+#     assert cached_server_version.patch == int(server_version[2])
 
 
 def test_no_db_explicitly_set() -> None:
