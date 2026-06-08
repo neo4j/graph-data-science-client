@@ -5,15 +5,15 @@ from typing import Any
 
 from pandas import DataFrame
 
+from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.retry_utils.retry_config import RetryConfigV2
 
+from ..arrow_client.arrow_info import ArrowInfo
 from ..call_parameters import CallParameters
-from ..query_runner.arrow_info import ArrowInfo
 from ..server_version.server_version import ServerVersion
 from .arrow_graph_constructor import ArrowGraphConstructor
 from .graph_constructor import GraphConstructor

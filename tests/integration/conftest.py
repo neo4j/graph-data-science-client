@@ -6,10 +6,9 @@ import neo4j.exceptions
 import pytest
 from neo4j import Driver, GraphDatabase
 
+from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
@@ -136,41 +135,6 @@ def id_warning_pattern() -> str:
         return r"(.*feature deprecated without replacement\. id is deprecated and will be removed without a replacement.*)|(.*feature deprecated with replacement\. id is deprecated.*)"
     else:
         return r".*The query used a deprecated function.*[`']id[`'].*"
-
-
-@pytest.fixture(autouse=True)
-def clean_up(gds: GraphDataScience) -> Generator[None, None, None]:
-    yield
-
-    res = gds.graph.list()
-    for graph_name in res["graphName"]:
-        gds.graph.drop(graph_name, failIfMissing=True)
-
-    res = gds.pipeline.list() if gds.server_version() >= ServerVersion(2, 5, 0) else gds.beta.pipeline.list()
-    for pipeline_name in res["pipelineName"]:
-        gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
-
-    if gds.server_version() >= ServerVersion(2, 5, 0):
-        model_names = gds.model.list()["modelName"]
-    else:
-        model_names = gds.beta.model.list()["modelInfo"].apply(func=lambda row: row["modelName"])
-
-    for model_name in model_names:
-        model = gds.model.get(model_name)
-        if model.stored():
-            if gds.server_version() >= ServerVersion(2, 5, 0):
-                gds.model.delete(model)
-            else:
-                gds.alpha.model.delete(model)
-        if model.exists():
-            model.drop(failIfMissing=True)
-
-    try:
-        # for the session setup there should be no data
-        if gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() > 0:
-            gds.run_cypher("MATCH (n) DETACH DELETE (n)")
-    except neo4j.exceptions.ClientError as e:
-        print(e)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:

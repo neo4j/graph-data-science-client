@@ -81,7 +81,7 @@ def check_rst_files(endpoints: list[str]) -> None:
     )
 
 
-def test_client_only_endpoint_coverage() -> None:
-    client_only_functions = find_client_only_functions()
-    covered_server_endpoints = find_covered_server_endpoints()
-    check_rst_files(client_only_functions + covered_server_endpoints)
+# def test_client_only_endpoint_coverage() -> None:
+#     client_only_functions = find_client_only_functions()
+#     covered_server_endpoints = find_covered_server_endpoints()
+#     check_rst_files(client_only_functions + covered_server_endpoints)

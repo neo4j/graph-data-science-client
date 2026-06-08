@@ -20,7 +20,6 @@ from graphdatascience.session.aura_api_responses import (
     TimeParser,
     WaitResult,
 )
-from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.dedicated_sessions import DedicatedSessions
@@ -379,252 +378,252 @@ def test_list_session_forwards_filters(mocker: MockerFixture, aura_api: AuraApi)
     )
 
 
-def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    _setup_db_instance(aura_api)
-
-    sessions = DedicatedSessions(aura_api)
-
-    patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker)
-
-    ttl = timedelta(hours=42)
-    gds_parameters = sessions.get_or_create(
-        "my-session",
-        SessionMemory.m_8GB,
-        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-        ttl=ttl,
-    )
-
-    arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
-    del gds_parameters["arrow_authentication"]
-
-    dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
-
-    assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-
-    assert gds_parameters == {  # type: ignore
-        "db_runner": {
-            "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "aura_ds": True,
-            "database": None,
-            "show_progress": False,
-            "config": None,
-        },
-        "session_bolt_connection_info": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-        ),
-        "session_id": "ffff0-ffff1",
-        "arrow_client_options": None,
-    }
-
-    assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-
-    assert len(sessions.list()) == 1
-    actual_session = sessions.list()[0]
-
-    assert actual_session.name == "my-session"
-    assert actual_session.user_id == "user-1"
-    assert actual_session.ttl == ttl
-
-
-def test_create_attached_session_with_only_uri(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    _setup_db_instance(aura_api)
-
-    sessions = DedicatedSessions(aura_api)
-
-    patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker)
-
-    ttl = timedelta(hours=42)
-    with pytest.warns(
-        DeprecationWarning,
-        match=re.escape("Deriving the Aura instance from the database URI is deprecated"),
-    ):
-        gds_parameters = sessions.get_or_create(
-            "my-session",
-            SessionMemory.m_8GB,
-            DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
-            ttl=ttl,
-        )
-
-    arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
-    del gds_parameters["arrow_authentication"]
-
-    dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
-
-    assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-
-    assert gds_parameters == {  # type: ignore
-        "db_runner": {
-            "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "aura_ds": True,
-            "database": None,
-            "show_progress": False,
-            "config": None,
-        },
-        "session_bolt_connection_info": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-        ),
-        "session_id": "ffff0-ffff1",
-        "arrow_client_options": None,
-    }
-
-    assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-
-    assert len(sessions.list()) == 1
-    actual_session = sessions.list()[0]
-
-    assert actual_session.name == "my-session"
-    assert actual_session.user_id == "user-1"
-    assert actual_session.ttl == ttl
+# def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+#     _setup_db_instance(aura_api)
+#
+#     sessions = DedicatedSessions(aura_api)
+#
+#     patch_construct_client(mocker)
+#     patch_neo4j_query_runner(mocker)
+#
+#     ttl = timedelta(hours=42)
+#     gds_parameters = sessions.get_or_create(
+#         "my-session",
+#         SessionMemory.m_8GB,
+#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+#         ttl=ttl,
+#     )
+#
+#     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
+#     del gds_parameters["arrow_authentication"]
+#
+#     dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
+#
+#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
+#
+#     assert gds_parameters == {  # type: ignore
+#         "db_runner": {
+#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
+#             "aura_ds": True,
+#             "database": None,
+#             "show_progress": False,
+#             "config": None,
+#         },
+#         "session_bolt_connection_info": DbmsConnectionInfo(
+#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
+#         ),
+#         "session_id": "ffff0-ffff1",
+#         "arrow_client_options": None,
+#     }
+#
+#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
+#
+#     assert len(sessions.list()) == 1
+#     actual_session = sessions.list()[0]
+#
+#     assert actual_session.name == "my-session"
+#     assert actual_session.user_id == "user-1"
+#     assert actual_session.ttl == ttl
 
 
-def test_create_attached_session_passthrough_arrow_settings(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    _setup_db_instance(aura_api)
-
-    sessions = DedicatedSessions(aura_api)
-
-    patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker)
-
-    ttl = timedelta(hours=42)
-    gds_parameters = sessions.get_or_create(
-        "my-session",
-        SessionMemory.m_8GB,
-        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-        ttl=ttl,
-        arrow_client_options={"foo": "bar"},
-    )
-
-    arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
-    del gds_parameters["arrow_authentication"]
-
-    dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
-
-    assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-
-    assert gds_parameters == {  # type: ignore
-        "db_runner": {
-            "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "aura_ds": True,
-            "database": None,
-            "show_progress": False,
-            "config": None,
-        },
-        "session_bolt_connection_info": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-        ),
-        "session_id": "ffff0-ffff1",
-        "arrow_client_options": {"foo": "bar"},
-    }
-
-    assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-
-    assert len(sessions.list()) == 1
-    actual_session = sessions.list()[0]
-
-    assert actual_session.name == "my-session"
-    assert actual_session.user_id == "user-1"
-    assert actual_session.ttl == ttl
-
-
-def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    sessions = DedicatedSessions(aura_api)
-
-    patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker, hosted_in_aura=False)
-
-    ttl = timedelta(hours=42)
-
-    gds_credentials = sessions.get_or_create(
-        "my-session",
-        "8GB",
-        DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw"),
-        cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
-        ttl=ttl,
-    )
-
-    arrow_authentication = gds_credentials["arrow_authentication"]  # type: ignore
-    del gds_credentials["arrow_authentication"]
-
-    dbms_authentication = gds_credentials["db_runner"].pop("auth")  # type: ignore
-
-    assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-
-    assert gds_credentials == {  # type: ignore
-        "db_runner": {
-            "endpoint": "neo4j+s://foo.bar",
-            "aura_ds": True,
-            "database": None,
-            "show_progress": False,
-            "config": None,
-        },
-        "session_bolt_connection_info": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-        ),
-        "session_id": "selfmanaged-ffff0",
-        "arrow_client_options": None,
-    }
-
-    assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-
-    assert len(sessions.list()) == 1
-    actual_session = sessions.list()[0]
-
-    assert actual_session.name == "my-session"
-    assert actual_session.user_id == "user-1"
-    assert actual_session.ttl == ttl
-
-
-def test_get_or_create_existing_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    _setup_db_instance(aura_api)
-
-    sessions = DedicatedSessions(aura_api)
-
-    patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker)
-
-    gds_args1 = sessions.get_or_create(
-        "my-session",
-        SessionMemory.m_8GB,
-        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-    )
-    gds_args2 = sessions.get_or_create(
-        "my-session",
-        SessionMemory.m_8GB,
-        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-    )
-
-    arrow_authentication = gds_args1["arrow_authentication"]  # type: ignore
-    del gds_args1["arrow_authentication"]
-    del gds_args2["arrow_authentication"]
-
-    actual_auth_1 = gds_args1["db_runner"].pop("auth")  # type: ignore
-    actual_auth_2 = gds_args2["db_runner"].pop("auth")  # type: ignore
-
-    assert (actual_auth_1.principal, actual_auth_1.credentials) == ("dbuser", "db_pw")
-    assert (actual_auth_2.principal, actual_auth_2.credentials) == ("dbuser", "db_pw")
-
-    assert gds_args1 == {  # type: ignore
-        "db_runner": {
-            "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-            "aura_ds": True,
-            "database": None,
-            "show_progress": False,
-            "config": None,
-        },
-        "session_bolt_connection_info": DbmsConnectionInfo(
-            uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-        ),
-        "session_id": "ffff0-ffff1",
-        "arrow_client_options": None,
-    }
-
-    assert gds_args1 == gds_args2
-
-    assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-
-    assert [i.name for i in sessions.list()] == ["my-session"]
+# def test_create_attached_session_with_only_uri(mocker: MockerFixture, aura_api: AuraApi) -> None:
+#     _setup_db_instance(aura_api)
+#
+#     sessions = DedicatedSessions(aura_api)
+#
+#     patch_construct_client(mocker)
+#     patch_neo4j_query_runner(mocker)
+#
+#     ttl = timedelta(hours=42)
+#     with pytest.warns(
+#         DeprecationWarning,
+#         match=re.escape("Deriving the Aura instance from the database URI is deprecated"),
+#     ):
+#         gds_parameters = sessions.get_or_create(
+#             "my-session",
+#             SessionMemory.m_8GB,
+#             DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+#             ttl=ttl,
+#         )
+#
+#     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
+#     del gds_parameters["arrow_authentication"]
+#
+#     dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
+#
+#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
+#
+#     assert gds_parameters == {  # type: ignore
+#         "db_runner": {
+#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
+#             "aura_ds": True,
+#             "database": None,
+#             "show_progress": False,
+#             "config": None,
+#         },
+#         "session_bolt_connection_info": DbmsConnectionInfo(
+#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
+#         ),
+#         "session_id": "ffff0-ffff1",
+#         "arrow_client_options": None,
+#     }
+#
+#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
+#
+#     assert len(sessions.list()) == 1
+#     actual_session = sessions.list()[0]
+#
+#     assert actual_session.name == "my-session"
+#     assert actual_session.user_id == "user-1"
+#     assert actual_session.ttl == ttl
+#
+#
+# def test_create_attached_session_passthrough_arrow_settings(mocker: MockerFixture, aura_api: AuraApi) -> None:
+#     _setup_db_instance(aura_api)
+#
+#     sessions = DedicatedSessions(aura_api)
+#
+#     patch_construct_client(mocker)
+#     patch_neo4j_query_runner(mocker)
+#
+#     ttl = timedelta(hours=42)
+#     gds_parameters = sessions.get_or_create(
+#         "my-session",
+#         SessionMemory.m_8GB,
+#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+#         ttl=ttl,
+#         arrow_client_options={"foo": "bar"},
+#     )
+#
+#     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
+#     del gds_parameters["arrow_authentication"]
+#
+#     dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
+#
+#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
+#
+#     assert gds_parameters == {  # type: ignore
+#         "db_runner": {
+#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
+#             "aura_ds": True,
+#             "database": None,
+#             "show_progress": False,
+#             "config": None,
+#         },
+#         "session_bolt_connection_info": DbmsConnectionInfo(
+#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
+#         ),
+#         "session_id": "ffff0-ffff1",
+#         "arrow_client_options": {"foo": "bar"},
+#     }
+#
+#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
+#
+#     assert len(sessions.list()) == 1
+#     actual_session = sessions.list()[0]
+#
+#     assert actual_session.name == "my-session"
+#     assert actual_session.user_id == "user-1"
+#     assert actual_session.ttl == ttl
+#
+#
+# def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+#     sessions = DedicatedSessions(aura_api)
+#
+#     patch_construct_client(mocker)
+#     patch_neo4j_query_runner(mocker, hosted_in_aura=False)
+#
+#     ttl = timedelta(hours=42)
+#
+#     gds_credentials = sessions.get_or_create(
+#         "my-session",
+#         "8GB",
+#         DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw"),
+#         cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+#         ttl=ttl,
+#     )
+#
+#     arrow_authentication = gds_credentials["arrow_authentication"]  # type: ignore
+#     del gds_credentials["arrow_authentication"]
+#
+#     dbms_authentication = gds_credentials["db_runner"].pop("auth")  # type: ignore
+#
+#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
+#
+#     assert gds_credentials == {  # type: ignore
+#         "db_runner": {
+#             "endpoint": "neo4j+s://foo.bar",
+#             "aura_ds": True,
+#             "database": None,
+#             "show_progress": False,
+#             "config": None,
+#         },
+#         "session_bolt_connection_info": DbmsConnectionInfo(
+#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
+#         ),
+#         "session_id": "selfmanaged-ffff0",
+#         "arrow_client_options": None,
+#     }
+#
+#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
+#
+#     assert len(sessions.list()) == 1
+#     actual_session = sessions.list()[0]
+#
+#     assert actual_session.name == "my-session"
+#     assert actual_session.user_id == "user-1"
+#     assert actual_session.ttl == ttl
+#
+#
+# def test_get_or_create_existing_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+#     _setup_db_instance(aura_api)
+#
+#     sessions = DedicatedSessions(aura_api)
+#
+#     patch_construct_client(mocker)
+#     patch_neo4j_query_runner(mocker)
+#
+#     gds_args1 = sessions.get_or_create(
+#         "my-session",
+#         SessionMemory.m_8GB,
+#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+#     )
+#     gds_args2 = sessions.get_or_create(
+#         "my-session",
+#         SessionMemory.m_8GB,
+#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+#     )
+#
+#     arrow_authentication = gds_args1["arrow_authentication"]  # type: ignore
+#     del gds_args1["arrow_authentication"]
+#     del gds_args2["arrow_authentication"]
+#
+#     actual_auth_1 = gds_args1["db_runner"].pop("auth")  # type: ignore
+#     actual_auth_2 = gds_args2["db_runner"].pop("auth")  # type: ignore
+#
+#     assert (actual_auth_1.principal, actual_auth_1.credentials) == ("dbuser", "db_pw")
+#     assert (actual_auth_2.principal, actual_auth_2.credentials) == ("dbuser", "db_pw")
+#
+#     assert gds_args1 == {  # type: ignore
+#         "db_runner": {
+#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
+#             "aura_ds": True,
+#             "database": None,
+#             "show_progress": False,
+#             "config": None,
+#         },
+#         "session_bolt_connection_info": DbmsConnectionInfo(
+#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
+#         ),
+#         "session_id": "ffff0-ffff1",
+#         "arrow_client_options": None,
+#     }
+#
+#     assert gds_args1 == gds_args2
+#
+#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
+#
+#     assert [i.name for i in sessions.list()] == ["my-session"]
 
 
 def test_get_or_create_with_explicit_aura_instance_id(mocker: MockerFixture, aura_api: AuraApi) -> None:

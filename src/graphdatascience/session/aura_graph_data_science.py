@@ -4,19 +4,10 @@ from typing import Any
 
 from pandas import DataFrame
 
+from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
+from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
-from graphdatascience.call_builder import IndirectCallBuilder
-from graphdatascience.endpoints import (
-    AlphaRemoteEndpoints,
-    BetaSessionEndpoints,
-    DirectSessionEndpoints,
-)
-from graphdatascience.error.uncallable_namespace import UncallableNamespace
-from graphdatascience.graph.graph_remote_proc_runner import GraphRemoteProcRunner
-from graphdatascience.procedure_surface.api.model import ModelCatalogEndpoints
-from graphdatascience.query_runner.arrow_authentication import ArrowAuthentication
-from graphdatascience.query_runner.arrow_info import ArrowInfo
 from graphdatascience.query_runner.arrow_query_runner import ArrowQueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -28,10 +19,9 @@ from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
-from graphdatascience.utils.util_remote_proc_runner import UtilRemoteProcRunner
 
 
-class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
+class AuraGraphDataScience:
     """
     Primary API class for interacting with Neo4j database + Graph Data Science Session.
     Always bind this object to a variable called `gds`.
@@ -127,8 +117,6 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
         self._v2_endpoints = v2_endpoints
         self._authenticated_arrow_client = authenticated_arrow_client
 
-        super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
-
     def verify_connectivity(self) -> None:
         """
         Verifies that Aura Graph Analytics Session is ready and the connection to the Aura Graph Analytics Session can be established.
@@ -179,41 +167,12 @@ class AuraGraphDataScience(DirectSessionEndpoints, UncallableNamespace):
             )
 
     @property
-    def graph(self) -> GraphRemoteProcRunner:
-        return GraphRemoteProcRunner(
-            self._query_runner,
-            self.arrow_client(),
-            self._db_query_runner,
-            f"{self._namespace}.graph",
-            self._server_version,
-        )
-
-    @property
-    def util(self) -> UtilRemoteProcRunner:
-        return UtilRemoteProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
-
-    @property
-    def alpha(self) -> AlphaRemoteEndpoints:
-        return AlphaRemoteEndpoints(self._query_runner, "gds.alpha", self._server_version)
-
-    @property
-    def beta(self) -> BetaSessionEndpoints:
-        return BetaSessionEndpoints(self._query_runner, "gds.beta", self._server_version)
-
-    @property
     def v2(self) -> SessionV2Endpoints:
         """
         Return preview v2 endpoints. These endpoints may change without warning.
         These endpoints are a preview of the API for the next major version of this library.
         """
         return self._v2_endpoints
-
-    @property
-    def model(self) -> ModelCatalogEndpoints:
-        return self.v2.model
-
-    def __getattr__(self, attr: str) -> IndirectCallBuilder:
-        return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
 
     def arrow_client(self) -> GdsArrowClient:
         """

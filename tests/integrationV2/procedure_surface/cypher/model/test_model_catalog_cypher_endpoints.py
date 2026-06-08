@@ -27,7 +27,7 @@ def sample_graph(gds: GraphDataScience) -> Generator[str, None, None]:
         (c)-[:REL]->(a)
         """
     )
-    G, _ = gds.graph.project("model_catalog_cypher_g", {"Node": {"properties": ["age"]}}, "REL")
+    G, _ = gds.v2.graph.project("model_catalog_cypher_g", {"Node": {"properties": ["age"]}}, "REL")
 
     yield G.name()
 

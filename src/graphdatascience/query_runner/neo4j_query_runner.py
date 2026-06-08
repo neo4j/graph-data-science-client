@@ -16,7 +16,6 @@ from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
 
 from ..call_parameters import CallParameters
-from ..error.endpoint_suggester import generate_suggestive_error_message
 from ..error.gds_not_installed import GdsNotFound
 from ..error.unable_to_connect import UnableToConnectError
 from ..semantic_version.semantic_version import SemanticVersion
@@ -201,10 +200,7 @@ class Neo4jQueryRunner(QueryRunner):
             try:
                 result = session.run(self._wrap_query(query, query_type), params)
             except Exception as e:
-                if custom_error:
-                    self.handle_driver_exception(session, e)
-                else:
-                    raise e
+                raise e
 
             self.__configure_warnings_filter()
 
@@ -258,11 +254,7 @@ class Neo4jQueryRunner(QueryRunner):
 
             return result
         except Exception as e:
-            if custom_error:
-                Neo4jQueryRunner.handle_driver_exception(self._driver, e)
-                raise e
-            else:
-                raise e
+            raise e
 
     def call_function(
         self,
@@ -421,30 +413,6 @@ class Neo4jQueryRunner(QueryRunner):
             show_progress=self._show_progress,
             instance_description=self._instance_description,
         )
-
-    @staticmethod
-    def handle_driver_exception(cypher_executor: neo4j.Session | neo4j.Driver, e: Exception) -> None:
-        reg_gds_hit = re.search(
-            r"There is no procedure with the name `(gds(?:\.\w+)+)` registered for this database instance",
-            str(e),
-        )
-        if not reg_gds_hit:
-            raise e
-
-        requested_endpoint = reg_gds_hit.group(1)
-
-        if isinstance(cypher_executor, neo4j.Session):
-            list_result = cypher_executor.run("CALL gds.list() YIELD name")
-            all_endpoints = list_result.to_df()["name"].tolist()
-        elif isinstance(cypher_executor, neo4j.Driver):
-            result = cypher_executor.execute_query("CALL gds.list() YIELD name", result_transformer_=neo4j.Result.to_df)
-            all_endpoints = result["name"].tolist()
-        else:
-            raise TypeError(
-                f"Expected cypher_executor to be a neo4j.Session or neo4j.Driver, got {type(cypher_executor)}"
-            )
-
-        raise SyntaxError(generate_suggestive_error_message(requested_endpoint, all_endpoints)) from e
 
     @retry(retry=retry_if_exception(is_retryable_neo4j_exception), stop=stop_after_delay(60), wait=wait_fixed(2))
     def verify_connectivity(self) -> None:

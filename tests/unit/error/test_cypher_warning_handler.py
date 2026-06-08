@@ -2,14 +2,10 @@ import warnings
 
 import pytest
 
-from graphdatascience.caller_base import CallerBase
 from graphdatascience.error.cypher_warning_handler import filter_id_func_deprecation_warning
 
 
-class DummyCaller(CallerBase):
-    def __init__(self) -> None:
-        super().__init__(None, None, None)  # type: ignore
-
+class DummyCaller:
     @filter_id_func_deprecation_warning()
     def func_with_warning(self) -> str:
         warnings.warn(DeprecationWarning("The query used a deprecated function: `id`."))

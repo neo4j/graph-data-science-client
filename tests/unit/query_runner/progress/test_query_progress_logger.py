@@ -122,7 +122,7 @@ def test_progress_bar_quantitive_output() -> None:
         qpl = QueryProgressLogger(
             simple_run_cypher,
             lambda: ServerVersion(3, 0, 0),
-            progress_bar_options={"file": pbarOutputStream, "mininterval": 0},
+            progress_bar_options={"file": pbarOutputStream, "mininterval": 0, "ascii": True},
         )
 
         pbar = qpl._init_pbar(TaskWithProgress("test task", "0%", "PENDING", ""))

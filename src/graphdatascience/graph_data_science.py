@@ -9,26 +9,20 @@ from neo4j import Driver
 from pandas import DataFrame
 
 from graphdatascience.plugin_v2_endpoints import PluginV2Endpoints
-from graphdatascience.query_runner.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.query_runner.query_mode import QueryMode
-from graphdatascience.topological_lp.topological_lp_runner import TopologicalLPRunner
 
+from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from .arrow_client.arrow_client_options_util import disable_server_verification, set_tls_root_certs
-from .call_builder import IndirectCallBuilder
-from .endpoints import AlphaEndpoints, BetaEndpoints, DirectEndpoints
-from .error.uncallable_namespace import UncallableNamespace
-from .graph.graph_proc_runner import GraphProcRunner
-from .query_runner.arrow_info import ArrowInfo
+from .arrow_client.arrow_info import ArrowInfo
 from .query_runner.arrow_query_runner import ArrowQueryRunner
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .query_runner.query_type import QueryType
 from .server_version.server_version import ServerVersion
-from .utils.util_proc_runner import UtilProcRunner
 from .version import __min_server_version__
 
 
-class GraphDataScience(DirectEndpoints, UncallableNamespace):
+class GraphDataScience:
     """
     Primary API class for the Neo4j Graph Data Science Python Client.
     Always bind this object to a variable called `gds`.
@@ -152,30 +146,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
             self._v2_endpoints = None
 
         self._query_runner.set_show_progress(show_progress)
-        super().__init__(self._query_runner, namespace="gds", server_version=self._server_version)
-
-    @property
-    def graph(self) -> GraphProcRunner:
-        return GraphProcRunner(self._query_runner, f"{self._namespace}.graph", self._server_version)
-
-    @property
-    def util(self) -> UtilProcRunner:
-        return UtilProcRunner(self._query_runner, f"{self._namespace}.util", self._server_version)
-
-    @property
-    def alpha(self) -> AlphaEndpoints:
-        return AlphaEndpoints(self._query_runner, "gds.alpha", self._server_version)
-
-    @property
-    def linkprediction(self) -> TopologicalLPRunner:
-        return TopologicalLPRunner(self._query_runner, f"{self._namespace}.linkprediction", self._server_version)
-
-    @property
-    def beta(self) -> BetaEndpoints:
-        return BetaEndpoints(self._query_runner, "gds.beta", self._server_version)
-
-    def __getattr__(self, attr: str) -> IndirectCallBuilder:
-        return IndirectCallBuilder(self._query_runner, f"gds.{attr}", self._server_version)
 
     def set_database(self, database: str) -> None:
         """
@@ -391,3 +361,6 @@ class GraphDataScience(DirectEndpoints, UncallableNamespace):
         traceback: TracebackType | None,
     ) -> None:
         self.close()
+
+    def server_version(self) -> ServerVersion:
+        return self._server_version
