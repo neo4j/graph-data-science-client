@@ -2,7 +2,7 @@ import inspect
 import re
 import typing
 from collections import OrderedDict
-from types import MethodType, UnionType
+from types import FunctionType, MethodType, UnionType
 from typing import Any
 
 from pandas import DataFrame
@@ -182,8 +182,10 @@ EXPECTED_RETURN_FIELD_ALIASES = {
 EXPECTED_IGNORED_RETURN_FIELDS = {GraphInfo: ["schema"], GraphInfoWithDegrees: ["schema"]}
 
 
-def method_str(method: MethodType) -> str:
-    return f"{method.__self__.__class__.__name__}.{method.__name__}"
+def method_str(method: MethodType | FunctionType) -> str:
+    if isinstance(method, MethodType):
+        return f"{method.__self__.__class__.__name__}.{method.__name__}"
+    return method.__qualname__
 
 
 def to_snake(camel: str) -> str:
@@ -206,19 +208,42 @@ def pythonic_endpoint_name(
     return ".".join(to_snake(part) for part in endpoint.split("."))
 
 
-def resolve_callable_object(endpoints: object, endpoint: str) -> MethodType | None:
+def resolve_callable_object(endpoints: type, endpoint: str) -> MethodType | FunctionType | None:
     resolved_object: Any = endpoints
-    for endpoint_part in endpoint.split("."):
-        if not hasattr(resolved_object, endpoint_part):
-            return None
 
-        resolved_object = getattr(resolved_object, endpoint_part)
+    for endpoint_part in endpoint.split("."):
+        if inspect.isclass(resolved_object):
+            static_attr = inspect.getattr_static(resolved_object, endpoint_part, None)
+            if static_attr is None:
+                return None
+            if isinstance(static_attr, property):
+                hints = typing.get_type_hints(static_attr.fget)
+                next_type = hints.get("return")
+                if next_type is None or not inspect.isclass(next_type):
+                    return None
+                resolved_object = next_type
+            elif inspect.isfunction(static_attr):
+                resolved_object = static_attr
+            else:
+                return None
+        else:
+            if not hasattr(resolved_object, endpoint_part):
+                return None
+            resolved_object = getattr(resolved_object, endpoint_part)
 
     if not callable(resolved_object):
         raise ValueError(f"Resolved object {resolved_object} for endpoint {endpoint} is not callable")
 
     if isinstance(resolved_object, MethodType):
         return resolved_object
+
+    if inspect.isfunction(resolved_object):
+        return resolved_object
+
+    if inspect.isclass(resolved_object):
+        static_call = inspect.getattr_static(resolved_object, "__call__", None)
+        if inspect.isfunction(static_call):
+            return static_call
 
     call_method = getattr(resolved_object, "__call__", None)
     if isinstance(call_method, MethodType):
@@ -227,7 +252,7 @@ def resolve_callable_object(endpoints: object, endpoint: str) -> MethodType | No
     raise ValueError(f"Resolved callable object {resolved_object} for endpoint {endpoint} is not a method")
 
 
-def verify_return_fields(callable_object: MethodType, expected_return_fields: list[ReturnField]) -> None:
+def verify_return_fields(callable_object: MethodType | FunctionType, expected_return_fields: list[ReturnField]) -> None:
     return_annotation: Any | None = typing.get_type_hints(callable_object).get("return")
 
     for expected, override in RETURN_CLASS_OVERRIDES.items():
@@ -294,7 +319,7 @@ def verify_return_fields(callable_object: MethodType, expected_return_fields: li
 
 
 def verify_configuration_fields(
-    callable_object: MethodType,
+    callable_object: MethodType | FunctionType,
     endpoint_spec: EndpointSpec,
     endpoint_mappings: OrderedDict[str, str] | None = None,
 ) -> None:
@@ -311,6 +336,7 @@ def verify_configuration_fields(
 
     method_signature = inspect.signature(callable_object)
     actual_parameters = dict(method_signature.parameters)
+    actual_parameters.pop("self", None)
 
     for endpoint_pattern, ignored_params in IGNORED_PARAMETERS.items():
         if re.match(endpoint_pattern, py_endpoint):
@@ -380,7 +406,7 @@ def verify_configuration_fields(
 
 
 def assert_api_spec_coverage(
-    endpoints: object,
+    endpoints: type,
     gds_api_spec: list[EndpointWithModesSpec],
     endpoint_mappings: OrderedDict[str, str] | None = None,
 ) -> None:
