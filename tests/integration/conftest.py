@@ -69,8 +69,7 @@ def gds_with_tls() -> Generator[GraphDataScience, None, None]:
         URI_TLS,
         auth=AUTH,
         arrow=True,
-        arrow_disable_server_verification=True,
-        arrow_tls_root_certs=root_ca,
+        arrow_client_options={"disable_server_verification": True, "tls_root_certs": root_ca},
     )
     _gds.set_database(DB)
 

@@ -40,13 +40,8 @@ def query_runner(gds_plugin_container: Neo4jContainer) -> Generator[Neo4jQueryRu
 def gds_arrow_client(gds_plugin_container: Neo4jContainer) -> Generator[GdsArrowClient, None, None]:
     arrow_port = int(gds_plugin_container.get_exposed_port(8491))
     with GdsArrowClient(
-        flight_client=AuthenticatedArrowClient.create(
-            arrow_info=ArrowInfo(
-                listenAddress=f"{gds_plugin_container.get_container_host_ip()}:{arrow_port}",
-                enabled=True,
-                running=True,
-                versions=[ArrowEndpointVersion.V2.version()],
-            ),
+        flight_client=AuthenticatedArrowClient(
+            (gds_plugin_container.get_container_host_ip(), arrow_port),
             auth=UsernamePasswordAuthentication("neo4j", "password"),
             encrypted=False,
         )

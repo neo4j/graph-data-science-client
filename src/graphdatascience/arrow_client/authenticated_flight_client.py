@@ -22,7 +22,6 @@ from pyarrow.flight import (
 )
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
-from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2, StopConfig
 
 from ..version import __version__
@@ -32,23 +31,41 @@ from .middleware.user_agent_middleware import UserAgentFactory
 
 
 class AuthenticatedArrowClient:
-    @staticmethod
-    def create(
-        arrow_info: ArrowInfo,
+    def __init__(
+        self,
+        connection_info: str | tuple[str, int],
         auth: ArrowAuthentication | None = None,
         encrypted: bool = False,
         arrow_client_options: dict[str, Any] | None = None,
-        connection_string_override: str | None = None,
-        retry_config: RetryConfigV2 | None = None,
+        user_agent: str | None = None,
         advertised_listen_address: tuple[str, int] | None = None,
-    ) -> AuthenticatedArrowClient:
-        connection_string: str
-        if connection_string_override is not None:
-            connection_string = connection_string_override
-        else:
-            connection_string = arrow_info.listenAddress
+        retry_config: RetryConfigV2 | None = None,
+    ):
+        """Creates a new AuthenticatedArrowClient instance.
 
-        host, port = connection_string.split(":")
+        Parameters
+        ----------
+        connection_info
+            The host address and port of the GDS Arrow server
+        auth
+            An implementation of ArrowAuthentication providing a pair to be used for basic authentication
+        encrypted
+            A flag that indicates whether the connection should be encrypted (default is False)
+        arrow_client_options
+            Additional options to be passed to the Arrow Flight client.
+        user_agent
+            The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
+        retry_config
+            The retry configuration to use for the Arrow requests send by the client.
+        advertised_listen_address
+            The advertised listen address of the GDS Arrow server. This will be used by remote projection and writeback operations.
+        """
+
+        if isinstance(connection_info, str):
+            host, port_str = connection_info.split(":")
+            port = int(port_str)
+        else:
+            host, port = connection_info
 
         if retry_config is None:
             retry_config = RetryConfigV2(
@@ -61,70 +78,18 @@ class AuthenticatedArrowClient:
                 wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
             )
 
-        return AuthenticatedArrowClient(
-            host=host,
-            retry_config=retry_config,
-            port=int(port),
-            auth=auth,
-            encrypted=encrypted,
-            arrow_client_options=arrow_client_options,
-            advertised_listen_address=advertised_listen_address,
-        )
-
-    def __init__(
-        self,
-        host: str,
-        retry_config: RetryConfigV2,
-        port: int = 8491,
-        auth: ArrowAuthentication | None = None,
-        encrypted: bool = False,
-        arrow_client_options: dict[str, Any] | None = None,
-        user_agent: str | None = None,
-        advertised_listen_address: tuple[str, int] | None = None,
-    ):
-        """Creates a new AuthenticatedArrowClient instance.
-
-        Parameters
-        ----------
-        host: str
-            The host address of the GDS Arrow server
-        port: int
-            The host port of the GDS Arrow server (default is 8491)
-        auth: ArrowAuthentication | None
-            An implementation of ArrowAuthentication providing a pair to be used for basic authentication
-        encrypted: bool
-            A flag that indicates whether the connection should be encrypted (default is False)
-        arrow_client_options: dict[str, Any] | None
-            Additional options to be passed to the Arrow Flight client.
-        user_agent: str | None
-            The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
-        retry_config: RetryConfig | None
-            The retry configuration to use for the Arrow requests send by the client.
-        advertised_listen_address: tuple[str, int] | None
-            The advertised listen address of the GDS Arrow server. This will be used by remote projection and writeback operations.
-        """
         self._host = host
-        self._port = port
-        self._auth = None
+        self._port = int(port)
+        self._auth = auth
         self._encrypted = encrypted
         self._arrow_client_options = arrow_client_options
         self._user_agent = user_agent
         self._logger = logging.getLogger("gds_arrow_client")
         self._retry_config = retry_config
         if auth:
-            self._auth = auth
             self._auth_middleware = AuthMiddleware(auth)
         self.advertised_listen_address = advertised_listen_address
-
         self._flight_client: flight.FlightClient = self._instantiate_flight_client()
-
-    def _reconnect(self) -> None:
-        try:
-            self._flight_client.close()
-        except Exception:
-            pass
-
-        self._flight_client = self._instantiate_flight_client()
 
     def connection_info(self) -> ConnectionInfo:
         """
@@ -265,6 +230,14 @@ class AuthenticatedArrowClient:
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         self.__dict__.update(state)
+        self._flight_client = self._instantiate_flight_client()
+
+    def _reconnect(self) -> None:
+        try:
+            self._flight_client.close()
+        except Exception:
+            pass
+
         self._flight_client = self._instantiate_flight_client()
 
 
