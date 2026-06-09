@@ -135,20 +135,18 @@ class DedicatedSessions:
 
         self._await_session_running(session_details, timeout)
 
-        session_bolt_connection_info = DbmsConnectionInfo(
-            uri=session_details.bolt_connection_url(),
-            username=self._aura_api._credentials[0],
-            password=self._aura_api._credentials[1],
-        )
+        session_host = session_details.host.split(":")[0]
+        session_port = 8491  # TODO we should get this from the API
 
         arrow_authentication = AuraApiTokenAuthentication(self._aura_api)
 
         return self._construct_client(
-            session_id=session_details.id,
-            session_bolt_connection_info=session_bolt_connection_info,
-            arrow_authentication=arrow_authentication,
-            db_runner=db_runner,
-            arrow_client_options=arrow_client_options,
+            session_details.id,
+            session_host,
+            session_port,
+            arrow_authentication,
+            db_runner,
+            arrow_client_options,
         )
 
     def _create_db_runner(
@@ -272,14 +270,15 @@ class DedicatedSessions:
     def _construct_client(
         self,
         session_id: str,
-        session_bolt_connection_info: DbmsConnectionInfo,
+        session_host: str,
+        session_port: int,
         arrow_authentication: ArrowAuthentication,
         db_runner: Neo4jQueryRunner | None,
         arrow_client_options: dict[str, Any] | None = None,
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
-            session_bolt_connection_info=session_bolt_connection_info,
-            arrow_authentication=arrow_authentication,
+            (session_host, session_port),
+            arrow_authentication,
             db_endpoint=db_runner,
             session_lifecycle_manager=SessionLifecycleManager(session_id, self._aura_api),
             arrow_client_options=arrow_client_options,

@@ -249,7 +249,7 @@ def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[
     mocker.patch("graphdatascience.session.session_v2_endpoints.SessionV2Endpoints.__init__", return_value=None)
 
     aura_gds = AuraGraphDataScience.create(
-        session_bolt_connection_info=DbmsConnectionInfo("address", "some", "auth"),
+        "address:42",
         arrow_authentication=UsernamePasswordAuthentication("some", "auth"),
         db_endpoint=DbmsConnectionInfo("address", "some", "auth"),
         session_lifecycle_manager=mocker.Mock(spec=SessionLifecycleManager),

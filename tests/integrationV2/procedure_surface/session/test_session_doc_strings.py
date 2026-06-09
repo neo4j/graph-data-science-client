@@ -7,7 +7,7 @@ from typing import Any, Dict, get_type_hints
 
 import pytest
 
-from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
+from graphdatascience.session import AuraGraphDataScience
 
 
 def load_parameter_descriptions() -> Dict[str, list[str] | str]:
@@ -117,7 +117,7 @@ def test_common_parameter_consistency() -> None:
     # parameter -> (method_name -> descriptions)
     param_descriptions: Dict[str, Dict[str, str]] = defaultdict(dict)
 
-    methods = get_all_endpoint_methods(SessionV2Endpoints, "gds")
+    methods = get_all_endpoint_methods(AuraGraphDataScience, "gds")
 
     for method_name, method in methods.items():
         docstring = inspect.getdoc(method)
