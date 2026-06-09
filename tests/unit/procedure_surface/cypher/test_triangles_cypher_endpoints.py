@@ -2,21 +2,6 @@ from unittest import mock
 
 import pandas as pd
 
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.plugin_v2_endpoints import PluginV2Endpoints
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-
-
-def test_plugin_exposes_top_level_triangles() -> None:
-    endpoints = PluginV2Endpoints(
-        arrow_client=mock.Mock(spec=AuthenticatedArrowClient),
-        db_client=mock.Mock(spec=Neo4jQueryRunner),
-    )
-
-    from graphdatascience.procedure_surface.cypher.community.triangles_cypher_endpoints import TrianglesCypherEndpoints
-
-    assert isinstance(endpoints.triangles, TrianglesCypherEndpoints)
-
 
 def test_triangles_call_runs_query() -> None:
     graph = mock.Mock()

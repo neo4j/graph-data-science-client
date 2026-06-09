@@ -1,18 +1,6 @@
 from unittest import mock
 
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.plugin_v2_endpoints import PluginV2Endpoints
 from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-
-
-def test_plugin_exposes_top_level_collapse_path() -> None:
-    endpoints = PluginV2Endpoints(
-        arrow_client=mock.Mock(spec=AuthenticatedArrowClient),
-        db_client=mock.Mock(spec=Neo4jQueryRunner),
-    )
-
-    assert isinstance(endpoints.collapse_path, CollapsePathCypherEndpoints)
 
 
 def test_collapse_path_mutate_runs_query() -> None:

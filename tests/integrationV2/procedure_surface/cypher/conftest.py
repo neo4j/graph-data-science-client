@@ -5,8 +5,6 @@ import pytest
 from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
-from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
-from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
