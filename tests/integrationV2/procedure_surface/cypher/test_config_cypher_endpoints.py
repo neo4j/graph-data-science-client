@@ -2,8 +2,8 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
+from graphdatascience.query_runner import QueryRunner
 
 
 @pytest.fixture

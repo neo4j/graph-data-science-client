@@ -5,9 +5,9 @@ from typing import Any
 from pyarrow import ArrowKeyError
 from tenacity import Retrying, retry, retry_if_result
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.protocol.status import Status

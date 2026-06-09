@@ -5,8 +5,8 @@ from typing import Generator
 import pytest
 from testcontainers.core.network import Network
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from tests.integrationV2.conftest import (
     GdsSessionConnectionInfo,

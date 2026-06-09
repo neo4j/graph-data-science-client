@@ -3,7 +3,6 @@ from uuid import uuid4
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
@@ -13,6 +12,7 @@ from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipel
 from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
     PipelineCatalogArrowEndpoints,
 )
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph, create_graph_from_db
 

@@ -182,7 +182,7 @@ class GraphDataScience:
 
     def __init__(
         self,
-        endpoint: str | Driver,
+        endpoint: str | Driver | QueryRunner,
         auth: tuple[str, str] | None = None,
         aura_ds: bool = False,
         database: str | None = None,
@@ -222,13 +222,16 @@ class GraphDataScience:
         if aura_ds:
             GraphDataScience._validate_endpoint(endpoint)
 
-        db_auth: neo4j.Auth | None = None
-        if auth:
-            db_auth = neo4j.basic_auth(*auth)
+        if isinstance(endpoint, QueryRunner):
+            self._query_runner = endpoint
+        else:
+            db_auth: neo4j.Auth | None = None
+            if auth:
+                db_auth = neo4j.basic_auth(*auth)
 
-        self._query_runner = Neo4jQueryRunner.create_for_db(
-            endpoint, db_auth, aura_ds, database, bookmarks, show_progress
-        )
+            self._query_runner = Neo4jQueryRunner.create_for_db(
+                endpoint, db_auth, aura_ds, database, bookmarks, show_progress
+            )
 
         self._server_version = self._query_runner.server_version()
 

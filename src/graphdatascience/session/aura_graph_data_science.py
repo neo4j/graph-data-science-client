@@ -53,8 +53,8 @@ class AuraGraphDataScience:
             arrow_client_options=arrow_client_options,
         )
 
-        session_auth_arrow_client = AuthenticatedArrowClient.create(
-            arrow_info=arrow_info,
+        session_auth_arrow_client = AuthenticatedArrowClient(
+            arrow_info.listenAddress,
             auth=arrow_authentication,
             encrypted=session_bolt_query_runner.encrypted(),
             arrow_client_options=arrow_client_options,

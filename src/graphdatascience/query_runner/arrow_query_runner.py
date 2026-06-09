@@ -34,12 +34,11 @@ class ArrowQueryRunner(QueryRunner):
         if not arrow_info.enabled:
             raise ValueError("Arrow is not enabled on the server")
 
-        arrow_client = AuthenticatedArrowClient.create(
-            arrow_info=arrow_info,
+        arrow_client = AuthenticatedArrowClient(
+            arrow_info.listenAddress,
             auth=arrow_authentication,
             encrypted=encrypted,
             arrow_client_options=arrow_client_options,
-            connection_string_override=connection_string_override,
             retry_config=retry_config,
         )
 

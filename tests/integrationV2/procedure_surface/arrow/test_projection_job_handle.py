@@ -3,11 +3,11 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 
 

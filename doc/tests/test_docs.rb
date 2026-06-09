@@ -11,7 +11,7 @@ import os
 import pandas
 
 from graphdatascience import GraphDataScience
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.graph.v2.graph_api import ServerVersion
 
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")

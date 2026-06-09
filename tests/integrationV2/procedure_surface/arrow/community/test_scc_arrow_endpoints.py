@@ -2,7 +2,6 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.community.scc_endpoints import (
@@ -11,7 +10,7 @@ from graphdatascience.procedure_surface.api.community.scc_endpoints import (
     SccWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.community.scc_arrow_endpoints import SccArrowEndpoints
-from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner import QueryRunner, QueryType
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
