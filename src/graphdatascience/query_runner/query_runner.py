@@ -4,7 +4,6 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.server_version.server_version import ServerVersion
@@ -77,12 +76,6 @@ class QueryRunner(ABC):
         pass
 
     def close(self) -> None:
-        pass
-
-    @abstractmethod
-    def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
-    ) -> GraphConstructor:
         pass
 
     @abstractmethod

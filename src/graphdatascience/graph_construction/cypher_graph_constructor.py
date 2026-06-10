@@ -8,11 +8,11 @@ from uuid import uuid4
 from pandas import DataFrame, concat
 
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.server_version.server_version import ServerVersion
 
-from ..server_version.server_version import ServerVersion
 from .graph_constructor import GraphConstructor
-from .query_runner import QueryRunner
-from .query_type import QueryType
 
 
 class CypherProjectionApi:
@@ -61,12 +61,14 @@ class CypherGraphConstructor(GraphConstructor):
         graph_name: str,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
+        inverse_indexed_relationship_types: list[str] | None = None,
     ):
         self._query_runner = query_runner
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._server_version = query_runner.server_version()
         self._undirected_relationship_types = undirected_relationship_types
+        self._inverse_indexed_relationship_types = inverse_indexed_relationship_types
 
     def run(self, node_dfs: list[DataFrame], relationship_dfs: list[DataFrame]) -> None:
         if self._should_warn_about_arrow_missing():
@@ -76,33 +78,13 @@ class CypherGraphConstructor(GraphConstructor):
                 "edition graph construction (slower)"
             )
 
-        # New Cypher propjection supports concurrency since 2.3.0
-        if self._server_version >= ServerVersion(2, 3, 0):
-            self.CypherProjectionRunner(
-                self._query_runner,
-                self._graph_name,
-                self._server_version,
-                self._concurrency,
-                self._undirected_relationship_types,
-            ).run(node_dfs, relationship_dfs)
-        else:
-            assert not self._undirected_relationship_types, "This should have been raised earlier."
-
-            def graph_construct_error_multidf(element: str) -> str:
-                return f"Graph construction only supports a single {element} dataframe on GDS versions prior to GDS 2.3"
-
-            if len(node_dfs) > 1:
-                raise ValueError(graph_construct_error_multidf("node"))
-
-            if len(relationship_dfs) > 1:
-                raise ValueError(graph_construct_error_multidf("relationship"))
-
-            node_df = node_dfs[0]
-            rel_df = relationship_dfs[0]
-
-            self.LegacyCypherProjectionRunner(self._query_runner, self._graph_name, self._concurrency).run(
-                node_df, rel_df
-            )
+        self.CypherProjectionRunner(
+            self._query_runner,
+            self._graph_name,
+            self._server_version,
+            self._concurrency,
+            self._undirected_relationship_types,
+        ).run(node_dfs, relationship_dfs)
 
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
@@ -134,11 +116,13 @@ class CypherGraphConstructor(GraphConstructor):
             server_version: ServerVersion,
             concurrency: int | None = None,
             undirected_relationship_types: list[str] | None = None,
+            inverse_indexed_relationship_types: list[str] | None = None,
         ):
             self._query_runner = query_runner
             self._concurrency = concurrency
             self._graph_name = graph_name
             self._undirected_relationship_types = undirected_relationship_types
+            self._inverse_indexed_relationship_types = inverse_indexed_relationship_types
             self._server_version = server_version
 
         def run(self, node_dfs: list[DataFrame], relationship_dfs: list[DataFrame]) -> None:
@@ -212,6 +196,7 @@ class CypherGraphConstructor(GraphConstructor):
             configuration = {
                 "readConcurrency": self._concurrency,
                 "undirectedRelationshipTypes": self._undirected_relationship_types,
+                "inverseIndexedRelationshipTypes": self._inverse_indexed_relationship_types,
             }
 
             # not using retryable here as gds.graph.project adds a graph to the gds graph catalog
@@ -359,89 +344,3 @@ class CypherGraphConstructor(GraphConstructor):
                 rels_config_fields.append(f"{rel_properties_key}: {rel_properties_key}")
 
             return rels_config_fields
-
-    class LegacyCypherProjectionRunner:
-        def __init__(self, query_runner: QueryRunner, graph_name: str, concurrency: int | None = None):
-            self._query_runner = query_runner
-            self._concurrency = concurrency if concurrency is not None else 4
-            self._graph_name = graph_name
-
-        def run(self, node_df: DataFrame, relationship_df: DataFrame) -> None:
-            query = (
-                "CALL gds.graph.project.cypher("
-                "$graph_name, "
-                "$node_query, "
-                "$relationship_query, "
-                "{readConcurrency: $read_concurrency, parameters: { nodes: $nodes, relationships: $relationships }})"
-            )
-
-            node_query, nodes = self._node_query(node_df)
-            relationship_query, relationships = self._relationship_query(relationship_df)
-
-            self._query_runner.run_cypher(
-                query,
-                QueryType.USER_TRANSPILED,
-                {
-                    "graph_name": self._graph_name,
-                    "node_query": node_query,
-                    "relationship_query": relationship_query,
-                    "read_concurrency": self._concurrency,
-                    "nodes": nodes,
-                    "relationships": relationships,
-                },
-                custom_error=False,
-            )
-
-        def _node_query(self, node_df: DataFrame) -> tuple[str, list[list[Any]]]:
-            # ignore type as tolist return depends on number of dimensions)
-            node_list: list[list[Any]] = node_df.values.tolist()  # type: ignore
-            node_columns = list(node_df.columns)
-            node_id_index = node_columns.index("nodeId")
-
-            label_query = ""
-            if "labels" in node_df.keys():
-                label_index = node_columns.index("labels")
-                label_query = f", node[{label_index}] as labels"
-
-                # Make sure every node has a list of labels
-                for node in node_list:
-                    labels = node[label_index]
-                    if isinstance(labels, list):
-                        continue
-                    node[label_index] = [labels]
-
-            property_query = ""
-            property_columns: set[str] = set(node_df.columns.tolist()) - {"nodeId", "labels"}
-            if len(property_columns) > 0:
-                property_queries = (f", node[{node_columns.index(col)}] as {col}" for col in property_columns)
-                property_query = "".join(property_queries)
-
-            return f"UNWIND $nodes as node RETURN node[{node_id_index}] as id{label_query}{property_query}", node_list
-
-        def _relationship_query(self, rel_df: DataFrame) -> tuple[str, list[list[Any]]]:
-            rel_list: list[list[Any]] = rel_df.values.tolist()  # type: ignore
-            rel_columns = list(rel_df.columns)
-            source_id_index = rel_columns.index("sourceNodeId")
-            target_id_index = rel_columns.index("targetNodeId")
-
-            type_query = ""
-            if "relationshipType" in rel_df.keys():
-                type_index = rel_columns.index("relationshipType")
-                type_query = f", relationship[{type_index}] as type"
-
-            property_query = ""
-            property_columns: set[str] = set(rel_df.columns.tolist()) - {
-                "sourceNodeId",
-                "targetNodeId",
-                "relationshipType",
-            }
-            if len(property_columns) > 0:
-                property_queries = (f", relationship[{rel_columns.index(col)}] as {col}" for col in property_columns)
-                property_query = "".join(property_queries)
-
-            return (
-                "UNWIND $relationships as relationship "
-                f"RETURN relationship[{source_id_index}] as source, relationship[{target_id_index}] as target"
-                f"{type_query}{property_query}",
-                rel_list,
-            )

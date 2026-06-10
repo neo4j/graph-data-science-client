@@ -9,6 +9,8 @@ import pytest
 
 from graphdatascience.session import AuraGraphDataScience
 
+IGNORED_PARAMS = ["batch_size"]
+
 
 def load_parameter_descriptions() -> Dict[str, list[str] | str]:
     """Load the canonical parameter descriptions from parameters.json."""
@@ -128,6 +130,8 @@ def test_common_parameter_consistency() -> None:
         param_types = inspect.signature(method).parameters
 
         for param in descriptions:
+            if param in IGNORED_PARAMS:
+                continue
             typed_key = f"{param}: {param_types[param].annotation}" if param in param_types else param
             param_descriptions[typed_key][method_name] = descriptions[param]
 

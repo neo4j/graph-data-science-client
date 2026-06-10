@@ -42,6 +42,8 @@ class CatalogEndpoints(ABC):
         relationships: DataFrame | list[DataFrame] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
+        inverse_indexed_relationship_types: list[str] | None = None,
+        batch_size: int = 100000,
     ) -> GraphV2:
         """Construct a graph from a list of node and relationship dataframes.
 
@@ -66,6 +68,10 @@ class CatalogEndpoints(ABC):
             Number of concurrent threads to use.
         undirected_relationship_types
             List of relationship types to treat as undirected.
+        inverse_indexed_relationship_types
+            List of relationship types for which to create an inverse index.
+        batch_size
+            Batch size to use when sending data to GDS.
 
         Returns
         -------
