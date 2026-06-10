@@ -10,6 +10,9 @@ from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.graph_construction.arrow_v1_graph_constructor import ArrowV1GraphConstructor
+from graphdatascience.graph_construction.cypher_graph_constructor import CypherGraphConstructor
+from graphdatascience.graph_construction.graph_constructor import GraphConstructor
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog import (
     NodeLabelEndpoints,
@@ -37,9 +40,6 @@ from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpo
 from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner import QueryRunner
-from graphdatascience.query_runner.arrow_graph_constructor import ArrowGraphConstructor
-from graphdatascience.query_runner.cypher_graph_constructor import CypherGraphConstructor
-from graphdatascience.query_runner.graph_constructor import GraphConstructor
 
 
 class CatalogCypherEndpoints(CatalogEndpoints):
@@ -59,6 +59,8 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         relationships: DataFrame | list[DataFrame] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
+        inverse_indexed_relationship_types: list[str] | None = None,
+        batch_size: int = 100000,
     ) -> GraphV2:
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
@@ -71,12 +73,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         if self._arrow_client is not None:
             database = require_database(self._cypher_runner)
 
-            graph_constructor = ArrowGraphConstructor(
+            graph_constructor = ArrowV1GraphConstructor(
                 database=database,
                 graph_name=graph_name,
                 flight_client=self._arrow_client,
                 concurrency=concurrency,
                 undirected_relationship_types=undirected_relationship_types,
+                inverse_indexed_relationship_types=inverse_indexed_relationship_types,
+                batch_size=batch_size,
             )
         else:
             graph_constructor = CypherGraphConstructor(
@@ -84,6 +88,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
                 graph_name=graph_name,
                 concurrency=concurrency,
                 undirected_relationship_types=undirected_relationship_types,
+                inverse_indexed_relationship_types=inverse_indexed_relationship_types,
             )
 
         graph_constructor.run(node_dfs=nodes, relationship_dfs=relationships)

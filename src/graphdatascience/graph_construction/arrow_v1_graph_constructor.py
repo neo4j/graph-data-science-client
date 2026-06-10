@@ -16,7 +16,7 @@ from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from .graph_constructor import GraphConstructor
 
 
-class ArrowGraphConstructor(GraphConstructor):
+class ArrowV1GraphConstructor(GraphConstructor):
     def __init__(
         self,
         database: str,
@@ -24,17 +24,17 @@ class ArrowGraphConstructor(GraphConstructor):
         flight_client: GdsArrowClient,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
-        chunk_size: int = 10_000,
+        inverse_indexed_relationship_types: list[str] | None = None,
+        batch_size: int = 100_000,
     ):
         self._database = database
         self._concurrency = concurrency
         self._graph_name = graph_name
         self._client = flight_client
-        self._undirected_relationship_types = (
-            [] if undirected_relationship_types is None else undirected_relationship_types
-        )
-        self._chunk_size = chunk_size
-        self._min_batch_size = chunk_size * 10
+        self._undirected_relationship_types = undirected_relationship_types or []
+        self._inverse_indexed_relationship_types = inverse_indexed_relationship_types or []
+        self._chunk_size = batch_size
+        self._min_partition_size = batch_size * 10
         self._logger = logging.getLogger()
 
     def run(self, node_dfs: list[DataFrame], relationship_dfs: list[DataFrame]) -> None:
@@ -46,6 +46,9 @@ class ArrowGraphConstructor(GraphConstructor):
 
             if self._undirected_relationship_types:
                 config["undirected_relationship_types"] = self._undirected_relationship_types
+
+            if self._inverse_indexed_relationship_types:
+                config["inverse_indexed_relationship_types"] = self._inverse_indexed_relationship_types
 
             self._client.create_graph(
                 graph_name=self._graph_name,
@@ -75,7 +78,7 @@ class ArrowGraphConstructor(GraphConstructor):
 
         for df in dfs:
             num_rows = df.shape[0]
-            num_batches = math.ceil(num_rows / self._min_batch_size)
+            num_batches = math.ceil(num_rows / self._min_partition_size)
 
             # pandas 2.1.0 deprecates swapaxes, but numpy did not catch up yet.
             warnings.filterwarnings(
@@ -105,14 +108,14 @@ class ArrowGraphConstructor(GraphConstructor):
                     self._client.upload_nodes(
                         self._graph_name,
                         node_data=df,
-                        batch_size=self._min_batch_size,
+                        batch_size=self._min_partition_size,
                         progress_callback=progress_callback,
                     )
                 else:
                     self._client.upload_relationships(
                         self._graph_name,
                         relationship_data=df,
-                        batch_size=self._min_batch_size,
+                        batch_size=self._min_partition_size,
                         progress_callback=progress_callback,
                     )
                 pbar.refresh()
