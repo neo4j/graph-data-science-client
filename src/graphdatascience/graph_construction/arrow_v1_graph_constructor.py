@@ -33,7 +33,7 @@ class ArrowV1GraphConstructor(GraphConstructor):
         self._client = flight_client
         self._undirected_relationship_types = undirected_relationship_types or []
         self._inverse_indexed_relationship_types = inverse_indexed_relationship_types or []
-        self._chunk_size = batch_size
+        self._batch_size = batch_size
         self._min_partition_size = batch_size * 10
         self._logger = logging.getLogger()
 
@@ -108,14 +108,14 @@ class ArrowV1GraphConstructor(GraphConstructor):
                     self._client.upload_nodes(
                         self._graph_name,
                         node_data=df,
-                        batch_size=self._min_partition_size,
+                        batch_size=self._batch_size,
                         progress_callback=progress_callback,
                     )
                 else:
                     self._client.upload_relationships(
                         self._graph_name,
                         relationship_data=df,
-                        batch_size=self._min_partition_size,
+                        batch_size=self._batch_size,
                         progress_callback=progress_callback,
                     )
                 pbar.refresh()

@@ -28,12 +28,8 @@ class ArrowV2GraphConstructor(GraphConstructor):
         self._graph_name = graph_name
         self._concurrency = concurrency
         self._client = authenticated_arrow_client
-        self._undirected_relationship_types = (
-            [] if undirected_relationship_types is None else undirected_relationship_types
-        )
-        self._inverse_indexed_relationship_types = (
-            [] if inverse_indexed_relationship_types is None else inverse_indexed_relationship_types
-        )
+        self._undirected_relationship_types = undirected_relationship_types or []
+        self._inverse_indexed_relationship_types = inverse_indexed_relationship_types or []
         self._batch_size = batch_size
         self._show_progress = show_progress
         self._logger = logging.getLogger()
