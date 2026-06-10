@@ -104,13 +104,13 @@ def test_stream_multiple_properties(relationship_endpoints: RelationshipCypherEn
         G=sample_graph, relationship_types=["REL"], relationship_properties=["weight", "weight2"]
     )
 
-    assert len(result) == 6  # All relationships
+    assert len(result) == 3  # All relationships
     assert "sourceNodeId" in result.columns
     assert "targetNodeId" in result.columns
     assert "relationshipType" in result.columns
-    assert "propertyValue" in result.columns
-    assert "relationshipProperty" in result.columns
-    assert set(result["relationshipProperty"].unique()) == {"weight", "weight2"}
+    assert "weight" in result.columns
+    assert "weight2" in result.columns
+    assert set(result["relationshipType"].unique()) == {"REL"}
 
 
 def test_stream_relationships_with_arrow(

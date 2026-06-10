@@ -87,6 +87,15 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
             if relationship_properties and len(relationship_properties) == 1:
                 result = result.rename(columns={"propertyValue": relationship_properties[0]})
+            elif relationship_properties and len(relationship_properties) > 1:
+                # Reshape the long-format Cypher result into one column per property to match the Arrow output.
+                result = result.pivot(
+                    index=["sourceNodeId", "targetNodeId", "relationshipType"],
+                    columns="relationshipProperty",
+                    values="propertyValue",
+                )
+                result = result.reset_index()
+                result.columns.name = None
 
             return result
 
