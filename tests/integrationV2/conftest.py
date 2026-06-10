@@ -25,6 +25,12 @@ def pytest_collection_modifyitems(config: Any, items: Any) -> None:
             if "integrationV2" in str(item.fspath):
                 item.add_marker(skip_v2)
 
+    if not config.getoption("--include-ogb"):
+        skip_ogb = pytest.mark.skip(reason="need --include-ogb option to run")
+        for item in items:
+            if "ogb" in item.keywords:
+                item.add_marker(skip_ogb)
+
 
 # best used with pytest --basetemp=tmp/pytest for easy access to logs
 @pytest.fixture(scope="session")
