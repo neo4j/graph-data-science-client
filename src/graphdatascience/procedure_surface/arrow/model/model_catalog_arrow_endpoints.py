@@ -7,7 +7,7 @@ from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
-from graphdatascience.model.v2.model_details import ModelDetails
+from graphdatascience.model.model_details import ModelDetails
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import (
     ModelCatalogEndpoints,
     ModelDeleteResult,

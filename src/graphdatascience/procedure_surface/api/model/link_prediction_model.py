@@ -3,8 +3,8 @@ from __future__ import annotations
 from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.model.v2.model import Model
-from graphdatascience.model.v2.model_api import ModelApi
+from graphdatascience.model.model import Model
+from graphdatascience.model.model_api import ModelApi
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
     LinkPredictionPipelinePredictEndpoints,
