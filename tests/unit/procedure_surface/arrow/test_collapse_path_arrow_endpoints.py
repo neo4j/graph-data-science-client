@@ -2,13 +2,15 @@ from unittest import mock
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
-from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
+from graphdatascience.session import AuraGraphDataScience
+from graphdatascience.session.session_lifecycle_manager import Noop
 
 
 def test_session_exposes_top_level_collapse_path() -> None:
-    endpoints = SessionV2Endpoints(
+    endpoints = AuraGraphDataScience(
         mock.Mock(spec=AuthenticatedArrowClient),
-        db_client=None,
+        db_query_runner=None,
+        session_lifecycle_manager=Noop(),
         show_progress=False,
     )
 

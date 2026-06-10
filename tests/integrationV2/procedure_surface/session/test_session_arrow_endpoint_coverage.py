@@ -4,7 +4,8 @@ from collections import defaultdict
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.session.session_v2_endpoints import SessionV2Endpoints
+from graphdatascience.session import AuraGraphDataScience
+from graphdatascience.session.session_lifecycle_manager import Noop
 
 UNMAPPED_ENDPOINTS = [
     "pipeline.drop",
@@ -54,8 +55,8 @@ ENDPOINT_MAPPINGS = {
 
 
 @pytest.fixture
-def endpoints(arrow_client: AuthenticatedArrowClient) -> SessionV2Endpoints:
-    return SessionV2Endpoints(arrow_client, db_client=None, show_progress=False)
+def endpoints(arrow_client: AuthenticatedArrowClient) -> AuraGraphDataScience:
+    return AuraGraphDataScience(arrow_client, None, Noop(), show_progress=False)
 
 
 def to_snake(camel: str) -> str:
@@ -70,8 +71,8 @@ def to_snake(camel: str) -> str:
     return snake.lower()
 
 
-def check_gds_v2_availability(endpoints: SessionV2Endpoints, endpoint: str) -> bool:
-    """Check if an algorithm is available through gds.v2 interface"""
+def check_gds_v2_availability(endpoints: AuraGraphDataScience, endpoint: str) -> bool:
+    """Check if an algorithm is available through AuraGraphDataScience"""
     for old, new in ENDPOINT_MAPPINGS.items():
         if old in endpoint:
             endpoint = endpoint.replace(old, new)
@@ -91,8 +92,8 @@ def check_gds_v2_availability(endpoints: SessionV2Endpoints, endpoint: str) -> b
     return True
 
 
-def test_algo_coverage(endpoints: SessionV2Endpoints) -> None:
-    arrow_client = endpoints._arrow_client
+def test_algo_coverage(endpoints: AuraGraphDataScience) -> None:
+    arrow_client = endpoints._authenticated_arrow_client
 
     # Get all available Arrow actions
     available_v2_actions = [
@@ -135,8 +136,8 @@ def test_algo_coverage(endpoints: SessionV2Endpoints) -> None:
     assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"
 
 
-def test_pipeline_coverage(endpoints: SessionV2Endpoints) -> None:
-    arrow_client = endpoints._arrow_client
+def test_pipeline_coverage(endpoints: AuraGraphDataScience) -> None:
+    arrow_client = endpoints._authenticated_arrow_client
 
     # Get all available Arrow actions
     available_v2_actions = [
