@@ -21,8 +21,6 @@ from ..error.unable_to_connect import UnableToConnectError
 from ..semantic_version.semantic_version import SemanticVersion
 from ..server_version.server_version import ServerVersion
 from ..version import __version__
-from .cypher_graph_constructor import CypherGraphConstructor
-from .graph_constructor import GraphConstructor
 from .progress.query_progress_logger import QueryProgressLogger
 
 
@@ -388,11 +386,6 @@ class Neo4jQueryRunner(QueryRunner):
     def __del__(self) -> None:
         if self._auto_close:
             self._driver.close()
-
-    def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
-    ) -> GraphConstructor:
-        return CypherGraphConstructor(self, graph_name, concurrency, undirected_relationship_types)
 
     def set_show_progress(self, show_progress: bool) -> None:
         self._show_progress = show_progress

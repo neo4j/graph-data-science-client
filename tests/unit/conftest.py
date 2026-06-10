@@ -12,10 +12,6 @@ from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner import QueryRunner
-from graphdatascience.query_runner.cypher_graph_constructor import (
-    CypherGraphConstructor,
-)
-from graphdatascience.query_runner.graph_constructor import GraphConstructor
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.server_version.server_version import ServerVersion
@@ -169,11 +165,6 @@ class CollectingQueryRunner(QueryRunner):
 
     def set_show_progress(self, show_progress: bool) -> None:
         pass
-
-    def create_graph_constructor(
-        self, graph_name: str, concurrency: int, undirected_relationship_types: list[str] | None
-    ) -> GraphConstructor:
-        return CypherGraphConstructor(self, graph_name, concurrency, undirected_relationship_types)
 
     def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
         return self
