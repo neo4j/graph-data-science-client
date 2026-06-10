@@ -2,9 +2,9 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 

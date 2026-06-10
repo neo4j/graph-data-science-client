@@ -5,8 +5,9 @@ import pandas as pd
 import pytest
 from pandas import DataFrame
 
-from graphdatascience import QueryRunner, ServerVersion
+from graphdatascience import ServerVersion
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
+from graphdatascience.query_runner import QueryRunner
 from tests.unit.conftest import CollectingQueryRunner
 
 

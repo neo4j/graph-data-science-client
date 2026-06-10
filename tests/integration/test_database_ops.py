@@ -157,7 +157,7 @@ def test_from_neo4j_driver_warns_if_auth_missing(neo4j_driver: Driver) -> None:
         UserWarning,
         match="Falling back to use Cypher for GDS. To use Arrow, you must explicitly provide the `auth` parameter.",
     ):
-        gds = GraphDataScience.from_neo4j_driver(neo4j_driver)
+        gds = GraphDataScience(neo4j_driver)
 
         assert isinstance(gds._query_runner, Neo4jQueryRunner)
 

@@ -27,7 +27,7 @@ def sample_graph(gds: GraphDataScience) -> Generator[str, None, None]:
         (c)-[:REL]->(a)
         """
     )
-    G, _ = gds.v2.graph.project("model_catalog_cypher_g", {"Node": {"properties": ["age"]}}, "REL")
+    G, _ = gds.graph.project("model_catalog_cypher_g", {"Node": {"properties": ["age"]}}, "REL")
 
     yield G.name()
 
@@ -49,7 +49,7 @@ def gs_model_name(gds: GraphDataScience, sample_graph: str) -> Generator[str, No
 
 @pytest.fixture
 def model_catalog(gds: GraphDataScience) -> ModelCatalogEndpoints:
-    return gds.v2.model
+    return gds.model
 
 
 def test_model_list(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:

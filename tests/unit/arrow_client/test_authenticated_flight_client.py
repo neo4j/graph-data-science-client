@@ -24,7 +24,7 @@ def mock_auth() -> ArrowAuthentication:
 
 
 def test_create_authenticated_arrow_client(arrow_info: ArrowInfo, mock_auth: ArrowAuthentication) -> None:
-    client = AuthenticatedArrowClient.create(arrow_info=arrow_info, auth=mock_auth, encrypted=True)
+    client = AuthenticatedArrowClient(arrow_info.listenAddress, auth=mock_auth, encrypted=True)
 
     assert client._retry_config.wait_config == ExponentialWaitConfig(multiplier=1, min=1, max=10)
     assert isinstance(client, AuthenticatedArrowClient)
@@ -32,13 +32,13 @@ def test_create_authenticated_arrow_client(arrow_info: ArrowInfo, mock_auth: Arr
 
 
 def test_connection_info(arrow_info: ArrowInfo, retry_config_v2: RetryConfigV2) -> None:
-    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
+    client = AuthenticatedArrowClient(("localhost", 8491), retry_config=retry_config_v2)
     connection_info = client.connection_info()
     assert connection_info == ConnectionInfo("localhost", 8491, encrypted=False)
 
 
 def test_pickle_roundtrip(arrow_info: ArrowInfo, retry_config_v2: RetryConfigV2) -> None:
-    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
+    client = AuthenticatedArrowClient(("localhost", 8491), retry_config=retry_config_v2)
     import pickle
 
     pickled_client = pickle.dumps(client)
@@ -55,7 +55,7 @@ def test_create_windows(
 
     spy = mocker.spy(certifi, "contents")
 
-    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
+    client = AuthenticatedArrowClient(("localhost", 8491), retry_config=retry_config_v2)
 
     assert spy.call_count == 1
     assert client.connection_info()
@@ -77,7 +77,7 @@ def test_do_action_with_retry_reconnects_on_retryable_error(
         side_effect=[first_client, second_client],
     )
 
-    client = AuthenticatedArrowClient(host="localhost", port=8491, retry_config=retry_config_v2)
+    client = AuthenticatedArrowClient(("localhost", 8491), retry_config=retry_config_v2)
 
     result = client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
 

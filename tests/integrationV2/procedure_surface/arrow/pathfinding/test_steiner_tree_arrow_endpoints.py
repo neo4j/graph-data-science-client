@@ -2,11 +2,11 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeWriteResult
 from graphdatascience.procedure_surface.arrow.pathfinding.steiner_tree_arrow_endpoints import SteinerTreeArrowEndpoints
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,

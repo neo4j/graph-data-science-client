@@ -36,14 +36,14 @@ from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_en
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.arrow_graph_constructor import ArrowGraphConstructor
 from graphdatascience.query_runner.cypher_graph_constructor import CypherGraphConstructor
 from graphdatascience.query_runner.graph_constructor import GraphConstructor
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 
 
 class CatalogCypherEndpoints(CatalogEndpoints):
-    def __init__(self, cypher_runner: Neo4jQueryRunner, arrow_client: GdsArrowClient | None = None):
+    def __init__(self, cypher_runner: QueryRunner, arrow_client: GdsArrowClient | None = None):
         self._cypher_runner = cypher_runner
         self._arrow_client = arrow_client
 

@@ -12,7 +12,6 @@ from testcontainers.core.network import Network
 from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
-from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 
 LOGGER = logging.getLogger(__name__)
@@ -172,8 +171,8 @@ def start_session(
 def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
     """Create an authenticated Arrow client connected to the session container."""
 
-    return AuthenticatedArrowClient.create(
-        arrow_info=ArrowInfo(f"{session_uri.host}:{session_uri.arrow_port}", True, True, ["v1", "v2"]),
+    return AuthenticatedArrowClient(
+        (session_uri.host, session_uri.arrow_port),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
         advertised_listen_address=("gds-session", 8491),

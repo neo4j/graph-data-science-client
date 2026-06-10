@@ -2,13 +2,12 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
     NodePropertiesCypherEndpoints,
 )
-from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner import QueryRunner, QueryType
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 

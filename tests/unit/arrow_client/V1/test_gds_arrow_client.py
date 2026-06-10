@@ -15,7 +15,6 @@ from pyarrow.flight import (
 )
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
-from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.procedure_surface.arrow.error_handler import handle_flight_error
@@ -125,8 +124,8 @@ def flaky_flight_server() -> Generator[None, FlakyFlightServer, None]:
 
 @pytest.fixture()
 def gds_client(flight_server: FlightServer) -> Generator[GdsArrowClient, None, None]:
-    with AuthenticatedArrowClient.create(
-        ArrowInfo(f"localhost:{flight_server.port}", True, True, ["v1"]),
+    with AuthenticatedArrowClient(
+        ("localhost", flight_server.port),
         UsernamePasswordAuthentication("user", "password"),
     ) as arrow_client:
         yield GdsArrowClient(arrow_client)
@@ -136,8 +135,8 @@ def gds_client(flight_server: FlightServer) -> Generator[GdsArrowClient, None, N
 def flaky_gds_client(
     flaky_flight_server: FlakyFlightServer, retry_config_v2: RetryConfigV2
 ) -> Generator[GdsArrowClient, None, None]:
-    with AuthenticatedArrowClient.create(
-        ArrowInfo(f"localhost:{flaky_flight_server.port}", True, True, ["v1"]),
+    with AuthenticatedArrowClient(
+        ("localhost", flaky_flight_server.port),
         UsernamePasswordAuthentication("user", "password"),
         retry_config=retry_config_v2,
     ) as arrow_client:

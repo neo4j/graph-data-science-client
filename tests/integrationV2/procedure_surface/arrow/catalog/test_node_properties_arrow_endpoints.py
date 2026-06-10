@@ -2,13 +2,12 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience import QueryRunner
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.v2.graph_api import GraphV2
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
 )
-from graphdatascience.query_runner import QueryType
+from graphdatascience.query_runner import QueryRunner, QueryType
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,
