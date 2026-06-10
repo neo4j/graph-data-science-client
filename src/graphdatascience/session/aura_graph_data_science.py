@@ -7,7 +7,7 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
-from graphdatascience.error.standalone_session_error import NotAvailableInSessions
+from graphdatascience.error.standalone_session_error import NotAvailableInStandaloneSessions
 from graphdatascience.procedure_surface.api import ConfigEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
@@ -751,7 +751,7 @@ class AuraGraphDataScience:
             The query result as a DataFrame
         """
         if not self._db_query_runner:
-            raise NotAvailableInSessions("Running Cypher queries")
+            raise NotAvailableInStandaloneSessions("Running Cypher queries")
 
         if retryable:
             return self._db_query_runner.run_retryable_cypher(
@@ -784,7 +784,7 @@ class AuraGraphDataScience:
             The name of the database to run queries against.
         """
         if not self._db_query_runner:
-            raise NotAvailableInSessions("Setting the database")
+            raise NotAvailableInStandaloneSessions("Setting the database")
         self._db_query_runner.set_database(database)
 
     def set_bookmarks(self, bookmarks: Any) -> None:
@@ -797,7 +797,7 @@ class AuraGraphDataScience:
             The Neo4j bookmarks defining the required state
         """
         if not self._db_query_runner:
-            raise NotAvailableInSessions("Setting bookmarks")
+            raise NotAvailableInStandaloneSessions("Setting bookmarks")
         self._db_query_runner.set_bookmarks(bookmarks)
 
     def set_show_progress(self, show_progress: bool) -> None:
@@ -821,7 +821,7 @@ class AuraGraphDataScience:
             The name of the database.
         """
         if not self._db_query_runner:
-            raise NotAvailableInSessions("Getting the database")
+            raise NotAvailableInStandaloneSessions("Getting the database")
         return self._db_query_runner.database()
 
     def bookmarks(self) -> Any | None:
@@ -833,7 +833,7 @@ class AuraGraphDataScience:
         The (possibly None) Neo4j bookmarks defining the currently required state
         """
         if not self._db_query_runner:
-            raise NotAvailableInSessions("Getting bookmarks")
+            raise NotAvailableInStandaloneSessions("Getting bookmarks")
         return self._db_query_runner.bookmarks()
 
     def last_bookmarks(self) -> Any | None:
@@ -845,7 +845,7 @@ class AuraGraphDataScience:
         The (possibly None) Neo4j bookmarks defining the state following the most recently called query
         """
         if not self._db_query_runner:
-            raise NotAvailableInSessions("Getting last bookmarks")
+            raise NotAvailableInStandaloneSessions("Getting last bookmarks")
         return self._db_query_runner.last_bookmarks()
 
     def delete(self) -> bool:
