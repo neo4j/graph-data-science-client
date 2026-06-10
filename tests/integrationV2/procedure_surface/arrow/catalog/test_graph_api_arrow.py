@@ -110,7 +110,7 @@ def test_graph_modification_time(G: Graph) -> None:
 
 
 def test_graph_str(G: Graph) -> None:
-    assert str(G) == "GraphV2(name=g, node_count=4, relationship_count=4)"
+    assert str(G) == "Graph(name=g, node_count=4, relationship_count=4)"
 
 
 def test_graph_repr(G: Graph) -> None:
