@@ -1,11 +1,16 @@
 import dataclasses
 import re
 from datetime import datetime, timedelta, timezone
-from typing import cast
+from typing import Any, cast
+from unittest import mock
 
 import pytest
 from pytest_mock import MockerFixture
 
+from graphdatascience import GdsSessions
+from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.session import AuraGraphDataScience
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi, AuraApiError, SessionStatusError
 from graphdatascience.session.aura_api_responses import (
@@ -20,9 +25,9 @@ from graphdatascience.session.aura_api_responses import (
     TimeParser,
     WaitResult,
 )
+from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from graphdatascience.session.dedicated_sessions import DedicatedSessions
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
@@ -251,6 +256,51 @@ class FakeAuraApi(AuraApi):
         return self._size_estimation
 
 
+class FakeGdsSessions(GdsSessions):
+    """
+    Test double for GdsSessions that avoids real database connections.
+
+    Overrides _create_db_runner to store its arguments and return a mock runner,
+    and _construct_client to store its arguments and return a mock client.
+    """
+
+    def __init__(self, aura_api: AuraApi, hosted_in_aura: bool = True) -> None:
+        super().__init__(aura_api)
+        self._hosted_in_aura = hosted_in_aura
+        self.create_db_runner_calls: list[dict[str, Any]] = []
+        self.construct_client_calls: list[dict[str, Any]] = []
+
+    def _create_db_runner(
+        self, db_connection: DbmsConnectionInfo, config: dict[str, Any] | None = None
+    ) -> Neo4jQueryRunner:
+        self.create_db_runner_calls.append({"db_connection": db_connection, "config": config})
+        return mock.MagicMock(spec=Neo4jQueryRunner)
+
+    def _check_hosted_in_aura(self, db_runner: Neo4jQueryRunner) -> bool:
+        return self._hosted_in_aura
+
+    def _construct_client(
+        self,
+        session_id: str,
+        session_host: str,
+        session_port: int,
+        arrow_authentication: ArrowAuthentication,
+        db_runner: Neo4jQueryRunner | None,
+        arrow_client_options: dict[str, Any] | None = None,
+    ) -> AuraGraphDataScience:
+        self.construct_client_calls.append(
+            {
+                "session_id": session_id,
+                "session_host": session_host,
+                "session_port": session_port,
+                "arrow_authentication": arrow_authentication,
+                "db_runner": db_runner,
+                "arrow_client_options": arrow_client_options,
+            }
+        )
+        return mock.MagicMock(spec=AuraGraphDataScience)
+
+
 @pytest.fixture
 def aura_api() -> AuraApi:
     return FakeAuraApi(client_id="client-id")
@@ -263,7 +313,7 @@ def test_list_session(aura_api: AuraApi) -> None:
         instance_id=aura_api.list_instances()[0].id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
 
@@ -291,7 +341,7 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
         instance_id=db.id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
 
@@ -320,7 +370,7 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
     )
     fake_aura_api.add_session(session_details)
 
-    sessions = DedicatedSessions(fake_aura_api)
+    sessions = GdsSessions(aura_api)
 
     actualSessions = sessions.list()
     assert actualSessions == [SessionInfo.from_session_details(session_details)]
@@ -350,13 +400,13 @@ def test_list_session_gds_instance(aura_api: AuraApi) -> None:
         instance_id=db.id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
 
 
 def test_list_session_forwards_filters(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
     list_sessions_spy = mocker.spy(aura_api, "list_sessions")
     start_date = datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc)
     end_date = datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc)
@@ -378,282 +428,199 @@ def test_list_session_forwards_filters(mocker: MockerFixture, aura_api: AuraApi)
     )
 
 
-# def test_create_attached_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-#     _setup_db_instance(aura_api)
-#
-#     sessions = DedicatedSessions(aura_api)
-#
-#     patch_construct_client(mocker)
-#     patch_neo4j_query_runner(mocker)
-#
-#     ttl = timedelta(hours=42)
-#     gds_parameters = sessions.get_or_create(
-#         "my-session",
-#         SessionMemory.m_8GB,
-#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-#         ttl=ttl,
-#     )
-#
-#     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
-#     del gds_parameters["arrow_authentication"]
-#
-#     dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
-#
-#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-#
-#     assert gds_parameters == {  # type: ignore
-#         "db_runner": {
-#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-#             "aura_ds": True,
-#             "database": None,
-#             "show_progress": False,
-#             "config": None,
-#         },
-#         "session_bolt_connection_info": DbmsConnectionInfo(
-#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-#         ),
-#         "session_id": "ffff0-ffff1",
-#         "arrow_client_options": None,
-#     }
-#
-#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-#
-#     assert len(sessions.list()) == 1
-#     actual_session = sessions.list()[0]
-#
-#     assert actual_session.name == "my-session"
-#     assert actual_session.user_id == "user-1"
-#     assert actual_session.ttl == ttl
+def test_create_attached_session(aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+
+    sessions = FakeGdsSessions(aura_api)
+
+    ttl = timedelta(hours=42)
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+        ttl=ttl,
+    )
+
+    db_call = sessions.create_db_runner_calls[0]
+    db_conn = db_call["db_connection"]
+    auth = db_conn.get_auth()
+    assert (auth.principal, auth.credentials) == ("dbuser", "db_pw")
+    assert db_conn.get_uri() == "neo4j+s://ffff0.databases.neo4j.io"
+    assert db_conn.database is None
+    assert db_call["config"] is None
+
+    construct_call = sessions.construct_client_calls[0]
+    assert isinstance(construct_call["arrow_authentication"], AuraApiTokenAuthentication)
+    assert construct_call["session_id"] == "ffff0-ffff1"
+    assert construct_call["session_host"] == "foo.bar"
+    assert construct_call["arrow_client_options"] is None
+
+    assert len(sessions.list()) == 1
+    actual_session = sessions.list()[0]
+    assert actual_session.name == "my-session"
+    assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
 
 
-# def test_create_attached_session_with_only_uri(mocker: MockerFixture, aura_api: AuraApi) -> None:
-#     _setup_db_instance(aura_api)
-#
-#     sessions = DedicatedSessions(aura_api)
-#
-#     patch_construct_client(mocker)
-#     patch_neo4j_query_runner(mocker)
-#
-#     ttl = timedelta(hours=42)
-#     with pytest.warns(
-#         DeprecationWarning,
-#         match=re.escape("Deriving the Aura instance from the database URI is deprecated"),
-#     ):
-#         gds_parameters = sessions.get_or_create(
-#             "my-session",
-#             SessionMemory.m_8GB,
-#             DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
-#             ttl=ttl,
-#         )
-#
-#     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
-#     del gds_parameters["arrow_authentication"]
-#
-#     dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
-#
-#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-#
-#     assert gds_parameters == {  # type: ignore
-#         "db_runner": {
-#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-#             "aura_ds": True,
-#             "database": None,
-#             "show_progress": False,
-#             "config": None,
-#         },
-#         "session_bolt_connection_info": DbmsConnectionInfo(
-#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-#         ),
-#         "session_id": "ffff0-ffff1",
-#         "arrow_client_options": None,
-#     }
-#
-#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-#
-#     assert len(sessions.list()) == 1
-#     actual_session = sessions.list()[0]
-#
-#     assert actual_session.name == "my-session"
-#     assert actual_session.user_id == "user-1"
-#     assert actual_session.ttl == ttl
-#
-#
-# def test_create_attached_session_passthrough_arrow_settings(mocker: MockerFixture, aura_api: AuraApi) -> None:
-#     _setup_db_instance(aura_api)
-#
-#     sessions = DedicatedSessions(aura_api)
-#
-#     patch_construct_client(mocker)
-#     patch_neo4j_query_runner(mocker)
-#
-#     ttl = timedelta(hours=42)
-#     gds_parameters = sessions.get_or_create(
-#         "my-session",
-#         SessionMemory.m_8GB,
-#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-#         ttl=ttl,
-#         arrow_client_options={"foo": "bar"},
-#     )
-#
-#     arrow_authentication = gds_parameters["arrow_authentication"]  # type: ignore
-#     del gds_parameters["arrow_authentication"]
-#
-#     dbms_authentication = gds_parameters["db_runner"].pop("auth")  # type: ignore
-#
-#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-#
-#     assert gds_parameters == {  # type: ignore
-#         "db_runner": {
-#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-#             "aura_ds": True,
-#             "database": None,
-#             "show_progress": False,
-#             "config": None,
-#         },
-#         "session_bolt_connection_info": DbmsConnectionInfo(
-#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-#         ),
-#         "session_id": "ffff0-ffff1",
-#         "arrow_client_options": {"foo": "bar"},
-#     }
-#
-#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-#
-#     assert len(sessions.list()) == 1
-#     actual_session = sessions.list()[0]
-#
-#     assert actual_session.name == "my-session"
-#     assert actual_session.user_id == "user-1"
-#     assert actual_session.ttl == ttl
-#
-#
-# def test_create_standalone_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-#     sessions = DedicatedSessions(aura_api)
-#
-#     patch_construct_client(mocker)
-#     patch_neo4j_query_runner(mocker, hosted_in_aura=False)
-#
-#     ttl = timedelta(hours=42)
-#
-#     gds_credentials = sessions.get_or_create(
-#         "my-session",
-#         "8GB",
-#         DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw"),
-#         cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
-#         ttl=ttl,
-#     )
-#
-#     arrow_authentication = gds_credentials["arrow_authentication"]  # type: ignore
-#     del gds_credentials["arrow_authentication"]
-#
-#     dbms_authentication = gds_credentials["db_runner"].pop("auth")  # type: ignore
-#
-#     assert (dbms_authentication.principal, dbms_authentication.credentials) == ("dbuser", "db_pw")
-#
-#     assert gds_credentials == {  # type: ignore
-#         "db_runner": {
-#             "endpoint": "neo4j+s://foo.bar",
-#             "aura_ds": True,
-#             "database": None,
-#             "show_progress": False,
-#             "config": None,
-#         },
-#         "session_bolt_connection_info": DbmsConnectionInfo(
-#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-#         ),
-#         "session_id": "selfmanaged-ffff0",
-#         "arrow_client_options": None,
-#     }
-#
-#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-#
-#     assert len(sessions.list()) == 1
-#     actual_session = sessions.list()[0]
-#
-#     assert actual_session.name == "my-session"
-#     assert actual_session.user_id == "user-1"
-#     assert actual_session.ttl == ttl
-#
-#
-# def test_get_or_create_existing_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-#     _setup_db_instance(aura_api)
-#
-#     sessions = DedicatedSessions(aura_api)
-#
-#     patch_construct_client(mocker)
-#     patch_neo4j_query_runner(mocker)
-#
-#     gds_args1 = sessions.get_or_create(
-#         "my-session",
-#         SessionMemory.m_8GB,
-#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-#     )
-#     gds_args2 = sessions.get_or_create(
-#         "my-session",
-#         SessionMemory.m_8GB,
-#         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-#     )
-#
-#     arrow_authentication = gds_args1["arrow_authentication"]  # type: ignore
-#     del gds_args1["arrow_authentication"]
-#     del gds_args2["arrow_authentication"]
-#
-#     actual_auth_1 = gds_args1["db_runner"].pop("auth")  # type: ignore
-#     actual_auth_2 = gds_args2["db_runner"].pop("auth")  # type: ignore
-#
-#     assert (actual_auth_1.principal, actual_auth_1.credentials) == ("dbuser", "db_pw")
-#     assert (actual_auth_2.principal, actual_auth_2.credentials) == ("dbuser", "db_pw")
-#
-#     assert gds_args1 == {  # type: ignore
-#         "db_runner": {
-#             "endpoint": "neo4j+s://ffff0.databases.neo4j.io",
-#             "aura_ds": True,
-#             "database": None,
-#             "show_progress": False,
-#             "config": None,
-#         },
-#         "session_bolt_connection_info": DbmsConnectionInfo(
-#             uri="neo4j+s://foo.bar", username="client-id", password="client_secret"
-#         ),
-#         "session_id": "ffff0-ffff1",
-#         "arrow_client_options": None,
-#     }
-#
-#     assert gds_args1 == gds_args2
-#
-#     assert isinstance(arrow_authentication, AuraApiTokenAuthentication)
-#
-#     assert [i.name for i in sessions.list()] == ["my-session"]
+def test_create_attached_session_with_only_uri(aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=True)
+
+    ttl = timedelta(hours=42)
+    with pytest.warns(
+        DeprecationWarning,
+        match=re.escape("Deriving the Aura instance from the database URI is deprecated"),
+    ):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo("neo4j+s://ffff0.databases.neo4j.io", "dbuser", "db_pw"),
+            ttl=ttl,
+        )
+
+    db_call = sessions.create_db_runner_calls[0]
+    db_conn = db_call["db_connection"]
+    auth = db_conn.get_auth()
+    assert (auth.principal, auth.credentials) == ("dbuser", "db_pw")
+    assert db_conn.get_uri() == "neo4j+s://ffff0.databases.neo4j.io"
+    assert db_conn.database is None
+    assert db_call["config"] is None
+
+    construct_call = sessions.construct_client_calls[0]
+    assert isinstance(construct_call["arrow_authentication"], AuraApiTokenAuthentication)
+    assert construct_call["session_id"] == "ffff0-ffff1"
+    assert construct_call["session_host"] == "foo.bar"
+    assert construct_call["arrow_client_options"] is None
+
+    assert len(sessions.list()) == 1
+    actual_session = sessions.list()[0]
+    assert actual_session.name == "my-session"
+    assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
 
 
-def test_get_or_create_with_explicit_aura_instance_id(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    db = _setup_db_instance(aura_api)
-    sessions = DedicatedSessions(aura_api)
-    patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker)
+def test_create_attached_session_passthrough_arrow_settings(aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+
+    sessions = FakeGdsSessions(aura_api)
+
+    ttl = timedelta(hours=42)
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+        ttl=ttl,
+        arrow_client_options={"foo": "bar"},
+    )
+
+    db_call = sessions.create_db_runner_calls[0]
+    db_conn = db_call["db_connection"]
+    auth = db_conn.get_auth()
+    assert (auth.principal, auth.credentials) == ("dbuser", "db_pw")
+    assert db_conn.get_uri() == "neo4j+s://ffff0.databases.neo4j.io"
+    assert db_conn.database is None
+    assert db_call["config"] is None
+
+    construct_call = sessions.construct_client_calls[0]
+    assert isinstance(construct_call["arrow_authentication"], AuraApiTokenAuthentication)
+    assert construct_call["session_id"] == "ffff0-ffff1"
+    assert construct_call["session_host"] == "foo.bar"
+    assert construct_call["arrow_client_options"] == {"foo": "bar"}
+
+    assert len(sessions.list()) == 1
+    actual_session = sessions.list()[0]
+    assert actual_session.name == "my-session"
+    assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
+
+
+def test_create_standalone_session(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=False)
+
+    ttl = timedelta(hours=42)
+    sessions.get_or_create(
+        "my-session",
+        "8GB",
+        DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw"),
+        cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+        ttl=ttl,
+    )
+
+    db_call = sessions.create_db_runner_calls[0]
+    db_conn = db_call["db_connection"]
+    auth = db_conn.get_auth()
+    assert (auth.principal, auth.credentials) == ("dbuser", "db_pw")
+    assert db_conn.get_uri() == "neo4j+s://foo.bar"
+    assert db_conn.database is None
+    assert db_call["config"] is None
+
+    construct_call = sessions.construct_client_calls[0]
+    assert isinstance(construct_call["arrow_authentication"], AuraApiTokenAuthentication)
+    assert construct_call["session_id"] == "selfmanaged-ffff0"
+    assert construct_call["session_host"] == "foo.bar"
+    assert construct_call["arrow_client_options"] is None
+
+    assert len(sessions.list()) == 1
+    actual_session = sessions.list()[0]
+    assert actual_session.name == "my-session"
+    assert actual_session.user_id == "user-1"
+    assert actual_session.ttl == ttl
+
+
+def test_get_or_create_existing_session(aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+
+    sessions = FakeGdsSessions(aura_api)
 
     sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
-        DbmsConnectionInfo(
-            username="dbuser", password="db_pw", aura_instance_id=db.id
-        ),  # not part of list instances result
+        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+    )
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+    )
+
+    assert len(sessions.construct_client_calls) == 2
+    for construct_call in sessions.construct_client_calls:
+        assert isinstance(construct_call["arrow_authentication"], AuraApiTokenAuthentication)
+        assert construct_call["session_id"] == "ffff0-ffff1"
+        assert construct_call["session_host"] == "foo.bar"
+        assert construct_call["arrow_client_options"] is None
+
+    for db_call in sessions.create_db_runner_calls:
+        auth = db_call["db_connection"].get_auth()
+        assert (auth.principal, auth.credentials) == ("dbuser", "db_pw")
+        assert db_call["db_connection"].get_uri() == "neo4j+s://ffff0.databases.neo4j.io"
+
+    assert [i.name for i in sessions.list()] == ["my-session"]
+
+
+def test_get_or_create_with_explicit_aura_instance_id(aura_api: AuraApi) -> None:
+    db = _setup_db_instance(aura_api)
+    sessions = FakeGdsSessions(aura_api)
+
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id=db.id),
         cloud_location=None,
     )
 
 
-def test_get_or_create_with_multidb_aura_instance(mocker: MockerFixture, aura_api: AuraApi) -> None:
+def test_get_or_create_with_multidb_aura_instance(aura_api: AuraApi) -> None:
     instance = _setup_db_instance(aura_api)
-    sessions = DedicatedSessions(aura_api)
-    patch_construct_client(mocker)
-    patch_neo4j_query_runner(mocker)
+    sessions = FakeGdsSessions(aura_api)
 
     sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo(
             username="dbuser", password="db_pw", aura_instance_id=instance.id, aura_database_id="db-id-1"
-        ),  # not part of list instances result
+        ),
         cloud_location=None,
     )
     session = [i for i in aura_api.list_sessions() if i.name == "my-session"][0]
@@ -661,10 +628,8 @@ def test_get_or_create_with_multidb_aura_instance(mocker: MockerFixture, aura_ap
     assert session.database_id == "db-id-1"
 
 
-def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
-
-    patch_neo4j_query_runner(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -687,7 +652,7 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
     )
 
     with pytest.raises(SessionStatusError, match=re.escape("Session is in an unhealthy state")):
-        sessions = DedicatedSessions(aura_api)
+        sessions = FakeGdsSessions(aura_api)
         sessions.get_or_create(
             "one",
             SessionMemory.m_8GB,
@@ -695,9 +660,8 @@ def test_get_or_create_expired_session(mocker: MockerFixture, aura_api: AuraApi)
         )
 
 
-def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
+def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
-    patch_neo4j_query_runner(mocker)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
@@ -719,7 +683,7 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
     )
 
     with pytest.raises(Warning, match=re.escape("Session `one` is expiring in 59 minutes.")):
-        sessions = DedicatedSessions(aura_api)
+        sessions = FakeGdsSessions(aura_api)
         sessions.get_or_create(
             "one",
             SessionMemory.m_8GB,
@@ -727,11 +691,10 @@ def test_get_or_create_soon_expired_session(mocker: MockerFixture, aura_api: Aur
         )
 
 
-def test_get_or_create_for_auradb_with_cloud_location(mocker: MockerFixture, aura_api: AuraApi) -> None:
+def test_get_or_create_for_auradb_with_cloud_location(aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 
-    sessions = DedicatedSessions(aura_api)
-    patch_neo4j_query_runner(mocker)
+    sessions = FakeGdsSessions(aura_api)
 
     with pytest.raises(
         ValueError, match=re.escape("cloud_location cannot be provided for sessions against an AuraDB.")
@@ -744,9 +707,8 @@ def test_get_or_create_for_auradb_with_cloud_location(mocker: MockerFixture, aur
         )
 
 
-def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    sessions = DedicatedSessions(aura_api)
-    patch_neo4j_query_runner(mocker, hosted_in_aura=False)
+def test_get_or_create_for_without_cloud_location(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=False)
 
     with pytest.raises(
         ValueError, match=re.escape("cloud_location must be provided for sessions not attached to an AuraDB.")
@@ -759,9 +721,8 @@ def test_get_or_create_for_without_cloud_location(mocker: MockerFixture, aura_ap
         )
 
 
-def test_get_or_create_for_non_derivable_aura_instance_id(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    sessions = DedicatedSessions(aura_api)
-    patch_neo4j_query_runner(mocker)
+def test_get_or_create_for_non_derivable_aura_instance_id(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=True)
 
     with (
         pytest.raises(
@@ -777,16 +738,13 @@ def test_get_or_create_for_non_derivable_aura_instance_id(mocker: MockerFixture,
         sessions.get_or_create(
             "my-session",
             SessionMemory.m_8GB,
-            DbmsConnectionInfo(
-                "neo4j+s://06cba79f.databases.neo4j.io", "dbuser", "db_pw"
-            ),  # not part of list instances result
+            DbmsConnectionInfo("neo4j+s://06cba79f.databases.neo4j.io", "dbuser", "db_pw"),
             cloud_location=None,
         )
 
 
-def test_get_or_create_for_non_accessible_aura_instance(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    sessions = DedicatedSessions(aura_api)
-    patch_neo4j_query_runner(mocker)
+def test_get_or_create_for_non_accessible_aura_instance(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api)
 
     with pytest.raises(
         ValueError,
@@ -797,16 +755,12 @@ def test_get_or_create_for_non_accessible_aura_instance(mocker: MockerFixture, a
         sessions.get_or_create(
             "my-session",
             SessionMemory.m_8GB,
-            DbmsConnectionInfo(
-                "neo4j+s://foo.bar", "dbuser", "db_pw", aura_instance_id="06cba79f"
-            ),  # not part of list instances result
+            DbmsConnectionInfo("neo4j+s://foo.bar", "dbuser", "db_pw", aura_instance_id="06cba79f"),
             cloud_location=None,
         )
 
 
-def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    patch_neo4j_query_runner(mocker, False)
-
+def test_get_or_create_failed_session(aura_api: AuraApi) -> None:
     fake_aura_api = cast(FakeAuraApi, aura_api)
     fake_aura_api.add_session(
         SessionDetailsWithErrors(
@@ -828,7 +782,7 @@ def test_get_or_create_failed_session(mocker: MockerFixture, aura_api: AuraApi) 
     )
 
     db_connection = DbmsConnectionInfo("foo.bar", "", "")
-    sessions = DedicatedSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=False)
 
     with pytest.raises(
         SessionStatusError,
@@ -843,7 +797,7 @@ def test_delete_session_by_name(aura_api: AuraApi) -> None:
     aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, instance_id="12345")
     aura_api.get_or_create_session("other", memory=SessionMemory.m_8GB.value, instance_id="123123")
 
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     assert sessions.delete(session_name="one")
     assert [i.name for i in sessions.list()] == ["other"]
@@ -887,7 +841,7 @@ def test_delete_session_by_name_admin() -> None:
         )
     )
 
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
     with pytest.raises(
         RuntimeError,
         match=re.escape(
@@ -901,7 +855,7 @@ def test_delete_session_by_id(aura_api: AuraApi) -> None:
     s1 = aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, instance_id="12345")
     s2 = aura_api.get_or_create_session("other", memory=SessionMemory.m_8GB.value, instance_id="123123")
 
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
     assert sessions.delete(session_id=s1.id)
     assert [i.name for i in sessions.list()] == [s2.name]
 
@@ -909,7 +863,7 @@ def test_delete_session_by_id(aura_api: AuraApi) -> None:
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
     aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, instance_id=db1)
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     assert sessions.delete(session_name="other") is False
     assert [i.name for i in sessions.list()] == ["one"]
@@ -937,18 +891,15 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
         instance_id=paused_db.id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     # can delete session running against a paused instance
     assert sessions.delete(session_name=session.name)
 
 
-def test_create_waiting_forever(
-    mocker: MockerFixture,
-) -> None:
+def test_create_waiting_forever() -> None:
     aura_api = FakeAuraApi(status_after_creating="updating")
-    sessions = DedicatedSessions(aura_api)
-    patch_neo4j_query_runner(mocker, False)
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=False)
 
     with pytest.raises(
         RuntimeError, match="Failed to get or create session `one`: Session `selfmanaged-ffff0` is not running"
@@ -963,21 +914,21 @@ def test_create_waiting_forever(
 
 def test_estimate_size() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
 
 
 def test_estimate_str_categories_size() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     assert sessions.estimate(1, 1, ["centrality"]) == SessionMemory.m_8GB
 
 
 def test_estimate_size_exceeds() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("16GB", "8GB"))
-    sessions = DedicatedSessions(aura_api)
+    sessions = GdsSessions(aura_api)
 
     with pytest.warns(
         ResourceWarning,
@@ -988,22 +939,3 @@ def test_estimate_size_exceeds() -> None:
 
 def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
     return aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
-
-
-def patch_neo4j_query_runner(mocker: MockerFixture, hosted_in_aura: bool = True) -> None:
-    mocker.patch(
-        "graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner.create_for_db",
-        lambda *args, **kwargs: kwargs,
-    )
-    mocker.patch("graphdatascience.session.dedicated_sessions.DedicatedSessions._validate_db_connection")
-    mocker.patch(
-        "graphdatascience.query_runner.db_environment_resolver.DbEnvironmentResolver.hosted_in_aura",
-        lambda *args, **kwargs: hosted_in_aura,
-    )
-
-
-def patch_construct_client(mocker: MockerFixture) -> None:
-    mocker.patch(
-        "graphdatascience.session.dedicated_sessions.DedicatedSessions._construct_client",
-        lambda *args, **kwargs: kwargs,
-    )
