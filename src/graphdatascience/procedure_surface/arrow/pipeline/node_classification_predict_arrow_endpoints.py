@@ -6,7 +6,7 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
@@ -35,7 +35,7 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         relationship_types: list[str] | None = None,
@@ -72,7 +72,7 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         relationship_types: list[str] | None = None,
@@ -98,7 +98,7 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         mutate_property: str,
         *,
@@ -143,7 +143,7 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         write_property: str,
         *,

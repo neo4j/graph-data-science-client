@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
     LocalClusteringCoefficientWriteResult,
 )
@@ -33,13 +33,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph, undirected=("REL", "UNDIRECTED_REL")) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -63,7 +63,7 @@ def local_clustering_coefficient_endpoints(
 
 
 def test_local_clustering_coefficient_stats(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test Local Clustering Coefficient stats operation via Arrow."""
     result = local_clustering_coefficient_endpoints.stats(G=sample_graph)
@@ -77,7 +77,7 @@ def test_local_clustering_coefficient_stats(
 
 
 def test_local_clustering_coefficient_stream(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test Local Clustering Coefficient stream operation via Arrow."""
     result_df = local_clustering_coefficient_endpoints.stream(G=sample_graph)
@@ -88,7 +88,7 @@ def test_local_clustering_coefficient_stream(
 
 
 def test_local_clustering_coefficient_mutate(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test Local Clustering Coefficient mutate operation via Arrow."""
     result = local_clustering_coefficient_endpoints.mutate(
@@ -108,7 +108,7 @@ def test_local_clustering_coefficient_mutate(
 
 @pytest.mark.db_integration
 def test_local_clustering_coefficient_write(
-    arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner
+    arrow_client: AuthenticatedArrowClient, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
     """Test Local Clustering Coefficient write operation via Arrow."""
 
@@ -131,7 +131,7 @@ def test_local_clustering_coefficient_write(
 
 
 def test_local_clustering_coefficient_estimate(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test Local Clustering Coefficient estimate operation via Arrow."""
     result = local_clustering_coefficient_endpoints.estimate(sample_graph)
@@ -146,7 +146,7 @@ def test_local_clustering_coefficient_estimate(
 
 
 def test_compute(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientArrowEndpoints, sample_graph: Graph
 ) -> None:
     handle = local_clustering_coefficient_endpoints.compute(G=sample_graph)
     summary = handle.summary()

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.longest_path_endpoints import LongestPathEndpoints
@@ -23,7 +23,7 @@ class LongestPathArrowEndpoints(LongestPathEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -49,7 +49,7 @@ class LongestPathArrowEndpoints(LongestPathEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,

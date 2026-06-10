@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -34,7 +34,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int,
         embedding_density: int,
         *,
@@ -76,7 +76,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int,
         embedding_density: int,
         mutate_property: str,
@@ -125,7 +125,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int,
         embedding_density: int,
         output_dimension: int | None = None,
@@ -171,7 +171,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int,
         embedding_density: int,
         write_property: str,
@@ -229,7 +229,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         iterations: int,
         embedding_density: int,
         output_dimension: int | None = None,

@@ -2,7 +2,7 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
     CollapsePathResult,
@@ -27,7 +27,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_types: list[str] = ALL_TYPES,
         relationship_properties: list[str] | None = None,
         *,
@@ -101,7 +101,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_type: str,
         relationship_properties: list[str] | None = None,
         *,
@@ -145,7 +145,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def drop(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_type: str,
         *,
         fail_if_missing: bool = True,
@@ -164,7 +164,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def index_inverse(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_types: list[str],
         *,
         concurrency: int | None = None,
@@ -196,7 +196,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def to_undirected(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_type: str,
         mutate_relationship_type: str,
         *,
@@ -238,7 +238,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
     def collapse_path(
         self,
-        G: GraphV2,
+        G: Graph,
         path_templates: list[list[str]],
         mutate_relationship_type: str,
         *,

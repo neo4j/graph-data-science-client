@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.modularity_optimization_cypher_endpoints import (
     ModularityOptimizationCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -50,7 +50,7 @@ def modularity_optimization_endpoints(
 
 
 def test_modularity_optimization_stats(
-    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Modularity Optimization stats operation."""
     result = modularity_optimization_endpoints.stats(G=sample_graph)
@@ -65,7 +65,7 @@ def test_modularity_optimization_stats(
 
 
 def test_modularity_optimization_stream(
-    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Modularity Optimization stream operation."""
     result_df = modularity_optimization_endpoints.stream(
@@ -79,7 +79,7 @@ def test_modularity_optimization_stream(
 
 
 def test_modularity_optimization_mutate(
-    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Modularity Optimization mutate operation."""
     result = modularity_optimization_endpoints.mutate(
@@ -99,7 +99,7 @@ def test_modularity_optimization_mutate(
 
 
 def test_modularity_optimization_estimate(
-    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = modularity_optimization_endpoints.estimate(sample_graph)
 

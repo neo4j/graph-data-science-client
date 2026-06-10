@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints import KnnCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {prop: [1.0, 2.0, 3.0]}),
@@ -38,7 +38,7 @@ def knn_endpoints(query_runner: QueryRunner) -> Generator[KnnCypherEndpoints, No
     yield KnnCypherEndpoints(query_runner)
 
 
-def test_knn_stats(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_stats(knn_endpoints: KnnCypherEndpoints, sample_graph: Graph) -> None:
     result = knn_endpoints.stats(G=sample_graph, node_properties=["prop"], top_k=2)
 
     assert result.ran_iterations > 0
@@ -52,7 +52,7 @@ def test_knn_stats(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> 
     assert "p50" in result.similarity_distribution
 
 
-def test_knn_stream(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_stream(knn_endpoints: KnnCypherEndpoints, sample_graph: Graph) -> None:
     result_df = knn_endpoints.stream(
         G=sample_graph,
         node_properties=["prop"],
@@ -63,7 +63,7 @@ def test_knn_stream(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) ->
     assert len(result_df) == 8
 
 
-def test_knn_mutate(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_mutate(knn_endpoints: KnnCypherEndpoints, sample_graph: Graph) -> None:
     result = knn_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="SIMILAR",
@@ -82,7 +82,7 @@ def test_knn_mutate(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) ->
     assert result.node_pairs_considered > 0
 
 
-def test_knn_estimate(knn_endpoints: KnnCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_estimate(knn_endpoints: KnnCypherEndpoints, sample_graph: Graph) -> None:
     result = knn_endpoints.estimate(sample_graph, node_properties=["prop"], top_k=2)
 
     assert result.node_count == 4

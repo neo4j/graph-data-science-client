@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipeline_cypher_endpoints import (
     NodeClassificationPipelineCypherEndpoints,
 )
@@ -13,7 +13,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: Neo4jQueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: Neo4jQueryRunner) -> Generator[Graph, None, None]:
     graph_name = f"nc-cypher-g-{uuid4().hex[:8]}"
     create_statement = """
     CREATE
@@ -46,7 +46,7 @@ def endpoints(query_runner: Neo4jQueryRunner) -> NodeClassificationPipelineCyphe
 def test_node_classification_train_estimate_cypher_pipeline(
     query_runner: Neo4jQueryRunner,
     endpoints: NodeClassificationPipelineCypherEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nc-cypher-pipe-{uuid4().hex[:8]}"
     model_name = f"nc-cypher-model-{uuid4().hex[:8]}"
@@ -75,7 +75,7 @@ def test_node_classification_train_estimate_cypher_pipeline(
 def test_node_classification_predict_estimate_cypher_pipeline(
     query_runner: Neo4jQueryRunner,
     endpoints: NodeClassificationPipelineCypherEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nc-cypher-pipe-{uuid4().hex[:8]}"
     model_name = f"nc-cypher-model-{uuid4().hex[:8]}"

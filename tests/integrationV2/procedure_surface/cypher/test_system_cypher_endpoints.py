@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -27,13 +27,13 @@ projection_query = """
 
 
 @pytest.fixture(scope="class")
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph(query_runner, "g", graph, projection_query) as G:
         yield G
 
 
 @pytest.fixture(scope="class")
-def job_id(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[str, None, None]:
+def job_id(query_runner: QueryRunner, sample_graph: Graph) -> Generator[str, None, None]:
     job_id = "test_job_id"
     WccCypherEndpoints(query_runner).mutate(sample_graph, job_id=job_id, log_progress=True, mutate_property="wcc")
     yield job_id

@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -15,7 +15,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         tolerance: float = 0.0001,
         max_levels: int = 10,
@@ -84,7 +84,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,
@@ -146,7 +146,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,
@@ -211,7 +211,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         tolerance: float = 0.0001,
         max_levels: int = 10,
@@ -282,7 +282,7 @@ class LouvainEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,

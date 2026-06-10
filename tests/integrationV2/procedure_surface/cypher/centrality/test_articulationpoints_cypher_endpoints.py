@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
@@ -17,7 +17,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -49,7 +49,7 @@ def articulationpoints_endpoints(query_runner: QueryRunner) -> Generator[Articul
 
 
 def test_articulationpoints_mutate(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test ArticulationPoints mutate operation."""
     result = articulationpoints_endpoints.mutate(
@@ -65,7 +65,7 @@ def test_articulationpoints_mutate(
 
 
 def test_articulationpoints_stats(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test ArticulationPoints stats operation."""
     result = articulationpoints_endpoints.stats(sample_graph)
@@ -76,7 +76,7 @@ def test_articulationpoints_stats(
 
 
 def test_articulationpoints_stream(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test ArticulationPoints stream operation."""
     result = articulationpoints_endpoints.stream(sample_graph)
@@ -88,7 +88,7 @@ def test_articulationpoints_stream(
 
 
 def test_articulationpoints_write(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test ArticulationPoints write operation."""
     result = articulationpoints_endpoints.write(

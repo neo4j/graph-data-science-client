@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.node_embedding.node2vec_cypher_endpoints import Node2VecCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -40,7 +40,7 @@ def node2vec_endpoints(query_runner: QueryRunner) -> Generator[Node2VecCypherEnd
     yield Node2VecCypherEndpoints(query_runner)
 
 
-def test_node2vec_mutate(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_node2vec_mutate(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: Graph) -> None:
     """Test Node2Vec mutate operation."""
     result = node2vec_endpoints.mutate(
         G=sample_graph,
@@ -59,7 +59,7 @@ def test_node2vec_mutate(node2vec_endpoints: Node2VecCypherEndpoints, sample_gra
     assert isinstance(result.loss_per_iteration, list)
 
 
-def test_node2vec_stream(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_node2vec_stream(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: Graph) -> None:
     """Test Node2Vec stream operation."""
     result = node2vec_endpoints.stream(
         G=sample_graph,
@@ -72,7 +72,7 @@ def test_node2vec_stream(node2vec_endpoints: Node2VecCypherEndpoints, sample_gra
     assert set(result.columns) == {"nodeId", "embedding"}
 
 
-def test_node2vec_write(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_node2vec_write(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: Graph) -> None:
     """Test Node2Vec write operation."""
     result = node2vec_endpoints.write(
         G=sample_graph,
@@ -91,7 +91,7 @@ def test_node2vec_write(node2vec_endpoints: Node2VecCypherEndpoints, sample_grap
     assert isinstance(result.loss_per_iteration, list)
 
 
-def test_node2vec_estimate(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_node2vec_estimate(node2vec_endpoints: Node2VecCypherEndpoints, sample_graph: Graph) -> None:
     """Test Node2Vec estimate operation."""
     result = node2vec_endpoints.estimate(
         G=sample_graph,

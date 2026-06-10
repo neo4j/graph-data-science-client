@@ -5,7 +5,7 @@ import typing
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
@@ -40,7 +40,7 @@ class JobsArrowEndpoints:
         self._write_protocol = write_protocol
         self._show_progress = show_progress
 
-    def get(self, G: GraphV2, job_id: str) -> JobHandle | WriteJobHandle | ProjectionJobHandle:
+    def get(self, G: Graph, job_id: str) -> JobHandle | WriteJobHandle | ProjectionJobHandle:
         """
         Returns the appropriate job handle for an existing job.
 

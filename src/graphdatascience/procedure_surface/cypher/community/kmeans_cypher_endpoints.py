@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import (
     KMeansEndpoints,
     KMeansMutateResult,
@@ -28,7 +28,7 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         mutate_property: str,
         *,
@@ -79,7 +79,7 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         *,
         compute_silhouette: bool = False,
@@ -128,7 +128,7 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         *,
         compute_silhouette: bool = False,
@@ -173,7 +173,7 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         write_property: str,
         *,
@@ -226,7 +226,7 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         node_property: str,
         *,
         compute_silhouette: bool = False,

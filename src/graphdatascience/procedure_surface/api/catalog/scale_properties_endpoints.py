@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
@@ -16,7 +16,7 @@ class ScalePropertiesEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         node_properties: list[str],
         scaler: str | dict[str, str | int | float] | ScalerConfig,
@@ -69,7 +69,7 @@ class ScalePropertiesEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: list[str],
         scaler: str | dict[str, str | int | float] | ScalerConfig,
         node_labels: list[str] = ALL_LABELS,
@@ -119,7 +119,7 @@ class ScalePropertiesEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: list[str],
         scaler: str | dict[str, str | int | float] | ScalerConfig,
         node_labels: list[str] = ALL_LABELS,
@@ -168,7 +168,7 @@ class ScalePropertiesEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         node_properties: list[str],
         scaler: str | dict[str, str | int | float] | ScalerConfig,
@@ -222,7 +222,7 @@ class ScalePropertiesEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         node_properties: list[str],
         scaler: str | dict[str, str | int | float] | ScalerConfig,
         node_labels: list[str] = ALL_LABELS,

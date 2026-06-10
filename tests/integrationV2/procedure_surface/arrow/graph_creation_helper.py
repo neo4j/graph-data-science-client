@@ -4,7 +4,7 @@ from typing import Any, Generator
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -14,7 +14,7 @@ from graphdatascience.query_runner.query_type import QueryType
 @contextmanager
 def create_graph(
     arrow_client: AuthenticatedArrowClient, graph_name: str, gdl: str, undirected: tuple[str, str] | None = None
-) -> Generator[GraphV2, Any, None]:
+) -> Generator[Graph, Any, None]:
     try:
         raw_res = list(
             arrow_client.do_action_with_retry("v2/graph.fromGDL", {"graphName": graph_name, "gdlGraph": gdl})
@@ -49,7 +49,7 @@ def create_graph_from_db(
     graph_data: str,
     query: str,
     undirected_relationship_types: list[str] | None = None,
-) -> Generator[GraphV2, Any, None]:
+) -> Generator[Graph, Any, None]:
     try:
         query_runner.run_cypher(graph_data, QueryType.USER_ACTION)
         result = CatalogArrowEndpoints(arrow_client, query_runner).project(

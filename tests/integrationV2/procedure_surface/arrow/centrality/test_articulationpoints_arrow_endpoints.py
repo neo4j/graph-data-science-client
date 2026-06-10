@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
@@ -30,13 +30,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph, undirected=("REL", "UNDIRECTED_REL")) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -58,7 +58,7 @@ def articulationpoints_endpoints(arrow_client: AuthenticatedArrowClient) -> Arti
 
 
 def test_articulationpoints_mutate(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = articulationpoints_endpoints.mutate(
         G=sample_graph,
@@ -74,7 +74,7 @@ def test_articulationpoints_mutate(
 
 
 def test_articulationpoints_stats(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = articulationpoints_endpoints.stats(sample_graph)
 
@@ -84,7 +84,7 @@ def test_articulationpoints_stats(
 
 
 def test_articulationpoints_stream_not_implemented(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
 ) -> None:
     with pytest.raises(
         NotImplementedError, match="Stream mode is not supported for ArticulationPoints arrow endpoints"
@@ -94,7 +94,7 @@ def test_articulationpoints_stream_not_implemented(
 
 @pytest.mark.db_integration
 def test_articulationpoints_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     endpoints = ArticulationPointsArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="articulationPoint")
@@ -114,7 +114,7 @@ def test_articulationpoints_write(
 
 
 def test_articulationpoints_estimate(
-    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = articulationpoints_endpoints.estimate(sample_graph)
 
@@ -127,7 +127,7 @@ def test_articulationpoints_estimate(
     assert result.heap_percentage_max > 0
 
 
-def test_compute(articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(articulationpoints_endpoints: ArticulationPointsArrowEndpoints, sample_graph: Graph) -> None:
     handle = articulationpoints_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

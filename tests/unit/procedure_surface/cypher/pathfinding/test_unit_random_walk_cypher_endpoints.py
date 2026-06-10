@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import (
     RandomWalkMutateResult,
     RandomWalkStatsResult,
@@ -19,7 +19,7 @@ def random_walk_endpoints(query_runner: CollectingQueryRunner) -> RandomWalkCyph
 
 
 def test_stream_basic(
-    random_walk_endpoints: RandomWalkCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
+    random_walk_endpoints: RandomWalkCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
     random_walk_endpoints.stream(graph, source_nodes=[1, 2], walk_length=3)
 
@@ -33,7 +33,7 @@ def test_stream_basic(
     assert "jobId" in config
 
 
-def test_mutate_basic(graph: GraphV2) -> None:
+def test_mutate_basic(graph: Graph) -> None:
     result = {
         "nodePropertiesWritten": 7,
         "preProcessingMillis": 10,
@@ -58,7 +58,7 @@ def test_mutate_basic(graph: GraphV2) -> None:
     assert result_obj.node_properties_written == 7
 
 
-def test_stats_basic(graph: GraphV2) -> None:
+def test_stats_basic(graph: Graph) -> None:
     result = {
         "preProcessingMillis": 10,
         "computeMillis": 20,
@@ -78,7 +78,7 @@ def test_stats_basic(graph: GraphV2) -> None:
     assert result_obj.compute_millis == 20
 
 
-def test_estimate_with_graph_name(graph: GraphV2) -> None:
+def test_estimate_with_graph_name(graph: Graph) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"randomWalk.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

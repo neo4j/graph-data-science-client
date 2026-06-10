@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.pathfinding.longest_path_arrow_endpoints import LongestPathArrowEndpoints
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -27,7 +27,7 @@ dag_graph = """
 
 
 @pytest.fixture
-def sample_dag(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_dag(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "dag", dag_graph) as G:
         yield G
 
@@ -39,7 +39,7 @@ def longest_path_endpoints(
     yield LongestPathArrowEndpoints(arrow_client)
 
 
-def test_longest_path_stream(longest_path_endpoints: LongestPathArrowEndpoints, sample_dag: GraphV2) -> None:
+def test_longest_path_stream(longest_path_endpoints: LongestPathArrowEndpoints, sample_dag: Graph) -> None:
     result_df = longest_path_endpoints.stream(
         G=sample_dag,
         relationship_weight_property="cost",
@@ -49,7 +49,7 @@ def test_longest_path_stream(longest_path_endpoints: LongestPathArrowEndpoints, 
     assert {"index", "sourceNode", "targetNode", "totalCost", "nodeIds", "costs"} == set(result_df.columns)
 
 
-def test_compute(longest_path_endpoints: LongestPathArrowEndpoints, sample_dag: GraphV2) -> None:
+def test_compute(longest_path_endpoints: LongestPathArrowEndpoints, sample_dag: Graph) -> None:
     handle = longest_path_endpoints.compute(G=sample_dag, relationship_weight_property="cost")
     summary = handle.summary()
 

@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.k_spanning_tree_cypher_endpoints import (
     KSpanningTreeCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -52,7 +52,7 @@ def k_spanning_tree_endpoints(query_runner: QueryRunner) -> Generator[KSpanningT
 
 
 def test_k_spanning_tree_write(
-    k_spanning_tree_endpoints: KSpanningTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    k_spanning_tree_endpoints: KSpanningTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
 

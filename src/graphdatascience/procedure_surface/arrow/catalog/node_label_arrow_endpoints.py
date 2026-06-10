@@ -1,6 +1,6 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import (
     NodeLabelEndpoints,
     NodeLabelMutateResult,
@@ -27,7 +27,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         node_label: str,
         *,
         node_filter: str,
@@ -58,7 +58,7 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         node_label: str,
         *,
         node_filter: str,

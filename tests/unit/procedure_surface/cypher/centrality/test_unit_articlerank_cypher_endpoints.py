@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import (
     ArticleRankMutateResult,
     ArticleRankStatsResult,
@@ -17,7 +17,7 @@ def articlerank_endpoints(query_runner: CollectingQueryRunner) -> ArticleRankCyp
     return ArticleRankCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(graph: GraphV2) -> None:
+def test_mutate_basic(graph: Graph) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -54,7 +54,7 @@ def test_mutate_basic(graph: GraphV2) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_mutate_with_optional_params(graph: GraphV2) -> None:
+def test_mutate_with_optional_params(graph: Graph) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "mutateMillis": 42,
@@ -109,7 +109,7 @@ def test_mutate_with_optional_params(graph: GraphV2) -> None:
     }
 
 
-def test_stats_basic(graph: GraphV2) -> None:
+def test_stats_basic(graph: Graph) -> None:
     result = {
         "ranIterations": 20,
         "didConverge": True,
@@ -141,7 +141,7 @@ def test_stats_basic(graph: GraphV2) -> None:
 
 
 def test_stream_basic(
-    articlerank_endpoints: ArticleRankCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
+    articlerank_endpoints: ArticleRankCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
     articlerank_endpoints.stream(graph)
 
@@ -153,7 +153,7 @@ def test_stream_basic(
     assert "jobId" in config
 
 
-def test_write_basic(graph: GraphV2) -> None:
+def test_write_basic(graph: Graph) -> None:
     result = {
         "nodePropertiesWritten": 5,
         "writeMillis": 42,
@@ -183,7 +183,7 @@ def test_write_basic(graph: GraphV2) -> None:
     assert result_obj.write_millis == 42
 
 
-def test_estimate_with_graph_name(graph: GraphV2) -> None:
+def test_estimate_with_graph_name(graph: Graph) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"articleRank.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

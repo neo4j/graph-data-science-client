@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -29,7 +29,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         iterations: int = 1,
         negative_sampling_rate: int = 5,
@@ -85,7 +85,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         iterations: int = 1,
         negative_sampling_rate: int = 5,
@@ -145,7 +145,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int = 1,
         negative_sampling_rate: int = 5,
         positive_sampling_factor: float = 0.001,
@@ -201,7 +201,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         iterations: int = 1,
         negative_sampling_rate: int = 5,
@@ -270,7 +270,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         iterations: int = 1,
         negative_sampling_rate: int = 5,
         positive_sampling_factor: float = 0.001,

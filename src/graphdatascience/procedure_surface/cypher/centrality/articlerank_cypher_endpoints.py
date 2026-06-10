@@ -4,7 +4,7 @@ from pandas import DataFrame
 from pydantic import BaseModel
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import (
     ArticleRankEndpoints,
@@ -30,7 +30,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         damping_factor: float = 0.85,
@@ -78,7 +78,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
@@ -123,7 +123,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
@@ -164,7 +164,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         damping_factor: float = 0.85,
@@ -213,7 +213,7 @@ class ArticleRankCypherEndpoints(ArticleRankEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         *,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,

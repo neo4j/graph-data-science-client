@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.louvain_cypher_endpoints import LouvainCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -47,7 +47,7 @@ def louvain_endpoints(query_runner: QueryRunner) -> Generator[LouvainCypherEndpo
     yield LouvainCypherEndpoints(query_runner)
 
 
-def test_louvain_stats(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_stats(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain stats operation."""
     result = louvain_endpoints.stats(G=sample_graph)
 
@@ -61,7 +61,7 @@ def test_louvain_stats(louvain_endpoints: LouvainCypherEndpoints, sample_graph: 
     assert "p10" in result.community_distribution
 
 
-def test_louvain_stream(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_stream(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain stream operation."""
     result_df = louvain_endpoints.stream(
         G=sample_graph,
@@ -72,7 +72,7 @@ def test_louvain_stream(louvain_endpoints: LouvainCypherEndpoints, sample_graph:
     assert len(result_df.columns) == 3
 
 
-def test_louvain_mutate(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_mutate(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain mutate operation."""
     result = louvain_endpoints.mutate(
         G=sample_graph,
@@ -91,7 +91,7 @@ def test_louvain_mutate(louvain_endpoints: LouvainCypherEndpoints, sample_graph:
     assert result.node_properties_written == 6
 
 
-def test_louvain_write(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_write(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain write operation."""
     result = louvain_endpoints.write(
         G=sample_graph,
@@ -110,7 +110,7 @@ def test_louvain_write(louvain_endpoints: LouvainCypherEndpoints, sample_graph: 
     assert result.node_properties_written == 6
 
 
-def test_louvain_estimate(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_estimate(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain estimate operation."""
     result = louvain_endpoints.estimate(sample_graph)
 
@@ -123,7 +123,7 @@ def test_louvain_estimate(louvain_endpoints: LouvainCypherEndpoints, sample_grap
     assert result.heap_percentage_max > 0
 
 
-def test_louvain_stats_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_stats_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain stats operation with various parameters."""
     result = louvain_endpoints.stats(
         G=sample_graph,
@@ -143,7 +143,7 @@ def test_louvain_stats_with_parameters(louvain_endpoints: LouvainCypherEndpoints
     assert "p10" in result.community_distribution
 
 
-def test_louvain_stream_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_stream_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain stream operation with various parameters."""
     result_df = louvain_endpoints.stream(
         G=sample_graph,
@@ -160,7 +160,7 @@ def test_louvain_stream_with_parameters(louvain_endpoints: LouvainCypherEndpoint
     assert len(result_df) == 6
 
 
-def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain mutate operation with various parameters."""
     result = louvain_endpoints.mutate(
         G=sample_graph,
@@ -183,7 +183,7 @@ def test_louvain_mutate_with_parameters(louvain_endpoints: LouvainCypherEndpoint
     assert result.node_properties_written == 6
 
 
-def test_louvain_write_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_louvain_write_with_parameters(louvain_endpoints: LouvainCypherEndpoints, sample_graph: Graph) -> None:
     """Test Louvain write operation with various parameters."""
     result = louvain_endpoints.write(
         G=sample_graph,

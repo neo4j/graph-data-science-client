@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 
 
@@ -12,7 +12,7 @@ class LongestPathEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,

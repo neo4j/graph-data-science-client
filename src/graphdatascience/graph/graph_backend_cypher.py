@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2 import GraphBackend, GraphV2
+from graphdatascience.graph import Graph, GraphBackend
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
-def get_graph(name: str, query_runner: QueryRunner) -> GraphV2:
+def get_graph(name: str, query_runner: QueryRunner) -> Graph:
     backend = CypherGraphBackend(name, query_runner)
 
-    return GraphV2(name, backend)
+    return Graph(name, backend)
 
 
 class CypherGraphBackend(GraphBackend):

@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
@@ -10,7 +10,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -40,7 +40,7 @@ def wcc_endpoints(query_runner: QueryRunner) -> Generator[WccCypherEndpoints, No
     yield WccCypherEndpoints(query_runner)
 
 
-def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     """Test WCC stats operation."""
     result = wcc_endpoints.stats(G=sample_graph)
 
@@ -51,7 +51,7 @@ def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> N
     assert "p10" in result.component_distribution
 
 
-def test_wcc_stream(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_stream(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     """Test WCC stream operation."""
     result_df = wcc_endpoints.stream(
         G=sample_graph,
@@ -62,7 +62,7 @@ def test_wcc_stream(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> 
     assert len(result_df.columns) == 2
 
 
-def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     """Test WCC mutate operation."""
     result = wcc_endpoints.mutate(
         G=sample_graph,
@@ -78,7 +78,7 @@ def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> 
     assert result.node_properties_written == 3
 
 
-def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     result = wcc_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
     BellmanFordWriteResult,
 )
@@ -37,13 +37,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -65,7 +65,7 @@ def bellman_ford_endpoints(
     yield BellmanFordArrowEndpoints(arrow_client)
 
 
-def test_bellman_ford_stream(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_stream(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: Graph) -> None:
     result_df = bellman_ford_endpoints.stream(
         G=sample_graph,
         source_node=0,
@@ -84,7 +84,7 @@ def test_bellman_ford_stream(bellman_ford_endpoints: BellmanFordArrowEndpoints, 
     assert len(result_df) == 5
 
 
-def test_bellman_ford_stats(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_stats(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: Graph) -> None:
     result = bellman_ford_endpoints.stats(
         G=sample_graph,
         source_node=0,
@@ -98,7 +98,7 @@ def test_bellman_ford_stats(bellman_ford_endpoints: BellmanFordArrowEndpoints, s
     assert "sourceNode" in result.configuration
 
 
-def test_bellman_ford_mutate(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_mutate(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: Graph) -> None:
     result = bellman_ford_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -119,7 +119,7 @@ def test_bellman_ford_mutate(bellman_ford_endpoints: BellmanFordArrowEndpoints, 
 def test_bellman_ford_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints_with_writeback = BellmanFordArrowEndpoints(
         arrow_client=arrow_client, write_protocol=WriteProtocol.select(arrow_client, query_runner)
@@ -142,7 +142,7 @@ def test_bellman_ford_write(
     assert "sourceNode" in result.configuration
 
 
-def test_bellman_ford_estimate(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_estimate(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: Graph) -> None:
     result = bellman_ford_endpoints.estimate(
         sample_graph,
         source_node=0,
@@ -158,7 +158,7 @@ def test_bellman_ford_estimate(bellman_ford_endpoints: BellmanFordArrowEndpoints
     assert result.heap_percentage_max > 0
 
 
-def test_compute(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(bellman_ford_endpoints: BellmanFordArrowEndpoints, sample_graph: Graph) -> None:
     handle = bellman_ford_endpoints.compute(G=sample_graph, source_node=0, relationship_weight_property="cost")
     summary = handle.summary()
 

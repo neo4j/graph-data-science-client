@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.conductance_cypher_endpoints import (
     ConductanceCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
               (a:Node {community: 0})
@@ -51,7 +51,7 @@ def conductance_endpoints(query_runner: QueryRunner) -> ConductanceCypherEndpoin
     return ConductanceCypherEndpoints(query_runner)
 
 
-def test_conductance_stream(conductance_endpoints: ConductanceCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_conductance_stream(conductance_endpoints: ConductanceCypherEndpoints, sample_graph: Graph) -> None:
     result = conductance_endpoints.stream(sample_graph, "community")
 
     assert set(result.columns) == {"community", "conductance"}

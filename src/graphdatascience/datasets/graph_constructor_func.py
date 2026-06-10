@@ -2,7 +2,7 @@ from typing import Protocol
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2 import GraphV2
+from graphdatascience.graph import Graph
 
 
 class GraphConstructorFunc(Protocol):
@@ -13,4 +13,4 @@ class GraphConstructorFunc(Protocol):
         relationships: DataFrame | list[DataFrame] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
-    ) -> GraphV2: ...
+    ) -> Graph: ...

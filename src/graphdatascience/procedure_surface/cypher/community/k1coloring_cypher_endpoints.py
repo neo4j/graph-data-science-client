@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import (
     K1ColoringEndpoints,
     K1ColoringMutateResult,
@@ -28,7 +28,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         batch_size: int = 10000,
@@ -65,7 +65,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         batch_size: int = 10000,
         concurrency: int | None = None,
@@ -100,7 +100,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         batch_size: int = 10000,
         concurrency: int | None = None,
@@ -133,7 +133,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         batch_size: int = 10000,
@@ -174,7 +174,7 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         *,
         batch_size: int = 10000,
         concurrency: int | None = None,

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.maxkcut_arrow_endpoints import MaxKCutArrowEndpoints
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
@@ -31,7 +31,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
@@ -48,7 +48,7 @@ def maxkcut_endpoints_with_write_back(
     yield MaxKCutArrowEndpoints(arrow_client, write_protocol, show_progress=False)
 
 
-def test_maxkcut_stream(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_maxkcut_stream(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: Graph) -> None:
     """Test Approximate Maximum k-cut stream operation via Arrow."""
     result_df = maxkcut_endpoints.stream(
         G=sample_graph,
@@ -65,7 +65,7 @@ def test_maxkcut_stream(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: 
     assert unique_communities <= 2
 
 
-def test_maxkcut_mutate(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_maxkcut_mutate(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: Graph) -> None:
     """Test Approximate Maximum k-cut mutate operation via Arrow."""
     result = maxkcut_endpoints.mutate(
         G=sample_graph,
@@ -81,7 +81,7 @@ def test_maxkcut_mutate(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: 
     assert result.node_properties_written == 6
 
 
-def test_maxkcut_estimate(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_maxkcut_estimate(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: Graph) -> None:
     """Test Approximate Maximum k-cut estimate operation via Arrow."""
     result = maxkcut_endpoints.estimate(sample_graph, k=2)
 
@@ -94,7 +94,7 @@ def test_maxkcut_estimate(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph
     assert result.heap_percentage_max > 0
 
 
-def test_compute(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(maxkcut_endpoints: MaxKCutArrowEndpoints, sample_graph: Graph) -> None:
     handle = maxkcut_endpoints.compute(G=sample_graph, k=2)
     summary = handle.summary()
 

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.closeness_harmonic_arrow_endpoints import (
     ClosenessHarmonicArrowEndpoints,
@@ -28,13 +28,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -57,7 +57,7 @@ def closeness_harmonic_endpoints(
 
 
 def test_closeness_harmonic_stats(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = closeness_harmonic_endpoints.stats(G=sample_graph)
 
@@ -68,7 +68,7 @@ def test_closeness_harmonic_stats(
 
 
 def test_closeness_harmonic_stream(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
 ) -> None:
     result_df = closeness_harmonic_endpoints.stream(
         G=sample_graph,
@@ -80,7 +80,7 @@ def test_closeness_harmonic_stream(
 
 
 def test_closeness_harmonic_mutate(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = closeness_harmonic_endpoints.mutate(
         G=sample_graph,
@@ -97,7 +97,7 @@ def test_closeness_harmonic_mutate(
 
 @pytest.mark.db_integration
 def test_closeness_harmonic_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     endpoints = ClosenessHarmonicArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="harmonic_closeness")
@@ -120,7 +120,7 @@ def test_closeness_harmonic_write(
 
 
 def test_closeness_harmonic_estimate(
-    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = closeness_harmonic_endpoints.estimate(sample_graph)
 
@@ -133,7 +133,7 @@ def test_closeness_harmonic_estimate(
     assert result.heap_percentage_max > 0
 
 
-def test_compute(closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(closeness_harmonic_endpoints: ClosenessHarmonicArrowEndpoints, sample_graph: Graph) -> None:
     handle = closeness_harmonic_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

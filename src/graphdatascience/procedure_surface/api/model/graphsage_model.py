@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.model.v2.model import Model
 from graphdatascience.model.v2.model_api import ModelApi
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
@@ -26,7 +26,7 @@ class GraphSageModelV2(Model):
 
     def predict_write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         relationship_types: list[str] = ALL_TYPES,
@@ -44,7 +44,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : GraphV2
+        G : Graph
             The graph to generate embeddings for.
         write_property : str
             The property to write the embeddings to.
@@ -90,7 +90,7 @@ class GraphSageModelV2(Model):
 
     def predict_stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -106,7 +106,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : GraphV2
+        G : Graph
             The graph to generate embeddings for.
         relationship_types : list[str]
             The relationship types to consider.
@@ -146,7 +146,7 @@ class GraphSageModelV2(Model):
 
     def predict_mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         relationship_types: list[str] = ALL_TYPES,
@@ -163,7 +163,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : GraphV2
+        G : Graph
             The graph to generate embeddings for.
         mutate_property : str
             The property to mutate with the embeddings.
@@ -206,7 +206,7 @@ class GraphSageModelV2(Model):
 
     def predict_estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -222,7 +222,7 @@ class GraphSageModelV2(Model):
 
         Parameters
         ----------
-        G : GraphV2
+        G : Graph
             The graph to generate embeddings for.
         relationship_types : list[str]
             The relationship types to consider.

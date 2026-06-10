@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.similarity.knn_filtered_arrow_endpoints import KnnFilteredArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
@@ -22,13 +22,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -48,7 +48,7 @@ def knn_filtered_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[
     yield KnnFilteredArrowEndpoints(arrow_client)
 
 
-def test_knn_filtered_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_filtered_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: Graph) -> None:
     result = knn_filtered_endpoints.stats(
         sample_graph,
         node_properties="prop",
@@ -69,7 +69,7 @@ def test_knn_filtered_stats(knn_filtered_endpoints: KnnFilteredArrowEndpoints, s
     assert "concurrency" in result.configuration
 
 
-def test_knn_filtered_stream(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_filtered_stream(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: Graph) -> None:
     result_df = knn_filtered_endpoints.stream(
         G=sample_graph,
         node_properties=["prop"],
@@ -84,7 +84,7 @@ def test_knn_filtered_stream(knn_filtered_endpoints: KnnFilteredArrowEndpoints, 
     assert len(result_df) == 4
 
 
-def test_knn_filtered_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_filtered_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: Graph) -> None:
     result = knn_filtered_endpoints.mutate(
         sample_graph,
         node_properties="prop",
@@ -109,9 +109,7 @@ def test_knn_filtered_mutate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, 
 
 
 @pytest.mark.db_integration
-def test_knn_filtered_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
-) -> None:
+def test_knn_filtered_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = KnnFilteredArrowEndpoints(
         arrow_client,
         write_protocol=WriteProtocol.select(arrow_client, query_runner),
@@ -141,7 +139,7 @@ def test_knn_filtered_write(
     assert "concurrency" in result.configuration
 
 
-def test_knn_filtered_estimate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_filtered_estimate(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: Graph) -> None:
     result = knn_filtered_endpoints.estimate(
         sample_graph,
         node_properties="prop",
@@ -155,7 +153,7 @@ def test_knn_filtered_estimate(knn_filtered_endpoints: KnnFilteredArrowEndpoints
     assert result.map_view is not None
 
 
-def test_compute(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(knn_filtered_endpoints: KnnFilteredArrowEndpoints, sample_graph: Graph) -> None:
     handle = knn_filtered_endpoints.compute(
         G=sample_graph,
         node_properties=["prop"],

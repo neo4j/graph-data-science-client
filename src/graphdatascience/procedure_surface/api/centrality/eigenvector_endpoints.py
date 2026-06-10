@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
@@ -16,7 +16,7 @@ class EigenvectorEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
@@ -86,7 +86,7 @@ class EigenvectorEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: int | list[int] | None = None,
@@ -153,7 +153,7 @@ class EigenvectorEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: int | list[int] | None = None,
@@ -215,7 +215,7 @@ class EigenvectorEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
@@ -286,7 +286,7 @@ class EigenvectorEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: int | list[int] | None = None,

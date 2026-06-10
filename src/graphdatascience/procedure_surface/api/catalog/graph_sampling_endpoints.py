@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import NamedTuple, Type
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -14,7 +14,7 @@ class GraphSamplingEndpoints(ABC):
     @abstractmethod
     def rwr(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
@@ -84,7 +84,7 @@ class GraphSamplingEndpoints(ABC):
     @abstractmethod
     def cnarw(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
@@ -156,7 +156,7 @@ class GraphSamplingEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
         sampling_ratio: float = 0.15,
@@ -212,10 +212,10 @@ class GraphSamplingResult(BaseResult):
 
 
 class GraphWithSamplingResult(NamedTuple):
-    graph: GraphV2
+    graph: Graph
     result: GraphSamplingResult
 
-    def __enter__(self) -> GraphV2:
+    def __enter__(self) -> Graph:
         return self.graph
 
     def __exit__(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import (
@@ -25,7 +25,7 @@ class KSpanningTreeArrowEndpoints(KSpanningTreeEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         k: int,
         source_node: int,
         *,
@@ -57,7 +57,7 @@ class KSpanningTreeArrowEndpoints(KSpanningTreeEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         k: int,
         write_property: str,
         source_node: int,

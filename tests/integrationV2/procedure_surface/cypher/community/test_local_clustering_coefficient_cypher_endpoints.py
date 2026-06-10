@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.local_clustering_coefficient_cypher_endpoints import (
     LocalClusteringCoefficientCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -50,7 +50,7 @@ def local_clustering_coefficient_endpoints(
 
 
 def test_local_clustering_coefficient_stats(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Local Clustering Coefficient stats operation."""
     result = local_clustering_coefficient_endpoints.stats(G=sample_graph)
@@ -64,7 +64,7 @@ def test_local_clustering_coefficient_stats(
 
 
 def test_local_clustering_coefficient_stream(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Local Clustering Coefficient stream operation."""
     result_df = local_clustering_coefficient_endpoints.stream(
@@ -78,7 +78,7 @@ def test_local_clustering_coefficient_stream(
 
 
 def test_local_clustering_coefficient_mutate(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Local Clustering Coefficient mutate operation."""
     result = local_clustering_coefficient_endpoints.mutate(
@@ -97,7 +97,7 @@ def test_local_clustering_coefficient_mutate(
 
 
 def test_local_clustering_coefficient_estimate(
-    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: GraphV2
+    local_clustering_coefficient_endpoints: LocalClusteringCoefficientCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = local_clustering_coefficient_endpoints.estimate(sample_graph)
 

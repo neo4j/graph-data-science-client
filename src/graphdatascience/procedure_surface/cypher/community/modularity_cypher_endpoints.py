@@ -2,7 +2,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.modularity_endpoints import (
     ModularityEndpoints,
     ModularityStatsResult,
@@ -22,7 +22,7 @@ class ModularityCypherEndpoints(ModularityEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         community_property: str,
         *,
         concurrency: int | None = None,
@@ -57,7 +57,7 @@ class ModularityCypherEndpoints(ModularityEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         community_property: str,
         *,
         concurrency: int | None = None,
@@ -88,7 +88,7 @@ class ModularityCypherEndpoints(ModularityEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         community_property: str,
         *,
         concurrency: int | None = None,

@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import (
@@ -27,7 +27,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int,
         embedding_density: int,
         mutate_property: str,
@@ -82,7 +82,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int,
         embedding_density: int,
         output_dimension: int | None = None,
@@ -131,7 +131,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         iterations: int,
         embedding_density: int,
         write_property: str,
@@ -188,7 +188,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         iterations: int,
         embedding_density: int,
         output_dimension: int | None = None,

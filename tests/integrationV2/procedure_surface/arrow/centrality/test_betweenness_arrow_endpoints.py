@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints import (
     BetweennessMutateResult,
     BetweennessStatsResult,
@@ -28,13 +28,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -54,7 +54,7 @@ def betweenness_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[B
     yield BetweennessArrowEndpoints(arrow_client)
 
 
-def test_betweenness_stats(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_stats(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
     result = betweenness_endpoints.stats(
         G=sample_graph,
     )
@@ -66,7 +66,7 @@ def test_betweenness_stats(betweenness_endpoints: BetweennessArrowEndpoints, sam
     assert result.post_processing_millis >= 0
 
 
-def test_betweenness_stream(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_stream(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
     result = betweenness_endpoints.stream(
         G=sample_graph,
     )
@@ -75,7 +75,7 @@ def test_betweenness_stream(betweenness_endpoints: BetweennessArrowEndpoints, sa
     assert {"nodeId", "score"} == set(result.columns.to_list())
 
 
-def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
     result = betweenness_endpoints.mutate(
         G=sample_graph,
         mutate_property="betweenness",
@@ -91,9 +91,7 @@ def test_betweenness_mutate(betweenness_endpoints: BetweennessArrowEndpoints, sa
 
 
 @pytest.mark.db_integration
-def test_betweenness_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
-) -> None:
+def test_betweenness_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = BetweennessArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="betweenness")
 
@@ -114,7 +112,7 @@ def test_betweenness_write(
 
 
 def test_betweenness_write_without_write_back_client(
-    betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2
+    betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph
 ) -> None:
     with pytest.raises(Exception, match="Write back is not supported by this session."):
         betweenness_endpoints.write(
@@ -123,7 +121,7 @@ def test_betweenness_write_without_write_back_client(
         )
 
 
-def test_betweenness_estimate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_estimate(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
     result = betweenness_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3
@@ -135,7 +133,7 @@ def test_betweenness_estimate(betweenness_endpoints: BetweennessArrowEndpoints, 
     assert result.heap_percentage_max > 0
 
 
-def test_compute(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(betweenness_endpoints: BetweennessArrowEndpoints, sample_graph: Graph) -> None:
     handle = betweenness_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

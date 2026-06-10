@@ -3,7 +3,7 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
     CollapsePathResult,
@@ -38,7 +38,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_types: list[str] = ALL_TYPES,
         relationship_properties: list[str] | None = None,
         *,
@@ -70,7 +70,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_type: str,
         relationship_properties: list[str] | None = None,
         *,
@@ -132,7 +132,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def drop(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_type: str,
         *,
         fail_if_missing: bool = True,
@@ -151,7 +151,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def index_inverse(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_types: list[str],
         *,
         concurrency: int | None = None,
@@ -179,7 +179,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def to_undirected(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_type: str,
         mutate_relationship_type: str,
         *,
@@ -211,7 +211,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
 
     def collapse_path(
         self,
-        G: GraphV2,
+        G: Graph,
         path_templates: list[list[str]],
         mutate_relationship_type: str,
         *,

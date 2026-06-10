@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.model.v2.model import Model
 from graphdatascience.model.v2.model_api import ModelApi
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -27,7 +27,7 @@ class LinkPredictionModelV2(Model):
 
     def predict_stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_types: list[str] | None = None,
         sample_rate: float = 1.0,
@@ -71,7 +71,7 @@ class LinkPredictionModelV2(Model):
 
     def predict_estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         source_node_label: str | None = None,
         target_node_label: str | None = None,
@@ -97,7 +97,7 @@ class LinkPredictionModelV2(Model):
 
     def predict_mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         *,
         mutate_property: str = "probability",

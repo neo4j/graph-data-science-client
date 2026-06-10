@@ -1,5 +1,5 @@
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
@@ -22,7 +22,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
 
     def __call__(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         feature_properties: list[str],
         *,
@@ -95,7 +95,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         feature_properties: list[str],
         *,

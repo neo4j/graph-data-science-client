@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.pathfinding.all_shortest_path_arrow_endpoints import (
     AllShortestPathArrowEndpoints,
 )
@@ -25,7 +25,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
@@ -36,7 +36,7 @@ def all_shortest_path_endpoints(arrow_client: AuthenticatedArrowClient) -> AllSh
 
 
 def test_all_shortest_paths_stream(
-    all_shortest_path_endpoints: AllShortestPathArrowEndpoints, sample_graph: GraphV2
+    all_shortest_path_endpoints: AllShortestPathArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = all_shortest_path_endpoints.stream(sample_graph)
 
@@ -45,7 +45,7 @@ def test_all_shortest_paths_stream(
 
 
 def test_all_shortest_paths_estimate(
-    all_shortest_path_endpoints: AllShortestPathArrowEndpoints, sample_graph: GraphV2
+    all_shortest_path_endpoints: AllShortestPathArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = all_shortest_path_endpoints.estimate(G=sample_graph)
 
@@ -60,7 +60,7 @@ def test_all_shortest_paths_estimate(
     assert result.heap_percentage_max >= 0
 
 
-def test_compute(all_shortest_path_endpoints: AllShortestPathArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(all_shortest_path_endpoints: AllShortestPathArrowEndpoints, sample_graph: Graph) -> None:
     handle = all_shortest_path_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

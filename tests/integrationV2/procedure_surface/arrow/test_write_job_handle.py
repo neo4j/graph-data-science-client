@@ -5,7 +5,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.write_job_handle import (
     WriteBackResult,
     WriteJobHandle,
@@ -22,9 +22,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import cr
 
 
 @pytest.fixture
-def projected_graph(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
-) -> Generator[GraphV2, None, None]:
+def projected_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     graph_data = """
         CREATE
         (a {prop: 42}),
@@ -80,7 +78,7 @@ def _create_write_handle(
 
 @pytest.mark.db_integration
 def test_v3_write_job_handle_writes_properties(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: Graph
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = RemoteWriteBackV3(arrow_client, query_runner)
@@ -96,7 +94,7 @@ def test_v3_write_job_handle_writes_properties(
 
 @pytest.mark.db_integration
 def test_v4_write_job_handle_writes_properties(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: Graph
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = RemoteWriteBackV4(arrow_client, query_runner)
@@ -111,7 +109,7 @@ def test_v4_write_job_handle_writes_properties(
 
 @pytest.mark.db_integration
 def test_write_job_handle_id_matches_provided_id(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: Graph
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = WriteProtocol.select(arrow_client, query_runner)
@@ -125,7 +123,7 @@ def test_write_job_handle_id_matches_provided_id(
 
 @pytest.mark.db_integration
 def test_write_job_handle_done_and_status_after_wait(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: Graph
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = WriteProtocol.select(arrow_client, query_runner)
@@ -141,7 +139,7 @@ def test_write_job_handle_done_and_status_after_wait(
 def test_write_job_handle_status_is_cached_when_terminal(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    projected_graph: GraphV2,
+    projected_graph: Graph,
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = WriteProtocol.select(arrow_client, query_runner)

@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import (
     TriangleCountEndpoints,
     TriangleCountMutateResult,
@@ -31,7 +31,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -59,7 +59,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         concurrency: int | None = None,
@@ -91,7 +91,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -122,7 +122,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -151,7 +151,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         concurrency: int | None = None,
@@ -192,7 +192,7 @@ class TriangleCountArrowEndpoints(TriangleCountEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         *,
         concurrency: int | None = None,
         label_filter: list[str] | None = None,

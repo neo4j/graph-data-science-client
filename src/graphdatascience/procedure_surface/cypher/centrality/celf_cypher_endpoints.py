@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.celf_endpoints import (
     CelfEndpoints,
     CelfMutateResult,
@@ -23,7 +23,7 @@ class CelfCypherEndpoints(CelfEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         seed_set_size: int,
         mutate_property: str,
         relationship_types: list[str] = ALL_TYPES,
@@ -65,7 +65,7 @@ class CelfCypherEndpoints(CelfEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         seed_set_size: int,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -105,7 +105,7 @@ class CelfCypherEndpoints(CelfEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         seed_set_size: int,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -144,7 +144,7 @@ class CelfCypherEndpoints(CelfEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         seed_set_size: int,
         write_property: str,
         propagation_probability: float = 0.1,
@@ -188,7 +188,7 @@ class CelfCypherEndpoints(CelfEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         seed_set_size: int,
         propagation_probability: float | None = None,
         monte_carlo_simulations: int | None = None,

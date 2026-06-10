@@ -4,7 +4,7 @@ from pandas import DataFrame
 from pydantic import BaseModel
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import (
     PageRankEndpoints,
@@ -32,7 +32,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
@@ -116,7 +116,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
@@ -157,7 +157,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
@@ -197,7 +197,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,
@@ -235,7 +235,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
@@ -283,7 +283,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         damping_factor: float = 0.85,
         tolerance: float = 1.0e-7,
         max_iterations: int = 20,

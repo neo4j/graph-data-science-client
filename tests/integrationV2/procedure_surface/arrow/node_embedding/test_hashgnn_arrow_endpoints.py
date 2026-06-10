@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNWriteResult
 from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -15,7 +15,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
     CREATE
     (a: Node {feature: [1L, 0L, 1L, 0L]}),
@@ -33,7 +33,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     graph = """
         CREATE
             (a: Node {feature: [1, 0, 1, 0]}),
@@ -69,7 +69,7 @@ def hashgnn_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[HashG
     yield HashGNNArrowEndpoints(arrow_client)
 
 
-def test_hashgnn_mutate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_hashgnn_mutate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
     """Test HashGNN mutate operation."""
     result = hashgnn_endpoints.mutate(
         G=sample_graph,
@@ -86,7 +86,7 @@ def test_hashgnn_mutate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: 
     assert result.configuration is not None
 
 
-def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
     """Test HashGNN stream operation."""
     result = hashgnn_endpoints.stream(
         G=sample_graph,
@@ -100,7 +100,7 @@ def test_hashgnn_stream(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: 
 
 
 @pytest.mark.db_integration
-def test_hashgnn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_hashgnn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     """Test HashGNN write operation."""
     endpoints = HashGNNArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(
@@ -126,9 +126,7 @@ def test_hashgnn_write(arrow_client: AuthenticatedArrowClient, query_runner: Que
     )
 
 
-def test_hashgnn_write_without_write_back_client(
-    hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2
-) -> None:
+def test_hashgnn_write_without_write_back_client(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
     """Test HashGNN write operation without write back client."""
     with pytest.raises(Exception, match="Write back is not supported by this session."):
         hashgnn_endpoints.write(
@@ -140,7 +138,7 @@ def test_hashgnn_write_without_write_back_client(
         )
 
 
-def test_hashgnn_estimate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_hashgnn_estimate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
     """Test HashGNN estimate operation."""
     result = hashgnn_endpoints.estimate(
         G=sample_graph,
@@ -158,7 +156,7 @@ def test_hashgnn_estimate(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph
     assert result.heap_percentage_max > 0
 
 
-def test_compute(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(hashgnn_endpoints: HashGNNArrowEndpoints, sample_graph: Graph) -> None:
     handle = hashgnn_endpoints.compute(
         G=sample_graph, iterations=2, embedding_density=4, feature_properties=["feature"]
     )

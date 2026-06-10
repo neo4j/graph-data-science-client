@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
 from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_train_cypher_endpoints import (
     GraphSageTrainCypherEndpoints,
@@ -13,7 +13,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {feature: 1.0}),
@@ -40,7 +40,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
 
 
 @pytest.fixture
-def gs_model(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[GraphSageModelV2, None, None]:
+def gs_model(query_runner: QueryRunner, sample_graph: Graph) -> Generator[GraphSageModelV2, None, None]:
     model, _ = GraphSageTrainCypherEndpoints(query_runner)(
         G=sample_graph,
         model_name="gs-model",
@@ -56,26 +56,26 @@ def gs_model(query_runner: QueryRunner, sample_graph: GraphV2) -> Generator[Grap
     query_runner.run_cypher("CALL gds.model.drop('gs-model')", query_type=QueryType.USER_ACTION)
 
 
-def test_stream(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
+def test_stream(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
     result = gs_model.predict_stream(sample_graph, concurrency=4)
 
     assert set(result.columns) == {"nodeId", "embedding"}
     assert len(result) == 3
 
 
-def test_mutate(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
+def test_mutate(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
     result = gs_model.predict_mutate(sample_graph, concurrency=4, mutate_property="embedding")
 
     assert result.node_properties_written == 3
 
 
-def test_write(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
+def test_write(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
     result = gs_model.predict_write(sample_graph, write_property="embedding", concurrency=4, write_concurrency=2)
 
     assert result.node_properties_written == 3
 
 
-def test_estimate(gs_model: GraphSageModelV2, sample_graph: GraphV2) -> None:
+def test_estimate(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
     result = gs_model.predict_estimate(sample_graph, concurrency=4)
 
     assert result.node_count == 3

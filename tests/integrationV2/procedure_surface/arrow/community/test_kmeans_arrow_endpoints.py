@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansWriteResult
 from graphdatascience.procedure_surface.arrow.community.kmeans_arrow_endpoints import KMeansArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -23,7 +23,7 @@ create_statement = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(
         arrow_client,
         "g",
@@ -33,7 +33,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -53,7 +53,7 @@ def kmeans_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[KMeans
     yield KMeansArrowEndpoints(arrow_client)
 
 
-def test_kmeans_stats(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_stats(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Graph) -> None:
     result = kmeans_endpoints.stats(G=sample_graph, node_property="kmeans", k=3)
 
     assert result.compute_millis >= 0
@@ -65,7 +65,7 @@ def test_kmeans_stats(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Grap
     assert isinstance(result.community_distribution, dict)
 
 
-def test_kmeans_stream(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_stream(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Graph) -> None:
     result_df = kmeans_endpoints.stream(
         G=sample_graph,
         node_property="kmeans",
@@ -77,7 +77,7 @@ def test_kmeans_stream(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Gra
     assert len(result_df) == 4
 
 
-def test_kmeans_mutate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_mutate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Graph) -> None:
     result = kmeans_endpoints.mutate(
         G=sample_graph,
         node_property="kmeans",
@@ -96,7 +96,7 @@ def test_kmeans_mutate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Gra
 
 
 @pytest.mark.db_integration
-def test_kmeans_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
+def test_kmeans_write(arrow_client: AuthenticatedArrowClient, db_graph: Graph, query_runner: QueryRunner) -> None:
     endpoints = KMeansArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
     result = endpoints.write(G=db_graph, node_property="kmeans", write_property="community", k=3)
@@ -120,7 +120,7 @@ def test_kmeans_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2,
     )
 
 
-def test_kmeans_estimate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_estimate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Graph) -> None:
     result = kmeans_endpoints.estimate(sample_graph, node_property="kmeans", k=3)
 
     assert result.node_count == 4
@@ -132,7 +132,7 @@ def test_kmeans_estimate(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: G
     assert result.heap_percentage_max > 0
 
 
-def test_compute(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(kmeans_endpoints: KMeansArrowEndpoints, sample_graph: Graph) -> None:
     handle = kmeans_endpoints.compute(G=sample_graph, node_property="kmeans", k=3)
     summary = handle.summary()
 

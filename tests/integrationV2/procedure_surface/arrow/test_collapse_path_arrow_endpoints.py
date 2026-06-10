@@ -3,13 +3,13 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
         CREATE
         (a:Node),
@@ -32,7 +32,7 @@ def collapse_path_endpoints(
     yield CollapsePathArrowEndpoints(arrow_client)
 
 
-def test_collapse_path(collapse_path_endpoints: CollapsePathArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_collapse_path(collapse_path_endpoints: CollapsePathArrowEndpoints, sample_graph: Graph) -> None:
     result = collapse_path_endpoints.mutate(
         G=sample_graph,
         path_templates=[["REL", "REL"]],

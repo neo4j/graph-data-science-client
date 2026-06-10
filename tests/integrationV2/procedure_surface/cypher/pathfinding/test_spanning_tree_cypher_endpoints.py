@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.spanning_tree_cypher_endpoints import (
     SpanningTreeCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -52,7 +52,7 @@ def spanning_tree_endpoints(query_runner: QueryRunner) -> Generator[SpanningTree
 
 
 def test_spanning_tree_stream(
-    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
 
@@ -67,7 +67,7 @@ def test_spanning_tree_stream(
 
 
 def test_spanning_tree_stats(
-    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
 
@@ -83,7 +83,7 @@ def test_spanning_tree_stats(
 
 
 def test_spanning_tree_mutate(
-    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
 
@@ -102,7 +102,7 @@ def test_spanning_tree_mutate(
 
 
 def test_spanning_tree_write(
-    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
 
@@ -121,7 +121,7 @@ def test_spanning_tree_write(
 
 
 def test_spanning_tree_estimate(
-    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    spanning_tree_endpoints: SpanningTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
 

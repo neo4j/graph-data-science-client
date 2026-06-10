@@ -4,7 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
     LinkPredictionPipelinePredictEndpoints,
@@ -32,7 +32,7 @@ class LinkPredictionPredictArrowEndpoints(LinkPredictionPipelinePredictEndpoints
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         source_node_label: str | None = None,
@@ -59,7 +59,7 @@ class LinkPredictionPredictArrowEndpoints(LinkPredictionPipelinePredictEndpoints
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         relationship_types: list[str] | None = None,
@@ -112,7 +112,7 @@ class LinkPredictionPredictArrowEndpoints(LinkPredictionPipelinePredictEndpoints
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         mutate_relationship_type: str,
         *,

@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.maxkcut_cypher_endpoints import MaxKCutCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -50,7 +50,7 @@ def maxkcut_endpoints(query_runner: QueryRunner) -> Generator[MaxKCutCypherEndpo
     yield MaxKCutCypherEndpoints(query_runner)
 
 
-def test_maxkcut_stream(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxkcut_stream(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph: Graph) -> None:
     """Test Approximate Maximum k-cut stream operation."""
     result_df = maxkcut_endpoints.stream(
         G=sample_graph,
@@ -67,7 +67,7 @@ def test_maxkcut_stream(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph:
     assert unique_communities <= 2  # Should be at most k communities
 
 
-def test_maxkcut_mutate(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxkcut_mutate(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph: Graph) -> None:
     """Test Approximate Maximum k-cut mutate operation."""
     result = maxkcut_endpoints.mutate(
         G=sample_graph,
@@ -83,7 +83,7 @@ def test_maxkcut_mutate(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph:
     assert result.node_properties_written == 6  # All 6 nodes should have community assigned
 
 
-def test_maxkcut_estimate(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxkcut_estimate(maxkcut_endpoints: MaxKCutCypherEndpoints, sample_graph: Graph) -> None:
     """Test Approximate Maximum k-cut estimate operation."""
     result = maxkcut_endpoints.estimate(sample_graph, k=2)
 

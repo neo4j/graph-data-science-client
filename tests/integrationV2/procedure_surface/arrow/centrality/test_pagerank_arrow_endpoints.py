@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.pagerank_arrow_endpoints import PageRankArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -25,13 +25,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -51,7 +51,7 @@ def pagerank_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Page
     yield PageRankArrowEndpoints(arrow_client, show_progress=False)
 
 
-def test_pagerank_stats(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_pagerank_stats(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
     """Test PageRank stats operation."""
     result = pagerank_endpoints.stats(G=sample_graph)
 
@@ -64,7 +64,7 @@ def test_pagerank_stats(pagerank_endpoints: PageRankArrowEndpoints, sample_graph
     assert "p50" in result.centrality_distribution
 
 
-def test_pagerank_stream(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_pagerank_stream(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
     """Test PageRank stream operation."""
     result_df = pagerank_endpoints.stream(
         G=sample_graph,
@@ -77,7 +77,7 @@ def test_pagerank_stream(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
     assert len(result_df) == 3  # We have 3 nodes
 
 
-def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
     """Test PageRank mutate operation."""
     result = pagerank_endpoints.mutate(
         G=sample_graph,
@@ -96,7 +96,7 @@ def test_pagerank_mutate(pagerank_endpoints: PageRankArrowEndpoints, sample_grap
 
 
 @pytest.mark.db_integration
-def test_pagerank_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_pagerank_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     """Test PageRank write operation."""
     endpoints = PageRankArrowEndpoints(
         arrow_client, WriteProtocol.select(arrow_client, query_runner), show_progress=True
@@ -123,7 +123,7 @@ def test_pagerank_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
     )
 
 
-def test_pagerank_estimate(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_pagerank_estimate(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
     result = pagerank_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3
@@ -135,7 +135,7 @@ def test_pagerank_estimate(pagerank_endpoints: PageRankArrowEndpoints, sample_gr
     assert result.heap_percentage_max > 0
 
 
-def test_compute(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(pagerank_endpoints: PageRankArrowEndpoints, sample_graph: Graph) -> None:
     handle = pagerank_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

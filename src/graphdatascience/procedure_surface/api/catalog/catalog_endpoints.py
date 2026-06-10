@@ -7,7 +7,7 @@ from typing import Any, NamedTuple, Type
 from pandas import DataFrame
 from pydantic import field_validator
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.dataset_endpoints import DatasetEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
@@ -19,7 +19,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 
 class CatalogEndpoints(ABC):
     @abstractmethod
-    def get(self, graph_name: str) -> GraphV2:
+    def get(self, graph_name: str) -> Graph:
         """Retrieve a handle to a graph from the graph catalog.
 
         Parameters
@@ -29,7 +29,7 @@ class CatalogEndpoints(ABC):
 
         Returns
         -------
-        GraphV2
+        Graph
             A handle to the graph.
         """
         pass
@@ -44,7 +44,7 @@ class CatalogEndpoints(ABC):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int = 100000,
-    ) -> GraphV2:
+    ) -> Graph:
         """Construct a graph from a list of node and relationship dataframes.
 
         Parameters
@@ -75,7 +75,7 @@ class CatalogEndpoints(ABC):
 
         Returns
         -------
-        GraphV2
+        Graph
             Constructed graph object.
         """
 
@@ -87,7 +87,7 @@ class CatalogEndpoints(ABC):
         return DatasetEndpoints(self.construct)
 
     @abstractmethod
-    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
+    def list(self, G: Graph | str | None = None) -> list[GraphInfoWithDegrees]:
         """List graphs in the graph catalog.
 
         Parameters
@@ -103,7 +103,7 @@ class CatalogEndpoints(ABC):
         pass
 
     @abstractmethod
-    def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
+    def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
         """Drop a graph from the graph catalog.
 
         Parameters
@@ -122,7 +122,7 @@ class CatalogEndpoints(ABC):
     @abstractmethod
     def filter(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
@@ -293,10 +293,10 @@ class RelationshipPropertySpec(BaseResult):
 
 # cannot use namedtuple + generic result as for python < 3.11 Multiple inheritance with NamedTuple is not supported
 class GraphWithFilterResult(NamedTuple):
-    graph: GraphV2
+    graph: Graph
     result: GraphFilterResult
 
-    def __enter__(self) -> GraphV2:
+    def __enter__(self) -> Graph:
         return self.graph
 
     def __exit__(
@@ -309,10 +309,10 @@ class GraphWithFilterResult(NamedTuple):
 
 
 class GraphWithGenerationStats(NamedTuple):
-    graph: GraphV2
+    graph: Graph
     result: GraphGenerationStats
 
-    def __enter__(self) -> GraphV2:
+    def __enter__(self) -> Graph:
         return self.graph
 
     def __exit__(

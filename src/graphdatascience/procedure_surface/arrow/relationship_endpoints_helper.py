@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 
 
@@ -24,7 +24,7 @@ class RelationshipEndpointsHelper(EndpointsHelperBase):
     def run_job_and_write(
         self,
         endpoint: str,
-        G: GraphV2,
+        G: Graph,
         config: dict[str, Any],
         *,
         relationship_type_overwrite: str,

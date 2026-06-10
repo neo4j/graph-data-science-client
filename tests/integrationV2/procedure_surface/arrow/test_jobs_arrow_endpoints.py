@@ -5,7 +5,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
@@ -45,13 +45,13 @@ DB_PROJECT_QUERY = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, f"jobs-endpoints-{uuid.uuid4()}", GDL) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -62,11 +62,11 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
         yield G
 
 
-def _start_pagerank(arrow_client: AuthenticatedArrowClient, graph: GraphV2) -> str:
+def _start_pagerank(arrow_client: AuthenticatedArrowClient, graph: Graph) -> str:
     return JobClient.run_job(arrow_client, "v2/centrality.pageRank", {"graphName": graph.name()})
 
 
-def test_get_raises_when_job_id_unknown(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_get_raises_when_job_id_unknown(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     endpoints = JobsArrowEndpoints(arrow_client)
 
     with pytest.raises(JobNotFoundException, match="not found"):
@@ -74,7 +74,7 @@ def test_get_raises_when_job_id_unknown(arrow_client: AuthenticatedArrowClient, 
 
 
 def test_get_returns_basic_job_handle_when_no_write_protocol(
-    arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, sample_graph: Graph
 ) -> None:
     job_id = _start_pagerank(arrow_client, sample_graph)
     endpoints = JobsArrowEndpoints(arrow_client)
@@ -112,7 +112,7 @@ def test_get_returns_projection_handle_for_projection_job(
 
 @pytest.mark.db_integration
 def test_get_returns_write_job_handle_when_write_protocol_succeeds(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     # Run a pagerank algorithm so we have a result to write back.
     algo_job_id = _start_pagerank(arrow_client, db_graph)

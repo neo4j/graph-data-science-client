@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.conductance_arrow_endpoints import ConductanceArrowEndpoints
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -27,7 +27,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
@@ -37,14 +37,14 @@ def conductance_endpoints(arrow_client: AuthenticatedArrowClient) -> Conductance
     return ConductanceArrowEndpoints(arrow_client)
 
 
-def test_conductance_stream(conductance_endpoints: ConductanceArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_conductance_stream(conductance_endpoints: ConductanceArrowEndpoints, sample_graph: Graph) -> None:
     result = conductance_endpoints.stream(sample_graph, "community")
 
     assert set(result.columns) == {"community", "conductance"}
     assert len(result) == 2
 
 
-def test_compute(conductance_endpoints: ConductanceArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(conductance_endpoints: ConductanceArrowEndpoints, sample_graph: Graph) -> None:
     handle = conductance_endpoints.compute(G=sample_graph, community_property="community")
     summary = handle.summary()
 

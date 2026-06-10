@@ -4,7 +4,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
@@ -71,7 +71,7 @@ class TestCypherProjectionJobHandle:
     def test_result_returns_graph_and_summary(self, cypher_handle: ProjectionJobHandle) -> None:
         graph, summary = cypher_handle.result()
 
-        assert isinstance(graph, GraphV2)
+        assert isinstance(graph, Graph)
         assert summary["nodeCount"] == 10
         assert summary["relationshipCount"] == 0
 
@@ -80,7 +80,7 @@ class TestCypherProjectionJobHandle:
 
         graph, summary = cypher_handle.result(wait=False)
 
-        assert isinstance(graph, GraphV2)
+        assert isinstance(graph, Graph)
         assert summary["nodeCount"] == 10
 
 
@@ -97,6 +97,6 @@ class TestNativeProjectionJobHandle:
     def test_result_returns_graph_and_summary(self, native_handle: ProjectionJobHandle) -> None:
         graph, summary = native_handle.result()
 
-        assert isinstance(graph, GraphV2)
+        assert isinstance(graph, Graph)
         assert summary["nodeCount"] == 10
         assert summary["relationshipCount"] == 5

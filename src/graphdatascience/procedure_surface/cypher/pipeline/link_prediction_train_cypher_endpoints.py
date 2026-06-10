@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
@@ -27,7 +27,7 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
 
     def __call__(
         self,
-        G: GraphV2,
+        G: Graph,
         pipeline_name: str,
         *,
         model_name: str,
@@ -78,7 +78,7 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         pipeline_name: str,
         *,
         model_name: str,

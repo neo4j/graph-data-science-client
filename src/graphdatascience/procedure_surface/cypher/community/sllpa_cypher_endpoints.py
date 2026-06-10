@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import (
     SllpaEndpoints,
     SllpaMutateResult,
@@ -27,7 +27,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         max_iterations: int,
@@ -67,7 +67,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         max_iterations: int,
         concurrency: int | None = None,
@@ -105,7 +105,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         max_iterations: int,
         concurrency: int | None = None,
@@ -143,7 +143,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         max_iterations: int,
@@ -185,7 +185,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         *,
         max_iterations: int,
         concurrency: int | None = None,

@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.source_target_yens_cypher_endpoints import (
     YensCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -50,7 +50,7 @@ def yens_endpoints(query_runner: QueryRunner) -> Generator[YensCypherEndpoints, 
     yield YensCypherEndpoints(query_runner)
 
 
-def test_yens_stream(yens_endpoints: YensCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_yens_stream(yens_endpoints: YensCypherEndpoints, sample_graph: Graph) -> None:
     result_df = yens_endpoints.stream(
         G=sample_graph,
         source_node=find_node_by_name(yens_endpoints._query_runner, "A"),
@@ -63,7 +63,7 @@ def test_yens_stream(yens_endpoints: YensCypherEndpoints, sample_graph: GraphV2)
     assert len(result_df) == 3
 
 
-def test_yens_mutate(yens_endpoints: YensCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_yens_mutate(yens_endpoints: YensCypherEndpoints, sample_graph: Graph) -> None:
     result = yens_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -81,7 +81,7 @@ def test_yens_mutate(yens_endpoints: YensCypherEndpoints, sample_graph: GraphV2)
     assert "sourceNode" in result.configuration
 
 
-def test_yens_write(yens_endpoints: YensCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_yens_write(yens_endpoints: YensCypherEndpoints, sample_graph: Graph) -> None:
     result = yens_endpoints.write(
         G=sample_graph,
         write_relationship_type="PATH",
@@ -99,7 +99,7 @@ def test_yens_write(yens_endpoints: YensCypherEndpoints, sample_graph: GraphV2) 
     assert "sourceNode" in result.configuration
 
 
-def test_yens_estimate(yens_endpoints: YensCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_yens_estimate(yens_endpoints: YensCypherEndpoints, sample_graph: Graph) -> None:
     result = yens_endpoints.estimate(
         sample_graph,
         source_node=find_node_by_name(yens_endpoints._query_runner, "A"),

@@ -6,7 +6,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
@@ -18,7 +18,7 @@ def gds_arrow_client(arrow_client: AuthenticatedArrowClient) -> GdsArrowClient:
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
         CREATE
         (a: Node:Foo {prop1: 1, prop2: 42.0}),
@@ -34,7 +34,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
         yield G
 
 
-def test_stream_node_label(gds_arrow_client: GdsArrowClient, sample_graph: GraphV2) -> None:
+def test_stream_node_label(gds_arrow_client: GdsArrowClient, sample_graph: Graph) -> None:
     job_id = gds_arrow_client.get_nodes(sample_graph.name(), node_filter="n.prop1 > 1")
     result = gds_arrow_client.stream_job(job_id)
 
@@ -42,7 +42,7 @@ def test_stream_node_label(gds_arrow_client: GdsArrowClient, sample_graph: Graph
     assert len(result) == 2
 
 
-def test_stream_node_properties(gds_arrow_client: GdsArrowClient, sample_graph: GraphV2) -> None:
+def test_stream_node_properties(gds_arrow_client: GdsArrowClient, sample_graph: Graph) -> None:
     job_id = gds_arrow_client.get_node_properties(sample_graph.name(), node_properties=["prop1", "prop2"])
     result = gds_arrow_client.stream_job(job_id)
 
@@ -55,7 +55,7 @@ def test_stream_node_properties(gds_arrow_client: GdsArrowClient, sample_graph: 
     assert set(result["prop2"].tolist()) == {42.0, 43.0, 44.0}
 
 
-def test_stream_relationship_properties(gds_arrow_client: GdsArrowClient, sample_graph: GraphV2) -> None:
+def test_stream_relationship_properties(gds_arrow_client: GdsArrowClient, sample_graph: Graph) -> None:
     job_id = gds_arrow_client.get_relationships(sample_graph.name(), ["REL"], relationship_properties=["relX", "relY"])
     result = gds_arrow_client.stream_job(job_id)
 

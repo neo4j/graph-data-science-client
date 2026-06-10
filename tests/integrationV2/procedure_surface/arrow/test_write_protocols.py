@@ -5,7 +5,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.protocol.write_protocols import (
     JobStatus,
@@ -18,9 +18,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import cr
 
 
 @pytest.fixture
-def projected_graph(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
-) -> Generator[GraphV2, None, None]:
+def projected_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     graph_data = """
         CREATE
         (a {prop: 42}),
@@ -64,7 +62,7 @@ def _poll_until_done(protocol: WriteProtocol, job_id: str) -> JobStatus:
 
 @pytest.mark.db_integration
 def test_v3_start_job_then_poll_to_completion(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: Graph
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = RemoteWriteBackV3(arrow_client, query_runner)
@@ -79,7 +77,7 @@ def test_v3_start_job_then_poll_to_completion(
 
 @pytest.mark.db_integration
 def test_v4_start_job_then_poll_to_completion(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, projected_graph: Graph
 ) -> None:
     job_id = _start_property_export(arrow_client, projected_graph.name())
     protocol = RemoteWriteBackV4(arrow_client, query_runner)

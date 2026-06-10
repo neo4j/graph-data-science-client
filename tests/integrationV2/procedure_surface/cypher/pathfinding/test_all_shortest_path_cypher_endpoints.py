@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.all_shortest_path_cypher_endpoints import (
     AllShortestPathCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
               (a:Node)
@@ -48,7 +48,7 @@ def all_shortest_path_endpoints(query_runner: QueryRunner) -> AllShortestPathCyp
 
 
 def test_all_shortest_paths_stream(
-    all_shortest_path_endpoints: AllShortestPathCypherEndpoints, sample_graph: GraphV2
+    all_shortest_path_endpoints: AllShortestPathCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = all_shortest_path_endpoints.stream(sample_graph)
 
@@ -57,7 +57,7 @@ def test_all_shortest_paths_stream(
 
 
 def test_all_shortest_paths_estimate(
-    all_shortest_path_endpoints: AllShortestPathCypherEndpoints, sample_graph: GraphV2
+    all_shortest_path_endpoints: AllShortestPathCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = all_shortest_path_endpoints.estimate(G=sample_graph)
 

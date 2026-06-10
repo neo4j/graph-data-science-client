@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.graph.graph_api import Graph
+from graphdatascience.graph.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
@@ -21,7 +21,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
     def rwr(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
@@ -70,7 +70,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
     def cnarw(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
@@ -119,7 +119,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
         sampling_ratio: float = 0.15,

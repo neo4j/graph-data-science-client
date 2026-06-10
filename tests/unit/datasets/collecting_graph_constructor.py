@@ -4,7 +4,7 @@ from unittest import mock
 from pandas import DataFrame
 
 from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
-from graphdatascience.graph.v2 import GraphBackend, GraphV2
+from graphdatascience.graph import Graph, GraphBackend
 
 
 class CollectingGraphConstructor(GraphConstructorFunc):
@@ -18,7 +18,7 @@ class CollectingGraphConstructor(GraphConstructorFunc):
         relationships: DataFrame | list[DataFrame] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: list[str] | None = None,
-    ) -> GraphV2:
+    ) -> Graph:
         self.calls[graph_name] = {
             "nodes": nodes,
             "relationships": relationships,
@@ -26,4 +26,4 @@ class CollectingGraphConstructor(GraphConstructorFunc):
             "undirected_relationship_types": undirected_relationship_types,
         }
 
-        return GraphV2(graph_name, mock.Mock(speck=GraphBackend))
+        return Graph(graph_name, mock.Mock(speck=GraphBackend))

@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -14,7 +14,7 @@ class GraphSageTrainEndpoints(ABC):
     @abstractmethod
     def __call__(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         feature_properties: list[str],
         *,
@@ -47,7 +47,7 @@ class GraphSageTrainEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         feature_properties: list[str],
         *,

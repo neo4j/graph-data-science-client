@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import K1ColoringWriteResult
 from graphdatascience.procedure_surface.arrow.community.k1coloring_arrow_endpoints import K1ColoringArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -25,13 +25,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -51,7 +51,7 @@ def k1coloring_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[K1
     yield K1ColoringArrowEndpoints(arrow_client)
 
 
-def test_k1coloring_stats(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_k1coloring_stats(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: Graph) -> None:
     """Test K1Coloring stats operation."""
     result = k1coloring_endpoints.stats(G=sample_graph)
 
@@ -63,7 +63,7 @@ def test_k1coloring_stats(k1coloring_endpoints: K1ColoringArrowEndpoints, sample
     assert isinstance(result.did_converge, bool)
 
 
-def test_k1coloring_stream(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_k1coloring_stream(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: Graph) -> None:
     """Test K1Coloring stream operation."""
     result_df = k1coloring_endpoints.stream(
         G=sample_graph,
@@ -75,7 +75,7 @@ def test_k1coloring_stream(k1coloring_endpoints: K1ColoringArrowEndpoints, sampl
     assert len(result_df) == 3
 
 
-def test_k1coloring_mutate(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_k1coloring_mutate(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: Graph) -> None:
     """Test K1Coloring mutate operation."""
     result = k1coloring_endpoints.mutate(
         G=sample_graph,
@@ -93,7 +93,7 @@ def test_k1coloring_mutate(k1coloring_endpoints: K1ColoringArrowEndpoints, sampl
 
 
 @pytest.mark.db_integration
-def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = K1ColoringArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="color")
 
@@ -114,7 +114,7 @@ def test_k1coloring_write(arrow_client: AuthenticatedArrowClient, query_runner: 
     )
 
 
-def test_k1coloring_estimate(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_k1coloring_estimate(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: Graph) -> None:
     result = k1coloring_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3
@@ -126,7 +126,7 @@ def test_k1coloring_estimate(k1coloring_endpoints: K1ColoringArrowEndpoints, sam
     assert result.heap_percentage_max > 0
 
 
-def test_compute(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(k1coloring_endpoints: K1ColoringArrowEndpoints, sample_graph: Graph) -> None:
     handle = k1coloring_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

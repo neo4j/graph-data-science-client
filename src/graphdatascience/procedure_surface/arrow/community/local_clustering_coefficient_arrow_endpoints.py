@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
     LocalClusteringCoefficientEndpoints,
     LocalClusteringCoefficientMutateResult,
@@ -30,7 +30,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -56,7 +56,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         mutate_property: str,
         concurrency: int | None = None,
@@ -88,7 +88,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -120,7 +120,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -151,7 +151,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         write_property: str,
         concurrency: int | None = None,
@@ -191,7 +191,7 @@ class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoin
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,

@@ -6,7 +6,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 
@@ -15,7 +15,7 @@ class NodePropertiesEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str],
         *,
         list_node_labels: bool | None = False,
@@ -62,7 +62,7 @@ class NodePropertiesEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str] | dict[str, str],
         *,
         node_labels: list[str] = ALL_LABELS,
@@ -110,7 +110,7 @@ class NodePropertiesEndpoints(ABC):
     @abstractmethod
     def drop(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: list[str],
         *,
         fail_if_missing: bool | None = True,

@@ -4,7 +4,7 @@ from pandas import DataFrame
 from pydantic import BaseModel
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import (
     EigenvectorEndpoints,
@@ -32,7 +32,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
@@ -67,7 +67,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
@@ -105,7 +105,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: int | list[int] | None = None,
@@ -142,7 +142,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: int | list[int] | None = None,
@@ -177,7 +177,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
@@ -223,7 +223,7 @@ class EigenvectorArrowEndpoints(EigenvectorEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         max_iterations: int = 20,
         tolerance: float = 1.0e-7,
         source_nodes: int | list[int] | None = None,

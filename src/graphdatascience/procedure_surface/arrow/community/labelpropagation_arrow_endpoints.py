@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import (
     LabelPropagationEndpoints,
     LabelPropagationMutateResult,
@@ -30,7 +30,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         consecutive_ids: bool = False,
@@ -64,7 +64,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         concurrency: int | None = None,
@@ -104,7 +104,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         consecutive_ids: bool = False,
@@ -143,7 +143,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         consecutive_ids: bool = False,
@@ -180,7 +180,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         concurrency: int | None = None,
@@ -228,7 +228,7 @@ class LabelPropagationArrowEndpoints(LabelPropagationEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         *,
         concurrency: int | None = None,
         consecutive_ids: bool = False,

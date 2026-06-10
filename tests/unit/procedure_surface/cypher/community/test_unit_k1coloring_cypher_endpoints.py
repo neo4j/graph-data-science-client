@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import (
     K1ColoringMutateResult,
     K1ColoringStatsResult,
@@ -18,7 +18,7 @@ def k1coloring_endpoints(query_runner: CollectingQueryRunner) -> K1ColoringCyphe
     return K1ColoringCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(graph: GraphV2) -> None:
+def test_mutate_basic(graph: Graph) -> None:
     result = {
         "nodeCount": 5,
         "colorCount": 3,
@@ -53,7 +53,7 @@ def test_mutate_basic(graph: GraphV2) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_mutate_with_optional_params(graph: GraphV2) -> None:
+def test_mutate_with_optional_params(graph: Graph) -> None:
     result = {
         "nodeCount": 5,
         "colorCount": 3,
@@ -99,7 +99,7 @@ def test_mutate_with_optional_params(graph: GraphV2) -> None:
     }
 
 
-def test_stats_basic(graph: GraphV2) -> None:
+def test_stats_basic(graph: Graph) -> None:
     result = {
         "nodeCount": 5,
         "colorCount": 3,
@@ -131,7 +131,7 @@ def test_stats_basic(graph: GraphV2) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_stats_with_optional_params(graph: GraphV2) -> None:
+def test_stats_with_optional_params(graph: Graph) -> None:
     result = {
         "nodeCount": 5,
         "colorCount": 3,
@@ -175,7 +175,7 @@ def test_stats_with_optional_params(graph: GraphV2) -> None:
 
 
 def test_stream_basic(
-    k1coloring_endpoints: K1ColoringCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
+    k1coloring_endpoints: K1ColoringCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
     k1coloring_endpoints.stream(graph)
 
@@ -188,7 +188,7 @@ def test_stream_basic(
 
 
 def test_stream_with_optional_params(
-    k1coloring_endpoints: K1ColoringCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
+    k1coloring_endpoints: K1ColoringCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
     k1coloring_endpoints.stream(
         graph,
@@ -222,7 +222,7 @@ def test_stream_with_optional_params(
     }
 
 
-def test_write_basic(graph: GraphV2) -> None:
+def test_write_basic(graph: Graph) -> None:
     result = {
         "nodeCount": 5,
         "colorCount": 3,
@@ -257,7 +257,7 @@ def test_write_basic(graph: GraphV2) -> None:
     assert result_obj.configuration == {"bar": 1337}
 
 
-def test_write_with_optional_params(graph: GraphV2) -> None:
+def test_write_with_optional_params(graph: Graph) -> None:
     result = {
         "nodeCount": 5,
         "colorCount": 3,
@@ -307,7 +307,7 @@ def test_write_with_optional_params(graph: GraphV2) -> None:
     }
 
 
-def test_estimate_with_graph_name(graph: GraphV2) -> None:
+def test_estimate_with_graph_name(graph: Graph) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"k1coloring.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.bfs_endpoints import (
     BFSMutateResult,
     BFSStatsResult,
@@ -16,7 +16,7 @@ def bfs_endpoints(query_runner: CollectingQueryRunner) -> BFSCypherEndpoints:
     return BFSCypherEndpoints(query_runner)
 
 
-def test_stream_basic(bfs_endpoints: BFSCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner) -> None:
+def test_stream_basic(bfs_endpoints: BFSCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner) -> None:
     bfs_endpoints.stream(graph, source_node=42)
 
     assert len(query_runner.queries) == 1
@@ -28,7 +28,7 @@ def test_stream_basic(bfs_endpoints: BFSCypherEndpoints, graph: GraphV2, query_r
     assert "jobId" in config
 
 
-def test_mutate_basic(graph: GraphV2) -> None:
+def test_mutate_basic(graph: Graph) -> None:
     result = {
         "relationshipsWritten": 5,
         "preProcessingMillis": 10,
@@ -54,7 +54,7 @@ def test_mutate_basic(graph: GraphV2) -> None:
     assert result_obj.relationships_written == 5
 
 
-def test_stats_basic(graph: GraphV2) -> None:
+def test_stats_basic(graph: Graph) -> None:
     result = {
         "preProcessingMillis": 10,
         "computeMillis": 20,
@@ -77,7 +77,7 @@ def test_stats_basic(graph: GraphV2) -> None:
     assert result_obj.compute_millis == 20
 
 
-def test_estimate_with_graph_name(graph: GraphV2) -> None:
+def test_estimate_with_graph_name(graph: Graph) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"bfs.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

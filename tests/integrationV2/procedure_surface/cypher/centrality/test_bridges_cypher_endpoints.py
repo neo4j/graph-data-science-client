@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.centrality.bridges_cypher_endpoints import BridgesCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -45,7 +45,7 @@ def bridges_endpoints(query_runner: QueryRunner) -> Generator[BridgesCypherEndpo
     yield BridgesCypherEndpoints(query_runner)
 
 
-def test_bridges_stream(bridges_endpoints: BridgesCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_bridges_stream(bridges_endpoints: BridgesCypherEndpoints, sample_graph: Graph) -> None:
     """Test Bridges stream operation."""
     result_df = bridges_endpoints.stream(
         G=sample_graph,
@@ -56,7 +56,7 @@ def test_bridges_stream(bridges_endpoints: BridgesCypherEndpoints, sample_graph:
     assert len(result_df) == 2
 
 
-def test_bridges_estimate(bridges_endpoints: BridgesCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_bridges_estimate(bridges_endpoints: BridgesCypherEndpoints, sample_graph: Graph) -> None:
     result = bridges_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3

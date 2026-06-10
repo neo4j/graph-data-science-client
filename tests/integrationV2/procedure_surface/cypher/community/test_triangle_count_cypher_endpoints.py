@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_endpoints import (
     TriangleCountCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -50,7 +50,7 @@ def triangle_count_endpoints(query_runner: QueryRunner) -> Generator[TriangleCou
     yield TriangleCountCypherEndpoints(query_runner)
 
 
-def test_triangle_count_stats(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_stats(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count stats operation."""
     result = triangle_count_endpoints.stats(G=sample_graph)
 
@@ -61,7 +61,7 @@ def test_triangle_count_stats(triangle_count_endpoints: TriangleCountCypherEndpo
     assert result.post_processing_millis >= 0
 
 
-def test_triangle_count_stream(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_stream(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count stream operation."""
     result_df = triangle_count_endpoints.stream(G=sample_graph)
 
@@ -74,7 +74,7 @@ def test_triangle_count_stream(triangle_count_endpoints: TriangleCountCypherEndp
     assert all(result_df["triangleCount"] >= 0)
 
 
-def test_triangle_count_mutate(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_mutate(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count mutate operation."""
     result = triangle_count_endpoints.mutate(
         G=sample_graph,
@@ -90,7 +90,7 @@ def test_triangle_count_mutate(triangle_count_endpoints: TriangleCountCypherEndp
     assert result.node_count == 6
 
 
-def test_triangle_count_write(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_write(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count write operation."""
     result = triangle_count_endpoints.write(
         G=sample_graph,
@@ -106,7 +106,7 @@ def test_triangle_count_write(triangle_count_endpoints: TriangleCountCypherEndpo
     assert result.node_count == 6
 
 
-def test_triangle_count_estimate(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_estimate(triangle_count_endpoints: TriangleCountCypherEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count estimate operation."""
     result = triangle_count_endpoints.estimate(sample_graph)
 

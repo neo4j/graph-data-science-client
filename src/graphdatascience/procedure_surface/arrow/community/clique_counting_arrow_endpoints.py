@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import (
     CliqueCountingEndpoints,
     CliqueCountingMutateResult,
@@ -30,7 +30,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -54,7 +54,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         concurrency: int | None = None,
@@ -84,7 +84,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -112,7 +112,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -136,7 +136,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -171,7 +171,7 @@ class CliqueCountingArrowEndpoints(CliqueCountingEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,

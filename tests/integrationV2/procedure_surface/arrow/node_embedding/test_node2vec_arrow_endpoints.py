@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecWriteResult
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -24,13 +24,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -50,7 +50,7 @@ def node2vec_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Node
     yield Node2VecArrowEndpoints(arrow_client)
 
 
-def test_node2vec_mutate(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_node2vec_mutate(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: Graph) -> None:
     """Test Node2Vec mutate operation."""
     result = node2vec_endpoints.mutate(
         G=sample_graph,
@@ -69,7 +69,7 @@ def test_node2vec_mutate(node2vec_endpoints: Node2VecArrowEndpoints, sample_grap
     assert isinstance(result.loss_per_iteration, list)
 
 
-def test_node2vec_stream(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_node2vec_stream(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: Graph) -> None:
     """Test Node2Vec stream operation."""
     result = node2vec_endpoints.stream(
         G=sample_graph,
@@ -83,7 +83,7 @@ def test_node2vec_stream(node2vec_endpoints: Node2VecArrowEndpoints, sample_grap
 
 
 @pytest.mark.db_integration
-def test_node2vec_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_node2vec_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     """Test Node2Vec write operation."""
     endpoints = Node2VecArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(
@@ -113,7 +113,7 @@ def test_node2vec_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
 
 
 def test_node2vec_write_without_write_back_client(
-    node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2
+    node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test Node2Vec write operation without write back client."""
     with pytest.raises(Exception, match="Write back is not supported by this session."):
@@ -126,7 +126,7 @@ def test_node2vec_write_without_write_back_client(
         )
 
 
-def test_node2vec_estimate(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_node2vec_estimate(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: Graph) -> None:
     """Test Node2Vec estimate operation."""
     result = node2vec_endpoints.estimate(
         G=sample_graph,
@@ -140,7 +140,7 @@ def test_node2vec_estimate(node2vec_endpoints: Node2VecArrowEndpoints, sample_gr
     assert "KiB" in result.required_memory or "Bytes" in result.required_memory
 
 
-def test_compute(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(node2vec_endpoints: Node2VecArrowEndpoints, sample_graph: Graph) -> None:
     handle = node2vec_endpoints.compute(G=sample_graph, embedding_dimension=64, walks_per_node=1, walk_length=2)
     summary = handle.summary()
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsMutateResult,
     ArticulationPointsStatsResult,
@@ -19,7 +19,7 @@ def articulationpoints_endpoints(query_runner: CollectingQueryRunner) -> Articul
     return ArticulationPointsCypherEndpoints(query_runner)
 
 
-def test_mutate_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: GraphV2) -> None:
+def test_mutate_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: Graph) -> None:
     result = {
         "articulationPointCount": 2,
         "computeMillis": 20,
@@ -49,7 +49,7 @@ def test_mutate_basic(articulationpoints_endpoints: ArticulationPointsCypherEndp
 
 
 def test_mutate_with_optional_params(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: Graph
 ) -> None:
     result = {
         "articulationPointCount": 3,
@@ -89,7 +89,7 @@ def test_mutate_with_optional_params(
     }
 
 
-def test_stats_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: GraphV2) -> None:
+def test_stats_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: Graph) -> None:
     result = {
         "articulationPointCount": 1,
         "computeMillis": 15,
@@ -113,7 +113,7 @@ def test_stats_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpo
     assert result_obj.configuration == {"concurrency": 1}
 
 
-def test_stream_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: GraphV2) -> None:
+def test_stream_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: Graph) -> None:
     result = pd.DataFrame(
         [
             {"nodeId": 0, "resultingComponents": {"max": 1}},
@@ -137,7 +137,7 @@ def test_stream_basic(articulationpoints_endpoints: ArticulationPointsCypherEndp
     assert "resultingComponents" in result_df.columns
 
 
-def test_write_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: GraphV2) -> None:
+def test_write_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: Graph) -> None:
     result = {
         "articulationPointCount": 2,
         "computeMillis": 20,
@@ -167,7 +167,7 @@ def test_write_basic(articulationpoints_endpoints: ArticulationPointsCypherEndpo
 
 
 def test_write_with_optional_params(
-    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: GraphV2
+    articulationpoints_endpoints: ArticulationPointsCypherEndpoints, graph: Graph
 ) -> None:
     result = {
         "articulationPointCount": 3,
@@ -209,7 +209,7 @@ def test_write_with_optional_params(
     }
 
 
-def test_estimate_with_graph_name(graph: GraphV2) -> None:
+def test_estimate_with_graph_name(graph: Graph) -> None:
     query_runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION, {"articulationPoints.stats.estimate": pd.DataFrame([estimate_mock_result()])}
     )

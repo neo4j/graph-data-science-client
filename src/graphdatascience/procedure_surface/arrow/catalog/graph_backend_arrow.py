@@ -1,13 +1,13 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2 import GraphBackend, GraphV2
+from graphdatascience.graph import Graph, GraphBackend
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 
 
-def get_graph(name: str, arrow_client: AuthenticatedArrowClient) -> GraphV2:
+def get_graph(name: str, arrow_client: AuthenticatedArrowClient) -> Graph:
     backend = ArrowGraphBackend(name, arrow_client)
 
-    return GraphV2(name, backend)
+    return Graph(name, backend)
 
 
 class ArrowGraphBackend(GraphBackend):

@@ -10,7 +10,7 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.graph_construction.arrow_v2_graph_constructor import ArrowV2GraphConstructor
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog import (
@@ -67,7 +67,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             )
             self._write_protocol = WriteProtocol.select(arrow_client, query_runner)
 
-    def get(self, graph_name: str) -> GraphV2:
+    def get(self, graph_name: str) -> Graph:
         if not self.list(graph_name):
             raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
         return get_graph(graph_name, self._arrow_client)
@@ -302,7 +302,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_index_relationship_types: typing.List[str] | None = None,
         batch_size: int = 100000,
-    ) -> GraphV2:
+    ) -> Graph:
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
         if relationships is not None and isinstance(relationships, DataFrame):
@@ -322,14 +322,14 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         constructor.run(nodes, relationships)
         return get_graph(graph_name, self._arrow_client)
 
-    def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
-        graph_name = G.name() if isinstance(G, GraphV2) else G
+    def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
+        graph_name = G.name() if isinstance(G, Graph) else G
 
         return self._graph_backend.drop(graph_name, fail_if_missing)
 
     def filter(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
@@ -364,7 +364,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     def filter_async(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
@@ -484,9 +484,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         return ProjectionJobHandle(self._arrow_client, graph_name, started_job_id, TerminationFlag.create())
 
-    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
+    def list(self, G: Graph | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name: str | None = None
-        if isinstance(G, GraphV2):
+        if isinstance(G, Graph):
             graph_name = G.name()
         elif isinstance(G, str):
             graph_name = G
@@ -554,10 +554,10 @@ class GraphWithProjectResult(NamedTuple):
     """Result object for graph projection jobs, containing the projected graph and the projection result.
     Can be used as a context manager to ensure the projected graph is dropped after use."""
 
-    graph: GraphV2
+    graph: Graph
     result: ProjectionResult | StoreProjectionResult
 
-    def __enter__(self) -> GraphV2:
+    def __enter__(self) -> Graph:
         return self.graph
 
     def __exit__(

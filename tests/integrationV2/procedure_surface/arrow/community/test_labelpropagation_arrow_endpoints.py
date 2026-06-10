@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationWriteResult
 from graphdatascience.procedure_surface.arrow.community.labelpropagation_arrow_endpoints import (
     LabelPropagationArrowEndpoints,
@@ -30,7 +30,7 @@ create_statement = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(
         arrow_client,
         "g",
@@ -40,7 +40,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -63,7 +63,7 @@ def labelpropagation_endpoints(
 
 
 def test_labelpropagation_stats(
-    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.stats(G=sample_graph, max_iterations=10)
 
@@ -77,7 +77,7 @@ def test_labelpropagation_stats(
 
 
 def test_labelpropagation_stream(
-    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result_df = labelpropagation_endpoints.stream(
         G=sample_graph,
@@ -90,7 +90,7 @@ def test_labelpropagation_stream(
 
 
 def test_labelpropagation_mutate(
-    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.mutate(
         G=sample_graph,
@@ -110,7 +110,7 @@ def test_labelpropagation_mutate(
 
 @pytest.mark.db_integration
 def test_labelpropagation_write(
-    arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner
+    arrow_client: AuthenticatedArrowClient, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
     endpoints = LabelPropagationArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
@@ -136,7 +136,7 @@ def test_labelpropagation_write(
 
 
 def test_labelpropagation_estimate(
-    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.estimate(sample_graph, max_iterations=10)
 
@@ -150,7 +150,7 @@ def test_labelpropagation_estimate(
 
 
 def test_labelpropagation_with_consecutive_ids(
-    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.stream(G=sample_graph, max_iterations=10, consecutive_ids=True)
 
@@ -160,7 +160,7 @@ def test_labelpropagation_with_consecutive_ids(
 
 
 def test_labelpropagation_with_min_community_size(
-    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.stream(G=sample_graph, max_iterations=10, min_community_size=2)
 
@@ -169,7 +169,7 @@ def test_labelpropagation_with_min_community_size(
     assert len(result) <= 4  # Some nodes might be filtered out due to min community size
 
 
-def test_compute(labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(labelpropagation_endpoints: LabelPropagationArrowEndpoints, sample_graph: Graph) -> None:
     handle = labelpropagation_endpoints.compute(G=sample_graph, max_iterations=10)
     summary = handle.summary()
 

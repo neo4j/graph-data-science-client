@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import (
     MaxFlowMutateResult,
     MaxFlowStatsResult,
@@ -15,7 +15,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
               (a:Node {name: 'A'})
@@ -55,7 +55,7 @@ def maxflow_endpoints(query_runner: QueryRunner) -> MaxFlowCypherEndpoints:
     return MaxFlowCypherEndpoints(query_runner)
 
 
-def test_maxflow_stats(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxflow_stats(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: Graph) -> None:
     result = maxflow_endpoints.stats(
         sample_graph,
         source_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "A")],
@@ -69,7 +69,7 @@ def test_maxflow_stats(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: 
     assert result.compute_millis >= 0
 
 
-def test_maxflow_stream(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxflow_stream(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: Graph) -> None:
     result = maxflow_endpoints.stream(
         sample_graph,
         capacity_property="capacity",
@@ -81,7 +81,7 @@ def test_maxflow_stream(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph:
     assert len(result) == 7
 
 
-def test_maxflow_mutate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxflow_mutate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: Graph) -> None:
     result = maxflow_endpoints.mutate(
         sample_graph,
         mutate_property="flow",
@@ -99,7 +99,7 @@ def test_maxflow_mutate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph:
     assert result.relationships_written == 7
 
 
-def test_maxflow_estimate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxflow_estimate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: Graph) -> None:
     result = maxflow_endpoints.estimate(
         G=sample_graph,
         source_nodes=[find_node_by_name(maxflow_endpoints._query_runner, "A")],
@@ -118,7 +118,7 @@ def test_maxflow_estimate(maxflow_endpoints: MaxFlowCypherEndpoints, sample_grap
     assert result.heap_percentage_max >= 0
 
 
-def test_maxflow_write(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_maxflow_write(maxflow_endpoints: MaxFlowCypherEndpoints, sample_graph: Graph) -> None:
     result = maxflow_endpoints.write(
         sample_graph,
         write_property="flow",

@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -32,7 +32,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         relationship_types: list[str] = ALL_TYPES,
@@ -60,7 +60,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         relationship_types: list[str] = ALL_TYPES,
@@ -88,7 +88,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         write_property: str,
         *,
@@ -128,7 +128,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         mutate_property: str,
         relationship_types: list[str] = ALL_TYPES,
@@ -163,7 +163,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         model_name: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,

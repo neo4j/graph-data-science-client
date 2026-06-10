@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.source_target_astar_endpoints import AStarWriteResult
 from graphdatascience.procedure_surface.arrow.pathfinding.source_target_astar_arrow_endpoints import AStarArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
@@ -33,13 +33,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -61,7 +61,7 @@ def astar_endpoints(
     yield AStarArrowEndpoints(arrow_client)
 
 
-def test_astar_stream(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_astar_stream(astar_endpoints: AStarArrowEndpoints, sample_graph: Graph) -> None:
     result_df = astar_endpoints.stream(
         G=sample_graph,
         source_node=0,
@@ -77,7 +77,7 @@ def test_astar_stream(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV
     assert "totalCost" in result_df.columns
 
 
-def test_astar_mutate(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_astar_mutate(astar_endpoints: AStarArrowEndpoints, sample_graph: Graph) -> None:
     result = astar_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -100,7 +100,7 @@ def test_astar_mutate(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV
 def test_astar_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints_with_writeback = AStarArrowEndpoints(
         arrow_client=arrow_client,
@@ -126,7 +126,7 @@ def test_astar_write(
     assert "sourceNode" in result.configuration
 
 
-def test_astar_estimate(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_astar_estimate(astar_endpoints: AStarArrowEndpoints, sample_graph: Graph) -> None:
     result = astar_endpoints.estimate(
         sample_graph,
         source_node=0,
@@ -145,7 +145,7 @@ def test_astar_estimate(astar_endpoints: AStarArrowEndpoints, sample_graph: Grap
     assert result.heap_percentage_max > 0
 
 
-def test_compute(astar_endpoints: AStarArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(astar_endpoints: AStarArrowEndpoints, sample_graph: Graph) -> None:
     handle = astar_endpoints.compute(
         G=sample_graph,
         source_node=0,

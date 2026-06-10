@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
@@ -22,13 +22,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -48,7 +48,7 @@ def knn_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[KnnArrowE
     yield KnnArrowEndpoints(arrow_client)
 
 
-def test_knn_stats(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_stats(knn_endpoints: KnnArrowEndpoints, sample_graph: Graph) -> None:
     """Test KNN stats operation."""
     result = knn_endpoints.stats(G=sample_graph, node_properties=["prop"], top_k=2)
 
@@ -63,7 +63,7 @@ def test_knn_stats(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> N
     assert "p50" in result.similarity_distribution
 
 
-def test_knn_stream(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_stream(knn_endpoints: KnnArrowEndpoints, sample_graph: Graph) -> None:
     """Test KNN stream operation."""
     result_df = knn_endpoints.stream(
         G=sample_graph,
@@ -75,7 +75,7 @@ def test_knn_stream(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> 
     assert len(result_df) == 8
 
 
-def test_knn_mutate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_mutate(knn_endpoints: KnnArrowEndpoints, sample_graph: Graph) -> None:
     """Test KNN mutate operation."""
     result = knn_endpoints.mutate(
         G=sample_graph,
@@ -96,7 +96,7 @@ def test_knn_mutate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> 
 
 
 @pytest.mark.db_integration
-def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     """Test KNN write operation."""
     endpoints = KnnArrowEndpoints(
         arrow_client,
@@ -125,7 +125,7 @@ def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     assert count_result >= result.relationships_written
 
 
-def test_knn_estimate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_knn_estimate(knn_endpoints: KnnArrowEndpoints, sample_graph: Graph) -> None:
     result = knn_endpoints.estimate(sample_graph, node_properties=["prop"], top_k=2)
 
     assert result.node_count == 4
@@ -137,7 +137,7 @@ def test_knn_estimate(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -
     assert result.heap_percentage_max > 0
 
 
-def test_compute(knn_endpoints: KnnArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(knn_endpoints: KnnArrowEndpoints, sample_graph: Graph) -> None:
     handle = knn_endpoints.compute(G=sample_graph, node_properties=["prop"], top_k=2)
     summary = handle.summary()
 

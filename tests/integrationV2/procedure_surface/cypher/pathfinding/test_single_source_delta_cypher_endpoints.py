@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.single_source_delta_cypher_endpoints import (
     DeltaSteppingCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -52,7 +52,7 @@ def delta_stepping_endpoints(query_runner: QueryRunner) -> Generator[DeltaSteppi
     yield DeltaSteppingCypherEndpoints(query_runner)
 
 
-def test_delta_stepping_stream(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_stream(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: Graph) -> None:
     result_df = delta_stepping_endpoints.stream(
         G=sample_graph,
         source_node=find_node_by_name(delta_stepping_endpoints._query_runner, "A"),
@@ -64,7 +64,7 @@ def test_delta_stepping_stream(delta_stepping_endpoints: DeltaSteppingCypherEndp
     assert len(result_df) == 5
 
 
-def test_delta_stepping_stats(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_stats(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: Graph) -> None:
     result = delta_stepping_endpoints.stats(
         G=sample_graph,
         source_node=find_node_by_name(delta_stepping_endpoints._query_runner, "A"),
@@ -78,7 +78,7 @@ def test_delta_stepping_stats(delta_stepping_endpoints: DeltaSteppingCypherEndpo
     assert "sourceNode" in result.configuration
 
 
-def test_delta_stepping_mutate(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_mutate(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: Graph) -> None:
     result = delta_stepping_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -95,7 +95,7 @@ def test_delta_stepping_mutate(delta_stepping_endpoints: DeltaSteppingCypherEndp
     assert "sourceNode" in result.configuration
 
 
-def test_delta_stepping_write(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_write(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: Graph) -> None:
     result = delta_stepping_endpoints.write(
         G=sample_graph,
         write_relationship_type="PATH",
@@ -112,7 +112,7 @@ def test_delta_stepping_write(delta_stepping_endpoints: DeltaSteppingCypherEndpo
     assert "sourceNode" in result.configuration
 
 
-def test_delta_stepping_estimate(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_estimate(delta_stepping_endpoints: DeltaSteppingCypherEndpoints, sample_graph: Graph) -> None:
     result = delta_stepping_endpoints.estimate(
         sample_graph,
         source_node=find_node_by_name(delta_stepping_endpoints._query_runner, "A"),

@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
     ModularityOptimizationEndpoints,
     ModularityOptimizationMutateResult,
@@ -27,7 +27,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         batch_size: int = 10000,
@@ -75,7 +75,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         batch_size: int = 10000,
         concurrency: int | None = None,
@@ -119,7 +119,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         batch_size: int = 10000,
         concurrency: int | None = None,
@@ -165,7 +165,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         batch_size: int = 10000,
@@ -215,7 +215,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         *,
         batch_size: int = 10000,
         concurrency: int | None = None,

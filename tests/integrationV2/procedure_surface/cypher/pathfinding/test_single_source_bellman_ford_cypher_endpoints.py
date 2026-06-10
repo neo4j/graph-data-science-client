@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.single_source_bellman_ford_cypher_endpoints import (
     BellmanFordCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -52,7 +52,7 @@ def bellman_ford_endpoints(query_runner: QueryRunner) -> Generator[BellmanFordCy
     yield BellmanFordCypherEndpoints(query_runner)
 
 
-def test_bellman_ford_stream(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_stream(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: Graph) -> None:
     result_df = bellman_ford_endpoints.stream(
         G=sample_graph,
         source_node=find_node_by_name(bellman_ford_endpoints._query_runner, "A"),
@@ -71,7 +71,7 @@ def test_bellman_ford_stream(bellman_ford_endpoints: BellmanFordCypherEndpoints,
     assert len(result_df) > 0
 
 
-def test_bellman_ford_stats(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_stats(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: Graph) -> None:
     result = bellman_ford_endpoints.stats(
         G=sample_graph,
         source_node=find_node_by_name(bellman_ford_endpoints._query_runner, "A"),
@@ -85,7 +85,7 @@ def test_bellman_ford_stats(bellman_ford_endpoints: BellmanFordCypherEndpoints, 
     assert "sourceNode" in result.configuration
 
 
-def test_bellman_ford_mutate(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_mutate(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: Graph) -> None:
     result = bellman_ford_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -102,7 +102,7 @@ def test_bellman_ford_mutate(bellman_ford_endpoints: BellmanFordCypherEndpoints,
     assert "sourceNode" in result.configuration
 
 
-def test_bellman_ford_write(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_write(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: Graph) -> None:
     result = bellman_ford_endpoints.write(
         G=sample_graph,
         write_relationship_type="PATH",
@@ -119,7 +119,7 @@ def test_bellman_ford_write(bellman_ford_endpoints: BellmanFordCypherEndpoints, 
     assert "sourceNode" in result.configuration
 
 
-def test_bellman_ford_estimate(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_bellman_ford_estimate(bellman_ford_endpoints: BellmanFordCypherEndpoints, sample_graph: Graph) -> None:
     result = bellman_ford_endpoints.estimate(
         sample_graph,
         source_node=find_node_by_name(bellman_ford_endpoints._query_runner, "A"),

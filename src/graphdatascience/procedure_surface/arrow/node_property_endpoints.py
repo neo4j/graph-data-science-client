@@ -1,6 +1,6 @@
 from typing import Any, OrderedDict
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 
 
@@ -21,7 +21,7 @@ class NodePropertyEndpointsHelper(EndpointsHelperBase):
     def run_job_and_write(
         self,
         endpoint: str,
-        G: GraphV2,
+        G: Graph,
         config: dict[str, Any],
         property_overwrites: str | dict[str, str],
         write_concurrency: int | None = None,
