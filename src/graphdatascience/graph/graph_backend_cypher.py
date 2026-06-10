@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph import Graph, GraphBackend
+from graphdatascience.graph import Graph
+from graphdatascience.graph.graph_backend import GraphBackend
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.query_runner.query_runner import QueryRunner
 

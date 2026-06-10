@@ -4,7 +4,8 @@ from unittest import mock
 from pandas import DataFrame
 
 from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
-from graphdatascience.graph import Graph, GraphBackend
+from graphdatascience.graph import Graph
+from graphdatascience.graph.graph_backend import GraphBackend
 
 
 class CollectingGraphConstructor(GraphConstructorFunc):
