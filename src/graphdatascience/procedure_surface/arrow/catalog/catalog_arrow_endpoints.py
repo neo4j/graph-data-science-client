@@ -9,9 +9,9 @@ from typing import Any, NamedTuple, Type
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph_construction.arrow_v2_graph_constructor import ArrowV2GraphConstructor
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog import (
     NodeLabelEndpoints,
@@ -38,7 +38,6 @@ from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endp
 )
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import RelationshipArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.progress.progress_bar import NoOpProgressBar, ProgressBar, TqdmProgressBar
 from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
 from graphdatascience.query_runner.protocol.projection_runner import ProjectionRunner
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
@@ -297,74 +296,30 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     def construct(
         self,
         graph_name: str,
-        nodes: DataFrame | list[DataFrame],
-        relationships: DataFrame | list[DataFrame] | None = None,
+        nodes: DataFrame | typing.List[DataFrame],
+        relationships: DataFrame | typing.List[DataFrame] | None = None,
         concurrency: int | None = None,
-        undirected_relationship_types: list[str] | None = None,
+        undirected_relationship_types: typing.List[str] | None = None,
+        inverse_index_relationship_types: typing.List[str] | None = None,
+        batch_size: int = 100000,
     ) -> GraphV2:
-        gds_arrow_client = GdsArrowClient(self._arrow_client)
-        job_client = JobClient()
-        termination_flag = TerminationFlag.create()
+        if isinstance(nodes, DataFrame):
+            nodes = [nodes]
+        if relationships is not None and isinstance(relationships, DataFrame):
+            relationships = [relationships]
+        if relationships is None:
+            relationships = []
 
-        if self._show_progress:
-            progress_bar: ProgressBar = TqdmProgressBar(task_name="Constructing graph", relative_progress=0.0)
-        else:
-            progress_bar = NoOpProgressBar()
-
-        with progress_bar:
-            create_job_id: str = gds_arrow_client.create_graph(
-                graph_name=graph_name,
-                undirected_relationship_types=undirected_relationship_types or [],
-                concurrency=concurrency,
-            )
-            node_count = nodes.shape[0] if isinstance(nodes, DataFrame) else sum(df.shape[0] for df in nodes)
-            if isinstance(relationships, DataFrame):
-                rel_count = relationships.shape[0]
-            elif relationships is None:
-                rel_count = 0
-                relationships = []
-            else:
-                rel_count = sum(df.shape[0] for df in relationships)
-            total_count = node_count + rel_count
-
-            gds_arrow_client.upload_nodes(
-                create_job_id,
-                nodes,
-                progress_callback=lambda rows_imported: progress_bar.update(
-                    sub_tasks_description="Uploading nodes", progress=rows_imported / total_count, status="Running"
-                ),
-                termination_flag=termination_flag,
-            )
-
-            gds_arrow_client.node_load_done(create_job_id)
-
-            # skipping progress bar here as we have our own for the overall process
-            job_client.wait_for_job(
-                self._arrow_client,
-                create_job_id,
-                expected_status="RELATIONSHIP_LOADING",
-                termination_flag=termination_flag,
-                show_progress=False,
-            )
-
-            if rel_count > 0:
-                gds_arrow_client.upload_relationships(
-                    create_job_id,
-                    relationships,
-                    progress_callback=lambda rows_imported: progress_bar.update(
-                        sub_tasks_description="Uploading relationships",
-                        progress=rows_imported / total_count,
-                        status="Running",
-                    ),
-                    termination_flag=termination_flag,
-                )
-
-            gds_arrow_client.relationship_load_done(create_job_id)
-
-        # will produce a second progress bar to show graph construction on the server side
-        job_client.wait_for_job(
-            self._arrow_client, create_job_id, termination_flag=termination_flag, show_progress=True
+        constructor = ArrowV2GraphConstructor(
+            self._arrow_client,
+            graph_name,
+            concurrency,
+            undirected_relationship_types,
+            inverse_index_relationship_types,
+            batch_size,
+            self._show_progress,
         )
+        constructor.run(nodes, relationships)
         return get_graph(graph_name, self._arrow_client)
 
     def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
