@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingWriteResult
 from graphdatascience.procedure_surface.cypher.community.clique_counting_cypher_endpoints import (
     CliqueCountingCypherEndpoints,
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
         (a1)-[:T]->(a2)-[:T]->(a3)-[:T]->(a4), (a2)-[:T]->(a4)-[:T]->(a1)-[:T]->(a3)
@@ -39,7 +39,7 @@ def clique_counting_endpoints(query_runner: QueryRunner) -> Generator[CliqueCoun
     yield CliqueCountingCypherEndpoints(query_runner)
 
 
-def test_clique_counting_stats(clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_clique_counting_stats(clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: Graph) -> None:
     """Test clique counting stats operation."""
     result = clique_counting_endpoints.stats(G=sample_graph)
 
@@ -48,9 +48,7 @@ def test_clique_counting_stats(clique_counting_endpoints: CliqueCountingCypherEn
     assert result.global_count == [4, 1]
 
 
-def test_clique_counting_stream(
-    clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: GraphV2
-) -> None:
+def test_clique_counting_stream(clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: Graph) -> None:
     """Test clique counting stream operation."""
     result_df = clique_counting_endpoints.stream(
         G=sample_graph,
@@ -60,9 +58,7 @@ def test_clique_counting_stream(
     assert len(result_df) == 4
 
 
-def test_clique_counting_mutate(
-    clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: GraphV2
-) -> None:
+def test_clique_counting_mutate(clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: Graph) -> None:
     """Test clique counting mutate operation."""
     result = clique_counting_endpoints.mutate(
         G=sample_graph,
@@ -77,7 +73,7 @@ def test_clique_counting_mutate(
 
 
 def test_clique_counting_write(
-    clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     result = clique_counting_endpoints.write(G=sample_graph, write_property="cliqueCount")
 
@@ -97,7 +93,7 @@ def test_clique_counting_write(
 
 
 def test_clique_counting_estimate(
-    clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: GraphV2
+    clique_counting_endpoints: CliqueCountingCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = clique_counting_endpoints.estimate(sample_graph)
 

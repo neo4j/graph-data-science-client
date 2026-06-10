@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint import ListProgressArrowEndpoint
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
@@ -15,13 +15,13 @@ graph = """
 
 
 @pytest.fixture(scope="class")
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture(scope="class")
-def job_id(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> Generator[str, None, None]:
+def job_id(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> Generator[str, None, None]:
     job_id = "test_job_id"
     WccArrowEndpoints(arrow_client).stats(sample_graph, job_id=job_id)
     yield job_id

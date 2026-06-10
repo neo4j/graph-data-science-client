@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import (
     HdbscanEndpoints,
     HdbscanMutateResult,
@@ -28,7 +28,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         mutate_property: str,
         *,
@@ -69,7 +69,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         *,
         leaf_size: int = 1,
@@ -108,7 +108,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         *,
         leaf_size: int = 1,
@@ -147,7 +147,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         node_property: str,
         write_property: str,
         *,
@@ -190,7 +190,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         node_property: str,
         *,
         leaf_size: int = 1,

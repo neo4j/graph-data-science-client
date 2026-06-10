@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.hdbscan_arrow_endpoints import HdbscanArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
@@ -22,7 +22,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(
         arrow_client,
         "hdbscan_test_graph",
@@ -32,7 +32,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -52,7 +52,7 @@ def hdbscan_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Hdbsc
     yield HdbscanArrowEndpoints(arrow_client)
 
 
-def test_hdbscan_stats(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_hdbscan_stats(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: Graph) -> None:
     result = hdbscan_endpoints.stats(G=sample_graph, node_property="prop", min_cluster_size=2)
 
     assert result.compute_millis >= 0
@@ -62,7 +62,7 @@ def test_hdbscan_stats(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: G
     assert "concurrency" in result.configuration
 
 
-def test_hdbscan_stream(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_hdbscan_stream(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: Graph) -> None:
     result_df = hdbscan_endpoints.stream(
         G=sample_graph,
         node_property="prop",
@@ -72,7 +72,7 @@ def test_hdbscan_stream(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: 
     assert len(result_df) == 4
 
 
-def test_hdbscan_mutate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_hdbscan_mutate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: Graph) -> None:
     result = hdbscan_endpoints.mutate(
         G=sample_graph,
         node_property="prop",
@@ -88,7 +88,7 @@ def test_hdbscan_mutate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: 
 
 
 @pytest.mark.db_integration
-def test_hdbscan_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
+def test_hdbscan_write(arrow_client: AuthenticatedArrowClient, db_graph: Graph, query_runner: QueryRunner) -> None:
     endpoints = HdbscanArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(
         G=db_graph,
@@ -107,7 +107,7 @@ def test_hdbscan_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2
     assert "concurrency" in result.configuration
 
 
-def test_hdbscan_estimate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_hdbscan_estimate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: Graph) -> None:
     result = hdbscan_endpoints.estimate(
         G=sample_graph,
         node_property="prop",
@@ -123,7 +123,7 @@ def test_hdbscan_estimate(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph
     assert result.heap_percentage_max > 0
 
 
-def test_compute(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(hdbscan_endpoints: HdbscanArrowEndpoints, sample_graph: Graph) -> None:
     handle = hdbscan_endpoints.compute(G=sample_graph, node_property="prop", min_cluster_size=2)
     summary = handle.summary()
 

@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -43,7 +43,7 @@ class SingleSourceBellmanFordEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -92,7 +92,7 @@ class SingleSourceBellmanFordEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -140,7 +140,7 @@ class SingleSourceBellmanFordEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         source_node: int,
         mutate_negative_cycles: bool = False,
@@ -192,7 +192,7 @@ class SingleSourceBellmanFordEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_relationship_type: str,
         source_node: int,
         write_node_ids: bool = False,
@@ -251,7 +251,7 @@ class SingleSourceBellmanFordEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_node: int,
         relationship_weight_property: str | None = None,
         relationship_types: list[str] = ALL_TYPES,

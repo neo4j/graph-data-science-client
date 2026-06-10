@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.kcore_endpoints import (
     KCoreEndpoints,
     KCoreMutateResult,
@@ -30,7 +30,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -53,7 +53,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         concurrency: int | None = None,
@@ -80,7 +80,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -106,7 +106,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -130,7 +130,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         *,
         concurrency: int | None = None,
@@ -164,7 +164,7 @@ class KCoreArrowEndpoints(KCoreEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         *,
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,

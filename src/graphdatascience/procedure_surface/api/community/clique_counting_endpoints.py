@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -15,7 +15,7 @@ class CliqueCountingEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         concurrency: int | None = None,
@@ -60,7 +60,7 @@ class CliqueCountingEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -101,7 +101,7 @@ class CliqueCountingEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         concurrency: int | None = None,
         job_id: str | None = None,
         log_progress: bool = True,
@@ -142,7 +142,7 @@ class CliqueCountingEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         concurrency: int | None = None,
         job_id: str | None = None,
@@ -187,7 +187,7 @@ class CliqueCountingEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         concurrency: int | None = None,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,

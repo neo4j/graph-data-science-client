@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesWriteResult
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
@@ -29,7 +29,7 @@ projection_query = """
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph(query_runner, "g", graph, projection_query) as G:
         yield G
 
@@ -40,7 +40,7 @@ def scale_properties_endpoints(query_runner: QueryRunner) -> Generator[ScaleProp
 
 
 def test_scale_properties_stats(
-    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = scale_properties_endpoints.stats(
         G=sample_graph, node_properties=["prop1"], scaler=ScalerConfig(type="MinMax")
@@ -54,7 +54,7 @@ def test_scale_properties_stats(
 
 
 def test_scale_properties_stream(
-    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: Graph
 ) -> None:
     result_df = scale_properties_endpoints.stream(
         G=sample_graph, node_properties=["prop1"], scaler=ScalerConfig(type="Log", offset=1.0)
@@ -65,7 +65,7 @@ def test_scale_properties_stream(
 
 
 def test_scale_properties_mutate(
-    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = scale_properties_endpoints.mutate(
         G=sample_graph, mutate_property="scaledProp", node_properties=["prop1"], scaler="MinMax"
@@ -81,7 +81,7 @@ def test_scale_properties_mutate(
 
 
 def test_scale_properties_write(
-    scale_properties_endpoints: ScalePropertiesCypherEndpoints, query_runner: QueryRunner, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesCypherEndpoints, query_runner: QueryRunner, sample_graph: Graph
 ) -> None:
     result = scale_properties_endpoints.write(
         G=sample_graph, write_property="scaledProp", node_properties=["prop1"], scaler="MinMax"
@@ -104,7 +104,7 @@ def test_scale_properties_write(
 
 
 def test_scale_properties_estimate(
-    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = scale_properties_endpoints.estimate(sample_graph, node_properties=["prop1"], scaler="MinMax")
 

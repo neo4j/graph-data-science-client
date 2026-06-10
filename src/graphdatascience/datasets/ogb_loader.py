@@ -10,7 +10,7 @@ import numpy.typing as npt
 import pandas as pd
 
 from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
-from graphdatascience.graph.v2 import GraphV2
+from graphdatascience.graph import Graph
 
 
 class _HomogeneousOGBGraphBase(TypedDict):
@@ -194,7 +194,7 @@ class OGBNLoader(OGBLoader):
         dataset_root_path: str = "dataset",
         graph_name: str | None = None,
         concurrency: int | None = None,
-    ) -> GraphV2:
+    ) -> Graph:
         """
         Parameters
         ----------
@@ -209,7 +209,7 @@ class OGBNLoader(OGBLoader):
 
         Returns
         -------
-        GraphV2
+        Graph
             A handle to the graph.
         """
         try:
@@ -326,7 +326,7 @@ class OGBLLoader(OGBLoader):
         dataset_root_path: str = "dataset",
         graph_name: str | None = None,
         concurrency: int | None = None,
-    ) -> GraphV2:
+    ) -> Graph:
         """
         Parameters
         ----------
@@ -341,7 +341,7 @@ class OGBLLoader(OGBLoader):
 
         Returns
         -------
-        GraphV2
+        Graph
             A handle to the graph.
         """
         try:

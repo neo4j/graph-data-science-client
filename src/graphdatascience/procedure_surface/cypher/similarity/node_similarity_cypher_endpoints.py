@@ -5,7 +5,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
@@ -35,7 +35,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         mutate_property: str,
         top_k: int = 10,
@@ -86,7 +86,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         top_k: int = 10,
         bottom_k: int = 10,
         top_n: int = 0,
@@ -135,7 +135,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         top_k: int = 10,
         bottom_k: int = 10,
         top_n: int = 0,
@@ -180,7 +180,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_relationship_type: str,
         write_property: str,
         top_k: int = 10,
@@ -235,7 +235,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         top_k: int = 10,
         bottom_k: int = 10,
         top_n: int = 0,

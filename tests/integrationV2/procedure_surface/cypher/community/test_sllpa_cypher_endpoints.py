@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.sllpa_cypher_endpoints import SllpaCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -48,7 +48,7 @@ def sllpa_endpoints(query_runner: QueryRunner) -> Generator[SllpaCypherEndpoints
     yield SllpaCypherEndpoints(query_runner)
 
 
-def test_sllpa_stats(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_stats(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA stats operation."""
     result = sllpa_endpoints.stats(G=sample_graph, max_iterations=1)
 
@@ -59,7 +59,7 @@ def test_sllpa_stats(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV
     assert isinstance(result.configuration, dict)
 
 
-def test_sllpa_stream(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_stream(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA stream operation."""
     result_df = sllpa_endpoints.stream(G=sample_graph, max_iterations=1)
 
@@ -68,7 +68,7 @@ def test_sllpa_stream(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph
     assert "values" in result_df.columns
 
 
-def test_sllpa_mutate(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_mutate(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA mutate operation."""
     result = sllpa_endpoints.mutate(
         G=sample_graph,
@@ -85,7 +85,7 @@ def test_sllpa_mutate(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph
     assert isinstance(result.configuration, dict)
 
 
-def test_sllpa_write(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_write(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA write operation."""
     result = sllpa_endpoints.write(
         G=sample_graph,
@@ -102,7 +102,7 @@ def test_sllpa_write(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV
     assert isinstance(result.configuration, dict)
 
 
-def test_sllpa_estimate(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_estimate(sllpa_endpoints: SllpaCypherEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA estimate operation."""
     result = sllpa_endpoints.estimate(sample_graph, max_iterations=1)
 

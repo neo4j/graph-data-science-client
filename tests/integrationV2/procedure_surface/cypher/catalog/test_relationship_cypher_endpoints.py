@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import (
@@ -16,7 +16,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_query = """
         CREATE
         (a:Node),
@@ -53,7 +53,7 @@ def relationship_endpoints(
     yield RelationshipCypherEndpoints(query_runner)
 
 
-def test_stream_relationships(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_stream_relationships(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
     result = relationship_endpoints.stream(G=sample_graph, relationship_types=["REL"])
 
     assert len(result) == 3
@@ -64,7 +64,7 @@ def test_stream_relationships(relationship_endpoints: RelationshipCypherEndpoint
 
 
 def test_stream_multiple_relationship_types(
-    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = relationship_endpoints.stream(G=sample_graph, relationship_types=["REL", "OTHER"])
 
@@ -75,7 +75,7 @@ def test_stream_multiple_relationship_types(
     assert set(result["relationshipType"].unique()) == {"REL", "OTHER"}
 
 
-def test_stream_all_relationships(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_stream_all_relationships(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
     result = relationship_endpoints.stream(G=sample_graph)
 
     assert len(result) == 4  # All relationships
@@ -85,7 +85,7 @@ def test_stream_all_relationships(relationship_endpoints: RelationshipCypherEndp
     assert set(result["relationshipType"].unique()) == {"REL", "OTHER"}
 
 
-def test_stream_single_property(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_stream_single_property(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
     result = relationship_endpoints.stream(
         G=sample_graph, relationship_types=["REL"], relationship_properties=["weight"]
     )
@@ -99,7 +99,7 @@ def test_stream_single_property(relationship_endpoints: RelationshipCypherEndpoi
     assert set(result["weight"].unique()) == {1.0, 2.0, 3.0}
 
 
-def test_stream_multiple_properties(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_stream_multiple_properties(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
     result = relationship_endpoints.stream(
         G=sample_graph, relationship_types=["REL"], relationship_properties=["weight", "weight2"]
     )
@@ -114,7 +114,7 @@ def test_stream_multiple_properties(relationship_endpoints: RelationshipCypherEn
 
 
 def test_stream_relationships_with_arrow(
-    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: GraphV2
+    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph
 ) -> None:
     endpoints = RelationshipCypherEndpoints(query_runner, gds_arrow_client)
 
@@ -128,7 +128,7 @@ def test_stream_relationships_with_arrow(
 
 
 def test_stream_relationship_properties_with_arrow(
-    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: GraphV2
+    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph
 ) -> None:
     endpoints = RelationshipCypherEndpoints(query_runner, gds_arrow_client)
 
@@ -145,7 +145,7 @@ def test_stream_relationship_properties_with_arrow(
 
 @pytest.mark.db_integration
 def test_write_relationships(
-    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     result = relationship_endpoints.write(G=sample_graph, relationship_type="REL")
 
@@ -159,7 +159,7 @@ def test_write_relationships(
 
 @pytest.mark.db_integration
 def test_write_relationships_with_single_property(
-    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     result = relationship_endpoints.write(G=sample_graph, relationship_type="REL", relationship_properties=["weight"])
 
@@ -173,7 +173,7 @@ def test_write_relationships_with_single_property(
 
 @pytest.mark.db_integration
 def test_write_relationships_with_multiple_properties(
-    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     result = relationship_endpoints.write(
         G=sample_graph, relationship_type="REL", relationship_properties=["weight", "weight2"]
@@ -187,7 +187,7 @@ def test_write_relationships_with_multiple_properties(
     assert result.write_millis >= 0
 
 
-def test_drop_relationships(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_drop_relationships(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
     # Drop REL relationship type
     drop_result = relationship_endpoints.drop(G=sample_graph, relationship_type="REL")
 
@@ -197,7 +197,7 @@ def test_drop_relationships(relationship_endpoints: RelationshipCypherEndpoints,
     assert drop_result.deleted_properties == {"weight": 3, "weight2": 3}
 
 
-def test_index_inverse(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_index_inverse(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
     result = relationship_endpoints.index_inverse(G=sample_graph, relationship_types=["REL"])
 
     assert result.pre_processing_millis >= 0
@@ -208,7 +208,7 @@ def test_index_inverse(relationship_endpoints: RelationshipCypherEndpoints, samp
     assert "configuration" in result.__dict__
 
 
-def test_to_undirected(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_to_undirected(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
     result = relationship_endpoints.to_undirected(
         G=sample_graph, relationship_type="REL", mutate_relationship_type="REL_UNDIRECTED"
     )
@@ -222,7 +222,7 @@ def test_to_undirected(relationship_endpoints: RelationshipCypherEndpoints, samp
 
 
 def test_to_undirected_with_aggregation(
-    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = relationship_endpoints.to_undirected(
         G=sample_graph,
@@ -240,7 +240,7 @@ def test_to_undirected_with_aggregation(
 
 
 def test_to_undirected_with_property_aggregation(
-    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = relationship_endpoints.to_undirected(
         G=sample_graph,
@@ -258,7 +258,7 @@ def test_to_undirected_with_property_aggregation(
 
 
 def test_collapse_path_delegates_to_dedicated_endpoint(
-    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: GraphV2
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph
 ) -> None:
     collapse_path_endpoints = mock.Mock()
     collapse_path_endpoints.mutate.return_value = mock.sentinel.result

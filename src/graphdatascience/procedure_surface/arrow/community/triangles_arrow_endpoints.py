@@ -4,7 +4,7 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
@@ -17,7 +17,7 @@ class TrianglesArrowEndpoints(TrianglesEndpoints):
 
     def __call__(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         concurrency: int | None = None,
         job_id: str | None = None,

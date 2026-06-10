@@ -3,12 +3,12 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
 
 @pytest.fixture
-def G(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def G(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
         CREATE
         (a: Node {x: 1}),
@@ -25,32 +25,32 @@ def G(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
         yield G
 
 
-def test_graph_configuration(G: GraphV2) -> None:
+def test_graph_configuration(G: Graph) -> None:
     assert G.configuration() == {}  # GDL based graph has an empty config
 
 
-def test_graph_node_count(G: GraphV2) -> None:
+def test_graph_node_count(G: Graph) -> None:
     assert G.node_count() == 4
 
 
-def test_graph_relationship_count(G: GraphV2) -> None:
+def test_graph_relationship_count(G: Graph) -> None:
     assert G.relationship_count() == 4
 
 
-def test_graph_node_labels(G: GraphV2) -> None:
+def test_graph_node_labels(G: Graph) -> None:
     assert set(G.node_labels()) == {"Node", "Node2"}
 
 
-def test_graph_relationship_types(G: GraphV2) -> None:
+def test_graph_relationship_types(G: Graph) -> None:
     assert set(G.relationship_types()) == {"REL", "REL2"}
 
 
-def test_graph_node_properties(G: GraphV2) -> None:
+def test_graph_node_properties(G: Graph) -> None:
     node_properties = G.node_properties()
     assert node_properties == {"Node": ["x"], "Node2": ["s"]}
 
 
-def test_graph_relationship_properties(G: GraphV2) -> None:
+def test_graph_relationship_properties(G: Graph) -> None:
     rel_properties = G.relationship_properties()
     assert isinstance(rel_properties, dict)
     assert rel_properties.keys() == {"REL", "REL2"}
@@ -58,23 +58,23 @@ def test_graph_relationship_properties(G: GraphV2) -> None:
     assert rel_properties["REL2"] == ["q"]
 
 
-def test_graph_degree_distribution(G: GraphV2) -> None:
+def test_graph_degree_distribution(G: Graph) -> None:
     assert G.degree_distribution()["mean"] == 1.75
 
 
-def test_graph_density(G: GraphV2) -> None:
+def test_graph_density(G: Graph) -> None:
     assert G.density() == pytest.approx(0.333, 0.01)
 
 
-def test_graph_memory_usage(G: GraphV2) -> None:
+def test_graph_memory_usage(G: Graph) -> None:
     assert G.memory_usage()
 
 
-def test_graph_size_in_bytes(G: GraphV2) -> None:
+def test_graph_size_in_bytes(G: Graph) -> None:
     assert G.size_in_bytes() > 0
 
 
-def test_graph_exists(G: GraphV2) -> None:
+def test_graph_exists(G: Graph) -> None:
     assert G.exists()
 
     G.drop()
@@ -82,7 +82,7 @@ def test_graph_exists(G: GraphV2) -> None:
     assert not G.exists()
 
 
-def test_graph_drop(G: GraphV2) -> None:
+def test_graph_drop(G: Graph) -> None:
     assert G.exists()
 
     result = G.drop()
@@ -101,17 +101,17 @@ def test_graph_drop(G: GraphV2) -> None:
         G.drop(failIfMissing=True)
 
 
-def test_graph_creation_time(G: GraphV2) -> None:
+def test_graph_creation_time(G: Graph) -> None:
     assert G.creation_time().year > 2000
 
 
-def test_graph_modification_time(G: GraphV2) -> None:
+def test_graph_modification_time(G: Graph) -> None:
     assert G.modification_time().year > 2000
 
 
-def test_graph_str(G: GraphV2) -> None:
-    assert str(G) == "GraphV2(name=g, node_count=4, relationship_count=4)"
+def test_graph_str(G: Graph) -> None:
+    assert str(G) == "Graph(name=g, node_count=4, relationship_count=4)"
 
 
-def test_graph_repr(G: GraphV2) -> None:
+def test_graph_repr(G: Graph) -> None:
     assert "'memory_usage'" in repr(G)

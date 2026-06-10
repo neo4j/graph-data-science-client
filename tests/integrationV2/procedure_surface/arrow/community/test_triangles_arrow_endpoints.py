@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.triangles_arrow_endpoints import (
     TrianglesArrowEndpoints,
 )
@@ -28,12 +28,12 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph, undirected=("REL", "UNDIRECTED_REL")) as G:
         yield G
 
 
-def test_triangles_happy_path(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_triangles_happy_path(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     result_df = TrianglesArrowEndpoints(arrow_client, show_progress=False)(G=sample_graph)
 
     assert list(result_df.columns) == ["nodeA", "nodeB", "nodeC"]

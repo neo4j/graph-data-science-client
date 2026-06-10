@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.pathfinding.k_spanning_tree_arrow_endpoints import (
     KSpanningTreeArrowEndpoints,
 )
@@ -33,13 +33,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph, undirected=("LINK", "UNDIRECTED_LINK")) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -61,7 +61,7 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 
 @pytest.mark.db_integration
 def test_k_spanning_tree_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     k_spanning_tree_endpoints = KSpanningTreeArrowEndpoints(
         arrow_client, write_protocol=WriteProtocol.select(arrow_client, query_runner)
@@ -81,7 +81,7 @@ def test_k_spanning_tree_write(
     assert result.post_processing_millis >= 0
 
 
-def test_compute(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_compute(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     endpoints = KSpanningTreeArrowEndpoints(arrow_client)
     handle = endpoints.compute(G=sample_graph, k=3, source_node=0, relationship_weight_property="cost")
     summary = handle.summary()

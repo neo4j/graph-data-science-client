@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_filtered_arrow_endpoints import (
     NodeSimilarityFilteredArrowEndpoints,
 )
@@ -30,13 +30,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -59,7 +59,7 @@ def node_similarity_filtered_endpoints(
 
 
 def test_node_similarity_filtered_stats(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test NodeSimilarity filtered stats operation."""
     result = node_similarity_filtered_endpoints.stats(
@@ -78,7 +78,7 @@ def test_node_similarity_filtered_stats(
 
 
 def test_node_similarity_filtered_stream(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test NodeSimilarity filtered stream operation."""
     result_df = node_similarity_filtered_endpoints.stream(
@@ -93,7 +93,7 @@ def test_node_similarity_filtered_stream(
 
 
 def test_node_similarity_filtered_mutate(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test NodeSimilarity filtered mutate operation."""
     result = node_similarity_filtered_endpoints.mutate(
@@ -116,7 +116,7 @@ def test_node_similarity_filtered_mutate(
 @pytest.mark.db_integration
 def test_node_similarity_filtered_write(
     arrow_client: AuthenticatedArrowClient,
-    db_graph: GraphV2,
+    db_graph: Graph,
     query_runner: QueryRunner,
 ) -> None:
     """Test NodeSimilarity filtered write operation."""
@@ -143,7 +143,7 @@ def test_node_similarity_filtered_write(
 
 
 def test_node_similarity_filtered_estimate(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: Graph
 ) -> None:
     """Test NodeSimilarity filtered estimate operation."""
     result = node_similarity_filtered_endpoints.estimate(
@@ -162,9 +162,7 @@ def test_node_similarity_filtered_estimate(
     assert result.heap_percentage_max > 0
 
 
-def test_compute(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: GraphV2
-) -> None:
+def test_compute(node_similarity_filtered_endpoints: NodeSimilarityFilteredArrowEndpoints, sample_graph: Graph) -> None:
     handle = node_similarity_filtered_endpoints.compute(
         G=sample_graph,
         source_node_filter="SourceNode",

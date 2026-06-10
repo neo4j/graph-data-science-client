@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
     NodeClassificationPipelineArrowEndpoints,
@@ -30,13 +30,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, f"node-classification-g-{uuid4().hex[:8]}", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -60,7 +60,7 @@ def endpoints(arrow_client: AuthenticatedArrowClient) -> NodeClassificationPipel
 def test_node_classification_train_and_predict_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints = NodeClassificationPipelineArrowEndpoints(
         arrow_client, WriteProtocol.select(arrow_client, query_runner), show_progress=False
@@ -101,7 +101,7 @@ def test_node_classification_train_and_predict_write(
 def test_node_classification_train_and_predict_and_stream(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeClassificationPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
     model_name = f"nc-model-{uuid4().hex[:8]}"
@@ -130,7 +130,7 @@ def test_node_classification_train_and_predict_and_stream(
 def test_node_classification_train_estimate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeClassificationPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
     model_name = f"nc-model-{uuid4().hex[:8]}"
@@ -173,7 +173,7 @@ def test_node_classification_pipeline_object_supports_exists_and_drop(
 def test_node_classification_predict_estimate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeClassificationPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
     model_name = f"nc-model-{uuid4().hex[:8]}"
@@ -200,7 +200,7 @@ def test_node_classification_predict_estimate(
 def test_node_classification_predict_mutate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeClassificationPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
     model_name = f"nc-model-{uuid4().hex[:8]}"

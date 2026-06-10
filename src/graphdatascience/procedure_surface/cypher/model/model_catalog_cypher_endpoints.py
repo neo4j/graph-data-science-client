@@ -5,7 +5,7 @@ from typing import Any
 import neo4j
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.model.v2.model_details import ModelDetails
+from graphdatascience.model.model_details import ModelDetails
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import (
     ModelCatalogEndpoints,
     ModelDeleteResult,

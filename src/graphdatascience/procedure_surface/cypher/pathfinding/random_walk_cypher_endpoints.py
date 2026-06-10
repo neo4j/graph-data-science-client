@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import (
@@ -22,7 +22,7 @@ class RandomWalkCypherEndpoints(RandomWalkEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: int | list[int] | None = None,
         walk_length: int = 80,
         walks_per_node: int = 10,
@@ -64,7 +64,7 @@ class RandomWalkCypherEndpoints(RandomWalkEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         source_nodes: int | list[int] | None = None,
         walk_length: int = 80,
@@ -112,7 +112,7 @@ class RandomWalkCypherEndpoints(RandomWalkEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: int | list[int] | None = None,
         walk_length: int = 80,
         walks_per_node: int = 10,
@@ -158,7 +158,7 @@ class RandomWalkCypherEndpoints(RandomWalkEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_nodes: int | list[int] | None = None,
         walk_length: int = 80,
         walks_per_node: int = 10,

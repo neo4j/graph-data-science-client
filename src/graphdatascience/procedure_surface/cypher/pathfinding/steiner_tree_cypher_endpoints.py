@@ -5,7 +5,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import (
@@ -25,7 +25,7 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         target_nodes: list[int],
         relationship_weight_property: str | None = None,
@@ -64,7 +64,7 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         target_nodes: list[int],
         relationship_weight_property: str | None = None,
@@ -103,7 +103,7 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         mutate_property: str,
         source_node: int,
@@ -146,7 +146,7 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_relationship_type: str,
         write_property: str,
         source_node: int,
@@ -191,7 +191,7 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_node: int,
         target_nodes: list[int],
         relationship_weight_property: str | None = None,

@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
@@ -14,7 +14,7 @@ class LinkPredictionPipelinePredictEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         source_node_label: str | None = None,
@@ -31,7 +31,7 @@ class LinkPredictionPipelinePredictEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         *,
         relationship_types: list[str] | None = None,
@@ -57,7 +57,7 @@ class LinkPredictionPipelinePredictEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         model_name: str,
         mutate_relationship_type: str,
         *,

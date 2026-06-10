@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
     NodeRegressionPipelineArrowEndpoints,
@@ -16,7 +16,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import cr
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
     CREATE
     (a: Node {feature: 1.0, target: 1.0}),
@@ -41,7 +41,7 @@ def endpoints(arrow_client: AuthenticatedArrowClient) -> NodeRegressionPipelineA
 def test_node_regression_train_and_predict_stream(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeRegressionPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nr-pipe-{uuid4().hex[:8]}"
     model_name = f"nr-model-{uuid4().hex[:8]}"
@@ -76,7 +76,7 @@ def test_node_regression_train_and_predict_stream(
 def test_node_regression_predict_mutate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeRegressionPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nr-pipe-{uuid4().hex[:8]}"
     model_name = f"nr-model-{uuid4().hex[:8]}"
@@ -105,7 +105,7 @@ def test_node_regression_predict_mutate(
 def test_node_regression_get_returns_pipeline_object(
     arrow_client: AuthenticatedArrowClient,
     endpoints: NodeRegressionPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nr-pipe-{uuid4().hex[:8]}"
 

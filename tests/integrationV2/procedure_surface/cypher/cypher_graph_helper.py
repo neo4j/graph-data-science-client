@@ -1,8 +1,8 @@
 from contextlib import contextmanager
 from typing import Any, Generator
 
-from graphdatascience.graph.v2 import GraphV2
-from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.graph import Graph
+from graphdatascience.graph.graph_backend_cypher import get_graph
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 
@@ -10,7 +10,7 @@ from graphdatascience.query_runner.query_type import QueryType
 @contextmanager
 def create_graph(
     query_runner: QueryRunner, graph_name: str, data_query: str, projection_query: str
-) -> Generator[GraphV2, Any, None]:
+) -> Generator[Graph, Any, None]:
     try:
         query_runner.run_cypher(data_query, QueryType.USER_ACTION)
         query_runner.run_cypher(projection_query, QueryType.USER_ACTION)

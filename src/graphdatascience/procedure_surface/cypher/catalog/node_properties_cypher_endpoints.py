@@ -2,7 +2,7 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import (
     NodePropertiesDropResult,
     NodePropertiesEndpoints,
@@ -23,7 +23,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str],
         *,
         list_node_labels: bool | None = False,
@@ -67,7 +67,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str] | dict[str, str],
         *,
         node_labels: list[str] = ALL_LABELS,
@@ -105,7 +105,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
     def drop(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: list[str],
         *,
         fail_if_missing: bool | None = True,

@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationWriteResult
 from graphdatascience.procedure_surface.cypher.community.labelpropagation_cypher_endpoints import (
     LabelPropagationCypherEndpoints,
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
             (a:Person),
@@ -47,7 +47,7 @@ def labelpropagation_endpoints(query_runner: QueryRunner) -> Generator[LabelProp
 
 
 def test_labelpropagation_stats(
-    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.stats(G=sample_graph, max_iterations=10)
 
@@ -61,7 +61,7 @@ def test_labelpropagation_stats(
 
 
 def test_labelpropagation_stream(
-    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: Graph
 ) -> None:
     result_df = labelpropagation_endpoints.stream(
         G=sample_graph,
@@ -74,7 +74,7 @@ def test_labelpropagation_stream(
 
 
 def test_labelpropagation_mutate(
-    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.mutate(
         G=sample_graph,
@@ -93,7 +93,7 @@ def test_labelpropagation_mutate(
 
 
 def test_labelpropagation_write(
-    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     result = labelpropagation_endpoints.write(G=sample_graph, write_property="lp_community", max_iterations=10)
 
@@ -116,7 +116,7 @@ def test_labelpropagation_write(
 
 
 def test_labelpropagation_estimate(
-    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.estimate(sample_graph, max_iterations=10)
 
@@ -130,7 +130,7 @@ def test_labelpropagation_estimate(
 
 
 def test_labelpropagation_with_consecutive_ids(
-    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.stream(G=sample_graph, max_iterations=10, consecutive_ids=True)
 
@@ -140,7 +140,7 @@ def test_labelpropagation_with_consecutive_ids(
 
 
 def test_labelpropagation_with_min_community_size(
-    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: GraphV2
+    labelpropagation_endpoints: LabelPropagationCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = labelpropagation_endpoints.stream(G=sample_graph, max_iterations=10, min_community_size=2)
 

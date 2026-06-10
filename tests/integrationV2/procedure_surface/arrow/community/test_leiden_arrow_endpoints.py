@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenWriteResult
 from graphdatascience.procedure_surface.arrow.community.leiden_arrow_endpoints import LeidenArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -34,7 +34,7 @@ create_statement = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(
         arrow_client,
         "g",
@@ -45,7 +45,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -66,7 +66,7 @@ def leiden_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Leiden
     yield LeidenArrowEndpoints(arrow_client)
 
 
-def test_leiden_stats(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_stats(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10)
 
     assert result.compute_millis >= 0
@@ -80,7 +80,7 @@ def test_leiden_stats(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Grap
     assert result.node_count == 6
 
 
-def test_leiden_stream(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_stream(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result_df = leiden_endpoints.stream(
         G=sample_graph,
         max_levels=10,
@@ -91,7 +91,7 @@ def test_leiden_stream(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Gra
     assert len(result_df) == 6
 
 
-def test_leiden_mutate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_mutate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.mutate(
         G=sample_graph,
         mutate_property="leiden_community",
@@ -111,7 +111,7 @@ def test_leiden_mutate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Gra
 
 
 @pytest.mark.db_integration
-def test_leiden_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
+def test_leiden_write(arrow_client: AuthenticatedArrowClient, db_graph: Graph, query_runner: QueryRunner) -> None:
     endpoints = LeidenArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
     result = endpoints.write(G=db_graph, write_property="leiden_community", max_levels=10)
@@ -137,7 +137,7 @@ def test_leiden_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2,
     assert count_result.squeeze() == 6
 
 
-def test_leiden_estimate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_estimate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.estimate(sample_graph, max_levels=10)
 
     assert result.node_count == 6
@@ -149,7 +149,7 @@ def test_leiden_estimate(leiden_endpoints: LeidenArrowEndpoints, sample_graph: G
     assert result.heap_percentage_max > 0
 
 
-def test_leiden_with_consecutive_ids(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_consecutive_ids(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stream(G=sample_graph, max_levels=10, consecutive_ids=True)
 
     assert "nodeId" in result.columns
@@ -157,7 +157,7 @@ def test_leiden_with_consecutive_ids(leiden_endpoints: LeidenArrowEndpoints, sam
     assert len(result) == 6
 
 
-def test_leiden_with_min_community_size(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_min_community_size(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stream(G=sample_graph, max_levels=10, min_community_size=2)
 
     assert "nodeId" in result.columns
@@ -165,7 +165,7 @@ def test_leiden_with_min_community_size(leiden_endpoints: LeidenArrowEndpoints, 
     assert len(result) <= 6  # Some nodes might be filtered out due to min community size
 
 
-def test_leiden_with_gamma_parameter(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_gamma_parameter(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10, gamma=0.5)
 
     assert result.compute_millis >= 0
@@ -173,7 +173,7 @@ def test_leiden_with_gamma_parameter(leiden_endpoints: LeidenArrowEndpoints, sam
     assert isinstance(result.modularity, float)
 
 
-def test_leiden_with_theta_parameter(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_theta_parameter(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10, theta=0.1)
 
     assert result.compute_millis >= 0
@@ -181,7 +181,7 @@ def test_leiden_with_theta_parameter(leiden_endpoints: LeidenArrowEndpoints, sam
     assert isinstance(result.modularity, float)
 
 
-def test_leiden_with_tolerance_parameter(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_tolerance_parameter(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10, tolerance=1e-3)
 
     assert result.compute_millis >= 0
@@ -189,7 +189,7 @@ def test_leiden_with_tolerance_parameter(leiden_endpoints: LeidenArrowEndpoints,
     assert isinstance(result.modularity, float)
 
 
-def test_compute(leiden_endpoints: LeidenArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(leiden_endpoints: LeidenArrowEndpoints, sample_graph: Graph) -> None:
     handle = leiden_endpoints.compute(G=sample_graph, max_levels=10)
     summary = handle.summary()
 

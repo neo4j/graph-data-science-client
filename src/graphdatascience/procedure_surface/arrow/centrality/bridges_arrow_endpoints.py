@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.bridges_endpoints import BridgesEndpoints
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -25,7 +25,7 @@ class BridgesArrowEndpoints(BridgesEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -48,7 +48,7 @@ class BridgesArrowEndpoints(BridgesEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -71,7 +71,7 @@ class BridgesArrowEndpoints(BridgesEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,

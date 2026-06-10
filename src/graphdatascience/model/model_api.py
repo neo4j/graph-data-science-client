@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from graphdatascience.model.v2.model_details import ModelDetails
+from graphdatascience.model.model_details import ModelDetails
 
 
 class ModelApi(ABC):

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.pathfinding.source_target_yens_arrow_endpoints import (
     YensArrowEndpoints,
 )
@@ -34,13 +34,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -62,7 +62,7 @@ def yens_endpoints(
     yield YensArrowEndpoints(arrow_client)
 
 
-def test_yens_stream(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_yens_stream(yens_endpoints: YensArrowEndpoints, sample_graph: Graph) -> None:
     result_df = yens_endpoints.stream(
         G=sample_graph,
         source_node=0,
@@ -75,7 +75,7 @@ def test_yens_stream(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2) 
     assert len(result_df) == 3
 
 
-def test_yens_mutate(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_yens_mutate(yens_endpoints: YensArrowEndpoints, sample_graph: Graph) -> None:
     result = yens_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -97,7 +97,7 @@ def test_yens_mutate(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2) 
 def test_yens_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints_with_writeback = YensArrowEndpoints(
         arrow_client=arrow_client,
@@ -121,7 +121,7 @@ def test_yens_write(
     assert "sourceNode" in result.configuration
 
 
-def test_yens_estimate(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_yens_estimate(yens_endpoints: YensArrowEndpoints, sample_graph: Graph) -> None:
     result = yens_endpoints.estimate(
         sample_graph,
         source_node=0,
@@ -138,7 +138,7 @@ def test_yens_estimate(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2
     assert result.heap_percentage_max > 0
 
 
-def test_compute(yens_endpoints: YensArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(yens_endpoints: YensArrowEndpoints, sample_graph: Graph) -> None:
     handle = yens_endpoints.compute(
         G=sample_graph, source_node=0, target_node=4, k=3, relationship_weight_property="cost"
     )

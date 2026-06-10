@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesWriteResult
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.arrow.catalog.scale_properties_arrow_endpoints import (
@@ -27,13 +27,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -55,9 +55,7 @@ def scale_properties_endpoints(
     yield ScalePropertiesArrowEndpoints(arrow_client)
 
 
-def test_scale_properties_stats(
-    scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: GraphV2
-) -> None:
+def test_scale_properties_stats(scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: Graph) -> None:
     result = scale_properties_endpoints.stats(
         G=sample_graph, node_properties=["prop1"], scaler=ScalerConfig(type="MinMax")
     )
@@ -70,7 +68,7 @@ def test_scale_properties_stats(
 
 
 def test_scale_properties_stream(
-    scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: Graph
 ) -> None:
     result_df = scale_properties_endpoints.stream(
         G=sample_graph, node_properties=["prop1"], scaler=ScalerConfig(type="Log", offset=1.0)
@@ -81,7 +79,7 @@ def test_scale_properties_stream(
 
 
 def test_scale_properties_mutate(
-    scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = scale_properties_endpoints.mutate(
         G=sample_graph, mutate_property="scaledProp", node_properties=["prop1"], scaler="MinMax"
@@ -98,7 +96,7 @@ def test_scale_properties_mutate(
 
 @pytest.mark.db_integration
 def test_scale_properties_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     endpoints = ScalePropertiesArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(
@@ -122,7 +120,7 @@ def test_scale_properties_write(
 
 
 def test_scale_properties_estimate(
-    scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: GraphV2
+    scale_properties_endpoints: ScalePropertiesArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = scale_properties_endpoints.estimate(sample_graph, node_properties=["prop1"], scaler="MinMax")
 

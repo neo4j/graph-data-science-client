@@ -5,8 +5,8 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.graph.graph_api import Graph
+from graphdatascience.graph.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -17,7 +17,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
 
 
 @pytest.fixture
-def sample_graph(query_runner: Neo4jQueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: Neo4jQueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node:A {id: 0}),
@@ -56,7 +56,7 @@ def catalog_endpoints_arrow(
     yield CatalogCypherEndpoints(query_runner, gds_arrow_client)
 
 
-def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     results = catalog_endpoints.list(G=sample_graph)
 
     assert len(results) == 1
@@ -76,7 +76,7 @@ def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph
     assert result.modification_time < datetime.datetime.now(datetime.timezone.utc)
 
 
-def test_list_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_list_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     results = catalog_endpoints.list(G="g")
 
     assert len(results) == 1
@@ -87,7 +87,7 @@ def test_list_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, 
 
 
 def test_list_without_graph(
-    catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     try:
         query_runner.run_cypher("CREATE (x:Test)", query_type=QueryType.USER_ACTION)
@@ -109,7 +109,7 @@ def test_list_without_graph(
         query_runner.run_cypher("MATCH (n:Test) DELETE n", query_type=QueryType.USER_ACTION)
 
 
-def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
     assert res is not None
@@ -117,7 +117,7 @@ def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sampl
     assert len(catalog_endpoints.list()) == 0
 
 
-def test_drop_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_drop_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop("g")
 
     assert res is not None
@@ -135,7 +135,7 @@ def test_drop_nonexistent_fail_if_missing_false(catalog_endpoints: CatalogCypher
     assert res is None
 
 
-def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     G, result = catalog_endpoints.filter(
         sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="FALSE"
     )
@@ -162,7 +162,7 @@ def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
     assert isinstance(sample_endpoints, GraphSamplingCypherEndpoints)
 
 
-def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     G, result = catalog_endpoints.project("g2", ["A", "B"], "REL", node_properties=["id"], read_concurrency=2)
 
     assert G.name() == "g2"

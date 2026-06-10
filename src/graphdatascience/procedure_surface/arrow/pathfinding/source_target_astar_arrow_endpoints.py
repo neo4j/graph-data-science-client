@@ -5,7 +5,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -32,7 +32,7 @@ class AStarArrowEndpoints(SourceTargetAStarEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         target_node: int,
         latitude_property: str,
@@ -66,7 +66,7 @@ class AStarArrowEndpoints(SourceTargetAStarEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         target_node: int,
         latitude_property: str,
@@ -103,7 +103,7 @@ class AStarArrowEndpoints(SourceTargetAStarEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         source_node: int,
         target_node: int,
@@ -145,7 +145,7 @@ class AStarArrowEndpoints(SourceTargetAStarEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_relationship_type: str,
         source_node: int,
         target_node: int,
@@ -196,7 +196,7 @@ class AStarArrowEndpoints(SourceTargetAStarEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_node: int,
         target_node: int,
         latitude_property: str,

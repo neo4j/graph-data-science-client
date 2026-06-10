@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 
-from graphdatascience.model.v2.model_api import ModelApi
-from graphdatascience.model.v2.model_details import ModelDetails
+from graphdatascience.model.model_api import ModelApi
+from graphdatascience.model.model_details import ModelDetails
 
 
-# Compared to v1 Model offering typed parameters for predict endpoints
 class Model(ABC):
     def __init__(self, name: str, model_api: ModelApi):
         self._name = name

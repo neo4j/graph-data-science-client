@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABEL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
@@ -16,7 +16,7 @@ class LinkPredictionPipelineTrainEndpoints(ABC):
     @abstractmethod
     def __call__(
         self,
-        G: GraphV2,
+        G: Graph,
         pipeline_name: str,
         *,
         model_name: str,
@@ -79,7 +79,7 @@ class LinkPredictionPipelineTrainEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         pipeline_name: str,
         *,
         model_name: str,

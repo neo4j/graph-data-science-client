@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -15,7 +15,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
@@ -72,7 +72,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -126,7 +126,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,
@@ -175,7 +175,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
@@ -233,7 +233,7 @@ class BetweennessEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         sampling_size: int | None = None,
         sampling_seed: int | None = None,
         relationship_types: list[str] = ALL_TYPES,

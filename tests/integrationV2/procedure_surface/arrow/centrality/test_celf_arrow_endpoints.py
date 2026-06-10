@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.celf_endpoints import CelfWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.celf_arrow_endpoints import CelfArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -29,13 +29,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -55,7 +55,7 @@ def celf_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[CelfArro
     yield CelfArrowEndpoints(arrow_client)
 
 
-def test_celf_stats(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_stats(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
     result = celf_endpoints.stats(G=sample_graph, seed_set_size=2)
 
     assert result.compute_millis >= 0
@@ -64,7 +64,7 @@ def test_celf_stats(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -
     assert isinstance(result.configuration, dict)
 
 
-def test_celf_stream(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_stream(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
     result_df = celf_endpoints.stream(G=sample_graph, seed_set_size=2)
 
     assert set(result_df.columns) == {"nodeId", "spread"}
@@ -72,7 +72,7 @@ def test_celf_stream(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) 
     assert all(result_df["spread"] >= 0)
 
 
-def test_celf_mutate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_mutate(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
     result = celf_endpoints.mutate(G=sample_graph, seed_set_size=2, mutate_property="celf_spread")
 
     assert result.node_properties_written == 5  # All nodes get properties (influence spread values)
@@ -84,7 +84,7 @@ def test_celf_mutate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) 
 
 
 @pytest.mark.db_integration
-def test_celf_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_celf_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = CelfArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, seed_set_size=2, write_property="celf_spread")
 
@@ -103,7 +103,7 @@ def test_celf_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryR
     )
 
 
-def test_celf_write_without_write_back_client(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_write_without_write_back_client(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
     with pytest.raises(Exception, match="Write back is not supported by this session."):
         celf_endpoints.write(
             G=sample_graph,
@@ -112,7 +112,7 @@ def test_celf_write_without_write_back_client(celf_endpoints: CelfArrowEndpoints
         )
 
 
-def test_celf_estimate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_estimate(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
     result = celf_endpoints.estimate(G=sample_graph, seed_set_size=2)
 
     assert result.node_count == 5
@@ -124,7 +124,7 @@ def test_celf_estimate(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2
     assert result.heap_percentage_max > 0
 
 
-def test_compute(celf_endpoints: CelfArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(celf_endpoints: CelfArrowEndpoints, sample_graph: Graph) -> None:
     handle = celf_endpoints.compute(G=sample_graph, seed_set_size=2)
     summary = handle.summary()
 

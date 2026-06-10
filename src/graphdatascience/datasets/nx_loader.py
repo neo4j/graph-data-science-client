@@ -5,14 +5,14 @@ import networkx as nx
 from pandas import DataFrame
 
 from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
-from graphdatascience.graph.v2 import GraphV2
+from graphdatascience.graph import Graph
 
 
 class NXLoader:
     def __init__(self, graph_constructor: GraphConstructorFunc) -> None:
         self._construct = graph_constructor
 
-    def load(self, nx_G: nx.Graph, graph_name: str, concurrency: int | None = None) -> GraphV2:
+    def load(self, nx_G: nx.Graph, graph_name: str, concurrency: int | None = None) -> Graph:
         """
         Parameters
         ----------
@@ -25,7 +25,7 @@ class NXLoader:
 
         Returns
         -------
-        GraphV2
+        Graph
             A handle to the graph.
         """
         nodes, rels = self._parse(nx_G)

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeWriteResult
 from graphdatascience.procedure_surface.arrow.pathfinding.steiner_tree_arrow_endpoints import SteinerTreeArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
@@ -32,13 +32,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -60,7 +60,7 @@ def steiner_tree_endpoints(
     yield SteinerTreeArrowEndpoints(arrow_client)
 
 
-def test_steiner_tree_stream(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_steiner_tree_stream(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: Graph) -> None:
     result_df = steiner_tree_endpoints.stream(
         G=sample_graph,
         source_node=0,
@@ -74,7 +74,7 @@ def test_steiner_tree_stream(steiner_tree_endpoints: SteinerTreeArrowEndpoints, 
     )  # differs to Cypher implementation as there the initial source -> source relationship is included
 
 
-def test_steiner_tree_stats(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_steiner_tree_stats(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: Graph) -> None:
     result = steiner_tree_endpoints.stats(
         G=sample_graph,
         source_node=0,
@@ -90,7 +90,7 @@ def test_steiner_tree_stats(steiner_tree_endpoints: SteinerTreeArrowEndpoints, s
     assert "sourceNode" in result.configuration
 
 
-def test_steiner_tree_mutate(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_steiner_tree_mutate(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: Graph) -> None:
     result = steiner_tree_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="STEINER_TREE",
@@ -114,7 +114,7 @@ def test_steiner_tree_mutate(steiner_tree_endpoints: SteinerTreeArrowEndpoints, 
 def test_steiner_tree_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints_with_writeback = SteinerTreeArrowEndpoints(
         arrow_client=arrow_client,
@@ -141,7 +141,7 @@ def test_steiner_tree_write(
     assert "sourceNode" in result.configuration
 
 
-def test_steiner_tree_estimate(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_steiner_tree_estimate(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: Graph) -> None:
     result = steiner_tree_endpoints.estimate(
         sample_graph,
         source_node=0,
@@ -158,7 +158,7 @@ def test_steiner_tree_estimate(steiner_tree_endpoints: SteinerTreeArrowEndpoints
     assert result.heap_percentage_max > 0
 
 
-def test_compute(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(steiner_tree_endpoints: SteinerTreeArrowEndpoints, sample_graph: Graph) -> None:
     handle = steiner_tree_endpoints.compute(
         G=sample_graph, source_node=0, target_nodes=[3, 4], relationship_weight_property="cost"
     )

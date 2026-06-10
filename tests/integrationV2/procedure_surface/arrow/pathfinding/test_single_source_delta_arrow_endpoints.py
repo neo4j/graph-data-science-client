@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import DeltaSteppingWriteResult
 from graphdatascience.procedure_surface.arrow.pathfinding.single_source_delta_arrow_endpoints import (
     DeltaSteppingArrowEndpoints,
@@ -35,13 +35,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -63,7 +63,7 @@ def delta_stepping_endpoints(
     yield DeltaSteppingArrowEndpoints(arrow_client)
 
 
-def test_delta_stepping_stream(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_stream(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: Graph) -> None:
     result_df = delta_stepping_endpoints.stream(
         G=sample_graph,
         source_node=0,
@@ -75,7 +75,7 @@ def test_delta_stepping_stream(delta_stepping_endpoints: DeltaSteppingArrowEndpo
     assert len(result_df) == 5
 
 
-def test_delta_stepping_stats(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_stats(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: Graph) -> None:
     result = delta_stepping_endpoints.stats(
         G=sample_graph,
         source_node=0,
@@ -89,7 +89,7 @@ def test_delta_stepping_stats(delta_stepping_endpoints: DeltaSteppingArrowEndpoi
     assert "sourceNode" in result.configuration
 
 
-def test_delta_stepping_mutate(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_mutate(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: Graph) -> None:
     result = delta_stepping_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -110,7 +110,7 @@ def test_delta_stepping_mutate(delta_stepping_endpoints: DeltaSteppingArrowEndpo
 def test_delta_stepping_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints_with_writeback = DeltaSteppingArrowEndpoints(
         arrow_client=arrow_client,
@@ -134,7 +134,7 @@ def test_delta_stepping_write(
     assert "sourceNode" in result.configuration
 
 
-def test_delta_stepping_estimate(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_delta_stepping_estimate(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: Graph) -> None:
     result = delta_stepping_endpoints.estimate(
         sample_graph,
         source_node=0,
@@ -151,7 +151,7 @@ def test_delta_stepping_estimate(delta_stepping_endpoints: DeltaSteppingArrowEnd
     assert result.heap_percentage_max > 0
 
 
-def test_compute(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(delta_stepping_endpoints: DeltaSteppingArrowEndpoints, sample_graph: Graph) -> None:
     handle = delta_stepping_endpoints.compute(
         G=sample_graph, source_node=0, delta=3.0, relationship_weight_property="cost"
     )

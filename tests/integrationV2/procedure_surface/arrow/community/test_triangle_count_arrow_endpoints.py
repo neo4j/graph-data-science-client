@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.triangle_count_arrow_endpoints import (
     TriangleCountArrowEndpoints,
 )
@@ -33,13 +33,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph, undirected=("REL", "UNDIRECTED_REL")) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -62,7 +62,7 @@ def triangle_count_endpoints(
     yield TriangleCountArrowEndpoints(arrow_client, show_progress=False)
 
 
-def test_triangle_count_stats(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_stats(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count stats operation via Arrow."""
     result = triangle_count_endpoints.stats(G=sample_graph)
 
@@ -73,7 +73,7 @@ def test_triangle_count_stats(triangle_count_endpoints: TriangleCountArrowEndpoi
     assert result.post_processing_millis >= 0
 
 
-def test_triangle_count_stream(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_stream(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count stream operation via Arrow."""
     result_df = triangle_count_endpoints.stream(G=sample_graph)
 
@@ -86,7 +86,7 @@ def test_triangle_count_stream(triangle_count_endpoints: TriangleCountArrowEndpo
     assert all(result_df["triangleCount"] >= 0)
 
 
-def test_triangle_count_mutate(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_mutate(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count mutate operation via Arrow."""
     result = triangle_count_endpoints.mutate(
         G=sample_graph,
@@ -104,7 +104,7 @@ def test_triangle_count_mutate(triangle_count_endpoints: TriangleCountArrowEndpo
 
 @pytest.mark.db_integration
 def test_triangle_count_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     """Test Triangle Count write operation."""
     endpoints = TriangleCountArrowEndpoints(
@@ -124,7 +124,7 @@ def test_triangle_count_write(
     assert result.node_count == 6
 
 
-def test_triangle_count_estimate(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_triangle_count_estimate(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: Graph) -> None:
     """Test Triangle Count estimate operation via Arrow."""
     result = triangle_count_endpoints.estimate(sample_graph)
 
@@ -137,7 +137,7 @@ def test_triangle_count_estimate(triangle_count_endpoints: TriangleCountArrowEnd
     assert result.heap_percentage_max > 0
 
 
-def test_compute(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(triangle_count_endpoints: TriangleCountArrowEndpoints, sample_graph: Graph) -> None:
     handle = triangle_count_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

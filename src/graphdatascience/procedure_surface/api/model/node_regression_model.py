@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.model.v2.model import Model
-from graphdatascience.model.v2.model_api import ModelApi
+from graphdatascience.graph.graph_api import Graph
+from graphdatascience.model.model import Model
+from graphdatascience.model.model_api import ModelApi
 from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
     NodeRegressionPipelinePredictEndpoints,
     NodeRegressionPipelinePredictMutateResult,
@@ -26,7 +26,7 @@ class NodeRegressionModelV2(Model):
 
     def predict_stream(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_types: list[str] | None = None,
         target_node_labels: list[str] | None = None,
@@ -77,7 +77,7 @@ class NodeRegressionModelV2(Model):
 
     def predict_mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         *,
         relationship_types: list[str] | None = None,

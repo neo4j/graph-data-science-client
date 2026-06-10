@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.eigenvector_arrow_endpoints import EigenvectorArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -27,13 +27,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -53,7 +53,7 @@ def eigenvector_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[E
     yield EigenvectorArrowEndpoints(arrow_client)
 
 
-def test_eigenvector_stats(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_eigenvector_stats(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: Graph) -> None:
     """Test Eigenvector stats operation."""
     result = eigenvector_endpoints.stats(G=sample_graph, source_nodes=[0, 1])
 
@@ -65,7 +65,7 @@ def test_eigenvector_stats(eigenvector_endpoints: EigenvectorArrowEndpoints, sam
     assert "p50" in result.centrality_distribution
 
 
-def test_eigenvector_stream(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_eigenvector_stream(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: Graph) -> None:
     """Test Eigenvector stream operation."""
     result_df = eigenvector_endpoints.stream(
         G=sample_graph,
@@ -77,7 +77,7 @@ def test_eigenvector_stream(eigenvector_endpoints: EigenvectorArrowEndpoints, sa
     assert len(result_df.columns) == 2
 
 
-def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: Graph) -> None:
     """Test Eigenvector mutate operation."""
     result = eigenvector_endpoints.mutate(
         G=sample_graph,
@@ -96,9 +96,7 @@ def test_eigenvector_mutate(eigenvector_endpoints: EigenvectorArrowEndpoints, sa
 
 
 @pytest.mark.db_integration
-def test_eigenvector_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
-) -> None:
+def test_eigenvector_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     """Test Eigenvector write operation."""
     endpoints = EigenvectorArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="eigenvector")
@@ -121,7 +119,7 @@ def test_eigenvector_write(
     )
 
 
-def test_eigenvector_estimate(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_eigenvector_estimate(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: Graph) -> None:
     result = eigenvector_endpoints.estimate(sample_graph)
 
     assert result.node_count == 4
@@ -133,7 +131,7 @@ def test_eigenvector_estimate(eigenvector_endpoints: EigenvectorArrowEndpoints, 
     assert result.heap_percentage_max > 0
 
 
-def test_compute(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(eigenvector_endpoints: EigenvectorArrowEndpoints, sample_graph: Graph) -> None:
     handle = eigenvector_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

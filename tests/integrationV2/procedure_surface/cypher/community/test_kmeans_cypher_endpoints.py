@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansWriteResult
 from graphdatascience.procedure_surface.cypher.community.kmeans_cypher_endpoints import KMeansCypherEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -10,7 +10,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
             (a {kmeans: [1.0, 1.0]}),
@@ -39,7 +39,7 @@ def kmeans_endpoints(query_runner: QueryRunner) -> Generator[KMeansCypherEndpoin
     yield KMeansCypherEndpoints(query_runner)
 
 
-def test_kmeans_stats(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_stats(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Graph) -> None:
     result = kmeans_endpoints.stats(G=sample_graph, node_property="kmeans", k=3)
 
     assert result.compute_millis >= 0
@@ -51,7 +51,7 @@ def test_kmeans_stats(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Gra
     assert isinstance(result.community_distribution, dict)
 
 
-def test_kmeans_stream(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_stream(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Graph) -> None:
     """Test K-Means stream operation."""
     result_df = kmeans_endpoints.stream(
         G=sample_graph,
@@ -66,7 +66,7 @@ def test_kmeans_stream(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Gr
     assert len(result_df.columns) == 4
 
 
-def test_kmeans_mutate(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_mutate(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Graph) -> None:
     """Test K-Means mutate operation."""
     result = kmeans_endpoints.mutate(
         G=sample_graph,
@@ -86,9 +86,7 @@ def test_kmeans_mutate(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Gr
     assert isinstance(result.community_distribution, dict)
 
 
-def test_kmeans_write(
-    kmeans_endpoints: KMeansCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
-) -> None:
+def test_kmeans_write(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner) -> None:
     result = kmeans_endpoints.write(G=sample_graph, node_property="kmeans", write_property="community", k=3)
 
     assert isinstance(result, KMeansWriteResult)
@@ -110,7 +108,7 @@ def test_kmeans_write(
     )
 
 
-def test_kmeans_estimate(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_kmeans_estimate(kmeans_endpoints: KMeansCypherEndpoints, sample_graph: Graph) -> None:
     result = kmeans_endpoints.estimate(sample_graph, node_property="kmeans", k=3)
 
     assert result.node_count == 4

@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.source_target_astar_cypher_endpoints import (
     AStarCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A', latitude: 55.6761, longitude: 12.5683}),
@@ -54,7 +54,7 @@ def astar_endpoints(query_runner: QueryRunner) -> Generator[AStarCypherEndpoints
     yield AStarCypherEndpoints(query_runner)
 
 
-def test_astar_stream(astar_endpoints: AStarCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_astar_stream(astar_endpoints: AStarCypherEndpoints, sample_graph: Graph) -> None:
     result_df = astar_endpoints.stream(
         G=sample_graph,
         source_node=find_node_by_name(astar_endpoints._query_runner, "A"),
@@ -68,7 +68,7 @@ def test_astar_stream(astar_endpoints: AStarCypherEndpoints, sample_graph: Graph
     assert len(result_df) == 1
 
 
-def test_astar_mutate(astar_endpoints: AStarCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_astar_mutate(astar_endpoints: AStarCypherEndpoints, sample_graph: Graph) -> None:
     result = astar_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -87,7 +87,7 @@ def test_astar_mutate(astar_endpoints: AStarCypherEndpoints, sample_graph: Graph
     assert "sourceNode" in result.configuration
 
 
-def test_astar_write(astar_endpoints: AStarCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_astar_write(astar_endpoints: AStarCypherEndpoints, sample_graph: Graph) -> None:
     result = astar_endpoints.write(
         G=sample_graph,
         write_relationship_type="PATH",
@@ -106,7 +106,7 @@ def test_astar_write(astar_endpoints: AStarCypherEndpoints, sample_graph: GraphV
     assert "sourceNode" in result.configuration
 
 
-def test_astar_estimate(astar_endpoints: AStarCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_astar_estimate(astar_endpoints: AStarCypherEndpoints, sample_graph: Graph) -> None:
     result = astar_endpoints.estimate(
         sample_graph,
         source_node=find_node_by_name(astar_endpoints._query_runner, "A"),

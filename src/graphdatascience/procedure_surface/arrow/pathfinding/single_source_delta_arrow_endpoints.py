@@ -5,7 +5,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -33,7 +33,7 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         *,
         delta: float = 2.0,
@@ -63,7 +63,7 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         *,
         delta: float = 2.0,
@@ -97,7 +97,7 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         *,
         delta: float = 2.0,
@@ -130,7 +130,7 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         mutate_relationship_type: str,
         *,
@@ -169,7 +169,7 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         write_relationship_type: str,
         *,
@@ -217,7 +217,7 @@ class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_node: int,
         delta: float = 2.0,
         relationship_weight_property: str | None = None,

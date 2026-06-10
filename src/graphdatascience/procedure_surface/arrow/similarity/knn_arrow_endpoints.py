@@ -5,7 +5,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -43,7 +43,7 @@ class KnnArrowEndpoints(KnnEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str] | dict[str, str],
         *,
         top_k: int = 10,
@@ -87,7 +87,7 @@ class KnnArrowEndpoints(KnnEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         mutate_property: str,
         node_properties: str | list[str] | dict[str, str],
@@ -137,7 +137,7 @@ class KnnArrowEndpoints(KnnEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str] | dict[str, str],
         top_k: int = 10,
         similarity_cutoff: float = 0.0,
@@ -183,7 +183,7 @@ class KnnArrowEndpoints(KnnEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str] | dict[str, str],
         top_k: int = 10,
         similarity_cutoff: float = 0.0,
@@ -229,7 +229,7 @@ class KnnArrowEndpoints(KnnEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_relationship_type: str,
         write_property: str,
         node_properties: str | list[str] | dict[str, str],
@@ -286,7 +286,7 @@ class KnnArrowEndpoints(KnnEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         node_properties: str | list[str] | dict[str, str],
         top_k: int = 10,
         similarity_cutoff: float = 0.0,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABEL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
@@ -153,7 +153,7 @@ class LinkPredictionPipeline:
 
     def train(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         model_name: str,
         metrics: list[str] = ["AUCPR"],
@@ -189,7 +189,7 @@ class LinkPredictionPipeline:
 
     def train_estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         model_name: str,
         metrics: list[str] = ["AUCPR"],

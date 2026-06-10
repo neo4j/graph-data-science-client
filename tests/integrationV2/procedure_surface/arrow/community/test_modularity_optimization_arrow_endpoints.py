@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
     ModularityOptimizationWriteResult,
 )
@@ -36,13 +36,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -65,7 +65,7 @@ def modularity_optimization_endpoints(
 
 
 def test_modularity_optimization_stats(
-    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = modularity_optimization_endpoints.stats(G=sample_graph, max_iterations=1)
 
@@ -77,7 +77,7 @@ def test_modularity_optimization_stats(
 
 
 def test_modularity_optimization_stream(
-    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result_df = modularity_optimization_endpoints.stream(G=sample_graph, max_iterations=1)
 
@@ -87,7 +87,7 @@ def test_modularity_optimization_stream(
 
 
 def test_modularity_optimization_mutate(
-    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = modularity_optimization_endpoints.mutate(
         G=sample_graph,
@@ -106,7 +106,7 @@ def test_modularity_optimization_mutate(
 
 @pytest.mark.db_integration
 def test_modularity_optimization_write(
-    arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner
+    arrow_client: AuthenticatedArrowClient, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
     endpoints = ModularityOptimizationArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
@@ -127,7 +127,7 @@ def test_modularity_optimization_write(
 
 
 def test_modularity_optimization_estimate(
-    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: GraphV2
+    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = modularity_optimization_endpoints.estimate(sample_graph, max_iterations=1)
 
@@ -139,9 +139,7 @@ def test_modularity_optimization_estimate(
     assert result.heap_percentage_max > 0
 
 
-def test_compute(
-    modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: GraphV2
-) -> None:
+def test_compute(modularity_optimization_endpoints: ModularityOptimizationArrowEndpoints, sample_graph: Graph) -> None:
     handle = modularity_optimization_endpoints.compute(G=sample_graph, max_iterations=1)
     summary = handle.summary()
 

@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import DataFrame
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -15,7 +15,7 @@ class DFSEndpoints(ABC):
     @abstractmethod
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         target_nodes: int | list[int] | None = None,
         max_depth: int = -1,
@@ -65,7 +65,7 @@ class DFSEndpoints(ABC):
     @abstractmethod
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         source_node: int,
         target_nodes: int | list[int] = [],
@@ -118,7 +118,7 @@ class DFSEndpoints(ABC):
     @abstractmethod
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         target_nodes: int | list[int] = [],
         max_depth: int = -1,
@@ -168,7 +168,7 @@ class DFSEndpoints(ABC):
     @abstractmethod
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_node: int,
         target_nodes: int | list[int] = [],
         max_depth: int = -1,

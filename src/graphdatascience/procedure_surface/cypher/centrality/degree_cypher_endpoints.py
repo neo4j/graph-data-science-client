@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import (
     DegreeEndpoints,
     DegreeMutateResult,
@@ -23,7 +23,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
@@ -61,7 +61,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -97,7 +97,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -130,7 +130,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
@@ -169,7 +169,7 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         orientation: str = "NATURAL",
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,

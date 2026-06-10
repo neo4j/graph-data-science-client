@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoints import (
@@ -23,7 +23,7 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         mutate_property: str,
@@ -70,7 +70,7 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         *,
@@ -113,7 +113,7 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         *,
@@ -154,7 +154,7 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         write_property: str,
@@ -203,7 +203,7 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_nodes: list[int],
         target_nodes: list[int],
         *,

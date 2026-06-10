@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.centrality.celf_cypher_endpoints import CelfCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {id: 0}),
@@ -45,7 +45,7 @@ def celf_endpoints(query_runner: QueryRunner) -> Generator[CelfCypherEndpoints, 
     yield CelfCypherEndpoints(query_runner)
 
 
-def test_celf_stats(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_stats(celf_endpoints: CelfCypherEndpoints, sample_graph: Graph) -> None:
     """Test CELF stats operation."""
     result = celf_endpoints.stats(G=sample_graph, seed_set_size=2)
 
@@ -56,7 +56,7 @@ def test_celf_stats(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2) 
     assert result.configuration.get("seedSetSize") == 2
 
 
-def test_celf_stream(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_stream(celf_endpoints: CelfCypherEndpoints, sample_graph: Graph) -> None:
     """Test CELF stream operation."""
     result_df = celf_endpoints.stream(G=sample_graph, seed_set_size=2)
 
@@ -66,7 +66,7 @@ def test_celf_stream(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2)
     assert all(result_df["spread"] >= 0)  # Spread values should be non-negative
 
 
-def test_celf_mutate(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_mutate(celf_endpoints: CelfCypherEndpoints, sample_graph: Graph) -> None:
     """Test CELF mutate operation."""
     result = celf_endpoints.mutate(G=sample_graph, seed_set_size=2, mutate_property="celf_spread")
 
@@ -80,7 +80,7 @@ def test_celf_mutate(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2)
     assert result.configuration.get("seedSetSize") == 2
 
 
-def test_celf_write(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_write(celf_endpoints: CelfCypherEndpoints, sample_graph: Graph) -> None:
     """Test CELF write operation."""
     result = celf_endpoints.write(G=sample_graph, seed_set_size=2, write_property="celf_spread")
 
@@ -94,7 +94,7 @@ def test_celf_write(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2) 
     assert result.configuration.get("seedSetSize") == 2
 
 
-def test_celf_estimate(celf_endpoints: CelfCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_celf_estimate(celf_endpoints: CelfCypherEndpoints, sample_graph: Graph) -> None:
     """Test CELF memory estimation."""
     result = celf_endpoints.estimate(G=sample_graph, seed_set_size=2)
 

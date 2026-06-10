@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaWriteResult
 from graphdatascience.procedure_surface.arrow.community.sllpa_arrow_endpoints import SllpaArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
@@ -32,13 +32,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -58,7 +58,7 @@ def sllpa_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[SllpaAr
     yield SllpaArrowEndpoints(arrow_client, show_progress=False)
 
 
-def test_sllpa_stats(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_stats(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA stats operation via Arrow."""
     result = sllpa_endpoints.stats(G=sample_graph, max_iterations=1)
 
@@ -69,7 +69,7 @@ def test_sllpa_stats(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2
     assert isinstance(result.configuration, dict)
 
 
-def test_sllpa_stream(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_stream(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA stream operation via Arrow."""
     result_df = sllpa_endpoints.stream(G=sample_graph, max_iterations=1)
 
@@ -78,7 +78,7 @@ def test_sllpa_stream(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV
     assert "community" in result_df.columns
 
 
-def test_sllpa_mutate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_mutate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA mutate operation via Arrow."""
     result = sllpa_endpoints.mutate(
         G=sample_graph,
@@ -96,7 +96,7 @@ def test_sllpa_mutate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV
 
 
 @pytest.mark.db_integration
-def test_sllpa_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, query_runner: QueryRunner) -> None:
+def test_sllpa_write(arrow_client: AuthenticatedArrowClient, db_graph: Graph, query_runner: QueryRunner) -> None:
     """Test SLLPA write operation via Arrow."""
 
     endpoints = SllpaArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
@@ -117,7 +117,7 @@ def test_sllpa_write(arrow_client: AuthenticatedArrowClient, db_graph: GraphV2, 
     assert isinstance(result.configuration, dict)
 
 
-def test_sllpa_estimate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_sllpa_estimate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph) -> None:
     """Test SLLPA estimate operation via Arrow."""
     result = sllpa_endpoints.estimate(sample_graph, max_iterations=1)
 
@@ -130,7 +130,7 @@ def test_sllpa_estimate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Grap
     assert result.heap_percentage_max > 0
 
 
-def test_compute(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph) -> None:
     handle = sllpa_endpoints.compute(G=sample_graph, max_iterations=1)
     summary = handle.summary()
 

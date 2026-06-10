@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
@@ -10,7 +10,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_query = """
         CREATE
         (a:Node),
@@ -47,7 +47,7 @@ def collapse_path_endpoints(
     yield CollapsePathCypherEndpoints(query_runner)
 
 
-def test_collapse_path(collapse_path_endpoints: CollapsePathCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_collapse_path(collapse_path_endpoints: CollapsePathCypherEndpoints, sample_graph: Graph) -> None:
     result = collapse_path_endpoints.mutate(
         G=sample_graph,
         path_templates=[["REL", "REL"]],

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.centrality.bridges_cypher_endpoints import BridgesCypherEndpoints
 from tests.unit.conftest import CollectingQueryRunner
 from tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
@@ -13,7 +13,7 @@ def bridges_endpoints(query_runner: CollectingQueryRunner) -> BridgesCypherEndpo
 
 
 def test_stream_basic(
-    bridges_endpoints: BridgesCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
+    bridges_endpoints: BridgesCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
     bridges_endpoints.stream(graph)
 
@@ -26,7 +26,7 @@ def test_stream_basic(
 
 
 def test_stream_with_optional_params(
-    bridges_endpoints: BridgesCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
+    bridges_endpoints: BridgesCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
     bridges_endpoints.stream(
         graph,
@@ -55,7 +55,7 @@ def test_stream_with_optional_params(
 
 
 def test_estimate_with_graph_name(
-    bridges_endpoints: BridgesCypherEndpoints, graph: GraphV2, query_runner: CollectingQueryRunner
+    bridges_endpoints: BridgesCypherEndpoints, graph: Graph, query_runner: CollectingQueryRunner
 ) -> None:
     query_runner.add__mock_result("gds.bridges.stream.estimate", pd.DataFrame([estimate_mock_result()]))
 

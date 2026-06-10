@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pipeline.link_prediction_pipeline_arrow_endpoints import (
     LinkPredictionPipelineArrowEndpoints,
@@ -38,7 +38,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(
         arrow_client,
         f"link-prediction-g-{uuid4().hex[:8]}",
@@ -49,7 +49,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -79,7 +79,7 @@ def endpoints(arrow_client: AuthenticatedArrowClient) -> LinkPredictionPipelineA
 def test_link_prediction_train_and_predict_stream(
     arrow_client: AuthenticatedArrowClient,
     endpoints: LinkPredictionPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"lp-pipe-{uuid4().hex[:8]}"
     model_name = f"lp-model-{uuid4().hex[:8]}"
@@ -126,7 +126,7 @@ def test_link_prediction_train_and_predict_stream(
 def test_link_prediction_train_estimate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: LinkPredictionPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"lp-pipe-{uuid4().hex[:8]}"
     model_name = f"lp-model-{uuid4().hex[:8]}"
@@ -153,7 +153,7 @@ def test_link_prediction_train_estimate(
 def test_link_prediction_predict_estimate(
     arrow_client: AuthenticatedArrowClient,
     endpoints: LinkPredictionPipelineArrowEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"lp-pipe-{uuid4().hex[:8]}"
     model_name = f"lp-model-{uuid4().hex[:8]}"
@@ -188,7 +188,7 @@ def test_link_prediction_predict_estimate(
 def test_link_prediction_predict_mutate(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints = LinkPredictionPipelineArrowEndpoints(
         arrow_client,

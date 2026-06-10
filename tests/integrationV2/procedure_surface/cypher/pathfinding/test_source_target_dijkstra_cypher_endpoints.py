@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.shortest_path_cypher_endpoints import (
     ShortestPathCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -50,7 +50,7 @@ def shortest_path_endpoints(query_runner: QueryRunner) -> Generator[ShortestPath
     yield ShortestPathCypherEndpoints(query_runner)
 
 
-def test_dijkstra_stream(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_stream(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: Graph) -> None:
     result_df = shortest_path_endpoints.dijkstra.stream(
         G=sample_graph,
         source_node=find_node_by_name(shortest_path_endpoints._query_runner, "A"),
@@ -62,7 +62,7 @@ def test_dijkstra_stream(shortest_path_endpoints: ShortestPathCypherEndpoints, s
     assert set(result_df.columns) == {"sourceNode", "targetNode", "totalCost", "nodeIds", "costs", "index"}
 
 
-def test_dijkstra_write(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_write(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: Graph) -> None:
     result = shortest_path_endpoints.dijkstra.write(
         G=sample_graph,
         write_relationship_type="PATH",
@@ -79,7 +79,7 @@ def test_dijkstra_write(shortest_path_endpoints: ShortestPathCypherEndpoints, sa
     assert "sourceNode" in result.configuration
 
 
-def test_dijkstra_mutate(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_mutate(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: Graph) -> None:
     result = shortest_path_endpoints.dijkstra.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -96,7 +96,7 @@ def test_dijkstra_mutate(shortest_path_endpoints: ShortestPathCypherEndpoints, s
     assert "sourceNode" in result.configuration
 
 
-def test_dijkstra_estimate(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_estimate(shortest_path_endpoints: ShortestPathCypherEndpoints, sample_graph: Graph) -> None:
     result = shortest_path_endpoints.dijkstra.estimate(
         sample_graph,
         source_node=find_node_by_name(shortest_path_endpoints._query_runner, "A"),

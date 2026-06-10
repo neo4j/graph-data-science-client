@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.single_source_dijkstra_cypher_endpoints import (
     SingleSourceDijkstraCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -52,7 +52,7 @@ def dijkstra_endpoints(query_runner: QueryRunner) -> Generator[SingleSourceDijks
     yield SingleSourceDijkstraCypherEndpoints(query_runner)
 
 
-def test_dijkstra_stream(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_stream(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: Graph) -> None:
     result_df = dijkstra_endpoints.stream(
         G=sample_graph,
         source_node=find_node_by_name(dijkstra_endpoints._query_runner, "A"),
@@ -63,7 +63,7 @@ def test_dijkstra_stream(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints
     assert len(result_df) == 5
 
 
-def test_dijkstra_mutate(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_mutate(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: Graph) -> None:
     result = dijkstra_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -79,7 +79,7 @@ def test_dijkstra_mutate(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints
     assert "sourceNode" in result.configuration
 
 
-def test_dijkstra_write(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_write(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: Graph) -> None:
     result = dijkstra_endpoints.write(
         G=sample_graph,
         write_relationship_type="PATH",
@@ -95,7 +95,7 @@ def test_dijkstra_write(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints,
     assert "sourceNode" in result.configuration
 
 
-def test_dijkstra_estimate(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_estimate(dijkstra_endpoints: SingleSourceDijkstraCypherEndpoints, sample_graph: Graph) -> None:
     result = dijkstra_endpoints.estimate(
         sample_graph,
         source_node=find_node_by_name(dijkstra_endpoints._query_runner, "A"),

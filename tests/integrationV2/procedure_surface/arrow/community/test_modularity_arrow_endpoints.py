@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.community.modularity_arrow_endpoints import ModularityArrowEndpoints
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph
 
@@ -27,7 +27,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
@@ -37,7 +37,7 @@ def modularity_endpoints(arrow_client: AuthenticatedArrowClient) -> ModularityAr
     return ModularityArrowEndpoints(arrow_client)
 
 
-def test_modularity_stats(modularity_endpoints: ModularityArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_modularity_stats(modularity_endpoints: ModularityArrowEndpoints, sample_graph: Graph) -> None:
     result = modularity_endpoints.stats(sample_graph, "community")
 
     assert result.community_count == 2
@@ -46,21 +46,21 @@ def test_modularity_stats(modularity_endpoints: ModularityArrowEndpoints, sample
     assert result.relationship_count == 8
 
 
-def test_modularity_stream(modularity_endpoints: ModularityArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_modularity_stream(modularity_endpoints: ModularityArrowEndpoints, sample_graph: Graph) -> None:
     result = modularity_endpoints.stream(sample_graph, "community")
 
     assert set(result.columns) == {"communityId", "modularity"}
     assert len(result) == 2
 
 
-def test_modularity_estimate(modularity_endpoints: ModularityArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_modularity_estimate(modularity_endpoints: ModularityArrowEndpoints, sample_graph: Graph) -> None:
     result = modularity_endpoints.estimate(sample_graph, "community")
 
     assert result.bytes_min > 0
     assert result.bytes_max >= result.bytes_min
 
 
-def test_compute(modularity_endpoints: ModularityArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(modularity_endpoints: ModularityArrowEndpoints, sample_graph: Graph) -> None:
     handle = modularity_endpoints.compute(G=sample_graph, community_property="community")
     summary = handle.summary()
 

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.kcore_endpoints import KCoreWriteResult
 from graphdatascience.procedure_surface.arrow.community.kcore_arrow_endpoints import KCoreArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -32,13 +32,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "kcore_g", graph, ("REL", "REL2")) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -59,7 +59,7 @@ def kcore_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[KCoreAr
     yield KCoreArrowEndpoints(arrow_client)
 
 
-def test_kcore_stats(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_stats(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     result = kcore_endpoints.stats(G=sample_graph)
 
     assert result.degeneracy >= 1
@@ -68,7 +68,7 @@ def test_kcore_stats(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2
     assert result.pre_processing_millis >= 0
 
 
-def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     result_df = kcore_endpoints.stream(G=sample_graph)
 
     assert "nodeId" in result_df.columns
@@ -77,7 +77,7 @@ def test_kcore_stream(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV
     assert len(result_df) == 6
 
 
-def test_kcore_mutate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_mutate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     result = kcore_endpoints.mutate(G=sample_graph, mutate_property="coreValue")
 
     assert result.degeneracy >= 1
@@ -88,7 +88,7 @@ def test_kcore_mutate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV
     assert result.node_properties_written == 6
 
 
-def test_kcore_estimate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_estimate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     result = kcore_endpoints.estimate(sample_graph)
 
     assert result.node_count == 6
@@ -100,7 +100,7 @@ def test_kcore_estimate(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Grap
     assert result.heap_percentage_max > 0
 
 
-def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     result = kcore_endpoints.stats(G=sample_graph, relationship_types=["REL2"], concurrency=2)
 
     assert result.degeneracy >= 1
@@ -109,7 +109,7 @@ def test_kcore_stats_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sampl
     assert result.post_processing_millis >= 0
 
 
-def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     result_df = kcore_endpoints.stream(G=sample_graph, relationship_types=["REL2"], concurrency=2)
 
     assert "nodeId" in result_df.columns
@@ -118,7 +118,7 @@ def test_kcore_stream_with_parameters(kcore_endpoints: KCoreArrowEndpoints, samp
     assert len(result_df) == 6
 
 
-def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     result = kcore_endpoints.mutate(
         G=sample_graph, mutate_property="kcoreValue", relationship_types=["REL2"], concurrency=2
     )
@@ -132,7 +132,7 @@ def test_kcore_mutate_with_parameters(kcore_endpoints: KCoreArrowEndpoints, samp
 
 
 @pytest.mark.db_integration
-def test_kcore_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_kcore_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = KCoreArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="coreValue")
 
@@ -152,7 +152,7 @@ def test_kcore_write(arrow_client: AuthenticatedArrowClient, query_runner: Query
     )
 
 
-def test_kcore_write_without_write_back_client(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_kcore_write_without_write_back_client(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     with pytest.raises(Exception, match="Write back is not supported by this session."):
         kcore_endpoints.write(
             G=sample_graph,
@@ -160,7 +160,7 @@ def test_kcore_write_without_write_back_client(kcore_endpoints: KCoreArrowEndpoi
         )
 
 
-def test_compute(kcore_endpoints: KCoreArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(kcore_endpoints: KCoreArrowEndpoints, sample_graph: Graph) -> None:
     handle = kcore_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

@@ -7,7 +7,7 @@ from pyarrow import ArrowKeyError
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import JobStatus
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2 import GraphV2
+from graphdatascience.graph import Graph
 from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import ArrowGraphBackend
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -61,7 +61,7 @@ class ProjectionJobHandle:
             termination_flag=self._termination_flag,
         )
 
-    def result(self, *, wait: bool = True) -> Tuple[GraphV2, dict[str, Any]]:
+    def result(self, *, wait: bool = True) -> Tuple[Graph, dict[str, Any]]:
         if not self.done():
             if not wait:
                 raise JobNotFinishedError(self._job_id)
@@ -69,4 +69,4 @@ class ProjectionJobHandle:
 
         summary = self._job_client.get_summary(self._arrow_client, self._job_id)
 
-        return GraphV2(self._graph_name, ArrowGraphBackend(self._graph_name, self._arrow_client)), summary
+        return Graph(self._graph_name, ArrowGraphBackend(self._graph_name, self._arrow_client)), summary

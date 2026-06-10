@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
@@ -28,7 +28,7 @@ class NodeClassificationTrainCypherEndpoints(NodeClassificationPipelineTrainEndp
 
     def __call__(
         self,
-        G: GraphV2,
+        G: Graph,
         pipeline_name: str,
         *,
         metrics: list[str],
@@ -75,7 +75,7 @@ class NodeClassificationTrainCypherEndpoints(NodeClassificationPipelineTrainEndp
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         pipeline_name: str,
         *,
         metrics: list[str],

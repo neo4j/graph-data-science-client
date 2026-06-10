@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenWriteResult
 from graphdatascience.procedure_surface.cypher.community.leiden_cypher_endpoints import LeidenCypherEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -10,7 +10,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
             (a:Person),
@@ -50,7 +50,7 @@ def leiden_endpoints(query_runner: QueryRunner) -> Generator[LeidenCypherEndpoin
     yield LeidenCypherEndpoints(query_runner)
 
 
-def test_leiden_stats(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_stats(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10)
 
     assert result.compute_millis >= 0
@@ -65,7 +65,7 @@ def test_leiden_stats(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Gra
     assert result.node_count == 6
 
 
-def test_leiden_stream(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_stream(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result_df = leiden_endpoints.stream(
         G=sample_graph,
         max_levels=10,
@@ -88,7 +88,7 @@ def test_leiden_stream(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Gr
     assert len(result_df_intermediate) == 6
 
 
-def test_leiden_mutate(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_mutate(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.mutate(
         G=sample_graph,
         mutate_property="leiden_community",
@@ -107,9 +107,7 @@ def test_leiden_mutate(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Gr
     assert isinstance(result.modularity, float)
 
 
-def test_leiden_write(
-    leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
-) -> None:
+def test_leiden_write(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner) -> None:
     result = leiden_endpoints.write(G=sample_graph, write_property="leiden_community", max_levels=10)
 
     assert isinstance(result, LeidenWriteResult)
@@ -133,7 +131,7 @@ def test_leiden_write(
     assert count_result.squeeze() == 6
 
 
-def test_leiden_estimate(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_estimate(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.estimate(sample_graph, max_levels=10)
 
     assert result.node_count == 6
@@ -145,7 +143,7 @@ def test_leiden_estimate(leiden_endpoints: LeidenCypherEndpoints, sample_graph: 
     assert result.heap_percentage_max > 0
 
 
-def test_leiden_with_consecutive_ids(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_consecutive_ids(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stream(G=sample_graph, max_levels=10, consecutive_ids=True)
 
     assert "nodeId" in result.columns
@@ -153,7 +151,7 @@ def test_leiden_with_consecutive_ids(leiden_endpoints: LeidenCypherEndpoints, sa
     assert len(result) == 6
 
 
-def test_leiden_with_min_community_size(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_min_community_size(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stream(G=sample_graph, max_levels=10, min_community_size=2)
 
     assert "nodeId" in result.columns
@@ -161,7 +159,7 @@ def test_leiden_with_min_community_size(leiden_endpoints: LeidenCypherEndpoints,
     assert len(result) <= 6  # Some nodes might be filtered out due to min community size
 
 
-def test_leiden_with_gamma_parameter(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_gamma_parameter(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10, gamma=0.5)
 
     assert result.compute_millis >= 0
@@ -169,7 +167,7 @@ def test_leiden_with_gamma_parameter(leiden_endpoints: LeidenCypherEndpoints, sa
     assert isinstance(result.modularity, float)
 
 
-def test_leiden_with_theta_parameter(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_theta_parameter(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10, theta=0.1)
 
     assert result.compute_millis >= 0
@@ -177,7 +175,7 @@ def test_leiden_with_theta_parameter(leiden_endpoints: LeidenCypherEndpoints, sa
     assert isinstance(result.modularity, float)
 
 
-def test_leiden_with_tolerance_parameter(leiden_endpoints: LeidenCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_leiden_with_tolerance_parameter(leiden_endpoints: LeidenCypherEndpoints, sample_graph: Graph) -> None:
     result = leiden_endpoints.stats(G=sample_graph, max_levels=10, tolerance=1e-3)
 
     assert result.compute_millis >= 0

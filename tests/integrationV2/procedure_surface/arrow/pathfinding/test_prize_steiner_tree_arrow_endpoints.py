@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.pathfinding.prize_steiner_tree_arrow_endpoints import (
     PrizeSteinerTreeArrowEndpoints,
 )
@@ -30,7 +30,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(
         arrow_client,
         "g",
@@ -41,7 +41,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -69,7 +69,7 @@ def prize_steiner_tree_endpoints(
 
 
 def test_prize_steiner_tree_stream(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: Graph
 ) -> None:
     result_df = prize_steiner_tree_endpoints.stream(
         G=sample_graph,
@@ -82,7 +82,7 @@ def test_prize_steiner_tree_stream(
 
 
 def test_prize_steiner_tree_stats(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = prize_steiner_tree_endpoints.stats(
         G=sample_graph,
@@ -97,7 +97,7 @@ def test_prize_steiner_tree_stats(
 
 
 def test_prize_steiner_tree_mutate(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = prize_steiner_tree_endpoints.mutate(
         G=sample_graph,
@@ -116,7 +116,7 @@ def test_prize_steiner_tree_mutate(
 
 @pytest.mark.db_integration
 def test_prize_steiner_tree_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     prize_steiner_tree_endpoints = PrizeSteinerTreeArrowEndpoints(
         arrow_client=arrow_client, write_protocol=WriteProtocol.select(arrow_client, query_runner)
@@ -137,7 +137,7 @@ def test_prize_steiner_tree_write(
 
 
 def test_prize_steiner_tree_estimate(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = prize_steiner_tree_endpoints.estimate(
         G=sample_graph,
@@ -149,7 +149,7 @@ def test_prize_steiner_tree_estimate(
     assert result.bytes_max > 0
 
 
-def test_compute(prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(prize_steiner_tree_endpoints: PrizeSteinerTreeArrowEndpoints, sample_graph: Graph) -> None:
     handle = prize_steiner_tree_endpoints.compute(
         G=sample_graph, prize_property="prize", relationship_weight_property="cost"
     )

@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import (
     ArticulationPointsEndpoints,
     ArticulationPointsMutateResult,
@@ -32,7 +32,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -56,7 +56,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -85,7 +85,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -113,7 +113,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
@@ -130,7 +130,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -165,7 +165,7 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         concurrency: int | None = None,

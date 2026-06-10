@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.triangles_cypher_endpoints import (
     TrianglesCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -45,7 +45,7 @@ def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
         yield g
 
 
-def test_triangles_happy_path(query_runner: QueryRunner, sample_graph: GraphV2) -> None:
+def test_triangles_happy_path(query_runner: QueryRunner, sample_graph: Graph) -> None:
     result_df = TrianglesCypherEndpoints(query_runner)(G=sample_graph)
 
     assert list(result_df.columns) == ["nodeA", "nodeB", "nodeC"]

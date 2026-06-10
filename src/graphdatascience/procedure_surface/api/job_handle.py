@@ -8,7 +8,7 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import JobStatus
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2 import GraphV2
+from graphdatascience.graph import Graph
 from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.procedure_surface.arrow.mutation_runner import MutationRunner
@@ -23,13 +23,13 @@ class JobHandle:
         arrow_client: AuthenticatedArrowClient,
         write_protocol: WriteProtocol | None,
         job_id: str,
-        graph: GraphV2 | str,
+        graph: Graph | str,
         show_progress: bool,
         endpoint: str,
     ):
         self._arrow_client = arrow_client
         self._job_id = job_id
-        self._graph_name = graph.name() if isinstance(graph, GraphV2) else graph
+        self._graph_name = graph.name() if isinstance(graph, Graph) else graph
         self._show_progress = show_progress
         self._is_done = False
         self._write_protocol = write_protocol

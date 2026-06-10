@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_endpoints import (
     SingleSourceDijkstraWriteResult,
 )
@@ -37,13 +37,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -65,7 +65,7 @@ def dijkstra_endpoints(
     yield SingleSourceDijkstraArrowEndpoints(arrow_client)
 
 
-def test_dijkstra_stream(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_stream(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: Graph) -> None:
     result_df = dijkstra_endpoints.stream(
         G=sample_graph,
         source_node=0,
@@ -76,7 +76,7 @@ def test_dijkstra_stream(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints,
     assert set(result_df.columns) == {"sourceNode", "targetNode", "totalCost", "nodeIds", "costs", "index"}
 
 
-def test_dijkstra_mutate(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_mutate(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: Graph) -> None:
     result = dijkstra_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="PATH",
@@ -96,7 +96,7 @@ def test_dijkstra_mutate(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints,
 def test_dijkstra_write(
     arrow_client: AuthenticatedArrowClient,
     query_runner: QueryRunner,
-    db_graph: GraphV2,
+    db_graph: Graph,
 ) -> None:
     endpoints_with_writeback = SingleSourceDijkstraArrowEndpoints(
         arrow_client=arrow_client, write_protocol=WriteProtocol.select(arrow_client, query_runner)
@@ -118,7 +118,7 @@ def test_dijkstra_write(
     assert "sourceNode" in result.configuration
 
 
-def test_dijkstra_estimate(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_dijkstra_estimate(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: Graph) -> None:
     result = dijkstra_endpoints.estimate(
         sample_graph,
         source_node=0,
@@ -134,7 +134,7 @@ def test_dijkstra_estimate(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoint
     assert result.heap_percentage_max > 0
 
 
-def test_compute(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(dijkstra_endpoints: SingleSourceDijkstraArrowEndpoints, sample_graph: Graph) -> None:
     handle = dijkstra_endpoints.compute(G=sample_graph, source_node=0, relationship_weight_property="cost")
     summary = handle.summary()
 

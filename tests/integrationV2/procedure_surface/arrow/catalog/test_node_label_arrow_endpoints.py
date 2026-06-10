@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
@@ -14,7 +14,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
         CREATE
         (a: Node:Foo),
@@ -27,7 +27,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     graph_data = """
         CREATE
         (a: Node:Foo),
@@ -57,7 +57,7 @@ def node_label_endpoints_with_db(
     yield NodeLabelArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
 
 
-def test_mutate_node_label(node_label_endpoints: NodeLabelArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_mutate_node_label(node_label_endpoints: NodeLabelArrowEndpoints, sample_graph: Graph) -> None:
     result = node_label_endpoints.mutate(G=sample_graph, node_label="MUTATED", node_filter="n:Foo")
 
     assert result.node_label == "MUTATED"
@@ -69,7 +69,7 @@ def test_mutate_node_label(node_label_endpoints: NodeLabelArrowEndpoints, sample
 
 @pytest.mark.db_integration
 def test_write_node_label(
-    node_label_endpoints_with_db: NodeLabelArrowEndpoints, db_graph: GraphV2, query_runner: QueryRunner
+    node_label_endpoints_with_db: NodeLabelArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
     result = node_label_endpoints_with_db.write(G=db_graph, node_label="WRITTEN", node_filter="n:Foo")
 

@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.centrality.closeness_harmonic_cypher_endpoints import (
     ClosenessHarmonicCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'a'}),
@@ -45,7 +45,7 @@ def closeness_harmonic_endpoints(query_runner: QueryRunner) -> Generator[Closene
 
 
 def test_closeness_harmonic_stats(
-    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Harmonic Closeness stats operation."""
     result = closeness_harmonic_endpoints.stats(G=sample_graph)
@@ -57,7 +57,7 @@ def test_closeness_harmonic_stats(
 
 
 def test_closeness_harmonic_stream(
-    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Harmonic Closeness stream operation."""
     result_df = closeness_harmonic_endpoints.stream(
@@ -69,7 +69,7 @@ def test_closeness_harmonic_stream(
 
 
 def test_closeness_harmonic_mutate(
-    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: Graph
 ) -> None:
     """Test Harmonic Closeness mutate operation."""
     result = closeness_harmonic_endpoints.mutate(
@@ -86,7 +86,7 @@ def test_closeness_harmonic_mutate(
 
 
 def test_closeness_harmonic_estimate(
-    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: GraphV2
+    closeness_harmonic_endpoints: ClosenessHarmonicCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = closeness_harmonic_endpoints.estimate(sample_graph)
 

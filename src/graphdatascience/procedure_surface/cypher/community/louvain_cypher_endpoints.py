@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.louvain_endpoints import (
     LouvainEndpoints,
     LouvainMutateResult,
@@ -28,7 +28,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         tolerance: float = 0.0001,
         max_levels: int = 10,
@@ -74,7 +74,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,
@@ -118,7 +118,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,
@@ -160,7 +160,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         tolerance: float = 0.0001,
         max_levels: int = 10,
@@ -210,7 +210,7 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,

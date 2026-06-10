@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.community.modularity_cypher_endpoints import ModularityCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
         CREATE
               (a:Node {community: 0})
@@ -49,7 +49,7 @@ def modularity_endpoints(query_runner: QueryRunner) -> ModularityCypherEndpoints
     return ModularityCypherEndpoints(query_runner)
 
 
-def test_modularity_stats(modularity_endpoints: ModularityCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_modularity_stats(modularity_endpoints: ModularityCypherEndpoints, sample_graph: Graph) -> None:
     result = modularity_endpoints.stats(sample_graph, "community")
 
     assert result.community_count == 2
@@ -58,14 +58,14 @@ def test_modularity_stats(modularity_endpoints: ModularityCypherEndpoints, sampl
     assert result.relationship_count == 8
 
 
-def test_modularity_stream(modularity_endpoints: ModularityCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_modularity_stream(modularity_endpoints: ModularityCypherEndpoints, sample_graph: Graph) -> None:
     result = modularity_endpoints.stream(sample_graph, "community")
 
     assert set(result.columns) == {"communityId", "modularity"}
     assert len(result) == 2
 
 
-def test_modularity_estimate(modularity_endpoints: ModularityCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_modularity_estimate(modularity_endpoints: ModularityCypherEndpoints, sample_graph: Graph) -> None:
     result = modularity_endpoints.estimate(sample_graph, "community")
 
     assert result.bytes_min > 0

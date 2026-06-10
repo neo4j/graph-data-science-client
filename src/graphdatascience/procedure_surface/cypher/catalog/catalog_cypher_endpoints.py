@@ -8,8 +8,8 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.graph.graph_api import Graph
+from graphdatascience.graph.graph_backend_cypher import get_graph
 from graphdatascience.graph_construction.arrow_v1_graph_constructor import ArrowV1GraphConstructor
 from graphdatascience.graph_construction.cypher_graph_constructor import CypherGraphConstructor
 from graphdatascience.graph_construction.graph_constructor import GraphConstructor
@@ -47,7 +47,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         self._cypher_runner = cypher_runner
         self._arrow_client = arrow_client
 
-    def get(self, graph_name: str) -> GraphV2:
+    def get(self, graph_name: str) -> Graph:
         if not self.list(graph_name):
             raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
         return get_graph(graph_name, self._cypher_runner)
@@ -61,7 +61,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int = 100000,
-    ) -> GraphV2:
+    ) -> Graph:
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
         if relationships is None:
@@ -94,14 +94,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         graph_constructor.run(node_dfs=nodes, relationship_dfs=relationships)
         return get_graph(graph_name, self._cypher_runner)
 
-    def list(self, G: GraphV2 | str | None = None) -> list[GraphInfoWithDegrees]:
+    def list(self, G: Graph | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
         result = self._cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
         return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
 
-    def drop(self, G: GraphV2 | str, fail_if_missing: bool = True) -> GraphInfo | None:
+    def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
         graph_name = G if isinstance(G, str) else G.name()
 
         params = (
@@ -154,7 +154,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
     def filter(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         node_filter: str,
         relationship_filter: str,
@@ -263,10 +263,10 @@ class GraphProjectResult(BaseResult):
 
 
 class GraphWithProjectResult(NamedTuple):
-    graph: GraphV2
+    graph: Graph
     result: GraphProjectResult
 
-    def __enter__(self) -> GraphV2:
+    def __enter__(self) -> Graph:
         return self.graph
 
     def __exit__(

@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import ClosenessWriteResult
 from graphdatascience.procedure_surface.arrow.centrality.closeness_arrow_endpoints import ClosenessArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -26,13 +26,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -52,7 +52,7 @@ def closeness_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Clo
     yield ClosenessArrowEndpoints(arrow_client)
 
 
-def test_closeness_stats(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_closeness_stats(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: Graph) -> None:
     result = closeness_endpoints.stats(G=sample_graph)
 
     assert result.compute_millis >= 0
@@ -61,7 +61,7 @@ def test_closeness_stats(closeness_endpoints: ClosenessArrowEndpoints, sample_gr
     assert "p50" in result.centrality_distribution
 
 
-def test_closeness_stream(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_closeness_stream(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: Graph) -> None:
     result_df = closeness_endpoints.stream(
         G=sample_graph,
     )
@@ -70,7 +70,7 @@ def test_closeness_stream(closeness_endpoints: ClosenessArrowEndpoints, sample_g
     assert len(result_df) == 4
 
 
-def test_closeness_mutate(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_closeness_mutate(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: Graph) -> None:
     result = closeness_endpoints.mutate(
         G=sample_graph,
         mutate_property="closeness",
@@ -85,7 +85,7 @@ def test_closeness_mutate(closeness_endpoints: ClosenessArrowEndpoints, sample_g
 
 
 @pytest.mark.db_integration
-def test_closeness_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_closeness_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = ClosenessArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="closeness")
 
@@ -105,7 +105,7 @@ def test_closeness_write(arrow_client: AuthenticatedArrowClient, query_runner: Q
     )
 
 
-def test_closeness_estimate(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_closeness_estimate(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: Graph) -> None:
     result = closeness_endpoints.estimate(sample_graph)
 
     assert result.node_count == 4
@@ -117,7 +117,7 @@ def test_closeness_estimate(closeness_endpoints: ClosenessArrowEndpoints, sample
     assert result.heap_percentage_max > 0
 
 
-def test_closeness_with_wasserman_faust(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_closeness_with_wasserman_faust(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: Graph) -> None:
     """Test Closeness with Wasserman-Faust normalization."""
     result = closeness_endpoints.stats(
         G=sample_graph,
@@ -130,7 +130,7 @@ def test_closeness_with_wasserman_faust(closeness_endpoints: ClosenessArrowEndpo
     assert "p50" in result.centrality_distribution
 
 
-def test_compute(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(closeness_endpoints: ClosenessArrowEndpoints, sample_graph: Graph) -> None:
     handle = closeness_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

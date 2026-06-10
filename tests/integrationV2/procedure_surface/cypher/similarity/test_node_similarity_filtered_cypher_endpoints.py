@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.similarity.node_similarity_filtered_cypher_endpoints import (
     NodeSimilarityFilteredCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: SourceNode),
@@ -49,7 +49,7 @@ def node_similarity_filtered_endpoints(
 
 
 def test_node_similarity_filtered_stats(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = node_similarity_filtered_endpoints.stats(
         G=sample_graph,
@@ -68,7 +68,7 @@ def test_node_similarity_filtered_stats(
 
 
 def test_node_similarity_filtered_stream(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = node_similarity_filtered_endpoints.stream(
         G=sample_graph,
@@ -82,7 +82,7 @@ def test_node_similarity_filtered_stream(
 
 
 def test_node_similarity_filtered_mutate(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = node_similarity_filtered_endpoints.mutate(
         G=sample_graph,
@@ -103,7 +103,7 @@ def test_node_similarity_filtered_mutate(
 
 
 def test_node_similarity_filtered_write(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = node_similarity_filtered_endpoints.write(
         G=sample_graph,
@@ -124,7 +124,7 @@ def test_node_similarity_filtered_write(
 
 
 def test_node_similarity_filtered_estimate(
-    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: GraphV2
+    node_similarity_filtered_endpoints: NodeSimilarityFilteredCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = node_similarity_filtered_endpoints.estimate(
         sample_graph,

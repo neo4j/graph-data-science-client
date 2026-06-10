@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import (
     ClosenessEndpoints,
     ClosenessMutateResult,
@@ -25,7 +25,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         use_wasserman_faust: bool = False,
         relationship_types: list[str] = ALL_TYPES,
@@ -61,7 +61,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         use_wasserman_faust: bool = False,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -95,7 +95,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         use_wasserman_faust: bool = False,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
@@ -126,7 +126,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         use_wasserman_faust: bool = False,
         relationship_types: list[str] = ALL_TYPES,
@@ -164,7 +164,7 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         use_wasserman_faust: bool = False,
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,

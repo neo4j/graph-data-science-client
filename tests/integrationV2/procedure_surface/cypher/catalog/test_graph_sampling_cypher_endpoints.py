@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
@@ -13,7 +13,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import (
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {id: 0}),
@@ -49,7 +49,7 @@ def graph_sampling_endpoints(query_runner: QueryRunner) -> Generator[GraphSampli
     yield GraphSamplingCypherEndpoints(query_runner)
 
 
-def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     G, result = graph_sampling_endpoints.rwr(
         G=sample_graph, graph_name="rwr_sampled", restart_probability=0.15, sampling_ratio=0.8
     )
@@ -62,9 +62,7 @@ def test_rwr_basic(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sampl
     assert result.project_millis >= 0
 
 
-def test_cnarw_with_stratification(
-    graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2
-) -> None:
+def test_cnarw_with_stratification(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     G, result = graph_sampling_endpoints.cnarw(
         G=sample_graph,
         graph_name="cnarw_stratified",
@@ -80,7 +78,7 @@ def test_cnarw_with_stratification(
     assert result.project_millis >= 0
 
 
-def test_cnarw_estimate(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_cnarw_estimate(graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph) -> None:
     result = graph_sampling_endpoints.estimate(G=sample_graph, restart_probability=0.15, sampling_ratio=0.8)
 
     assert result.node_count == 5

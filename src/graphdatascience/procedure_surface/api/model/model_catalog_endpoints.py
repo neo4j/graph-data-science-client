@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from graphdatascience.model.v2.model_details import ModelDetails
+from graphdatascience.model.model_details import ModelDetails
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 

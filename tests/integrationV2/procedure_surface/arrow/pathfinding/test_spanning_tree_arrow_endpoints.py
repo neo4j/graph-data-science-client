@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.pathfinding.spanning_tree_arrow_endpoints import (
     SpanningTreeArrowEndpoints,
 )
@@ -33,13 +33,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph, undirected=("LINK", "LINK_UNDIRECTED")) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -62,7 +62,7 @@ def spanning_tree_endpoints(
     yield SpanningTreeArrowEndpoints(arrow_client)
 
 
-def test_spanning_tree_stream(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_spanning_tree_stream(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: Graph) -> None:
     result_df = spanning_tree_endpoints.stream(
         G=sample_graph,
         source_node=0,
@@ -73,7 +73,7 @@ def test_spanning_tree_stream(spanning_tree_endpoints: SpanningTreeArrowEndpoint
     assert len(result_df) == 5  # cypher has 6 as it includes the initial root node -> root node rel
 
 
-def test_spanning_tree_stats(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_spanning_tree_stats(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: Graph) -> None:
     result = spanning_tree_endpoints.stats(
         G=sample_graph,
         source_node=0,
@@ -85,7 +85,7 @@ def test_spanning_tree_stats(spanning_tree_endpoints: SpanningTreeArrowEndpoints
     assert result.compute_millis >= 0
 
 
-def test_spanning_tree_mutate(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_spanning_tree_mutate(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: Graph) -> None:
     result = spanning_tree_endpoints.mutate(
         G=sample_graph,
         mutate_relationship_type="TREE",
@@ -102,7 +102,7 @@ def test_spanning_tree_mutate(spanning_tree_endpoints: SpanningTreeArrowEndpoint
 
 @pytest.mark.db_integration
 def test_spanning_tree_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     spanning_tree_endpoints = SpanningTreeArrowEndpoints(
         arrow_client, write_protocol=WriteProtocol.select(arrow_client, query_runner)
@@ -121,7 +121,7 @@ def test_spanning_tree_write(
     assert result.write_millis >= 0
 
 
-def test_spanning_tree_estimate(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_spanning_tree_estimate(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: Graph) -> None:
     result = spanning_tree_endpoints.estimate(
         G=sample_graph,
         source_node=0,
@@ -132,7 +132,7 @@ def test_spanning_tree_estimate(spanning_tree_endpoints: SpanningTreeArrowEndpoi
     assert result.bytes_max > 0
 
 
-def test_compute(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(spanning_tree_endpoints: SpanningTreeArrowEndpoints, sample_graph: Graph) -> None:
     handle = spanning_tree_endpoints.compute(G=sample_graph, source_node=0, relationship_weight_property="cost")
     summary = handle.summary()
 

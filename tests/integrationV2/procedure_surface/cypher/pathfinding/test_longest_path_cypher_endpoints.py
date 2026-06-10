@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.longest_path_cypher_endpoints import (
     LongestPathCypherEndpoints,
 )
@@ -29,7 +29,7 @@ dag_graph = """
 
 
 @pytest.fixture
-def sample_dag(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_dag(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     projection_query = """
         MATCH (source)-[r]->(target)
         WITH gds.graph.project('dag', source, target, {
@@ -49,7 +49,7 @@ def longest_path_endpoints(query_runner: QueryRunner) -> Generator[LongestPathCy
     yield LongestPathCypherEndpoints(query_runner)
 
 
-def test_longest_path_stream(longest_path_endpoints: LongestPathCypherEndpoints, sample_dag: GraphV2) -> None:
+def test_longest_path_stream(longest_path_endpoints: LongestPathCypherEndpoints, sample_dag: Graph) -> None:
     result_df = longest_path_endpoints.stream(
         G=sample_dag,
         relationship_weight_property="cost",

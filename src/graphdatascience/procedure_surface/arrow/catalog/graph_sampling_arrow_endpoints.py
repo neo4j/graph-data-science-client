@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
@@ -23,7 +23,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
     def rwr(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
@@ -69,7 +69,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
     def cnarw(
         self,
-        G: GraphV2,
+        G: Graph,
         graph_name: str,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
@@ -115,7 +115,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
 
     def estimate(
         self,
-        G: GraphV2,
+        G: Graph,
         start_nodes: list[int] | None = None,
         restart_probability: float = 0.1,
         sampling_ratio: float = 0.15,

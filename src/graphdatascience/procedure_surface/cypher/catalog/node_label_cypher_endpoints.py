@@ -1,5 +1,5 @@
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import (
     NodeLabelEndpoints,
     NodeLabelMutateResult,
@@ -15,7 +15,7 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         node_label: str,
         *,
         node_filter: str,
@@ -47,7 +47,7 @@ class NodeLabelCypherEndpoints(NodeLabelEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         node_label: str,
         *,
         node_filter: str,

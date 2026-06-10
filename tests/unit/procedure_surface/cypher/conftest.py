@@ -2,8 +2,8 @@ from typing import Any
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
-from graphdatascience.graph.v2.graph_backend_cypher import get_graph
+from graphdatascience.graph.graph_api import Graph
+from graphdatascience.graph.graph_backend_cypher import get_graph
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
@@ -13,7 +13,7 @@ def query_runner() -> CollectingQueryRunner:
 
 
 @pytest.fixture
-def graph(query_runner: CollectingQueryRunner) -> GraphV2:
+def graph(query_runner: CollectingQueryRunner) -> Graph:
     return get_graph("test_graph", query_runner)
 
 

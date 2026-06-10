@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.centrality.betweenness_cypher_endpoints import BetweennessCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -40,7 +40,7 @@ def betweenness_endpoints(query_runner: QueryRunner) -> Generator[BetweennessCyp
     yield BetweennessCypherEndpoints(query_runner)
 
 
-def test_betweenness_stats(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_stats(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: Graph) -> None:
     """Test Betweenness Centrality stats operation."""
     result = betweenness_endpoints.stats(
         G=sample_graph,
@@ -52,7 +52,7 @@ def test_betweenness_stats(betweenness_endpoints: BetweennessCypherEndpoints, sa
     assert result.post_processing_millis >= 0
 
 
-def test_betweenness_stream(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_stream(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: Graph) -> None:
     """Test Betweenness Centrality stream operation."""
     result = betweenness_endpoints.stream(
         G=sample_graph,
@@ -63,7 +63,7 @@ def test_betweenness_stream(betweenness_endpoints: BetweennessCypherEndpoints, s
     assert "score" in result.columns
 
 
-def test_betweenness_mutate(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_mutate(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: Graph) -> None:
     """Test Betweenness Centrality mutate operation."""
     result = betweenness_endpoints.mutate(
         G=sample_graph,
@@ -78,7 +78,7 @@ def test_betweenness_mutate(betweenness_endpoints: BetweennessCypherEndpoints, s
     assert result.node_properties_written == 3
 
 
-def test_betweenness_write(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_write(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: Graph) -> None:
     """Test Betweenness Centrality write operation."""
     result = betweenness_endpoints.write(
         G=sample_graph,
@@ -93,7 +93,7 @@ def test_betweenness_write(betweenness_endpoints: BetweennessCypherEndpoints, sa
     assert result.node_properties_written == 3
 
 
-def test_betweenness_estimate(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_betweenness_estimate(betweenness_endpoints: BetweennessCypherEndpoints, sample_graph: Graph) -> None:
     result = betweenness_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3

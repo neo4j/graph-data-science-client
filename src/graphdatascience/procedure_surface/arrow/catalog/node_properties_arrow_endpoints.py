@@ -3,7 +3,7 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import (
     NodePropertiesDropResult,
     NodePropertiesEndpoints,
@@ -39,7 +39,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str],
         *,
         list_node_labels: bool | None = False,
@@ -80,7 +80,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: str | list[str] | dict[str, str],
         *,
         node_labels: list[str] = ALL_LABELS,
@@ -130,7 +130,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
     def drop(
         self,
-        G: GraphV2,
+        G: Graph,
         node_properties: list[str],
         *,
         fail_if_missing: bool | None = True,

@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
     NodeRegressionPipelineCypherEndpoints,
@@ -14,7 +14,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: Neo4jQueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: Neo4jQueryRunner) -> Generator[Graph, None, None]:
     graph_name = f"nr-cypher-g-{uuid4().hex[:8]}"
     create_statement = """
     CREATE
@@ -47,7 +47,7 @@ def endpoints(query_runner: Neo4jQueryRunner) -> NodeRegressionPipelineCypherEnd
 def test_node_regression_train_cypher_pipeline(
     query_runner: Neo4jQueryRunner,
     endpoints: NodeRegressionPipelineCypherEndpoints,
-    sample_graph: GraphV2,
+    sample_graph: Graph,
 ) -> None:
     pipeline_name = f"nr-cypher-pipe-{uuid4().hex[:8]}"
     model_name = f"nr-cypher-model-{uuid4().hex[:8]}"

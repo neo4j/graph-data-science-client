@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -33,7 +33,7 @@ class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         *,
@@ -69,7 +69,7 @@ class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         mutate_property: str,
@@ -115,7 +115,7 @@ class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         *,
@@ -156,7 +156,7 @@ class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         *,
@@ -195,7 +195,7 @@ class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         source_nodes: list[int],
         target_nodes: list[int],
         write_property: str,
@@ -245,7 +245,7 @@ class MaxFlowMinCostArrowEndpoints(MaxFlowMinCostEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_nodes: list[int],
         target_nodes: list[int],
         *,

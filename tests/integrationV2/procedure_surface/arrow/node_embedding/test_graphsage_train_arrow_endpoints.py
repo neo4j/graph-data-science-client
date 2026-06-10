@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arrow_endpoints import (
     GraphSageTrainArrowEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import cr
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
     CREATE
     (a: Node {feature: 1.0}),
@@ -33,7 +33,7 @@ def graphsage_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Gra
     yield GraphSageTrainArrowEndpoints(arrow_client, None)
 
 
-def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: Graph) -> None:
     """Test GraphSage train operation."""
     model, result = graphsage_endpoints(
         G=sample_graph,
@@ -57,7 +57,7 @@ def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, samp
     model.drop()
 
 
-def test_graphsage_train_estimate(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_graphsage_train_estimate(graphsage_endpoints: GraphSageTrainArrowEndpoints, sample_graph: Graph) -> None:
     """Test GraphSage estimate operation."""
     result = graphsage_endpoints.estimate(
         G=sample_graph,

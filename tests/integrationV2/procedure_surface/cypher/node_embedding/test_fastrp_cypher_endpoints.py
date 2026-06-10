@@ -2,14 +2,14 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.node_embedding.fastrp_cypher_endpoints import FastRPCypherEndpoints
 from graphdatascience.query_runner import QueryRunner
 from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import create_graph
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node),
@@ -43,7 +43,7 @@ def fastrp_endpoints(query_runner: QueryRunner) -> Generator[FastRPCypherEndpoin
     yield FastRPCypherEndpoints(query_runner)
 
 
-def test_fastrp_stats(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_fastrp_stats(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Graph) -> None:
     """Test FastRP stats operation."""
     result = fastrp_endpoints.stats(G=sample_graph, embedding_dimension=128)
 
@@ -52,7 +52,7 @@ def test_fastrp_stats(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Gra
     assert result.configuration is not None
 
 
-def test_fastrp_stream(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_fastrp_stream(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Graph) -> None:
     """Test FastRP stream operation."""
     result_df = fastrp_endpoints.stream(
         G=sample_graph,
@@ -68,7 +68,7 @@ def test_fastrp_stream(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Gr
     assert len(embedding_sample) == 64
 
 
-def test_fastrp_mutate(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_fastrp_mutate(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Graph) -> None:
     """Test FastRP mutate operation."""
     result = fastrp_endpoints.mutate(
         G=sample_graph,
@@ -83,7 +83,7 @@ def test_fastrp_mutate(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Gr
     assert result.configuration is not None
 
 
-def test_fastrp_write(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_fastrp_write(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Graph) -> None:
     """Test FastRP write operation."""
     result = fastrp_endpoints.write(
         G=sample_graph,
@@ -98,7 +98,7 @@ def test_fastrp_write(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Gra
     assert result.configuration is not None
 
 
-def test_fastrp_estimate(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_fastrp_estimate(fastrp_endpoints: FastRPCypherEndpoints, sample_graph: Graph) -> None:
     """Test FastRP estimate operation."""
     result = fastrp_endpoints.estimate(sample_graph, embedding_dimension=128)
 

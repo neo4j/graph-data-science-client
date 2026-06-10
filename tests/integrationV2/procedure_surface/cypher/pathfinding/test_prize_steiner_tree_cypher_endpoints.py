@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.prize_steiner_tree_cypher_endpoints import (
     PrizeSteinerTreeCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A', prize: 5.0}),
@@ -51,7 +51,7 @@ def prize_steiner_tree_endpoints(query_runner: QueryRunner) -> Generator[PrizeSt
 
 
 def test_prize_steiner_tree_stream(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: Graph
 ) -> None:
     result_df = prize_steiner_tree_endpoints.stream(
         G=sample_graph,
@@ -64,7 +64,7 @@ def test_prize_steiner_tree_stream(
 
 
 def test_prize_steiner_tree_stats(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = prize_steiner_tree_endpoints.stats(
         G=sample_graph,
@@ -79,7 +79,7 @@ def test_prize_steiner_tree_stats(
 
 
 def test_prize_steiner_tree_mutate(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = prize_steiner_tree_endpoints.mutate(
         G=sample_graph,
@@ -97,7 +97,7 @@ def test_prize_steiner_tree_mutate(
 
 
 def test_prize_steiner_tree_write(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = prize_steiner_tree_endpoints.write(
         G=sample_graph,
@@ -115,7 +115,7 @@ def test_prize_steiner_tree_write(
 
 
 def test_prize_steiner_tree_estimate(
-    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: GraphV2
+    prize_steiner_tree_endpoints: PrizeSteinerTreeCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = prize_steiner_tree_endpoints.estimate(
         G=sample_graph,

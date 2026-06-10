@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_endpoints import (
     MaxFlowMinCostMutateResult,
     MaxFlowMinCostStatsResult,
@@ -35,7 +35,7 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     projection_query = """
         MATCH (n)
         OPTIONAL MATCH (n)-[r]->(m)
@@ -61,7 +61,7 @@ def min_cost_endpoints(query_runner: QueryRunner) -> MaxFlowMinCostCypherEndpoin
     return MaxFlowMinCostCypherEndpoints(query_runner)
 
 
-def test_min_cost_stats(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_min_cost_stats(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: Graph) -> None:
     result = min_cost_endpoints.stats(
         sample_graph,
         source_nodes=[find_node_by_name(min_cost_endpoints._query_runner, "A")],
@@ -78,7 +78,7 @@ def test_min_cost_stats(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sampl
     assert result.configuration["alpha"] == 5
 
 
-def test_min_cost_stream(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_min_cost_stream(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: Graph) -> None:
     result = min_cost_endpoints.stream(
         sample_graph,
         capacity_property="capacity",
@@ -91,7 +91,7 @@ def test_min_cost_stream(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, samp
     assert len(result) > 0
 
 
-def test_min_cost_mutate(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_min_cost_mutate(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: Graph) -> None:
     result = min_cost_endpoints.mutate(
         sample_graph,
         [find_node_by_name(min_cost_endpoints._query_runner, "A")],
@@ -111,7 +111,7 @@ def test_min_cost_mutate(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, samp
 
 
 def test_min_cost_write(
-    query_runner: QueryRunner, min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: GraphV2
+    query_runner: QueryRunner, min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: Graph
 ) -> None:
     result = min_cost_endpoints.write(
         sample_graph,
@@ -131,7 +131,7 @@ def test_min_cost_write(
     assert result.relationships_written > 0
 
 
-def test_min_cost_estimate(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: GraphV2) -> None:
+def test_min_cost_estimate(min_cost_endpoints: MaxFlowMinCostCypherEndpoints, sample_graph: Graph) -> None:
     result = min_cost_endpoints.estimate(
         G=sample_graph,
         source_nodes=[find_node_by_name(min_cost_endpoints._query_runner, "A")],

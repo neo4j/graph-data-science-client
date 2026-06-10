@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.scc_endpoints import (
     SccMutateResult,
     SccStatsResult,
@@ -42,13 +42,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -68,7 +68,7 @@ def scc_endpoints(arrow_client: AuthenticatedArrowClient) -> SccArrowEndpoints:
     return SccArrowEndpoints(arrow_client)
 
 
-def test_scc_stats(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_scc_stats(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
     result = scc_endpoints.stats(sample_graph)
 
     assert isinstance(result, SccStatsResult)
@@ -79,7 +79,7 @@ def test_scc_stats(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> N
     assert "p10" in result.component_distribution
 
 
-def test_scc_stream(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_scc_stream(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
     result = scc_endpoints.stream(sample_graph)
 
     assert len(result) == 9
@@ -87,7 +87,7 @@ def test_scc_stream(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> 
     assert "componentId" in result.columns
 
 
-def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
     result = scc_endpoints.mutate(sample_graph, "componentId")
 
     assert isinstance(result, SccMutateResult)
@@ -101,7 +101,7 @@ def test_scc_mutate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> 
 
 
 @pytest.mark.db_integration
-def test_scc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_scc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     """Test SCC write operation."""
     endpoints = SccArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="componentId")
@@ -123,7 +123,7 @@ def test_scc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     )
 
 
-def test_scc_estimate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_scc_estimate(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
     result = scc_endpoints.estimate(G=sample_graph)
 
     assert result.node_count >= 0
@@ -137,7 +137,7 @@ def test_scc_estimate(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -
     assert result.heap_percentage_max >= 0
 
 
-def test_compute(scc_endpoints: SccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(scc_endpoints: SccArrowEndpoints, sample_graph: Graph) -> None:
     handle = scc_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

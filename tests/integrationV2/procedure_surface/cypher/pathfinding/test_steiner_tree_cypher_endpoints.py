@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.pathfinding.steiner_tree_cypher_endpoints import (
     SteinerTreeCypherEndpoints,
 )
@@ -12,7 +12,7 @@ from tests.integrationV2.procedure_surface.node_lookup_helper import find_node_b
 
 
 @pytest.fixture
-def sample_graph(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {name: 'A'}),
@@ -52,7 +52,7 @@ def steiner_tree_endpoints(query_runner: QueryRunner) -> Generator[SteinerTreeCy
 
 
 def test_steiner_tree_stream(
-    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
     targets = [find_node_by_name(query_runner, "D"), find_node_by_name(query_runner, "E")]
@@ -69,7 +69,7 @@ def test_steiner_tree_stream(
 
 
 def test_steiner_tree_stats(
-    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
     targets = [find_node_by_name(query_runner, "D"), find_node_by_name(query_runner, "E")]
@@ -90,7 +90,7 @@ def test_steiner_tree_stats(
 
 
 def test_steiner_tree_mutate(
-    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
     targets = [find_node_by_name(query_runner, "D"), find_node_by_name(query_runner, "E")]
@@ -115,7 +115,7 @@ def test_steiner_tree_mutate(
 
 
 def test_steiner_tree_write(
-    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
     targets = [find_node_by_name(query_runner, "D"), find_node_by_name(query_runner, "E")]
@@ -140,7 +140,7 @@ def test_steiner_tree_write(
 
 
 def test_steiner_tree_estimate(
-    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: GraphV2, query_runner: QueryRunner
+    steiner_tree_endpoints: SteinerTreeCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
 ) -> None:
     source = find_node_by_name(query_runner, "A")
     targets = [find_node_by_name(query_runner, "D"), find_node_by_name(query_runner, "E")]

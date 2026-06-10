@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
 )
@@ -15,7 +15,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
         CREATE
         (a: Node {prop1: 1, prop2: 42.0}),
@@ -28,7 +28,7 @@ def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, N
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     graph_data = """
         CREATE
         (a: Node {prop1: 1, prop2: 42.0}),
@@ -60,7 +60,7 @@ def node_properties_endpoints_with_db(
     yield NodePropertiesArrowEndpoints(arrow_client, query_runner)
 
 
-def test_stream_node_properties(node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_stream_node_properties(node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: Graph) -> None:
     result = node_properties_endpoints.stream(G=sample_graph, node_properties=["prop1", "prop2"])
 
     assert len(result) == 3
@@ -73,7 +73,7 @@ def test_stream_node_properties(node_properties_endpoints: NodePropertiesArrowEn
 
 @pytest.mark.db_integration
 def test_stream_node_properties_with_db_properties(
-    node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: GraphV2
+    node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: Graph
 ) -> None:
     result = node_properties_endpoints_with_db.stream(
         G=db_graph, node_properties=["prop1"], db_node_properties=["prop2"]
@@ -88,7 +88,7 @@ def test_stream_node_properties_with_db_properties(
 
 
 def test_stream_node_properties_with_labels(
-    node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: GraphV2
+    node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: Graph
 ) -> None:
     result = node_properties_endpoints.stream(G=sample_graph, node_properties=["prop1"], list_node_labels=True)
 
@@ -101,7 +101,7 @@ def test_stream_node_properties_with_labels(
 
 @pytest.mark.db_integration
 def test_write_node_properties(
-    node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: GraphV2, query_runner: QueryRunner
+    node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: Graph, query_runner: QueryRunner
 ) -> None:
     result = node_properties_endpoints_with_db.write(G=db_graph, node_properties=["prop1", "prop2"])
 
@@ -123,7 +123,7 @@ def test_write_node_properties(
     assert props_written == 3
 
 
-def test_drop_node_properties(node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_drop_node_properties(node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: Graph) -> None:
     # Drop one property
     drop_result = node_properties_endpoints.drop(G=sample_graph, node_properties=["prop1"])
 
@@ -133,7 +133,7 @@ def test_drop_node_properties(node_properties_endpoints: NodePropertiesArrowEndp
 
 
 def test_drop_multiple_node_properties(
-    node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: GraphV2
+    node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: Graph
 ) -> None:
     # Drop both properties
     drop_result = node_properties_endpoints.drop(G=sample_graph, node_properties=["prop1", "prop2"])

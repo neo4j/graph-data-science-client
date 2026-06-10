@@ -6,7 +6,7 @@ from pandas import DataFrame
 from pyarrow import ArrowKeyError
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     RelationshipPropertySpec,
 )
@@ -20,7 +20,7 @@ from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import cr
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     gdl = """
     (a :Node:A)
     (b :Node:A)
@@ -37,7 +37,7 @@ def catalog_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[Catal
     yield CatalogArrowEndpoints(arrow_client)
 
 
-def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     results = catalog_endpoints.list(G=sample_graph)
 
     assert len(results) == 1
@@ -61,7 +61,7 @@ def test_list_with_graph(catalog_endpoints: CatalogArrowEndpoints, sample_graph:
 
 
 def test_list_without_graph(
-    catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2, arrow_client: AuthenticatedArrowClient
+    catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph, arrow_client: AuthenticatedArrowClient
 ) -> None:
     with create_graph(arrow_client, "second_graph", "()") as g2:
         result = catalog_endpoints.list()
@@ -70,7 +70,7 @@ def test_list_without_graph(
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
 
 
-def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
     assert res is not None
@@ -191,7 +191,7 @@ def test_load_dataset(catalog_endpoints: CatalogArrowEndpoints) -> None:
         assert G.relationship_count() == 78
 
 
-def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_graph_filter(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     try:
         G, result = catalog_endpoints.filter(
             sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="*"
@@ -292,7 +292,7 @@ def test_store_projection_async(arrow_client: AuthenticatedArrowClient, query_ru
         query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
 
 
-def test_graph_filter_async(catalog_endpoints: CatalogArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_graph_filter_async(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     try:
         handle = catalog_endpoints.filter_async(
             sample_graph,

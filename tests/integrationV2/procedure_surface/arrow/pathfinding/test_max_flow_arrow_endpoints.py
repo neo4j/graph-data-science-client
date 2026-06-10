@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import (
     MaxFlowMutateResult,
     MaxFlowStatsResult,
@@ -38,13 +38,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -64,7 +64,7 @@ def max_flow_endpoints(arrow_client: AuthenticatedArrowClient) -> MaxFlowArrowEn
     return MaxFlowArrowEndpoints(arrow_client)
 
 
-def test_max_flow_stats(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_max_flow_stats(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: Graph) -> None:
     result = max_flow_endpoints.stats(sample_graph, source_nodes=[0], target_nodes=[5], capacity_property="capacity")
 
     assert isinstance(result, MaxFlowStatsResult)
@@ -73,14 +73,14 @@ def test_max_flow_stats(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph:
     assert result.compute_millis >= 0
 
 
-def test_max_flow_stream(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_max_flow_stream(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: Graph) -> None:
     result = max_flow_endpoints.stream(sample_graph, capacity_property="capacity", source_nodes=[0], target_nodes=[5])
 
     assert set(result.columns) == {"source", "target", "flow"}
     assert len(result) == 7
 
 
-def test_max_flow_mutate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_max_flow_mutate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: Graph) -> None:
     result = max_flow_endpoints.mutate(
         sample_graph,
         [0],
@@ -99,7 +99,7 @@ def test_max_flow_mutate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph
 
 
 @pytest.mark.db_integration
-def test_max_flow_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_max_flow_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = MaxFlowArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(
         db_graph,
@@ -118,7 +118,7 @@ def test_max_flow_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
     assert result.relationships_written == 7
 
 
-def test_max_flow_estimate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_max_flow_estimate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: Graph) -> None:
     result = max_flow_endpoints.estimate(
         G=sample_graph, capacity_property="capacity", source_nodes=[0], target_nodes=[5]
     )
@@ -134,7 +134,7 @@ def test_max_flow_estimate(max_flow_endpoints: MaxFlowArrowEndpoints, sample_gra
     assert result.heap_percentage_max >= 0
 
 
-def test_compute(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(max_flow_endpoints: MaxFlowArrowEndpoints, sample_graph: Graph) -> None:
     handle = max_flow_endpoints.compute(
         G=sample_graph, source_nodes=[0], target_nodes=[5], capacity_property="capacity"
     )

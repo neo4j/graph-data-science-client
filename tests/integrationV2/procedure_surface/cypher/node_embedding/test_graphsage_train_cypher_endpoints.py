@@ -2,7 +2,7 @@ from typing import Generator
 
 import pytest
 
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_train_cypher_endpoints import (
     GraphSageTrainCypherEndpoints,
 )
@@ -11,7 +11,7 @@ from tests.integrationV2.procedure_surface.cypher.cypher_graph_helper import cre
 
 
 @pytest.fixture
-def sample_graph_with_features(query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def sample_graph_with_features(query_runner: QueryRunner) -> Generator[Graph, None, None]:
     create_statement = """
     CREATE
     (a: Node {feature: 1.0}),
@@ -42,9 +42,7 @@ def graphsage_endpoints(query_runner: QueryRunner) -> Generator[GraphSageTrainCy
     yield GraphSageTrainCypherEndpoints(query_runner)
 
 
-def test_graphsage_train(
-    graphsage_endpoints: GraphSageTrainCypherEndpoints, sample_graph_with_features: GraphV2
-) -> None:
+def test_graphsage_train(graphsage_endpoints: GraphSageTrainCypherEndpoints, sample_graph_with_features: Graph) -> None:
     """Test GraphSage train operation."""
     model, train_result = graphsage_endpoints(
         G=sample_graph_with_features,
@@ -62,7 +60,7 @@ def test_graphsage_train(
 
 
 def test_graphsage_train_estimate(
-    graphsage_endpoints: GraphSageTrainCypherEndpoints, sample_graph_with_features: GraphV2
+    graphsage_endpoints: GraphSageTrainCypherEndpoints, sample_graph_with_features: Graph
 ) -> None:
     """Test GraphSage estimate operation."""
     result = graphsage_endpoints.estimate(

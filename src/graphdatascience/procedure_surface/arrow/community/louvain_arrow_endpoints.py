@@ -3,7 +3,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.louvain_endpoints import (
     LouvainEndpoints,
     LouvainMutateResult,
@@ -30,7 +30,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def compute(
         self,
-        G: GraphV2,
+        G: Graph,
         *,
         tolerance: float = 0.0001,
         max_levels: int = 10,
@@ -67,7 +67,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_property: str,
         tolerance: float = 0.0001,
         max_levels: int = 10,
@@ -107,7 +107,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def stats(
         self,
-        G: GraphV2,
+        G: Graph,
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,
@@ -146,7 +146,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,
@@ -185,7 +185,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_property: str,
         tolerance: float = 0.0001,
         max_levels: int = 10,
@@ -236,7 +236,7 @@ class LouvainArrowEndpoints(LouvainEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         tolerance: float = 0.0001,
         max_levels: int = 10,
         include_intermediate_communities: bool = False,

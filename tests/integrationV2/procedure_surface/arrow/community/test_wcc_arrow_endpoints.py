@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccWriteResult
 from graphdatascience.procedure_surface.arrow.community.wcc_arrow_endpoints import WccArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
@@ -23,13 +23,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -50,7 +50,7 @@ def wcc_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[WccArrowE
     yield WccArrowEndpoints(arrow_client)
 
 
-def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     result = wcc_endpoints.stats(G=sample_graph)
 
     assert result.component_count == 2
@@ -60,7 +60,7 @@ def test_wcc_stats(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> N
     assert "p10" in result.component_distribution
 
 
-def test_wcc_stream(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_stream(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     result_df = wcc_endpoints.stream(
         G=sample_graph,
     )
@@ -70,7 +70,7 @@ def test_wcc_stream(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> 
     assert len(result_df.columns) == 2
 
 
-def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     result = wcc_endpoints.mutate(
         G=sample_graph,
         mutate_property="componentId",
@@ -86,7 +86,7 @@ def test_wcc_mutate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> 
 
 
 @pytest.mark.db_integration
-def test_wcc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2) -> None:
+def test_wcc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = WccArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="componentId")
 
@@ -107,7 +107,7 @@ def test_wcc_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     )
 
 
-def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     result = wcc_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3
@@ -121,7 +121,7 @@ def test_wcc_estimate(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -
     assert result.heap_percentage_max > 0
 
 
-def test_compute(wcc_endpoints: WccArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(wcc_endpoints: WccArrowEndpoints, sample_graph: Graph) -> None:
     handle = wcc_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

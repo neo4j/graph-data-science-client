@@ -5,7 +5,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
@@ -24,13 +24,13 @@ GDL = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", GDL) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -45,13 +45,13 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
         yield g
 
 
-def _start_pagerank(arrow_client: AuthenticatedArrowClient, graph: GraphV2) -> str:
+def _start_pagerank(arrow_client: AuthenticatedArrowClient, graph: Graph) -> str:
     return JobClient.run_job(arrow_client, "v2/centrality.pageRank", {"graphName": graph.name()})
 
 
 def _make_handle(
     arrow_client: AuthenticatedArrowClient,
-    graph: GraphV2,
+    graph: Graph,
     *,
     write_protocol: WriteProtocol | None = None,
 ) -> JobHandle:
@@ -66,7 +66,7 @@ def _make_handle(
     )
 
 
-def test_job_id_matches_started_job(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_job_id_matches_started_job(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     job_id = _start_pagerank(arrow_client, sample_graph)
     handle = JobHandle(
         arrow_client=arrow_client,
@@ -80,7 +80,7 @@ def test_job_id_matches_started_job(arrow_client: AuthenticatedArrowClient, samp
     assert handle.job_id() == job_id
 
 
-def test_wait_makes_handle_done(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_wait_makes_handle_done(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
     handle.wait()
@@ -88,7 +88,7 @@ def test_wait_makes_handle_done(arrow_client: AuthenticatedArrowClient, sample_g
     assert handle.done() is True
 
 
-def test_status_returns_terminal_after_wait(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_status_returns_terminal_after_wait(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     handle = _make_handle(arrow_client, sample_graph)
     handle.wait()
 
@@ -98,7 +98,7 @@ def test_status_returns_terminal_after_wait(arrow_client: AuthenticatedArrowClie
 
 
 def test_summary_waits_and_returns_dict_with_internals_stripped(
-    arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, sample_graph: Graph
 ) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
@@ -110,7 +110,7 @@ def test_summary_waits_and_returns_dict_with_internals_stripped(
     assert "writeConcurrency" not in config
 
 
-def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     job_id = JobClient.run_job(arrow_client, "v2/centrality.pageRank", {"graphName": sample_graph.name()})
 
     handle = JobHandle(
@@ -128,7 +128,7 @@ def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowCl
             handle.summary(wait=False)
 
 
-def test_stream_returns_dataframe(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_stream_returns_dataframe(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
     df = handle.stream()
@@ -139,7 +139,7 @@ def test_stream_returns_dataframe(arrow_client: AuthenticatedArrowClient, sample
     assert len(df) == 3
 
 
-def test_mutate_writes_node_property(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_mutate_writes_node_property(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
     result = handle.mutate(mutate_property="pagerank")
@@ -148,14 +148,14 @@ def test_mutate_writes_node_property(arrow_client: AuthenticatedArrowClient, sam
     assert result["configuration"]["mutateProperty"] == "pagerank"
 
 
-def test_mutate_without_target_raises(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_mutate_without_target_raises(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
     with pytest.raises(ValueError, match="Provide one of"):
         handle.mutate()
 
 
-def test_write_without_protocol_raises(arrow_client: AuthenticatedArrowClient, sample_graph: GraphV2) -> None:
+def test_write_without_protocol_raises(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     handle = _make_handle(arrow_client, sample_graph)
 
     with pytest.raises(ValueError, match="does not support write operations"):
@@ -164,7 +164,7 @@ def test_write_without_protocol_raises(arrow_client: AuthenticatedArrowClient, s
 
 @pytest.mark.db_integration
 def test_write_returns_write_job_handle(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     write_protocol = WriteProtocol.select(arrow_client, query_runner)
     handle = _make_handle(arrow_client, db_graph, write_protocol=write_protocol)

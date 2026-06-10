@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.centrality.articlerank_arrow_endpoints import ArticleRankArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
 from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
@@ -23,13 +23,13 @@ graph = """
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[GraphV2, None, None]:
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
     with create_graph(arrow_client, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[GraphV2, None, None]:
+def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
         arrow_client,
         query_runner,
@@ -49,7 +49,7 @@ def articlerank_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[A
     yield ArticleRankArrowEndpoints(arrow_client)
 
 
-def test_articlerank_stats(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_articlerank_stats(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
     """Test ArticleRank stats operation."""
     result = articlerank_endpoints.stats(G=sample_graph, source_nodes=[0, 1])
 
@@ -61,7 +61,7 @@ def test_articlerank_stats(articlerank_endpoints: ArticleRankArrowEndpoints, sam
     assert "p50" in result.centrality_distribution
 
 
-def test_articlerank_stream(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_articlerank_stream(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
     """Test ArticleRank stream operation."""
     result_df = articlerank_endpoints.stream(
         G=sample_graph,
@@ -74,7 +74,7 @@ def test_articlerank_stream(articlerank_endpoints: ArticleRankArrowEndpoints, sa
     assert len(result_df) == 3  # We have 3 nodes
 
 
-def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
     """Test ArticleRank mutate operation."""
     result = articlerank_endpoints.mutate(
         G=sample_graph,
@@ -93,9 +93,7 @@ def test_articlerank_mutate(articlerank_endpoints: ArticleRankArrowEndpoints, sa
 
 
 @pytest.mark.db_integration
-def test_articlerank_write(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: GraphV2
-) -> None:
+def test_articlerank_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
     endpoints = ArticleRankArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
     result = endpoints.write(G=db_graph, write_property="write")
 
@@ -115,7 +113,7 @@ def test_articlerank_write(
     )
 
 
-def test_articlerank_estimate(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_articlerank_estimate(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
     result = articlerank_endpoints.estimate(sample_graph)
 
     assert result.node_count == 3
@@ -127,7 +125,7 @@ def test_articlerank_estimate(articlerank_endpoints: ArticleRankArrowEndpoints, 
     assert result.heap_percentage_max > 0
 
 
-def test_compute(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: GraphV2) -> None:
+def test_compute(articlerank_endpoints: ArticleRankArrowEndpoints, sample_graph: Graph) -> None:
     handle = articlerank_endpoints.compute(G=sample_graph)
     summary = handle.summary()
 

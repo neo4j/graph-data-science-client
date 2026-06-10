@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
@@ -178,7 +178,7 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
 
     def train(
         self,
-        G: GraphV2,
+        G: Graph,
         pipeline_name: str,
         *,
         metrics: list[str | NodeRegressionMetric],

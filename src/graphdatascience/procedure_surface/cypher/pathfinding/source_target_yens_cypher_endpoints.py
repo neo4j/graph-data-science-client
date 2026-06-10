@@ -5,7 +5,7 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.graph.v2.graph_api import GraphV2
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.pathfinding.source_target_yens_endpoints import (
@@ -24,7 +24,7 @@ class YensCypherEndpoints(SourceTargetYensEndpoints):
 
     def stream(
         self,
-        G: GraphV2,
+        G: Graph,
         source_node: int,
         target_node: int,
         k: int,
@@ -62,7 +62,7 @@ class YensCypherEndpoints(SourceTargetYensEndpoints):
 
     def mutate(
         self,
-        G: GraphV2,
+        G: Graph,
         mutate_relationship_type: str,
         source_node: int,
         target_node: int,
@@ -101,7 +101,7 @@ class YensCypherEndpoints(SourceTargetYensEndpoints):
 
     def write(
         self,
-        G: GraphV2,
+        G: Graph,
         write_relationship_type: str,
         source_node: int,
         target_node: int,
@@ -146,7 +146,7 @@ class YensCypherEndpoints(SourceTargetYensEndpoints):
 
     def estimate(
         self,
-        G: GraphV2 | dict[str, Any],
+        G: Graph | dict[str, Any],
         source_node: int,
         target_node: int,
         k: int,
