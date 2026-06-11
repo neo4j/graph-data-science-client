@@ -2,7 +2,8 @@ from typing import Callable
 
 from pandas import DataFrame
 
-from ...server_version.server_version import ServerVersion
+from graphdatascience.server_version.server_version import ServerVersion
+
 from .progress_provider import ProgressProvider, TaskWithProgress
 
 # takes a query str, optional db str and returns the result as a DataFrame

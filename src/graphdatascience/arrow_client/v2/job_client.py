@@ -8,7 +8,7 @@ from tenacity import Retrying, retry_if_result
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.api_types import JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
-from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
+from graphdatascience.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import job_wait_strategy
 
