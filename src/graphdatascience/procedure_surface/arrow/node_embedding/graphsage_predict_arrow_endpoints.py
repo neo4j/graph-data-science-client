@@ -14,7 +14,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
 )
 from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):

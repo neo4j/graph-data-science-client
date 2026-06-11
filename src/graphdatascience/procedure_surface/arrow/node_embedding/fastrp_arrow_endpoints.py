@@ -14,7 +14,7 @@ from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints impo
     FastRPWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class FastRPArrowEndpoints(FastRPEndpoints):

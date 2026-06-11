@@ -9,7 +9,7 @@ from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoint
     KSpanningTreeWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class KSpanningTreeArrowEndpoints(KSpanningTreeEndpoints):

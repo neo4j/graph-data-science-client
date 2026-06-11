@@ -9,10 +9,10 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner import QueryRunner
-from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
-from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
+from graphdatascience.session.remote_ops.project_protocols import ProjectProtocol
+from graphdatascience.session.remote_ops.status import Status
 
 
 class ProjectionRunner:

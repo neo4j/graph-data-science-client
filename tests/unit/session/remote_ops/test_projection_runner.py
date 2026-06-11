@@ -4,11 +4,11 @@ import pytest
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
-from graphdatascience.query_runner.protocol.projection_runner import ProjectionRunner
-from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
+from graphdatascience.session.remote_ops.project_protocols import ProjectProtocol
+from graphdatascience.session.remote_ops.projection_runner import ProjectionRunner
+from graphdatascience.session.remote_ops.status import Status
 
 
 @pytest.fixture(autouse=True)

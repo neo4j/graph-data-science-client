@@ -10,7 +10,7 @@ from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.query_runner import QueryRunner
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph, create_graph_from_db
 
 GDL = """

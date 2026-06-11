@@ -5,15 +5,15 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
-from graphdatascience.query_runner.protocol.project_protocols import (
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
+from graphdatascience.session.remote_ops.project_protocols import (
     ProjectProtocol,
     ProjectProtocolV3,
     ProjectProtocolV4,
 )
-from graphdatascience.query_runner.protocol.projection_runner import ProjectionRunner
-from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.query_runner.query_type import QueryType
-from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
+from graphdatascience.session.remote_ops.projection_runner import ProjectionRunner
 
 
 @pytest.fixture

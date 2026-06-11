@@ -32,7 +32,7 @@ from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_en
     PipelineCatalogArrowEndpoints,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoints):

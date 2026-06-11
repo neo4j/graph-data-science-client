@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
-from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
+from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
 
 
 def test_arrow_config_falls_back_to_ignored_token_when_none() -> None:

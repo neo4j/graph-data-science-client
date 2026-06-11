@@ -15,7 +15,7 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_predict
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictEndpoints):

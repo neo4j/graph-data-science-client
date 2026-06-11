@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_
 from graphdatascience.procedure_surface.arrow.pipeline.pipeline_catalog_arrow_endpoints import (
     PipelineCatalogArrowEndpoints,
 )
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class PipelineArrowEndpoints(PipelineCatalogArrowEndpoints, PipelineEndpoints):

@@ -7,7 +7,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPWriteResult
 from graphdatascience.procedure_surface.arrow.node_embedding.fastrp_arrow_endpoints import FastRPArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,

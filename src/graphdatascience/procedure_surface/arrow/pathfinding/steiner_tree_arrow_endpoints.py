@@ -17,7 +17,7 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import map_steiner_tree_stream_result
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class SteinerTreeArrowEndpoints(SteinerTreeEndpoints):

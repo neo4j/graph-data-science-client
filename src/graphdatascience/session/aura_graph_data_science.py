@@ -165,10 +165,10 @@ from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_e
 )
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from graphdatascience.session.session_lifecycle_manager import LifecycleManager
 
 

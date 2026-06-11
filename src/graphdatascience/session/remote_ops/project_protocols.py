@@ -6,12 +6,12 @@ from typing import Any, Tuple
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
-from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
+from graphdatascience.session.remote_ops.status import Status
 
 
 class ProjectProtocol(ABC):

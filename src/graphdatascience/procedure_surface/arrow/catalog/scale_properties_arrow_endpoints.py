@@ -15,7 +15,7 @@ from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerC
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class ScalePropertiesArrowEndpoints(ScalePropertiesEndpoints):
