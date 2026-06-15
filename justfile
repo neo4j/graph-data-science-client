@@ -23,44 +23,9 @@ post-release-main version="":
 unit-tests extra_options="":
     uv run pytest tests/unit {{extra_options}}
 
-# just it test true "--durations=20"
-it filter="" enterprise="true" extra_options="":
-    #!/usr/bin/env bash
-    set -e
-    if [ "{{enterprise}}" = "true" ]; then
-        ENV_DIR="scripts/test_envs/gds_plugin_enterprise"
-        EXTRA_FLAGS="--include-model-store-location --include-enterprise {{extra_options}}"
-    else
-        ENV_DIR="scripts/test_envs/gds_plugin_community"
-        EXTRA_FLAGS="{{extra_options}}"
-    fi
-    trap "cd $ENV_DIR && docker compose down" EXIT
-    cd $ENV_DIR && docker compose up -d
-    cd -
-    uv run pytest tests/integration $EXTRA_FLAGS --basetemp=tmp/ {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
-
-
 # such as `just it-v2 wcc`
-it-v2 filter="" extra_options="":
-    uv run pytest tests/integrationV2 --include-integration-v2 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
-
-
-# runs the session related v1 integration tests
-session-v1-it:
-    #!/usr/bin/env bash
-    set -e
-    ENV_DIR="scripts/test_envs/gds_session"
-    trap "cd $ENV_DIR && docker compose down" EXIT
-    cd $ENV_DIR && docker compose up -d
-    cd -
-    sleep 5 # wait for the containers to be ready
-    NEO4J_URI=bolt://localhost:7688 \
-    NEO4J_USER=neo4j \
-    NEO4J_PASSWORD=password \
-    NEO4J_DB=neo4j \
-    NEO4J_AURA_DB_URI=bolt://localhost:7687 \
-    uv run pytest tests --include-cloud-architecture
-
+it filter="" extra_options="":
+    uv run pytest tests/integration --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 update-session-image:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
