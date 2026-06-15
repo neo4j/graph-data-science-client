@@ -14,7 +14,7 @@ from graphdatascience.session.remote_ops.status import Status
 @pytest.fixture(autouse=True)
 def stub_poll_progress(mocker: MockerFixture) -> None:
     mocker.patch(
-        "graphdatascience.query_runner.protocol.projection_runner.ProjectionRunner._poll_progress",
+        "graphdatascience.session.remote_ops.projection_runner.ProjectionRunner._poll_progress",
         return_value=None,
     )
 
