@@ -1,0 +1,76 @@
+from typing import Generator
+
+import pytest
+
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
+from tests.integration.procedure_surface.arrow.graph_creation_helper import (
+    create_graph,
+)
+
+
+@pytest.fixture
+def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+    gdl = """
+    (a :Node {id: 0})
+    (b :Node {id: 1})
+    (c :Node {id: 2})
+    (d :Node {id: 3})
+    (e :Node {id: 4})
+    (a)-[:REL {weight: 1.0}]->(b)
+    (b)-[:REL {weight: 2.0}]->(c)
+    (c)-[:REL {weight: 1.5}]->(d)
+    (d)-[:REL {weight: 0.5}]->(e)
+    (e)-[:REL {weight: 1.2}]->(a)
+    """
+
+    with create_graph(arrow_client, "sampleGraph", gdl) as G:
+        yield G
+    arrow_client.do_action("v2/graph.drop", {"graphName": "sampled"})
+
+
+@pytest.fixture
+def graph_sampling_endpoints(
+    arrow_client: AuthenticatedArrowClient,
+) -> Generator[GraphSamplingArrowEndpoints, None, None]:
+    yield GraphSamplingArrowEndpoints(arrow_client)
+
+
+def test_rwr_with_weights(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+    G, result = graph_sampling_endpoints.rwr(
+        G=sample_graph,
+        graph_name="sampled",
+        restart_probability=0.2,
+        sampling_ratio=0.6,
+        relationship_weight_property="weight",
+    )
+
+    assert result.graph_name == "sampled"
+    assert result.from_graph_name == sample_graph.name()
+    assert result.node_count > 0
+    assert result.start_node_count >= 1
+    assert result.project_millis >= 0
+
+
+def test_cnarw_minimal_config(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+    G, result = graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="sampled")
+
+    assert result.graph_name == "sampled"
+    assert result.from_graph_name == sample_graph.name()
+    assert result.node_count > 0
+    assert result.project_millis >= 0
+
+
+def test_cnarw_estimate(graph_sampling_endpoints: GraphSamplingArrowEndpoints, sample_graph: Graph) -> None:
+    result = graph_sampling_endpoints.estimate(G=sample_graph, restart_probability=0.15, sampling_ratio=0.8)
+
+    assert result.node_count == 5
+    assert result.relationship_count == 5
+    assert "Bytes" in result.required_memory
+    assert result.tree_view is not None
+    assert isinstance(result.map_view, dict)
+    assert result.bytes_min >= 0
+    assert result.bytes_max >= 0
+    assert result.heap_percentage_min >= 0
+    assert result.heap_percentage_max >= 0

@@ -1,225 +1,178 @@
+import logging
 import os
+import socket
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any, Generator, Optional
 
-import neo4j.exceptions
 import pytest
-from neo4j import Driver, GraphDatabase
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.network import Network
+from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
-from graphdatascience.graph_data_science import GraphDataScience
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
-from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 
-URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
-URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
-
-AUTH = ("neo4j", "password")
-if neo4j_user := os.environ.get("NEO4J_USER", os.environ.get("NEO4J_USERNAME", "neo4j")):
-    AUTH = (
-        neo4j_user,
-        os.environ.get("NEO4J_PASSWORD", "password"),
-    )
-
-DB = os.environ.get("NEO4J_DB", "neo4j")
-
-AURA_DB_URI = os.environ.get("AURA_DB_URI", "bolt://localhost:7687")
-AURA_DB_AUTH = ("neo4j", "password")
-
-
-@pytest.fixture(scope="package", autouse=False)
-def neo4j_driver() -> Generator[Driver, None, None]:
-    driver = GraphDatabase.driver(URI, auth=AUTH)
-
-    yield driver
-
-    driver.close()
-
-
-@pytest.fixture(scope="package", autouse=False)
-def runner(neo4j_driver: Driver) -> Generator[Neo4jQueryRunner, None, None]:
-    _runner = Neo4jQueryRunner.create_for_db(neo4j_driver)
-    _runner.set_database(DB)
-
-    yield _runner
-
-    _runner.close()
-
-
-@pytest.fixture(scope="package", autouse=False)
-def gds() -> Generator[GraphDataScience, None, None]:
-    _gds = GraphDataScience(URI, auth=AUTH)
-    _gds.set_database(DB)
-
-    yield _gds
-
-    _gds.close()
-
-
-@pytest.fixture(scope="package", autouse=False)
-def gds_with_tls() -> Generator[GraphDataScience, None, None]:
-    integration_test_dir = Path(__file__).resolve().parent
-    cert = os.path.join(integration_test_dir, "resources", "arrow-flight-gds-test.crt")
-
-    with open(cert, "rb") as f:
-        root_ca = f.read()
-
-    _gds = GraphDataScience(
-        URI_TLS,
-        auth=AUTH,
-        arrow=True,
-        arrow_client_options={"disable_server_verification": True, "tls_root_certs": root_ca},
-    )
-    _gds.set_database(DB)
-
-    yield _gds
-
-    _gds.close()
-
-
-@pytest.fixture(scope="package", autouse=False)
-def gds_without_arrow() -> Generator[GraphDataScience, None, None]:
-    _gds = GraphDataScience(URI, auth=AUTH, arrow=False)
-    _gds.set_database(DB)
-
-    yield _gds
-
-    _gds.close()
-
-
-@pytest.fixture(scope="package", autouse=False)
-def gds_with_cloud_setup() -> Generator[AuraGraphDataScience, None, None]:
-    _gds = AuraGraphDataScience.create(
-        session_bolt_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
-        arrow_authentication=UsernamePasswordAuthentication(AUTH[0], AUTH[1]),
-        db_endpoint=DbmsConnectionInfo(AURA_DB_URI, AURA_DB_AUTH[0], AURA_DB_AUTH[1]),
-        session_lifecycle_manager=None,  # type: ignore
-    )
-    _gds.set_database(DB)
-
-    yield _gds
-
-    _gds.close()
-
-
-@pytest.fixture(scope="package", autouse=False)
-def standalone_aura_gds() -> Generator[AuraGraphDataScience, None, None]:
-    _gds = AuraGraphDataScience.create(
-        session_bolt_connection_info=DbmsConnectionInfo(URI, AUTH[0], AUTH[1]),
-        arrow_authentication=UsernamePasswordAuthentication(AUTH[0], AUTH[1]),
-        db_endpoint=None,
-        session_lifecycle_manager=None,  # type: ignore
-    )
-
-    yield _gds
-
-    _gds.close()
-
-
-def is_neo4j_44(gds: GraphDataScience) -> bool:
-    try:
-        result = gds.run_cypher(
-            "CALL dbms.components() YIELD name, versions, edition unwind versions as version RETURN name, version, edition"
-        )
-        version = result["version"][0]
-        return version.startswith("4.4")  # type: ignore
-    except Exception as e:
-        print(e)
-        return False
-
-
-def id_warning_pattern() -> str:
-    if neo4j.__version__.startswith("6."):
-        return r"(.*feature deprecated without replacement\. id is deprecated and will be removed without a replacement.*)|(.*feature deprecated with replacement\. id is deprecated.*)"
-    else:
-        return r".*The query used a deprecated function.*[`']id[`'].*"
+LOGGER = logging.getLogger(__name__)
 
 
 def pytest_collection_modifyitems(config: Any, items: Any) -> None:
-    if config.getoption("--target-aura"):
-        skip_on_aura = pytest.mark.skip(reason="skipping since targeting AuraDS")
-        for item in items:
-            if "skip_on_aura" in item.keywords:
-                item.add_marker(skip_on_aura)
-    else:
-        skip_not_aura = pytest.mark.skip(reason="skipping since not targeting AuraDS")
-        for item in items:
-            if "only_on_aura" in item.keywords:
-                item.add_marker(skip_not_aura)
-
     if not config.getoption("--include-ogb"):
-        skip_ogb_only = pytest.mark.skip(reason="need --include-ogb option to run")
+        skip_ogb = pytest.mark.skip(reason="need --include-ogb option to run")
         for item in items:
             if "ogb" in item.keywords:
-                item.add_marker(skip_ogb_only)
+                item.add_marker(skip_ogb)
 
-    if not config.getoption("--include-enterprise"):
-        skip_enterprise = pytest.mark.skip(reason="need --include-enterprise option to run")
-        for item in items:
-            if "enterprise" in item.keywords:
-                item.add_marker(skip_enterprise)
 
-    # `encrypted` includes marked tests and excludes everything else
-    if config.getoption("--encrypted-only"):
-        skip_encrypted_only = pytest.mark.skip(reason="not marked as `encrypted_only`")
-        for item in items:
-            if "encrypted_only" not in item.keywords:
-                item.add_marker(skip_encrypted_only)
-    else:
-        skip_encrypted_only = pytest.mark.skip(reason="need --encrypted-only option to run")
-        for item in items:
-            if "encrypted_only" in item.keywords:
-                item.add_marker(skip_encrypted_only)
+# best used with pytest --basetemp=tmp/pytest for easy access to logs
+@pytest.fixture(scope="session")
+def logs_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, None]:
+    """Create a temporary file and return its path."""
+    tmp_dir = tmp_path_factory.mktemp("logs")
 
-    if not config.getoption("--include-model-store-location"):
-        skip_stored_models = pytest.mark.skip(reason="need --include-model-store-location option to run")
-        for item in items:
-            if "model_store_location" in item.keywords:
-                item.add_marker(skip_stored_models)
+    yield tmp_dir
 
-    # `cloud-architecture` includes marked tests and excludes everything else
-    if config.getoption("--include-cloud-architecture"):
-        skip_on_prem = pytest.mark.skip(reason="not marked as `cloud-architecture`")
-        for item in items:
-            if "cloud_architecture" not in item.keywords:
-                item.add_marker(skip_on_prem)
-    else:
-        skip_cloud_architecture = pytest.mark.skip(reason="need --include-cloud-architecture option to run")
-        for item in items:
-            if "cloud_architecture" in item.keywords:
-                item.add_marker(skip_cloud_architecture)
 
+def inside_ci() -> bool:
+    return os.environ.get("BUILD_NUMBER") is not None
+
+
+@dataclass
+class GdsSessionConnectionInfo:
+    host: str
+    arrow_port: int
+    bolt_port: int
+
+
+def _current_container_id() -> Optional[str]:
+    """Detect: are we running inside a docker container that the sibling docker
+    daemon knows about? Returns its id, or None for host runs.
+
+    TeamCity is expected to set TEST_CONTAINER_ID explicitly (e.g. via
+    `--cidfile` or a fixed `--name`); we also try `socket.gethostname()` as a
+    fallback because docker sets the short container id as the hostname by
+    default. Errors are logged (not swallowed silently) so a misconfigured CI
+    environment fails loudly rather than hanging.
+    """
+    candidate = os.environ.get("TEST_CONTAINER_ID") or socket.gethostname()
+    print(f"[v2-it] resolving self container id via candidate={candidate!r}", flush=True)
+    if not candidate:
+        return None
     try:
-        with GraphDataScience(URI, auth=AUTH) as gds:
-            server_version = gds.server_version()
+        container = DockerClient().client.containers.get(candidate)
     except Exception as e:
-        print("Could not derive GDS library server version")
-        raise e
+        print(f"[v2-it] daemon could not find container {candidate!r}: {e}", flush=True)
+        return None
+    print(f"[v2-it] resolved current container id: {container.id}", flush=True)
+    return str(container.id)
 
-    skip_incompatible_versions = pytest.mark.skip(reason=f"incompatible with GDS server version {server_version}")
 
-    for item in items:
-        for mark in item.iter_markers(name="compatible_with"):
-            kwargs = mark.kwargs
+@pytest.fixture(scope="package")
+def network() -> Generator[Network, None, None]:
+    with Network() as network:
+        self_id = _current_container_id()
+        if self_id is not None:
+            print(f"[v2-it] attaching {self_id[:12]} to test network {network.name}", flush=True)
+            network.connect(self_id)
+        elif inside_ci():
+            raise RuntimeError(
+                "Running inside CI (BUILD_NUMBER is set) but could not determine "
+                "this process's docker container id; the test container must be "
+                "attachable to the testcontainers network. Set TEST_CONTAINER_ID "
+                "in the build step or run the test container with a `--name` that "
+                "matches its hostname."
+            )
+        try:
+            yield network
+        finally:
+            # Detach ourselves so the testcontainers `Network.remove()` on
+            # context exit isn't blocked by an "active endpoints" error.
+            if self_id is not None:
+                try:
+                    network._unwrap_network.disconnect(self_id)
+                    print(f"[v2-it] detached {self_id[:12]} from test network {network.name}", flush=True)
+                except Exception as e:
+                    print(f"[v2-it] failed to detach {self_id[:12]} from test network: {e}", flush=True)
 
-            if "min_inclusive" in kwargs and kwargs["min_inclusive"] > server_version:
-                item.add_marker(skip_incompatible_versions)
-                continue
 
-            if "max_exclusive" in kwargs and kwargs["max_exclusive"] <= server_version:
-                item.add_marker(skip_incompatible_versions)
+def start_session(
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, network: Network, request: pytest.FixtureRequest
+) -> Generator[GdsSessionConnectionInfo, None, None]:
+    if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
+        uri_parts = session_uri.split(":")
+        yield GdsSessionConnectionInfo(host=uri_parts[0], arrow_port=8491, bolt_port=int(uri_parts[1]))
+        return
 
-    db_driver_version = Neo4jQueryRunner._NEO4J_DRIVER_VERSION
-    skip_incompatible_driver_version = pytest.mark.skip(reason=f"incompatible with driver version {db_driver_version}")
+    session_image = os.getenv(
+        "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
+    )
+    LOGGER.info(f"Using session image: {session_image}")
 
-    for item in items:
-        for mark in item.iter_markers(name="compatible_with_db_driver"):
-            kwargs = mark.kwargs
+    model_dir = tmp_path_factory.mktemp("models")
+    model_dir.chmod(0o777)  # allow other user inside container to write to model dir
 
-            if "min_inclusive" in kwargs and kwargs["min_inclusive"] > db_driver_version:
-                item.add_marker(skip_incompatible_driver_version)
-                continue
+    session_container = (
+        DockerContainer(
+            image=session_image,
+        )
+        .with_env("ALLOW_LIST", "DEFAULT")
+        .with_env("DNS_NAME", "gds-session")
+        .with_env("PAGE_CACHE_SIZE", "100M")
+        .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
+        .with_env("ENVIRONMENT", "local")
+        .with_env("SESSION_ID", 42)
+        .with_env("EXTRA_FLAGS", "--disable-authentication")
+        .with_volume_mapping(model_dir, "/models", mode="rw")
+        .with_exposed_ports(8491, 8080)
+        .waiting_for(HttpWaitStrategy(8080, path="/available"))
+    )
+    session_container = session_container.with_network(network).with_network_aliases("gds-session")
+    with session_container as session_container:
+        try:
+            # When the test process itself is attached to the test network (CI),
+            # reach the session by its alias + internal port. Otherwise we are
+            # on the docker host and must use the exposed host port.
+            if _current_container_id() is not None:
+                host, arrow_port = "gds-session", 8491
+            else:
+                host, arrow_port = (
+                    session_container.get_container_host_ip(),
+                    int(session_container.get_exposed_port(8491)),
+                )
+            print(f"[v2-it] session reachable at {host}:{arrow_port}", flush=True)
+            yield GdsSessionConnectionInfo(
+                host=host,
+                arrow_port=arrow_port,
+                bolt_port=-1,  # not used in tests
+            )
+        finally:
+            stdout, stderr = session_container.get_logs()
+            stderr_lines = stderr.decode("utf-8", errors="replace").splitlines()
+            stderr_lines = [line for line in stderr_lines if line.strip() and "log4j" not in line.lower()]
 
-            if "max_exclusive" in kwargs and kwargs["max_exclusive"] <= db_driver_version:
-                item.add_marker(skip_incompatible_driver_version)
+            if stderr_lines:
+                log_lines = "\n".join(stderr_lines)
+                LOGGER.info(f"Error logs from session container:\n{log_lines}")
+
+            if inside_ci():
+                print(f"Session container logs:\n{stdout}")
+
+            session_logs_dir = logs_dir / request.node.name
+            session_logs_dir.mkdir(parents=True, exist_ok=True)
+            session_logs_dir.chmod(0o777)
+
+            out_file = session_logs_dir / "session_container.log"
+            with open(out_file, "w") as f:
+                f.write(stdout.decode("utf-8"))
+
+
+def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
+    """Create an authenticated Arrow client connected to the session container."""
+
+    return AuthenticatedArrowClient(
+        (session_uri.host, session_uri.arrow_port),
+        auth=UsernamePasswordAuthentication("neo4j", "password"),
+        encrypted=False,
+        advertised_listen_address=("gds-session", 8491),
+    )
