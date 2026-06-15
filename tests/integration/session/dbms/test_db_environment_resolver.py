@@ -1,5 +1,3 @@
-import pytest
-
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms.db_environment_resolver import DbEnvironmentResolver
 
