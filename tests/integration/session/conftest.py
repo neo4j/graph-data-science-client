@@ -6,7 +6,7 @@ from testcontainers.core.network import Network
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integration.procedure_surface.conftest import (
+from tests.integration.conftest import (
     create_db_query_runner,
     start_database,
 )

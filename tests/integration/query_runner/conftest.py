@@ -6,7 +6,7 @@ from testcontainers.core.network import Network
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integration.procedure_surface.conftest import start_database
+from tests.integration.conftest import create_db_query_runner, start_database
 
 
 @pytest.fixture(scope="package")
@@ -18,10 +18,4 @@ def neo4j_connection(
 
 @pytest.fixture(scope="package")
 def query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
-    runner = Neo4jQueryRunner.create_for_db(
-        f"bolt://{neo4j_connection.uri}",
-        ("neo4j", "password"),
-    )
-    runner.set_database("neo4j")
-    yield runner
-    runner.close()
+    yield from create_db_query_runner(neo4j_connection)
