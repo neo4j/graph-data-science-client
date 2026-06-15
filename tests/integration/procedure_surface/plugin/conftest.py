@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Generator
 
 import pytest
@@ -6,14 +5,7 @@ from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integration.procedure_surface.conftest import start_gds_plugin_database
-
-
-@pytest.fixture(scope="package")
-def gds_plugin_container(
-    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
-) -> Generator[Neo4jContainer, None, None]:
-    yield from start_gds_plugin_database(logs_dir, tmp_path_factory, request)
+from tests.integration.conftest import create_plugin_query_runner
 
 
 @pytest.fixture(scope="package")
@@ -29,13 +21,5 @@ def neo4j_connection(gds_plugin_container: Neo4jContainer) -> Generator[DbmsConn
 
 
 @pytest.fixture(scope="package")
-def query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
-    query_runner = Neo4jQueryRunner.create_for_db(
-        neo4j_connection.get_uri(),
-        (neo4j_connection.username, neo4j_connection.password),  # type: ignore
-    )
-
-    query_runner.set_database("neo4j")
-
-    yield query_runner
-    query_runner.close()
+def query_runner(gds_plugin_container: Neo4jContainer) -> Generator[Neo4jQueryRunner, None, None]:
+    yield from create_plugin_query_runner(gds_plugin_container)

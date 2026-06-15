@@ -2,17 +2,24 @@ import logging
 import os
 import socket
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Generator, Optional
 
+import dotenv
 import pytest
+from dateutil.relativedelta import relativedelta
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.network import Network
-from testcontainers.core.wait_strategies import HttpWaitStrategy
+from testcontainers.core.wait_strategies import HttpWaitStrategy, LogMessageWaitStrategy
+from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -96,6 +103,11 @@ def network() -> Generator[Network, None, None]:
                     print(f"[v2-it] failed to detach {self_id[:12]} from test network: {e}", flush=True)
 
 
+# --------------------------------------------------------------------------- #
+# GDS Session (Arrow-only) container
+# --------------------------------------------------------------------------- #
+
+
 def start_session(
     logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, network: Network, request: pytest.FixtureRequest
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
@@ -176,3 +188,203 @@ def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedA
         encrypted=False,
         advertised_listen_address=("gds-session", 8491),
     )
+
+
+@pytest.fixture(scope="package")
+def session_connection(
+    network: Network,
+    tmp_path_factory: pytest.TempPathFactory,
+    logs_dir: Path,
+    request: pytest.FixtureRequest,
+) -> Generator[GdsSessionConnectionInfo, None, None]:
+    yield from start_session(logs_dir, tmp_path_factory, network, request)
+
+
+@pytest.fixture(scope="package")
+def arrow_client(session_connection: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
+    return create_arrow_client(session_connection)
+
+
+# --------------------------------------------------------------------------- #
+# Neo4j database (no GDS) container
+# --------------------------------------------------------------------------- #
+
+
+def latest_neo4j_version() -> str:
+    today = datetime.now()
+
+    previous_month = today - relativedelta(months=1)
+
+    overrides = {"2025.12.0": "2025.12.1-1", "2026.01.0": "2026.01.2"}
+
+    cal_ver = previous_month.strftime("%Y.%m.0")
+
+    return overrides.get(cal_ver, cal_ver)
+
+
+def start_database(
+    logs_dir: Path, network: Network, request: pytest.FixtureRequest
+) -> Generator[DbmsConnectionInfo, None, None]:
+    default_neo4j_image = (
+        f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
+    )
+    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", default_neo4j_image)
+    if neo4j_image is None:
+        raise ValueError("NEO4J_DATABASE_IMAGE environment variable is not set")
+
+    advertise_address = "neo4j-db" if inside_ci() else "localhost"
+
+    db_logs_dir = logs_dir / request.node.name / "db_logs"
+    db_logs_dir.mkdir(parents=True, exist_ok=True)
+    db_logs_dir.chmod(0o777)
+    db_container = (
+        DockerContainer(image=neo4j_image)
+        .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
+        .with_env("NEO4J_AUTH", "neo4j/password")
+        .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
+        .with_env("NEO4J_server_bolt_advertised__address", f"{advertise_address}:7687")
+        .with_network_aliases("neo4j-db")
+        .with_network(network)
+        .with_bind_ports(7687, 7687)
+        .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
+        .waiting_for(LogMessageWaitStrategy("Started."))
+    )
+    with db_container as db_container:
+        try:
+            if _current_container_id() is not None:
+                uri = "neo4j-db:7687"
+            else:
+                uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
+            print(f"[v2-it] neo4j reachable at {uri}", flush=True)
+            yield DbmsConnectionInfo(
+                uri=uri,
+                username="neo4j",
+                password="password",
+            )
+        finally:
+            stdout, stderr = db_container.get_logs()
+
+            if stderr:
+                print(f"Error logs from database container:\n{stderr}")
+
+            if inside_ci():
+                print(f"Database container logs:\n{stdout}")
+
+            out_file = db_logs_dir / "stdout.log"
+            with open(out_file, "w") as f:
+                f.write(stdout.decode("utf-8"))
+
+
+def create_db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
+    query_runner = Neo4jQueryRunner.create_for_db(
+        f"bolt://{neo4j_connection.uri}",
+        ("neo4j", "password"),
+    )
+    query_runner.set_database("neo4j")
+    yield query_runner
+    query_runner.close()
+
+
+# --------------------------------------------------------------------------- #
+# Neo4j + GDS plugin container
+# --------------------------------------------------------------------------- #
+
+
+def start_gds_plugin_database(
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
+) -> Generator[Neo4jContainer, None, None]:
+    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
+
+    dotenv.load_dotenv("tests/test.env", override=True)
+    GDS_LICENSE_KEY = os.getenv("GDS_LICENSE_KEY")
+
+    if GDS_LICENSE_KEY is None:
+        raise ValueError("Trying to start a Plugin database, but no GDS_LICENSE_KEY environment variable was set")
+
+    db_logs_dir = logs_dir / request.node.name / "db_logs"
+    db_logs_dir.mkdir(parents=True)
+    db_logs_dir.chmod(0o777)
+
+    models_dir = tmp_path_factory.mktemp("models")
+    models_dir.chmod(0o777)
+
+    neo4j_container = (
+        Neo4jContainer(
+            image=neo4j_image,
+        )
+        .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
+        .with_env("NEO4J_PLUGINS", '["graph-data-science"]')
+        .with_env("NEO4J_gds_arrow_enabled", "true")
+        .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
+        .with_env("NEO4J_gds_model_store__location", "/models")
+        .with_exposed_ports(8491)
+        .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
+        .with_volume_mapping(models_dir, "/models", mode="rw")
+        .waiting_for(LogMessageWaitStrategy("Started."))
+    )
+
+    license_dir = tmp_path_factory.mktemp("gds_license")
+    license_dir.chmod(0o755)
+    license_file = os.path.join(license_dir, "license_key")
+    with open(license_file, "w") as f:
+        f.write(GDS_LICENSE_KEY)
+
+    neo4j_container.with_volume_mapping(
+        license_dir,
+        "/licenses",
+    )
+    neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
+
+    with neo4j_container as neo4j_db:
+        try:
+            yield neo4j_db
+        finally:
+            stdout, stderr = neo4j_db.get_logs()
+            if stderr:
+                print(f"Error logs from Neo4j container:\n{stderr}")
+
+            if inside_ci():
+                print(f"Neo4j container logs:\n{stdout}")
+
+            out_file = db_logs_dir / "stdout.log"
+            with open(out_file, "w") as f:
+                f.write(stdout.decode("utf-8"))
+
+
+def create_plugin_query_runner(container: Neo4jContainer) -> Generator[Neo4jQueryRunner, None, None]:
+    """Create a query runner connected to the bolt endpoint of a GDS plugin container."""
+    host = container.get_container_host_ip()
+    port = container.get_exposed_port(7687)
+
+    query_runner = Neo4jQueryRunner.create_for_db(
+        f"bolt://{host}:{port}",
+        ("neo4j", "password"),
+    )
+    query_runner.set_database("neo4j")
+    yield query_runner
+    query_runner.close()
+
+
+def create_gds_arrow_client(container: Neo4jContainer) -> Generator[GdsArrowClient, None, None]:
+    """Create a v1 Arrow client connected to the arrow endpoint of a GDS plugin container."""
+    arrow_port = int(container.get_exposed_port(8491))
+    with GdsArrowClient(
+        flight_client=AuthenticatedArrowClient(
+            (container.get_container_host_ip(), arrow_port),
+            auth=UsernamePasswordAuthentication("neo4j", "password"),
+            encrypted=False,
+        )
+    ) as client:
+        yield client
+
+
+@pytest.fixture(scope="package")
+def gds_plugin_container(
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
+) -> Generator[Neo4jContainer, None, None]:
+    yield from start_gds_plugin_database(logs_dir, tmp_path_factory, request)
+
+
+@pytest.fixture(scope="package")
+def gds_arrow_client(gds_plugin_container: Neo4jContainer) -> Generator[GdsArrowClient, None, None]:
+    yield from create_gds_arrow_client(gds_plugin_container)
