@@ -4,10 +4,10 @@ import pytest
 
 pytest.importorskip("networkx")
 
-import networkx as nx  # noqa: E402
+import networkx as nx
 
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient  # noqa: E402
-from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import (  # noqa: E402
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import (
     CatalogArrowEndpoints,
 )
 
