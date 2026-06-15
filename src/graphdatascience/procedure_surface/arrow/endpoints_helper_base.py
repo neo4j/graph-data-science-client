@@ -10,8 +10,8 @@ from graphdatascience.graph.graph_api import Graph
 from ...arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ...arrow_client.v2.data_mapper_utils import deserialize_single
 from ...arrow_client.v2.job_client import JobClient
-from ...query_runner.protocol.write_protocols import WriteProtocol
 from ...query_runner.termination_flag import TerminationFlag
+from ...session.remote_ops.write_protocols import WriteProtocol
 from ..api.estimation_result import EstimationResult
 from ..api.job_handle import JobHandle
 from ..api.write_job_handle import WriteJobHandle

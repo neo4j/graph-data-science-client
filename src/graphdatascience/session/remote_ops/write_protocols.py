@@ -8,13 +8,13 @@ from pandas import Series
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
-from graphdatascience.query_runner.protocol.status import Status
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
+from graphdatascience.session.remote_ops.status import Status
 
 
 @dataclass(frozen=True)

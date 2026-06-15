@@ -23,7 +23,7 @@ from graphdatascience.procedure_surface.arrow.similarity.node_similarity_filtere
     NodeSimilarityFilteredArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import rename_similarity_stream_result
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class NodeSimilarityArrowEndpoints(NodeSimilarityEndpoints):

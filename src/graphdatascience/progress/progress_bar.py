@@ -6,7 +6,7 @@ from typing import Any, Type
 
 from tqdm.auto import tqdm
 
-from graphdatascience.query_runner.progress.progress_provider import TaskWithProgress
+from graphdatascience.progress.progress_provider import TaskWithProgress
 
 
 class ProgressBar(ABC):
@@ -38,7 +38,7 @@ class ProgressBar(ABC):
 
 
 class TqdmProgressBar(ProgressBar):
-    def __init__(self, task_name: str, relative_progress: float | None, bar_options: dict[str, Any] = {}):
+    def __init__(self, task_name: str, relative_progress: float | None, bar_options: dict[str, Any] | None = None):
         root_task_name = task_name
         if relative_progress is None:  # Qualitative progress report
             self._tqdm_bar = tqdm(
@@ -46,7 +46,7 @@ class TqdmProgressBar(ProgressBar):
                 unit="",
                 desc=root_task_name,
                 bar_format="{desc} [elapsed: {elapsed} {postfix}]",
-                **bar_options,
+                **bar_options or {},
             )
         else:
             self._tqdm_bar = tqdm(
@@ -54,7 +54,7 @@ class TqdmProgressBar(ProgressBar):
                 unit="%",
                 desc=root_task_name,
                 initial=relative_progress,
-                **bar_options,
+                **bar_options or {},
             )
 
     def __enter__(self: TqdmProgressBar) -> TqdmProgressBar:

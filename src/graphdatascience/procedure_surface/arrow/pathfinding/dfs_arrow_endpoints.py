@@ -14,7 +14,7 @@ from graphdatascience.procedure_surface.api.pathfinding.dfs_endpoints import (
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import aggregate_traversal_rels
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class DFSArrowEndpoints(DFSEndpoints):

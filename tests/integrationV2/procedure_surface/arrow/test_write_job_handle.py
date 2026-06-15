@@ -10,14 +10,14 @@ from graphdatascience.procedure_surface.api.write_job_handle import (
     WriteBackResult,
     WriteJobHandle,
 )
-from graphdatascience.query_runner.protocol.write_protocols import (
+from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
+from graphdatascience.session.remote_ops.write_protocols import (
     RemoteWriteBackV3,
     RemoteWriteBackV4,
     WriteProtocol,
 )
-from graphdatascience.query_runner.query_runner import QueryRunner
-from graphdatascience.query_runner.query_type import QueryType
-from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import create_graph_from_db
 
 

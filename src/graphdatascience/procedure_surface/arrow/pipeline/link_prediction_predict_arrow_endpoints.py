@@ -12,7 +12,7 @@ from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_end
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class LinkPredictionPredictArrowEndpoints(LinkPredictionPipelinePredictEndpoints):

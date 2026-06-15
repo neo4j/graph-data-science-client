@@ -5,10 +5,10 @@ import logging
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
+from graphdatascience.progress.progress_bar import NoOpProgressBar, ProgressBar, TqdmProgressBar
 
 from ..arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from ..arrow_client.v2.job_client import JobClient
-from ..query_runner.progress.progress_bar import NoOpProgressBar, ProgressBar, TqdmProgressBar
 from ..query_runner.termination_flag import TerminationFlag
 from .graph_constructor import GraphConstructor
 

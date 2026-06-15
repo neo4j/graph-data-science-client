@@ -7,11 +7,11 @@ from io import StringIO
 from pandas import DataFrame
 
 from graphdatascience import ServerVersion
+from graphdatascience.progress.progress_provider import TaskWithProgress
+from graphdatascience.progress.query_progress_logger import QueryProgressLogger
+from graphdatascience.progress.query_progress_provider import QueryProgressProvider
+from graphdatascience.progress.static_progress_provider import StaticProgressProvider, StaticProgressStore
 from graphdatascience.query_runner import QueryType
-from graphdatascience.query_runner.progress.progress_provider import TaskWithProgress
-from graphdatascience.query_runner.progress.query_progress_logger import QueryProgressLogger
-from graphdatascience.query_runner.progress.query_progress_provider import QueryProgressProvider
-from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider, StaticProgressStore
 from tests.unit.conftest import CollectingQueryRunner
 
 

@@ -8,7 +8,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
-from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -16,6 +15,7 @@ from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.cloud_location import CloudLocation
+from graphdatascience.session.dbms.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
