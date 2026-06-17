@@ -1100,7 +1100,7 @@ requires-dist = [
     { name = "networkx", marker = "extra == 'networkx'", specifier = ">=2.0,<4.0" },
     { name = "numpy", specifier = "<2.4" },
     { name = "ogb", marker = "extra == 'ogb'", specifier = ">=1.0,<2.0" },
-    { name = "pandas", specifier = ">=2.0,<3.0" },
+    { name = "pandas", specifier = ">=2.0,<4.0" },
     { name = "pyarrow", specifier = ">=18.0,<24.0" },
     { name = "pydantic", specifier = ">=2.11" },
     { name = "requests" },
