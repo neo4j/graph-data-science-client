@@ -27,6 +27,11 @@ unit-tests extra_options="":
 it filter="" extra_options="":
     uv run pytest tests/integration --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
+test-session-notebooks:
+    # expects Aura API credentials to be set as env vars
+    uv run scripts/ci/run_session_notebooks.py
+
+
 update-session-image:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
 

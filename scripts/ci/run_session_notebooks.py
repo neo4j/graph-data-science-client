@@ -1,5 +1,3 @@
-# run `tox -e jupyter-notebook-session-ci`
-
 import logging
 import os
 import random as rd
@@ -18,10 +16,9 @@ def main() -> None:
     project_id = os.environ.get("AURA_PROJECT_ID")
     aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, project_id=project_id)
 
-    MAX_INT = 1000000
-    instance_name = f"ci-build-{sys.argv[1]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, MAX_INT))
-
-    create_result = aura_api.create_instance(instance_name, memory="2GB", type="enterprise-db")
+    instance_name = f"ci-build-{sys.argv[1]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, 1000000))
+    instance_type = "enterprise-db" if os.environ.get("ENTERPRISE", "true").lower() == "true" else "professional-db"
+    create_result = aura_api.create_instance(instance_name, memory="2GB", type=instance_type)
     instance_id = create_result["id"]
     logging.info(f"Creation of database with id '{instance_id}'")
 
@@ -49,7 +46,7 @@ def main() -> None:
         else:
             project_id_part = ""
 
-        cmd = f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} AURA_INSTANCEID={instance_id} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} tox -e jupyter-notebook-session-ci"
+        cmd = f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} AURA_INSTANCEID={instance_id} NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} uv run --group notebook-aura-ci ./scripts/run_notebooks.py sessions-attached"
 
         if os.system(cmd) != 0:
             raise Exception("Failed to run notebooks")
