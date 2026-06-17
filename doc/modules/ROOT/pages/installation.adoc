@@ -7,13 +7,11 @@ To install the latest deployed version of the Python client, run:
 pip install graphdatascience
 ----
 
-
 [[python-client-system-requirements]]
-== System requirements
+== Compatibility matrix
 
 The Python client version to install depends on the server-side installation of the link:{gds-docs-base-uri}[GDS library], the Python environment, and the Neo4j Python Driver.
 
-.Compatibility matrix
 [opts=header, cols="m,m,m,m"]
 |===
 | Python Client | GDS version  | Python version | Neo4j Python Driver version
