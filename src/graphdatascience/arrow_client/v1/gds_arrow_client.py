@@ -16,7 +16,6 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_single
 
 from ...procedure_surface.arrow.error_handler import handle_flight_error
-from ...semantic_version.semantic_version import SemanticVersion
 from ..progress_callback import ProgressCallback
 
 
@@ -562,11 +561,7 @@ class GdsArrowClient:
         except Exception as e:
             handle_flight_error(e)
         arrow_table = self._sanitize_arrow_table(arrow_table)
-        if SemanticVersion.from_string(pandas.__version__) >= SemanticVersion(2, 0, 0):
-            return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
-        else:
-            arrow_table = self._sanitize_arrow_table(arrow_table)
-            return arrow_table.to_pandas()  # type: ignore
+        return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
 
     def __enter__(self) -> GdsArrowClient:
         return self
