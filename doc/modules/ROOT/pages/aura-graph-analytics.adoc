@@ -282,13 +282,12 @@ For a detailed description of the allowed parameters, see the link:{neo4j-docs-b
 Once you have a GDS Session, you can project a graph into it.
 This operation is called _remote projection_ because the data source is not a co-located database, but rather a remote one.
 
+=== Cypher projections
+
 You can create a remote projection using the `gds.graph.project()` endpoint with a graph name, a Cypher query, and additional optional parameters.
 The Cypher query must contain the `gds.graph.project.remote()` function to project the graph into the GDS Session.
 This is only possible to do with Attached and self-managed sessions.
 Standalone sessions must use xref:graph-object.adoc#construct[graph.construct].
-
-
-=== Syntax
 
 .Remote projection:
 [source, role=no-test]
@@ -353,7 +352,7 @@ The optional parameters `undirectedRelationshipTypes` and `inverseIndexedRelatio
 These have the same behavior as documented in the link:{neo4j-docs-base-uri}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/#graph-project-cypher-projection-syntax[GDS Manual].
 
 
-=== Example
+==== Example
 
 This example shows how to project a graph into a GDS Session.
 The example graph is heterogeneous and models users and products.
@@ -540,7 +539,68 @@ G = gds.graph.construct(
 
 =====
 
+=== Native projections
 
+Native projections allow you to efficiently project graphs directly from your underlying database storage into your GDS session. By bypassing query-based filtering, they offer the highest performance and scalability for bulk graph loading. 
+
+For comprehensive details on how these projections work and when to use them, see the GDS manual on link:https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/cypher/#_native_projections[Native projections in Aura Graph Analytics].
+
+.Native projection:
+[source, role=no-test]
+----
+gds.v2.graph.project_native(
+    graph_name: str,
+    node_label_filter: list[str],
+    relationship_type_filter: list[str],
+    node_properties: Optional[list[str]] = None,
+    relationship_properties: Optional[list[str]] = None,
+    job_id: Optional[str] = None,
+    concurrency: Optional[int] = None,
+    undirected_relationship_types: Optional[list[str]] = None,
+    inverse_indexed_relationship_types: Optional[list[str]] = None,
+    batch_size: Optional[int] = None,
+    logging: bool = True
+): (Graph, Series[Any])
+----
+
+.Parameters:
+[opts="header",cols="3m,1m,1,1m,6", role="no-break"]
+|===
+| Name                               | Type      | Optional | Default | Description
+| graph_name                         | str       | no       | -       | Name of the graph.
+| node_label_filter                  | list[str] | no       | -       | List of node labels to include in the graph projection.
+| relationship_type_filter           | list[str] | no       | -       | List of relationship types to include in the graph projection.
+| node_properties                    | list[str] | yes      | None    | List of node properties to include in the graph projection.
+| relationship_properties            | list[str] | yes      | None    | List of relationship properties to include in the graph projection.
+| job_id                             | str       | yes      | None    | Correlation id for the process on the session. If not provided an automatically generated id will be used.
+| concurrency                        | int       | yes      | None    | Concurrency to use for building the graph within the session.
+| undirected_relationship_types      | list[str] | yes      | None    | List of relationship type names that should be treated as undirected.
+| inverse_indexed_relationship_types | list[str] | yes      | None    | List of relationship type names that should be indexed in reverse.
+| batch_size                         | int       | yes      | None    | Size of batches transmitted from the DBMS to the session.
+| logging                            | bool      | yes      | True    | Whether to log progress during graph projection.
+|===
+
+[NOTE]
+You can use the wildcard +*+ in the `node_label_filter` or `relationship_type_filter` arguments to project all available node labels or relationship types, respectively (e.g., +node_label_filter=["*"]+).
+
+.Results:
+[opts="header",cols="1m,1m,4", role="no-break"]
+|===
+| Name   | Type        | Description
+| graph  | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/graph_object[Graph]       | Graph object representing the projected graph.
+| result | Series[Any] | Statistical data about the projection.
+|===
+
+.Example:
+[source, python, role=no-test]
+----
+G, result = gds.v2.graph.project_native(
+    graph_name="my_native_graph",
+    node_label_filter=["Person", "Movie"],
+    relationship_type_filter=["ACTED_IN", "DIRECTED"],
+    node_properties=["age", "rating"]
+)
+----
 
 == Running algorithms
 
