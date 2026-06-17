@@ -1,4 +1,4 @@
-# Changes in 1.23
+# Changes in 2.0
 
 ## Breaking changes
 
