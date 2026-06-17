@@ -7,10 +7,10 @@ from tenacity import retry, retry_if_result
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
-from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
-from graphdatascience.query_runner.protocol.write_protocols import JobStatus, WriteProtocol
+from graphdatascience.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
+from graphdatascience.session.remote_ops.write_protocols import JobStatus, WriteProtocol
 
 
 class WriteJobHandle:

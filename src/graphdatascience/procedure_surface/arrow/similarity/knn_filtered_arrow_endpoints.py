@@ -15,7 +15,7 @@ from graphdatascience.procedure_surface.api.similarity.knn_results import (
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import rename_similarity_stream_result
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):

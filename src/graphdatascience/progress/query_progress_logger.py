@@ -4,9 +4,9 @@ from typing import Any, Callable
 
 from pandas import DataFrame
 
-from graphdatascience.query_runner.progress.progress_bar import TqdmProgressBar
+from graphdatascience.progress.progress_bar import TqdmProgressBar
+from graphdatascience.server_version.server_version import ServerVersion
 
-from ...server_version.server_version import ServerVersion
 from .progress_provider import ProgressProvider, TaskWithProgress
 from .query_progress_provider import CypherQueryFunction, QueryProgressProvider, ServerVersionFunction
 from .static_progress_provider import StaticProgressProvider, StaticProgressStore

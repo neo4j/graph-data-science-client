@@ -10,6 +10,7 @@ import neo4j
 from pandas import DataFrame
 from tenacity import retry, retry_if_exception, stop_after_delay, wait_fixed
 
+from graphdatascience.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
@@ -21,7 +22,6 @@ from ..error.unable_to_connect import UnableToConnectError
 from ..semantic_version.semantic_version import SemanticVersion
 from ..server_version.server_version import ServerVersion
 from ..version import __version__
-from .progress.query_progress_logger import QueryProgressLogger
 
 
 class Neo4jQueryRunner(QueryRunner):

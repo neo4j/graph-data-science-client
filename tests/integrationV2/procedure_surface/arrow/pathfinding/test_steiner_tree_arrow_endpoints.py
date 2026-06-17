@@ -7,7 +7,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeWriteResult
 from graphdatascience.procedure_surface.arrow.pathfinding.steiner_tree_arrow_endpoints import SteinerTreeArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from tests.integrationV2.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
     create_graph_from_db,

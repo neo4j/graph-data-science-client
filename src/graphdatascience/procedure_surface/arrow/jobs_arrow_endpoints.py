@@ -10,8 +10,8 @@ from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class JobInfo(BaseResult):

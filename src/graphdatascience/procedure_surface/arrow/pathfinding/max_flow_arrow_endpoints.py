@@ -21,7 +21,7 @@ from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper impo
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import (
     map_max_flow_stream_result,
 )
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class MaxFlowArrowEndpoints(MaxFlowEndpoints):

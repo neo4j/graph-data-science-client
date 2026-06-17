@@ -7,16 +7,16 @@ from graphdatascience.arrow_client.authenticated_flight_client import (
     AuthenticatedArrowClient,
     ConnectionInfo,
 )
-from graphdatascience.query_runner.protocol.arrow_config import build_arrow_config
-from graphdatascience.query_runner.protocol.project_protocols import (
+from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
+from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
+from graphdatascience.session.remote_ops.project_protocols import (
     ProjectProtocol,
     ProjectProtocolV3,
     ProjectProtocolV4,
 )
-from graphdatascience.query_runner.protocol.status import Status
-from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
-from graphdatascience.server_version.server_version import ServerVersion
-from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+from graphdatascience.session.remote_ops.status import Status
 from tests.unit.conftest import CollectingQueryRunner
 
 

@@ -15,9 +15,9 @@ from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHand
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):

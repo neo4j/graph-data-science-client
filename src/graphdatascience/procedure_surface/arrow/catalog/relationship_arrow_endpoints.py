@@ -17,8 +17,8 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class RelationshipArrowEndpoints(RelationshipsEndpoints):

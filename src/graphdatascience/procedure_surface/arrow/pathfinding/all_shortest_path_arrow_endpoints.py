@@ -25,7 +25,7 @@ from graphdatascience.procedure_surface.arrow.pathfinding.single_source_dijkstra
 )
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import map_all_shortest_path_stream_result
 from graphdatascience.procedure_surface.arrow.table_endpoints_helper import TableEndpointsHelper
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):

@@ -38,12 +38,12 @@ from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endp
 )
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import RelationshipArrowEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.protocol.project_protocols import ProjectProtocol
-from graphdatascience.query_runner.protocol.projection_runner import ProjectionRunner
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
+from graphdatascience.session.remote_ops.project_protocols import ProjectProtocol
+from graphdatascience.session.remote_ops.projection_runner import ProjectionRunner
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class CatalogArrowEndpoints(CatalogEndpoints):

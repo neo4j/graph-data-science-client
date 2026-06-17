@@ -22,7 +22,7 @@ from graphdatascience.procedure_surface.arrow.pathfinding.source_target_dijkstra
 from graphdatascience.procedure_surface.arrow.pathfinding.source_target_yens_arrow_endpoints import (
     YensArrowEndpoints,
 )
-from graphdatascience.query_runner.protocol.write_protocols import WriteProtocol
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class ShortestPathArrowEndpoints(ShortestPathEndpoints):

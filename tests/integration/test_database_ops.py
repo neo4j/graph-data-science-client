@@ -5,9 +5,9 @@ import pytest
 from neo4j import Driver
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.progress.static_progress_provider import StaticProgressProvider
 from graphdatascience.query_runner import QueryMode, QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.query_runner.progress.static_progress_provider import StaticProgressProvider
 from tests.integration.conftest import AUTH, URI
 
 GRAPH_NAME = "g"
