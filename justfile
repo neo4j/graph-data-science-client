@@ -31,6 +31,10 @@ test-session-notebooks:
     # expects Aura API credentials to be set as env vars
     uv run scripts/ci/run_session_notebooks.py
 
+test-aurads-notebooks:
+    # expects Aura API credentials to be set as env vars
+    uv run scripts/ci/run_plugin_notebooks_aura.py
+
 
 update-session-image:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest

@@ -156,6 +156,6 @@ class AuraApiCI:
         response.raise_for_status()
 
         raw_data = response.json()["data"]
-        assert len(raw_data) == 1
+        assert len(raw_data) == 1, f"Expected exactly one tenant for the given credentials, but got {raw_data}"
 
         return raw_data[0]["id"]  # type: ignore

@@ -29,6 +29,7 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
 )
 from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
@@ -116,41 +117,9 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         else:
             return None
 
-    def project(
-        self,
-        graph_name: str,
-        node_projection: str | builtins.list[str] | dict[str, Any] | None = None,
-        relationship_projection: str | builtins.list[str] | dict[str, Any] | None = None,
-        node_properties: str | builtins.list[str] | dict[str, Any] | None = None,
-        relationship_properties: str | builtins.list[str] | dict[str, Any] | None = None,
-        read_concurrency: int | None = None,
-        job_id: str | None = None,
-        sudo: bool = False,
-        username: str | None = None,
-        log_progress: bool = True,
-    ) -> GraphWithProjectResult:
-        config = ConfigConverter.convert_to_gds_config(
-            nodeProperties=node_properties,
-            relationshipProperties=relationship_properties,
-            jobId=job_id,
-            sudo=sudo,
-            username=username,
-            readConcurrency=read_concurrency,
-        )
-
-        params = CallParameters(
-            graphName=graph_name,
-            nodeProjection=node_projection,
-            relationshipProjection=relationship_projection,
-            config=config,
-        )
-        params.ensure_job_id_in_config()
-
-        result = self._cypher_runner.call_procedure(
-            endpoint="gds.graph.project", params=params, logging=log_progress
-        ).squeeze()
-        project_result = GraphProjectResult(**result.to_dict())
-        return GraphWithProjectResult(get_graph(project_result.graph_name, self._cypher_runner), project_result)
+    @property
+    def project(self) -> GraphNativeProjectEndpoints:
+        return GraphNativeProjectEndpoints(self._cypher_runner)
 
     def filter(
         self,
@@ -276,3 +245,101 @@ class GraphWithProjectResult(NamedTuple):
         traceback: TracebackType | None,
     ) -> None:
         self.graph.drop()
+
+
+class GraphNativeProjectEndpoints:
+    """Endpoints for projecting a graph into the catalog via Cypher projections.
+
+    Callable to run the projection (``gds.graph.project``), and exposes
+    :meth:`estimate` for ``gds.graph.project.estimate``.
+    """
+
+    def __init__(self, cypher_runner: QueryRunner):
+        self._cypher_runner = cypher_runner
+
+    def __call__(
+        self,
+        graph_name: str,
+        node_projection: str | builtins.list[str] | dict[str, Any] | None = None,
+        relationship_projection: str | builtins.list[str] | dict[str, Any] | None = None,
+        node_properties: str | builtins.list[str] | dict[str, Any] | None = None,
+        relationship_properties: str | builtins.list[str] | dict[str, Any] | None = None,
+        read_concurrency: int | None = None,
+        job_id: str | None = None,
+        sudo: bool = False,
+        username: str | None = None,
+        log_progress: bool = True,
+    ) -> GraphWithProjectResult:
+        config = ConfigConverter.convert_to_gds_config(
+            nodeProperties=node_properties,
+            relationshipProperties=relationship_properties,
+            jobId=job_id,
+            sudo=sudo,
+            username=username,
+            readConcurrency=read_concurrency,
+        )
+
+        params = CallParameters(
+            graphName=graph_name,
+            nodeProjection=node_projection,
+            relationshipProjection=relationship_projection,
+            config=config,
+        )
+        params.ensure_job_id_in_config()
+
+        result = self._cypher_runner.call_procedure(
+            endpoint="gds.graph.project", params=params, logging=log_progress
+        ).squeeze()
+        project_result = GraphProjectResult(**result.to_dict())
+        return GraphWithProjectResult(get_graph(project_result.graph_name, self._cypher_runner), project_result)
+
+    def estimate(
+        self,
+        node_projection: str | builtins.list[str] | dict[str, Any] | None = None,
+        relationship_projection: str | builtins.list[str] | dict[str, Any] | None = None,
+        node_properties: str | builtins.list[str] | dict[str, Any] | None = None,
+        relationship_properties: str | builtins.list[str] | dict[str, Any] | None = None,
+        read_concurrency: int | None = None,
+        sudo: bool = False,
+        username: str | None = None,
+    ) -> EstimationResult:
+        """Estimate the memory consumption of a native graph projection.
+
+        Parameters
+        ----------
+        node_projection
+            The node projection used for the projection. A single label, a list of labels, or a projection map.
+        relationship_projection
+            The relationship projection used for the projection. A single type, a list of types, or a projection map.
+        node_properties
+            Node properties to load during the projection.
+        relationship_properties
+            Relationship properties to load during the projection.
+        read_concurrency
+            Number of concurrent threads used during the projection.
+        sudo
+            Disable the memory guard.
+        username
+            As an administrator, impersonate a different user for the estimation.
+
+        Returns
+        -------
+        EstimationResult
+            The result of the estimation, including the required memory and node/relationship counts.
+        """
+        config = ConfigConverter.convert_to_gds_config(
+            nodeProperties=node_properties,
+            relationshipProperties=relationship_properties,
+            sudo=sudo,
+            username=username,
+            readConcurrency=read_concurrency,
+        )
+
+        params = CallParameters(
+            nodeProjection=node_projection,
+            relationshipProjection=relationship_projection,
+            config=config,
+        )
+
+        result = self._cypher_runner.call_procedure(endpoint="gds.graph.project.estimate", params=params).squeeze()
+        return EstimationResult(**result.to_dict())
