@@ -2,7 +2,7 @@
 
 To install the latest deployed version of the Python client, run:
 
-[source,bash]
+[source,console]
 ----
 pip install graphdatascience
 ----
@@ -11,9 +11,9 @@ pip install graphdatascience
 [[python-client-system-requirements]]
 == System requirements
 
-The GDS Python client depends on Python, the Neo4j Python Driver, and a server-side installation of the GDS library (see https://neo4j.com/docs/graph-data-science/current/installation/[installation instruction for the GDS library]).
-The Python client supports the following versions of the other three components:
+The Python client version to install depends on the server-side installation of the link:{gds-docs-base-uri}[GDS library], the Python environment, and the Neo4j Python Driver.
 
+.Compatibility matrix
 [opts=header, cols="m,m,m,m"]
 |===
 | Python Client | GDS version  | Python version | Neo4j Python Driver version
@@ -109,58 +109,35 @@ The Python client supports the following versions of the other three components:
 .1+<.^| 2.0
 |===
 
-
-== Versioning
-
-To make things easy for users of the Python client, our aim is that running `pip install --upgrade graphdatascience` should give you a version of the client that supports all https://neo4j.com/docs/graph-data-science/current/installation/supported-neo4j-versions/[currently supported GDS library versions], starting with 2.0.
-
-The Python client follows https://semver.org/[semantic versioning].
-
-Python client versions do not map identically to versions of the GDS library.
-Eg. Python client version X.Y must not necessarily be compatible with GDS library version X.Y.
-Instead, the Python client may be released independently and one has to consult xref:installation.adoc#python-client-system-requirements[System requirements] above to figure out whether one's client version is compatible with the GDS library on the server.
-
-
 == Optional dependencies
 
-Some functionality of the `graphdatascience` library requires extra dependencies.
-These dependencies are not installed by default since
+=== NetworkX graphs
 
-* They may be somewhat sizeable, and the functionality they enable is not necessarily something every user of the library needs, or
-* They may require additional system specific installation steps in addition to `pip install`.
+Install the optional `networkx` dependency if you plan to load xref:graph-object#networkx[NetworkX graphs]:
 
-Instructions on how to install these extra dependencies and what they enable is outlined in this section.
-
-
-=== Neo4j python driver speedup extension
-
-The `graphdatascience` library utilizes the Neo4j Python Driver under the hood to communicate with Neo4j DBMSs.
-In order to enable the driver speedup given by the https://github.com/neo4j/neo4j-python-driver-rust-ext[Neo4j python driver rust extension], one has to install the optional `rust_ext` dependency:
-
-[source,bash]
+[source,console]
 ----
-pip install graphdatascience[rust_ext]
+pip install "graphdatascience[networkx]"
 ----
 
-Though unlikely, depending on your system, additional steps may be required.
-If this is the case, those steps are outlined in the https://github.com/neo4j/neo4j-python-driver-rust-ext?tab=readme-ov-file#requirements[Neo4j python driver rust extension README].
+=== Neo4j Python driver speedup extension
 
+The `graphdatascience` library uses the Neo4j Python driver under the hood to communicate with Neo4j DBMSs.
+To use the link:https://github.com/neo4j/neo4j-python-driver-rust-ext[Rust extension] for better performance, you must install the optional `rust_ext` dependency:
 
-=== OGB dataset loading
-
-In order to use the xref:common-datasets#ogb[convenience OGB dataset loading functionality] of `graphdatascience`, one has to install the optional `ogb` dependency:
-
-[source,bash]
+[source,console]
 ----
-pip install graphdatascience[ogb]
+pip install "graphdatascience[rust_ext]"
 ----
 
+Depending on your system, you may need additional installation steps.
+See the https://github.com/neo4j/neo4j-python-driver-rust-ext?tab=readme-ov-file#requirements[Rust extension README] for more details.
 
-=== NetworkX graph loading
+=== OGB dataset
 
-In order to use the xref:graph-object#networkx[convenience NetworkX graph loading functionality] of `graphdatascience`, one has to install the optional `networkx` dependency:
+Install the optional `ogb` dependency if you plan to use the xref:common-datasets#ogb[OGB dataset]:
 
-[source,bash]
+[source,console]
 ----
-pip install graphdatascience[networkx]
+pip install "graphdatascience[ogb]"
 ----
