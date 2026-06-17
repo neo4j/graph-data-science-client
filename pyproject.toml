@@ -96,6 +96,7 @@ notebook-base = [
     "nbformat==5.10.4",
     "nbclient==0.10.4",
     "ipykernel==7.1.0",
+    "neo4j-viz"
 ]
 notebook-aura-ci = [
     { include-group = "notebook-base" },
