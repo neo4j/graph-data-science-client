@@ -265,7 +265,8 @@ class FakeGdsSessions(GdsSessions):
     """
 
     def __init__(self, aura_api: AuraApi, hosted_in_aura: bool = True) -> None:
-        super().__init__(aura_api)
+        # We are purposefully not calling super.init() to avoid creating an actual instance of AuraAPI
+        self._aura_api = aura_api
         self._hosted_in_aura = hosted_in_aura
         self.create_db_runner_calls: list[dict[str, Any]] = []
         self.construct_client_calls: list[dict[str, Any]] = []
@@ -313,7 +314,7 @@ def test_list_session(aura_api: AuraApi) -> None:
         instance_id=aura_api.list_instances()[0].id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
 
@@ -341,7 +342,7 @@ def test_list_session_paused_instance(aura_api: AuraApi) -> None:
         instance_id=db.id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
 
@@ -370,7 +371,7 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
     )
     fake_aura_api.add_session(session_details)
 
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     actualSessions = sessions.list()
     assert actualSessions == [SessionInfo.from_session_details(session_details)]
@@ -400,13 +401,13 @@ def test_list_session_gds_instance(aura_api: AuraApi) -> None:
         instance_id=db.id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     assert sessions.list() == [SessionInfo.from_session_details(session)]
 
 
 def test_list_session_forwards_filters(mocker: MockerFixture, aura_api: AuraApi) -> None:
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
     list_sessions_spy = mocker.spy(aura_api, "list_sessions")
     start_date = datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc)
     end_date = datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc)
@@ -797,7 +798,7 @@ def test_delete_session_by_name(aura_api: AuraApi) -> None:
     aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, instance_id="12345")
     aura_api.get_or_create_session("other", memory=SessionMemory.m_8GB.value, instance_id="123123")
 
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     assert sessions.delete(session_name="one")
     assert [i.name for i in sessions.list()] == ["other"]
@@ -841,7 +842,7 @@ def test_delete_session_by_name_admin() -> None:
         )
     )
 
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
     with pytest.raises(
         RuntimeError,
         match=re.escape(
@@ -855,7 +856,7 @@ def test_delete_session_by_id(aura_api: AuraApi) -> None:
     s1 = aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, instance_id="12345")
     s2 = aura_api.get_or_create_session("other", memory=SessionMemory.m_8GB.value, instance_id="123123")
 
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
     assert sessions.delete(session_id=s1.id)
     assert [i.name for i in sessions.list()] == [s2.name]
 
@@ -863,7 +864,7 @@ def test_delete_session_by_id(aura_api: AuraApi) -> None:
 def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     db1 = aura_api.create_instance("db1", SessionMemory.m_4GB.value, "aura", "leipzig").id
     aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, instance_id=db1)
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     assert sessions.delete(session_name="other") is False
     assert [i.name for i in sessions.list()] == ["one"]
@@ -891,7 +892,7 @@ def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
         instance_id=paused_db.id,
         memory=SessionMemory.m_8GB.value,
     )
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     # can delete session running against a paused instance
     assert sessions.delete(session_name=session.name)
@@ -914,21 +915,21 @@ def test_create_waiting_forever() -> None:
 
 def test_estimate_size() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
 
 
 def test_estimate_str_categories_size() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     assert sessions.estimate(1, 1, ["centrality"]) == SessionMemory.m_8GB
 
 
 def test_estimate_size_exceeds() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("16GB", "8GB"))
-    sessions = GdsSessions(aura_api)
+    sessions = FakeGdsSessions(aura_api)
 
     with pytest.warns(
         ResourceWarning,
