@@ -1,8 +1,9 @@
-* xref:index.adoc[Introduction]
+* xref:index.adoc[]
 
 * *Getting started*
 * xref:installation.adoc[]
 * xref:getting-started.adoc[]
+* xref:cypher-mapping.adoc[]
 * xref:aura-graph-analytics.adoc[]
 * xref:tutorials/index.adoc[]
 // https://docs.antora.org/antora/latest/navigation/include-lists/
