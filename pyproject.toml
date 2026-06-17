@@ -73,7 +73,7 @@ dev-base = [
     "types-requests",
     "types-tqdm",
     "types-python-dateutil",
-    "python-dotenv==1.2.1",
+    "python-dotenv==1.2.2",
     "types-colorama",
 ]
 test = [
@@ -99,7 +99,7 @@ notebook-base = [
 ]
 notebook-aura-ci = [
     { include-group = "notebook-base" },
-    "python-dotenv==1.2.1"
+    "python-dotenv==1.2.2"
 ]
 notebook-ci = [
     { include-group = "notebook-base" },
