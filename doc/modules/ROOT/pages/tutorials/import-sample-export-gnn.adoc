@@ -187,11 +187,7 @@ Great, it looks like we have the format we need to create a PyG
 ----
 # We also need to export the node properties corresponding to our node labels and features, represented by the
 # "subject" and "features" node properties respectively
-sample_node_properties = gds.graph.nodeProperties.stream(
-    G_sample,
-    ["subject", "features"],
-    separate_property_columns=True,
-)
+sample_node_properties = gds.graph.node_properties.stream(G_sample, ["subject", "features"])
 ----
 
 [source, python, role=no-test]
