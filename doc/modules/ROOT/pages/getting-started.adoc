@@ -24,7 +24,7 @@ from graphdatascience import GraphDataScience
 
 # Use Neo4j URI and credentials according to your setup
 # NEO4J_URI could look similar to "bolt://my-server.neo4j.io:7687"
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 
 # Check the installed GDS version on the server
 print(gds.server_version())
@@ -104,7 +104,7 @@ If we don't want to use the default database of our DBMS we can provide the `Gra
 
 [source,python,role=no-test]
 ----
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD), database="my-db")
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="my-db")
 ----
 
 Or we could change the database we are targeting later:
@@ -126,7 +126,7 @@ If Apache Arrow is available on the https://neo4j.com/docs/graph-data-science/cu
 ----
 gds = GraphDataScience(
   NEO4J_URI,
-  auth=(NEO4J_USER, NEO4J_PASSWORD),
+  auth=(NEO4J_USERNAME, NEO4J_PASSWORD),
   arrow=True,
   arrow_disable_server_verification=False,
   arrow_tls_root_certs=CERT

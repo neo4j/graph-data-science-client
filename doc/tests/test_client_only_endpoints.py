@@ -12,9 +12,9 @@ from graphdatascience.ignored_server_endpoints import (  # noqa: E402
 
 URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 AUTH = ("neo4j", "password")
-if os.environ.get("NEO4J_USER"):
+if os.environ.get("NEO4J_USERNAME"):
     AUTH = (
-        os.environ.get("NEO4J_USER", "DUMMY"),
+        os.environ.get("NEO4J_USERNAME", "DUMMY"),
         os.environ.get("NEO4J_PASSWORD", "neo4j"),
     )
 
