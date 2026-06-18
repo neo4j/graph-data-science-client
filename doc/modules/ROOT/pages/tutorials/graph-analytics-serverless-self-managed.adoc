@@ -205,12 +205,12 @@ data_query = """
 """
 
 # making sure the database is actually empty
-assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+assert gds.run_cypher("MATCH (n) RETURN count(n)", retryable=True).squeeze() == 0, "Database is not empty!"
 
 # let's now write our graph!
 gds.run_cypher(data_query)
 
-gds.run_cypher("MATCH (n) RETURN count(n) AS nodeCount")
+gds.run_cypher("MATCH (n) RETURN count(n) AS nodeCount", retryable=True)
 ----
 
 == Projecting Graphs
@@ -330,7 +330,8 @@ gds.run_cypher(
     MATCH (p:Person)
     RETURN p.name, p.pagerank AS rank, p.louvain
      ORDER BY rank DESC
-    """
+    """,
+    retryable=True,
 )
 ----
 
@@ -359,5 +360,5 @@ sessions.list()
 [source, python, role=no-test]
 ----
 # Lastly, let's clean up the database
-gds.run_cypher("MATCH (n:Person|Fruit) DETACH DELETE n")
+gds.run_cypher("MATCH (n:Person|Fruit) DETACH DELETE n", retryable=True)
 ----

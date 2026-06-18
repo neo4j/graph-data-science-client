@@ -189,7 +189,7 @@ query = """
     ORDER BY componentSize DESC
 """
 
-components = gds.run_cypher(query)
+components = gds.run_cypher(query, retryable=True)
 components
 ----
 
@@ -238,7 +238,8 @@ gds.run_cypher(
     """
     MATCH (n) WHERE 'louvainCommunityId' IN keys(n)
     RETURN n.name, n.louvainCommunityId LIMIT 10
-    """
+    """,
+    retryable=True,
 )
 ----
 
@@ -256,7 +257,7 @@ query = """
     ORDER BY communitySize DESC
 """
 
-communities = gds.run_cypher(query)
+communities = gds.run_cypher(query, retryable=True)
 communities
 ----
 
@@ -286,7 +287,7 @@ G.drop()
 [source, python, role=no-test]
 ----
 # Cleanup database
-gds.run_cypher("MATCH (n:Subreddit) DETACH DELETE n")
+gds.run_cypher("MATCH (n:Subreddit) DETACH DELETE n", retryable=True)
 ----
 
 == References

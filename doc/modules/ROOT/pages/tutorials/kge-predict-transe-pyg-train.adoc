@@ -183,6 +183,7 @@ def process():
             MERGE (n)-[:{rel_type} {{rel_id:l.rel_id}}]->(m)
             """,
             params={"ll": list_of_dicts},
+            retryable=True,
         )
 
     print("Writing relationships as different relationship types")
@@ -194,6 +195,7 @@ def process():
             MERGE (n)-[:{REL_TYPE} {{rel_id:$rel_id, text:$text}}]->(m)
             """,
             params={"ll": rels, "rel_id": rel_id, "text": rel_id_to_text_dict[rel_id]},
+            retryable=True,
         )
 
 
@@ -337,6 +339,7 @@ for i in tqdm(range(len(nodeId_to_id))):
     gds.run_cypher(
         "MATCH (n:Entity {id: $i}) SET n.emb=$EMBEDDING",
         params={"i": i, "EMBEDDING": model.node_emb.weight[i].tolist()},
+        retryable=True,
     )
 ----
 
@@ -389,6 +392,7 @@ source_node_list = ["/m/07l450", "/m/0ds2l81", "/m/0jvt9"]
 source_ids_df = gds.run_cypher(
     "UNWIND $node_text_list AS t MATCH (n:Entity) WHERE n.text=t RETURN id(n) as nodeId",
     params={"node_text_list": source_node_list},
+    retryable=True,
 )
 ----
 
@@ -416,6 +420,7 @@ ids_in_result = pd.unique(pd.concat([result.sourceNodeId, result.targetNodeId]))
 ids_to_text = gds.run_cypher(
     "UNWIND $ids AS id MATCH (n:Entity) WHERE id(n)=id RETURN id(n) AS nodeId, n.text AS tag, n.id AS id",
     params={"ids": ids_in_result},
+    retryable=True,
 )
 
 nodeId_to_text_res = dict(zip(ids_to_text.nodeId, ids_to_text.tag))
@@ -456,7 +461,8 @@ Extract the result from the database.
 gds.run_cypher(
     "MATCH (n)-[r:"
     + write_relationship_type
-    + "]->(m) RETURN n.id AS sourceId, n.text AS sourceTag, m.id AS targetId, m.text AS targetTag, r.transe_score AS score"
+    + "]->(m) RETURN n.id AS sourceId, n.text AS sourceTag, m.id AS targetId, m.text AS targetTag, r.transe_score AS score",
+    retryable=True,
 )
 ----
 

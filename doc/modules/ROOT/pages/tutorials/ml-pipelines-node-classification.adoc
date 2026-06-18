@@ -170,8 +170,8 @@ load_relationships = f"""
 """
 
 # Load nodes and relationships on Neo4j
-gds.run_cypher(load_nodes)
-gds.run_cypher(load_relationships)
+gds.run_cypher(load_nodes, retryable=True)
+gds.run_cypher(load_relationships, retryable=True)
 ----
 
 With the data loaded on Neo4j, we can now project a graph including all
@@ -503,7 +503,7 @@ longer useful:
 
 [source, python, role=no-test]
 ----
-gds.run_cypher("MATCH (n) WHERE n:Paper OR n:UnclassifiedPaper DETACH DELETE n")
+gds.run_cypher("MATCH (n) WHERE n:Paper OR n:UnclassifiedPaper DETACH DELETE n", retryable=True)
 ----
 
 It is good practice to close the client as well:
