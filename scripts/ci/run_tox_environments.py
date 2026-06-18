@@ -35,4 +35,5 @@ args = parser.parse_args()
 
 environments_to_run = ", ".join(get_partition_environments(args.num_partitions, args.partition_index))
 
-subprocess.run(["uvx", "tox", "run", "-e", environments_to_run], check=True)
+if os.system(f"uvx tox run -e \"{environments_to_run}\"") != 0:
+    raise Exception("Failed to run notebooks")
