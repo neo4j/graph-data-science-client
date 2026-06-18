@@ -16,7 +16,8 @@ def main() -> None:
     project_id = os.environ.get("AURA_PROJECT_ID")
     aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, project_id=project_id)
 
-    instance_name = f"ci-build-{sys.argv[1]}" if len(sys.argv) > 1 else "ci-instance-" + str(rd.randint(0, 1000000))
+    build_id = os.environ.get("BUILD_ID", None)
+    instance_name = f"ci-build-{build_id}" if build_id else "ci-instance-" + str(rd.randint(0, 1000000))
     instance_type = "enterprise-db" if os.environ.get("ENTERPRISE", "true").lower() == "true" else "professional-db"
     create_result = aura_api.create_instance(instance_name, memory="2GB", type=instance_type)
     instance_id = create_result["id"]
