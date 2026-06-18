@@ -189,7 +189,7 @@ result = gds.fast_rp.estimate(
     iteration_weights=[0.8, 1, 1, 1],
 )
 
-print(f"Required memory for running FastRP: {result['requiredMemory']}")
+print(f"Required memory for running FastRP: {result.required_memory}")
 ----
 
 [source, python, role=no-test]
@@ -205,7 +205,7 @@ result = gds.fast_rp.mutate(
 )
 
 # Let's make sure we got an embedding for each node
-print(f"Number of embedding vectors produced: {result['nodePropertiesWritten']}")
+print(f"Number of embedding vectors produced: {result.node_properties_written}")
 ----
 
 == Similarities with kNN

@@ -1,8 +1,7 @@
-from pandas import DataFrame
-
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
     CollapsePathResult,
@@ -35,22 +34,26 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-    ) -> DataFrame:
+    ) -> RelationshipsDataFrame:
         effective_rel_types = relationship_types if relationship_types is not None else ["*"]
 
         if self._gds_arrow_client is not None:
             database = require_database(self._query_runner)
 
             if relationship_properties:
-                return self._gds_arrow_client.get_relationship_properties(
-                    G.name(),
-                    database,
-                    relationship_properties,
-                    effective_rel_types,
-                    concurrency,
+                return RelationshipsDataFrame(
+                    self._gds_arrow_client.get_relationship_properties(
+                        G.name(),
+                        database,
+                        relationship_properties,
+                        effective_rel_types,
+                        concurrency,
+                    )
                 )
             else:
-                return self._gds_arrow_client.get_relationships(G.name(), database, effective_rel_types, concurrency)
+                return RelationshipsDataFrame(
+                    self._gds_arrow_client.get_relationships(G.name(), database, effective_rel_types, concurrency)
+                )
         else:
             config = ConfigConverter.convert_to_gds_config(
                 concurrency=concurrency,
@@ -97,7 +100,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
                 result = result.reset_index()
                 result.columns.name = None
 
-            return result
+            return RelationshipsDataFrame(result)
 
     def write(
         self,

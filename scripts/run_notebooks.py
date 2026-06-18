@@ -120,6 +120,8 @@ def main(filter_func: Callable[[str], bool]) -> None:
     td_collector = GdsTearDownCollector(kernel_name="python3")
     failures: list[tuple[str, CellExecutionError, int | None]] = []
 
+    logger.info("Found notebooks to execute: %s", [f.name for f in notebook_files])
+
     for notebook_filename in notebook_files:
         logger.info("Executing notebook %s", notebook_filename)
 

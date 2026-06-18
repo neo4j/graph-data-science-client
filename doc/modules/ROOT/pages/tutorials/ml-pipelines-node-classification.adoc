@@ -83,7 +83,6 @@ load the data, and `numpy` and `pandas` for further data processing.
 import json
 
 import numpy as np
-import pandas as pd
 ----
 
 == Loading the Cora dataset
@@ -311,7 +310,7 @@ evaluation metrics of the trained model.
 # print(stats.to_json(indent=2))
 
 # Print F1_WEIGHTED metric
-stats["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"]
+stats.model_info["metrics"]["F1_WEIGHTED"]["test"]
 ----
 
 == Using the model for prediction
@@ -348,7 +347,7 @@ model, _not_ its position.
 [source, python, role=no-test]
 ----
 # List of class labels
-classes = stats["modelInfo"]["classes"]
+classes = stats.model_info["classes"]
 print("Class labels:", classes)
 
 # Calculate the confidence percentage for the predicted class
@@ -423,7 +422,7 @@ The `F1++_++WEIGHTED` metrics is better with embeddings:
 
 [source, python, role=no-test]
 ----
-print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
+print(stats_fastrp.model_info["metrics"]["F1_WEIGHTED"]["test"])
 ----
 
 The classification using `predict++_++stream` can be run in the same
@@ -457,33 +456,10 @@ model_fastrp.predict_mutate(
     target_node_labels=["UnclassifiedPaper"],
 )
 
-predicted_fastrp = gds.graph.node_properties.stream(G, "predictedClass", node_labels=["UnclassifiedPaper"])
-----
-
-[source, python, role=no-test]
-----
+predicted_fastrp = gds.graph.node_properties.stream(
+    G, "predictedClass", node_labels=["UnclassifiedPaper"], db_node_properties=["subject"]
+)
 predicted_fastrp
-----
-
-This is useful to compare the result of classification with the original
-`subject` value of the test nodes, which must be retrieved from the
-Neo4j database since it has been excluded from the projected graph.
-
-[source, python, role=no-test]
-----
-# Retrieve node information from Neo4j using the node IDs from the prediction result
-nodes = gds.util.as_nodes(predicted_fastrp.nodeId.to_list())
-
-# Create a new DataFrame containing node IDs along with node properties
-nodes_df = pd.DataFrame([(node.id, node["subject"]) for node in nodes], columns=["nodeId", "subject"])
-
-# Merge with the prediction result on node IDs, to check the predicted value
-# against the original subject
-#
-# NOTE: This could also be replaced by just appending `node["subject"]` as a
-# Series since the node order would not change, but a proper merge (or join)
-# is clearer and less prone to errors.
-predicted_fastrp.merge(nodes_df, on="nodeId")
 ----
 
 As we can see, the prediction for all the test nodes is accurate.
