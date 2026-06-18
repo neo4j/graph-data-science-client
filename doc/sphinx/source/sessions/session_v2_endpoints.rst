@@ -15,6 +15,7 @@ SessionV2Endpoints
    ../v2_endpoints/estimation_result
    ../v2_endpoints/model_endpoints
    ../v2_endpoints/config_endpoints
+   ../v2_endpoints/util_endpoints
    ../v2_endpoints/system_endpoints
    ../v2_endpoints/job_endpoints
 

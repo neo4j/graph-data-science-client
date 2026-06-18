@@ -66,6 +66,7 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
     ScalePropertiesCypherEndpoints,
@@ -163,6 +164,7 @@ from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints i
 from graphdatascience.procedure_surface.cypher.similarity.node_similarity_cypher_endpoints import (
     NodeSimilarityCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
 from graphdatascience.query_runner.query_mode import QueryMode
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
@@ -294,6 +296,13 @@ class GraphDataScience:
         Return endpoints for configuration.
         """
         return ConfigCypherEndpoints(self._query_runner)
+
+    @property
+    def util(self) -> UtilEndpoints:
+        """
+        Return utility endpoints.
+        """
+        return UtilCypherEndpoints(self._query_runner)
 
     @property
     def list_progress(self) -> ListProgressCypherEndpoint:

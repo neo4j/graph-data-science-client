@@ -66,6 +66,7 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.scale_properties_arrow_endpoints import (
     ScalePropertiesArrowEndpoints,
@@ -163,6 +164,7 @@ from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints imp
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
     NodeSimilarityArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.util_arrow_endpoints import UtilArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -255,6 +257,13 @@ class AuraGraphDataScience:
         Return configuration-related endpoints.
         """
         return ConfigArrowEndpoints(self._authenticated_arrow_client)
+
+    @property
+    def util(self) -> UtilEndpoints:
+        """
+        Return utility endpoints.
+        """
+        return UtilArrowEndpoints(self._db_query_runner)
 
     @property
     def list_progress(self) -> ListProgressEndpoint:
