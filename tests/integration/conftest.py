@@ -42,7 +42,7 @@ def logs_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, 
 
 
 def inside_ci() -> bool:
-    return os.environ.get("BUILD_NUMBER") is not None
+    return os.environ.get("BUILD_ID") is not None
 
 
 @dataclass
@@ -84,7 +84,7 @@ def network() -> Generator[Network, None, None]:
             network.connect(self_id)
         elif inside_ci():
             raise RuntimeError(
-                "Running inside CI (BUILD_NUMBER is set) but could not determine "
+                "Running inside CI (BUILD_ID is set) but could not determine "
                 "this process's docker container id; the test container must be "
                 "attachable to the testcontainers network. Set TEST_CONTAINER_ID "
                 "in the build step or run the test container with a `--name` that "
