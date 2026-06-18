@@ -109,7 +109,7 @@ class AuraApiCI:
             ) and RUNNING_MAX_WAIT_TIME > wait_time
 
             if should_retry:
-                logging.debug(
+                logging.info(
                     f"Status code: {response.status_code}, Status: {instance_status} - Retrying in {wait_time} s"
                 )
 

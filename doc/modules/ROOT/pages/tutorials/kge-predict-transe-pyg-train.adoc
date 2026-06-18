@@ -335,10 +335,22 @@ database.
 
 [source, python, role=no-test]
 ----
-for i in tqdm(range(len(nodeId_to_id))):
+node_embeddings = model.node_emb.weight.detach().cpu()
+num_nodes = node_embeddings.size(0)
+
+batch_size = 1000
+for start in tqdm(range(0, num_nodes, batch_size)):
+    rows = [
+        {"id": start + offset, "emb": emb}
+        for offset, emb in enumerate(node_embeddings[start : start + batch_size].tolist())
+    ]
     gds.run_cypher(
-        "MATCH (n:Entity {id: $i}) SET n.emb=$EMBEDDING",
-        params={"i": i, "EMBEDDING": model.node_emb.weight[i].tolist()},
+        """
+        UNWIND $rows AS row
+        MATCH (n:Entity {id: row.id})
+        SET n.emb = row.emb
+        """,
+        params={"rows": rows},
         retryable=True,
     )
 ----
