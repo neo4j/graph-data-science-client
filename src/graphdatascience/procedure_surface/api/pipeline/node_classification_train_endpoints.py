@@ -6,7 +6,7 @@ from typing import Any
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineTrainResult,
 )
@@ -31,7 +31,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]:
+    ) -> tuple[NodeClassificationModel, NodeClassificationPipelineTrainResult]:
         """
         Train a node classification model from the specified pipeline.
 
@@ -68,7 +68,7 @@ class NodeClassificationPipelineTrainEndpoints(ABC):
 
         Returns
         -------
-        tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]
+        tuple[NodeClassificationModel, NodeClassificationPipelineTrainResult]
             Trained model and training result.
         """
         pass

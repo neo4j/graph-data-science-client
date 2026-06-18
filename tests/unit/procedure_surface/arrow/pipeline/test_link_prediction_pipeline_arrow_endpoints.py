@@ -7,7 +7,7 @@ import pytest
 from pyarrow import flight
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.pipeline.link_prediction_pipeline_arrow_endpoints import (
@@ -276,7 +276,7 @@ def test_link_prediction_train_runs_arrow_job_and_returns_arrow_wired_model() ->
             target_relationship_type="REL",
         )
 
-    assert isinstance(model, LinkPredictionModelV2)
+    assert isinstance(model, LinkPredictionModel)
     assert model.name() == "model"
     assert result.train_millis == 7
     assert run_job_and_wait.call_args.args[2]["negativeClassWeight"] == 2.5

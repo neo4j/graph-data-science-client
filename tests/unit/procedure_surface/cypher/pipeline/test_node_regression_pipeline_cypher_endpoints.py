@@ -168,7 +168,7 @@ def test_node_regression_train_runs_query() -> None:
     graph = mock.Mock()
     graph.name.return_value = "g"
 
-    from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
+    from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModel
     from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
         NodeRegressionPipelineCypherEndpoints,
     )
@@ -176,7 +176,7 @@ def test_node_regression_train_runs_query() -> None:
     pipeline, _ = NodeRegressionPipelineCypherEndpoints(query_runner).create("pipe")
     model, result = pipeline.train(graph, metrics=["MAE"], model_name="model", target_property="y")
 
-    assert isinstance(model, NodeRegressionModelV2)
+    assert isinstance(model, NodeRegressionModel)
     assert model.name() == "model"
     assert result.train_millis == 7
     assert result.model_info is not None

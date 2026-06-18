@@ -4,7 +4,7 @@ from unittest import mock
 import pandas as pd
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
@@ -106,7 +106,7 @@ def test_node_classification_train_runs_arrow_job_and_returns_arrow_wired_model(
         endpoints = NodeClassificationPipelineArrowEndpoints(arrow_client, None)
         model, result = endpoints.train(graph, "pipe", metrics=["F1_WEIGHTED"], model_name="model", target_property="y")
 
-    assert isinstance(model, NodeClassificationModelV2)
+    assert isinstance(model, NodeClassificationModel)
     assert model.name() == "model"
     assert result.train_millis == 7
     assert result.model_info is not None

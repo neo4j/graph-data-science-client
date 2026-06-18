@@ -7,7 +7,7 @@ import pytest
 from pyarrow import flight
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
+from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModel
 from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_pipeline_arrow_endpoints import (
@@ -233,7 +233,7 @@ def test_node_regression_train_runs_arrow_job_and_returns_arrow_wired_model() ->
         endpoints = NodeRegressionPipelineArrowEndpoints(arrow_client)
         model, result = endpoints.train(graph, "pipe", metrics=["MAE"], model_name="model", target_property="y")
 
-        assert isinstance(model, NodeRegressionModelV2)
+        assert isinstance(model, NodeRegressionModel)
         assert model.name() == "model"
         assert result.train_millis == 7
         assert result.model_info is not None

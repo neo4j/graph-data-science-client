@@ -1,6 +1,6 @@
 from unittest import mock
 
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import NodeClassificationPipeline
 from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
     PipelineCatalogEntry,
@@ -44,7 +44,7 @@ def test_node_classification_pipeline_drop_delegates_to_catalog_endpoint() -> No
 
 def test_node_classification_model_predict_stream_delegates_include_predicted_probabilities() -> None:
     predict = mock.Mock()
-    model = NodeClassificationModelV2("model", mock.Mock(), predict)
+    model = NodeClassificationModel("model", mock.Mock(), predict)
 
     model.predict_stream(mock.Mock(), include_predicted_probabilities=False)
 

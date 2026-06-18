@@ -5,7 +5,7 @@ from typing import Any
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
+from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModel
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
@@ -241,7 +241,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[NodeRegressionModelV2, NodeRegressionPipelineTrainResult]:
+    ) -> tuple[NodeRegressionModel, NodeRegressionPipelineTrainResult]:
         """
         Train a node regression model from the given pipeline.
 
@@ -278,7 +278,7 @@ class NodeRegressionPipelineEndpoints(ABC):
 
         Returns
         -------
-        tuple[NodeRegressionModelV2, NodeRegressionPipelineTrainResult]
+        tuple[NodeRegressionModel, NodeRegressionPipelineTrainResult]
             The trained model and the corresponding training result.
         """
         pass
