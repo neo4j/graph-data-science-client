@@ -82,6 +82,9 @@ test-plugin-notebooks-local filter="" enterprise="true":
     # (bolt://localhost:7687, user "neo4j", empty password).
     uv run --group notebook-ci ./scripts/run_notebooks.py {{filter}}
 
+test-tox-partition number-of-partitions partition-index:
+    uv run scripts/ci/run_tox_environments.py {{number-of-partitions}} {{partition-index}}
+
 
 update-session-image:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
