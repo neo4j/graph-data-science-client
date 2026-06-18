@@ -3,9 +3,9 @@ from __future__ import annotations
 from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.model.model import Model
 from graphdatascience.model.model_api import ModelApi
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.model.pipeline_model import PipelineModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
     NodeClassificationPipelinePredictMutateResult,
@@ -13,11 +13,11 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_predict
 )
 
 
-class NodeClassificationModelV2(Model):
+class NodeClassificationModel(PipelineModel):
     """
     Represents a node classification model in the model catalog.
 
-    Construct this using: func:`gds.v2.pipeline.node_classification.train()`.
+    Construct this using: func:`gds.pipeline.node_classification.train()`.
     """
 
     def __init__(
@@ -50,6 +50,8 @@ class NodeClassificationModelV2(Model):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         target_node_labels
             Optional node label filter.
+        include_predicted_probabilities
+            Whether to include the predicted probability distribution in the streamed results.
         username
             As an administrator, impersonate a different user for accessing their graphs.
         log_progress

@@ -3,20 +3,20 @@ from __future__ import annotations
 from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.model.model import Model
 from graphdatascience.model.model_api import ModelApi
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.model.pipeline_model import PipelineModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
     LinkPredictionPipelinePredictEndpoints,
     LinkPredictionPipelinePredictMutateResult,
 )
 
 
-class LinkPredictionModelV2(Model):
+class LinkPredictionModel(PipelineModel):
     """
     Represents a link prediction model in the model catalog.
 
-    Construct this using: func:`gds.v2.pipeline.link_prediction.train()`.
+    Construct this using: func:`gds.pipeline.link_prediction.train()`.
     """
 
     def __init__(

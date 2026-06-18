@@ -6,7 +6,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
     LinkPredictionPipelineTrainResult,
 )
@@ -57,7 +57,7 @@ class LinkPredictionTrainArrowEndpoints(LinkPredictionPipelineTrainEndpoints):
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[LinkPredictionModelV2, LinkPredictionPipelineTrainResult]:
+    ) -> tuple[LinkPredictionModel, LinkPredictionPipelineTrainResult]:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             model_name=model_name,
@@ -84,7 +84,7 @@ class LinkPredictionTrainArrowEndpoints(LinkPredictionPipelineTrainEndpoints):
         )
         result = JobClient.get_summary(self._arrow_client, result_job_id)
         return (
-            LinkPredictionModelV2(
+            LinkPredictionModel(
                 model_name,
                 self._model_api,
                 predict_endpoints=self._predict_endpoints,

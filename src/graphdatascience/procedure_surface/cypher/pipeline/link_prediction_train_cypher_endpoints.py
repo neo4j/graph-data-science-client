@@ -5,7 +5,7 @@ from typing import Any
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
     LinkPredictionPipelineTrainResult,
 )
@@ -43,7 +43,7 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[LinkPredictionModelV2, LinkPredictionPipelineTrainResult]:
+    ) -> tuple[LinkPredictionModel, LinkPredictionPipelineTrainResult]:
         config = ConfigConverter.convert_to_gds_config(
             metrics=metrics,
             model_name=model_name,
@@ -68,7 +68,7 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
             logging=True,
         ).squeeze()
         return (
-            LinkPredictionModelV2(
+            LinkPredictionModel(
                 name=model_name,
                 model_api=ModelApiCypher(self._query_runner),
                 predict_endpoints=self._predict_endpoints,

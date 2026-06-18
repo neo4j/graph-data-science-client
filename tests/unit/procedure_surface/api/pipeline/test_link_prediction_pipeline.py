@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline import (
     LinkPredictionPipeline,
 )
@@ -133,21 +133,21 @@ def test_link_prediction_pipeline_delegates_configure_auto_tuning() -> None:
 
 
 def test_link_prediction_model_predict_stream_rejects_target_relationship_type() -> None:
-    model = LinkPredictionModelV2("model", mock.Mock(), mock.Mock())
+    model = LinkPredictionModel("model", mock.Mock(), mock.Mock())
 
     with pytest.raises(TypeError, match="target_relationship_type"):
         cast(Any, model.predict_stream)(mock.Mock(), target_relationship_type="REL")
 
 
 def test_link_prediction_model_predict_estimate_rejects_target_relationship_type() -> None:
-    model = LinkPredictionModelV2("model", mock.Mock(), mock.Mock())
+    model = LinkPredictionModel("model", mock.Mock(), mock.Mock())
 
     with pytest.raises(TypeError, match="target_relationship_type"):
         cast(Any, model.predict_estimate)(mock.Mock(), target_relationship_type="REL")
 
 
 def test_link_prediction_model_predict_mutate_rejects_target_relationship_type() -> None:
-    model = LinkPredictionModelV2("model", mock.Mock(), mock.Mock())
+    model = LinkPredictionModel("model", mock.Mock(), mock.Mock())
 
     with pytest.raises(TypeError, match="target_relationship_type"):
         cast(Any, model.predict_mutate)(mock.Mock(), "PREDICTED_REL", target_relationship_type="REL")
@@ -155,7 +155,7 @@ def test_link_prediction_model_predict_mutate_rejects_target_relationship_type()
 
 def test_link_prediction_model_predict_stream_delegates_top_n() -> None:
     predict = mock.Mock()
-    model = LinkPredictionModelV2("model", mock.Mock(), predict)
+    model = LinkPredictionModel("model", mock.Mock(), predict)
 
     model.predict_stream(
         mock.Mock(),
@@ -196,7 +196,7 @@ def test_link_prediction_model_predict_stream_delegates_top_n() -> None:
 
 def test_link_prediction_model_predict_mutate_delegates_top_n() -> None:
     predict = mock.Mock()
-    model = LinkPredictionModelV2("model", mock.Mock(), predict)
+    model = LinkPredictionModel("model", mock.Mock(), predict)
 
     model.predict_mutate(
         mock.Mock(),

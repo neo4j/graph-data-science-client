@@ -6,7 +6,7 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineTrainResult,
 )
@@ -43,7 +43,7 @@ class NodeClassificationTrainCypherEndpoints(NodeClassificationPipelineTrainEndp
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]:
+    ) -> tuple[NodeClassificationModel, NodeClassificationPipelineTrainResult]:
         gds_config = ConfigConverter.convert_to_gds_config(
             metrics=metrics,
             model_name=model_name,
@@ -65,7 +65,7 @@ class NodeClassificationTrainCypherEndpoints(NodeClassificationPipelineTrainEndp
             endpoint="gds.beta.pipeline.nodeClassification.train", params=params, logging=True
         ).squeeze()
         return (
-            NodeClassificationModelV2(
+            NodeClassificationModel(
                 name=model_name,
                 model_api=ModelApiCypher(self._query_runner),
                 predict_endpoints=self._predict_endpoints,
