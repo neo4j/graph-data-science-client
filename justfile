@@ -2,6 +2,19 @@ style skip_notebooks="false":
      uv sync --frozen
      SKIP_NOTEBOOKS={{skip_notebooks}} ./scripts/makestyle && ./scripts/checkstyle
 
+# Comprehensive CI-style check: Python style, notebook docs, and Ruby style
+checkstyle-all:
+    #!/usr/bin/env bash
+    set -e
+    uv sync --group dev-base
+    # Python style
+    ./scripts/checkstyle
+    ./scripts/nb2doc/check.sh
+    # Ruby style
+    cd doc/tests
+    bundle install
+    bundle exec rubocop
+
 check-notebooks:
     ./scripts/nb2doc/check.sh
 
