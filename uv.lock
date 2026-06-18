@@ -3,9 +3,12 @@ revision = 3
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.13'",
-    "python_full_version == '3.12.*'",
-    "python_full_version == '3.11.*'",
-    "python_full_version < '3.11'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
 ]
 
 [[package]]
@@ -324,7 +327,7 @@ name = "build"
 version = "1.4.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "os_name == 'nt'" },
+    { name = "colorama", marker = "(python_full_version >= '3.13' and os_name == 'nt') or (os_name == 'nt' and sys_platform != 'darwin')" },
     { name = "importlib-metadata", marker = "python_full_version < '3.10.2'" },
     { name = "packaging" },
     { name = "pyproject-hooks" },
@@ -624,8 +627,8 @@ name = "cryptography"
 version = "46.0.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
-    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+    { name = "cffi", marker = "(python_full_version >= '3.13' and platform_python_implementation != 'PyPy') or (platform_python_implementation != 'PyPy' and sys_platform != 'darwin')" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11' and sys_platform != 'darwin'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/47/93/ac8f3d5ff04d54bc814e961a43ae5b0b146154c89c61b47bb07557679b18/cryptography-46.0.7.tar.gz", hash = "sha256:e4cfd68c5f3e0bfdad0d38e023239b96a2fe84146481852dffbcca442c245aa5", size = 750652, upload-time = "2026-04-08T01:57:54.692Z" }
 wheels = [
@@ -1071,8 +1074,10 @@ notebook-ci = [
     { name = "scipy" },
     { name = "torch" },
     { name = "torch-geometric" },
-    { name = "torch-scatter" },
-    { name = "torch-sparse" },
+    { name = "torch-scatter", version = "2.1.2", source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }, marker = "python_full_version < '3.13' and sys_platform == 'darwin'" },
+    { name = "torch-scatter", version = "2.1.2+pt23cpu", source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }, marker = "python_full_version >= '3.13' or sys_platform != 'darwin'" },
+    { name = "torch-sparse", version = "0.6.18", source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }, marker = "python_full_version < '3.13' and sys_platform == 'darwin'" },
+    { name = "torch-sparse", version = "0.6.18+pt23cpu", source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }, marker = "python_full_version >= '3.13' or sys_platform != 'darwin'" },
 ]
 publish = [
     { name = "build" },
@@ -1179,8 +1184,8 @@ notebook-ci = [
     { name = "scipy", specifier = "==1.14.0" },
     { name = "torch", specifier = "==2.3.0" },
     { name = "torch-geometric", specifier = ">=2.5.0" },
-    { name = "torch-scatter", specifier = "==2.1.1" },
-    { name = "torch-sparse", specifier = "==0.6.17" },
+    { name = "torch-scatter", specifier = "==2.1.2", index = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" },
+    { name = "torch-sparse", specifier = "==0.6.18", index = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" },
 ]
 publish = [
     { name = "build" },
@@ -1299,7 +1304,8 @@ name = "ipython"
 version = "8.39.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version < '3.11'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
 ]
 dependencies = [
     { name = "colorama", marker = "python_full_version < '3.11' and sys_platform == 'win32'" },
@@ -1324,7 +1330,8 @@ name = "ipython"
 version = "9.10.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version == '3.11.*'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
 ]
 dependencies = [
     { name = "colorama", marker = "python_full_version == '3.11.*' and sys_platform == 'win32'" },
@@ -1350,7 +1357,8 @@ version = "9.12.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
-    "python_full_version == '3.12.*'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
 ]
 dependencies = [
     { name = "colorama", marker = "python_full_version >= '3.12' and sys_platform == 'win32'" },
@@ -2252,7 +2260,8 @@ name = "networkx"
 version = "3.4.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version < '3.11'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fd/1d/06475e1cd5264c0b870ea2cc6fdb3e37177c1e565c43f56ff17a10e3937f/networkx-3.4.2.tar.gz", hash = "sha256:307c3669428c5362aab27c8a1260aa8f47c4e91d3891f48be0141738d8d053e1", size = 2151368, upload-time = "2024-10-21T12:39:38.695Z" }
 wheels = [
@@ -2265,8 +2274,10 @@ version = "3.6.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
-    "python_full_version == '3.12.*'",
-    "python_full_version == '3.11.*'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/6a/51/63fe664f3908c97be9d2e4f1158eb633317598cfa6e1fc14af5383f17512/networkx-3.6.1.tar.gz", hash = "sha256:26b7c357accc0c8cde558ad486283728b65b6a95d85ee1cd66bafab4c8168509", size = 2517025, upload-time = "2025-12-08T17:02:39.908Z" }
 wheels = [
@@ -3630,7 +3641,8 @@ name = "scikit-learn"
 version = "1.7.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version < '3.11'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
 ]
 dependencies = [
     { name = "joblib", marker = "python_full_version < '3.11'" },
@@ -3678,8 +3690,10 @@ version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
-    "python_full_version == '3.12.*'",
-    "python_full_version == '3.11.*'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
 ]
 dependencies = [
     { name = "joblib", marker = "python_full_version >= '3.11'" },
@@ -3767,8 +3781,8 @@ name = "secretstorage"
 version = "3.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cryptography" },
-    { name = "jeepney" },
+    { name = "cryptography", marker = "python_full_version >= '3.13' or sys_platform != 'darwin'" },
+    { name = "jeepney", marker = "python_full_version >= '3.13' or sys_platform != 'darwin'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1c/03/e834bcd866f2f8a49a85eaff47340affa3bfa391ee9912a952a1faa68c7b/secretstorage-3.5.0.tar.gz", hash = "sha256:f04b8e4689cbce351744d5537bf6b1329c6fc68f91fa666f60a380edddcd11be", size = 19884, upload-time = "2025-11-23T19:02:53.191Z" }
 wheels = [
@@ -3870,7 +3884,8 @@ name = "sphinx-prompt"
 version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version < '3.11'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
 ]
 dependencies = [
     { name = "docutils", marker = "python_full_version < '3.11'" },
@@ -3888,8 +3903,10 @@ version = "1.10.2"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
-    "python_full_version == '3.12.*'",
-    "python_full_version == '3.11.*'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
 ]
 dependencies = [
     { name = "certifi", marker = "python_full_version >= '3.11'" },
@@ -4229,18 +4246,77 @@ wheels = [
 
 [[package]]
 name = "torch-scatter"
-version = "2.1.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/db/ae/3dee934b7118aec8528a6832dbb3cf079e13dd442c4600cae8d29a4f9fea/torch_scatter-2.1.1.tar.gz", hash = "sha256:59b6fad2c04f58b4ea46bb56e839edfd421faaa849d5e32ab1290975b9ef1656", size = 107610, upload-time = "2023-03-16T14:34:40.047Z" }
+version = "2.1.2"
+source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }
+resolution-markers = [
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
+]
+wheels = [
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2-cp310-cp310-macosx_10_9_universal2.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2-cp311-cp311-macosx_10_9_universal2.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2-cp312-cp312-macosx_10_9_universal2.whl" },
+]
+
+[[package]]
+name = "torch-scatter"
+version = "2.1.2+pt23cpu"
+source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }
+resolution-markers = [
+    "python_full_version >= '3.13'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+]
+wheels = [
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2%2Bpt23cpu-cp310-cp310-linux_x86_64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2%2Bpt23cpu-cp310-cp310-win_amd64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2%2Bpt23cpu-cp311-cp311-linux_x86_64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2%2Bpt23cpu-cp311-cp311-win_amd64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2%2Bpt23cpu-cp312-cp312-linux_x86_64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_scatter-2.1.2%2Bpt23cpu-cp312-cp312-win_amd64.whl" },
+]
 
 [[package]]
 name = "torch-sparse"
-version = "0.6.17"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "scipy" },
+version = "0.6.18"
+source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }
+resolution-markers = [
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cb/ff/21d4674bdf232cd7a2bdbbbb04c35ba1cbdf444d4f3331f5d7eb6c5d4a8f/torch_sparse-0.6.17.tar.gz", hash = "sha256:06e268dd77f73eb641da8f9383306d7afac6423383c9197b9df120955e2a96bd", size = 209205, upload-time = "2023-03-22T14:12:20.737Z" }
+dependencies = [
+    { name = "scipy", marker = "python_full_version < '3.13' and sys_platform == 'darwin'" },
+]
+wheels = [
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18-cp310-cp310-macosx_11_0_universal2.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18-cp311-cp311-macosx_11_0_universal2.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18-cp312-cp312-macosx_11_0_universal2.whl" },
+]
+
+[[package]]
+name = "torch-sparse"
+version = "0.6.18+pt23cpu"
+source = { registry = "https://data.pyg.org/whl/torch-2.3.0+cpu.html" }
+resolution-markers = [
+    "python_full_version >= '3.13'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+]
+dependencies = [
+    { name = "scipy", marker = "python_full_version >= '3.13' or sys_platform != 'darwin'" },
+]
+wheels = [
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18%2Bpt23cpu-cp310-cp310-linux_x86_64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18%2Bpt23cpu-cp310-cp310-win_amd64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18%2Bpt23cpu-cp311-cp311-linux_x86_64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18%2Bpt23cpu-cp311-cp311-win_amd64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18%2Bpt23cpu-cp312-cp312-linux_x86_64.whl" },
+    { url = "https://data.pyg.org/whl/torch-2.3.0%2Bcpu/torch_sparse-0.6.18%2Bpt23cpu-cp312-cp312-win_amd64.whl" },
+]
 
 [[package]]
 name = "tornado"

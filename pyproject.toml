@@ -106,13 +106,28 @@ notebook-ci = [
     { include-group = "notebook-base" },
     "scipy == 1.14.0",
     "torch==2.3.0",
-    "torch-scatter==2.1.1",
-    "torch-sparse==0.6.17",
+    "torch-scatter==2.1.2",
+    "torch-sparse==0.6.18",
     "torch-geometric>=2.5.0",
 ]
 
 publish = ["build", "twine"]
 
+# torch-scatter/torch-sparse have no sdist-friendly install: building from source
+# requires a working C++/torch toolchain and fails on many local machines (notably
+# macOS arm64). Instead we pull prebuilt wheels from the PyG wheel index, which ships
+# wheels for both Linux (torch-2.3.0+cpu) and macOS (universal2).
+[tool.uv.sources]
+torch-scatter = [{ index = "pytorch-geometric-cpu" }]
+torch-sparse = [{ index = "pytorch-geometric-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-geometric-cpu"
+url = "https://data.pyg.org/whl/torch-2.3.0+cpu.html"
+explicit = true
+format = "flat"
+
+# Fallback only: if uv ever has to build these from source, make torch available.
 [tool.uv.extra-build-dependencies]
 torch-sparse = ["torch"]
 torch-scatter = ["torch"]
