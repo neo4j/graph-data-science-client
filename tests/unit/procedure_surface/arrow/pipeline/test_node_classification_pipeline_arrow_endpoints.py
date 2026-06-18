@@ -39,6 +39,7 @@ def _train_summary(**overrides: object) -> dict[str, object]:
         "configuration": {},
         "modelInfo": {
             "bestParameters": {},
+            "classes": [0, 1],
             "metrics": {},
             "modelName": "model",
             "modelType": "NodeClassification",

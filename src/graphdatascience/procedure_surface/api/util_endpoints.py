@@ -48,7 +48,7 @@ class UtilEndpoints(ABC):
         """
         Get the property of a node with the given id from an in-memory graph.
 
-        Not available in AuraGDS sessions; stream the node properties once
+        Not available in AGA sessions; stream the node properties once
         (``gds.graph.node_properties.stream``) and filter on the client side instead.
 
         Parameters

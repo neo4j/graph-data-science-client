@@ -50,7 +50,7 @@ class UtilArrowEndpoints(UtilEndpoints):
 
     def node_property(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:
         raise NotImplementedError(
-            "`node_property` is not available in AuraGDS sessions. "
+            "`node_property` is not available in AGA sessions. "
             "Stream the node properties once and filter on the client side instead, e.g.:\n"
             "    df = gds.graph.node_properties.stream(G, [property_key])\n"
             "    df.loc[df['nodeId'] == node_id, 'propertyValue']"
