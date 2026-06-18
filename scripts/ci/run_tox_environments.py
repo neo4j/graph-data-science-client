@@ -22,7 +22,7 @@ def range_partition(total_environments: int, n_partitions: int, partition_index:
 
 def get_partition_environments(n_partitions: int, partition_index: int) -> list[str]:
     """Return the list of environments for a partition (0-based)."""
-    available_environments =  subprocess.getoutput("uvx tox -l -q | sort").splitlines()
+    available_environments =  subprocess.getoutput("uvx -q tox -l -q | sort").splitlines()
     start, end = range_partition(len(available_environments), n_partitions, partition_index)
     partition_environments = available_environments[start:end]
     print(f"Running partition {partition_index} with {len(partition_environments)} environments")
