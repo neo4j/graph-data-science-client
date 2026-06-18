@@ -63,6 +63,15 @@ def test_stream_relationships(relationship_endpoints: RelationshipCypherEndpoint
     assert set(result["relationshipType"].unique()) == {"REL"}
 
 
+def test_stream_by_rel_type(relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph) -> None:
+    by_rel_type = relationship_endpoints.stream(G=sample_graph).by_rel_type()
+
+    assert set(by_rel_type.keys()) == {"REL", "OTHER"}
+    sources, targets = by_rel_type["REL"]
+    assert len(sources) == 3
+    assert len(targets) == 3
+
+
 def test_stream_multiple_relationship_types(
     relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph
 ) -> None:

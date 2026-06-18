@@ -209,3 +209,4 @@ examples/dev/*
 # Datasets from loaders such as OGBLoader
 dataset/
 /graph-data-science-client.iml
+data_from_zip/

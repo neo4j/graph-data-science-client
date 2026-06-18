@@ -219,7 +219,7 @@ algorithm to detect communities in our subgraph and assign a
 
 [source, python, role=no-test]
 ----
-gds.louvain.mutate(largest_component_graph, mutateProperty="louvainCommunityId")
+gds.louvain.mutate(largest_component_graph, mutate_property="louvainCommunityId")
 ----
 
 We get a modularity score of 0.5898 for our community detection
@@ -227,7 +227,7 @@ algorithm.
 
 [source, python, role=no-test]
 ----
-gds.graph.nodeProperties.write(largest_component_graph, ["louvainCommunityId"])
+gds.graph.node_properties.write(largest_component_graph, ["louvainCommunityId"])
 ----
 
 We can also check that the property was written by the below command.

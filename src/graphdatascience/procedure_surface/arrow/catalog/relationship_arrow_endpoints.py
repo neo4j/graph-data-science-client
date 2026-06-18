@@ -1,9 +1,8 @@
-from pandas import DataFrame
-
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
     CollapsePathResult,
@@ -46,7 +45,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-    ) -> DataFrame:
+    ) -> RelationshipsDataFrame:
         config_input = {
             "graph_name": G.name(),
             "relationship_types": relationship_types or ["*"],
@@ -66,7 +65,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         job_id = JobClient.run_job(self._arrow_client, endpoint, config)
         result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
 
-        return result
+        return RelationshipsDataFrame(result)
 
     def write(
         self,

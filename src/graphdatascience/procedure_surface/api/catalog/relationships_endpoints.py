@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
-from pandas import DataFrame
 from pydantic import AliasChoices, Field, field_validator
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 
 
@@ -24,7 +24,7 @@ class RelationshipsEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-    ) -> DataFrame:
+    ) -> RelationshipsDataFrame:
         """
         Streams all relationships of the specified types with the specified properties.
 
@@ -46,8 +46,9 @@ class RelationshipsEndpoints(ABC):
             As an administrator, impersonate a different user for accessing their graphs.
         Returns
         -------
-        DataFrame
-            The streamed relationships [sourceId, targetId, relationshipType] with a column for each property
+        RelationshipsDataFrame
+            The streamed relationships [sourceNodeId, targetNodeId, relationshipType] with a column for each
+            property. Offers a ``by_rel_type()`` method to reshape the relationships by relationship type.
         """
         pass
 

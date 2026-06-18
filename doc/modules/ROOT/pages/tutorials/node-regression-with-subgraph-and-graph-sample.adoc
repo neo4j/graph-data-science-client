@@ -364,7 +364,7 @@ print("#nodes: " + str(G_chameleon.node_count()))
 print("#relationships: " + str(G_chameleon.relationship_count()))
 print("Degree distribution")
 print("=" * 25)
-print(G_chameleon.degree_distribution().sort_index())
+print(G_chameleon.degree_distribution())
 ----
 
 == Now, let's construct a training pipeline!
@@ -435,10 +435,10 @@ nc_model, train_result = chameleons_nr_training.train(
 
 [source, python, role=no-test]
 ----
-print("Winning model parameters: \n\t\t" + str(train_result["modelInfo"]["bestParameters"]))
+print("Winning model parameters: \n\t\t" + str(nc_model.best_parameters()))
 print()
-print("MEAN_SQUARED_ERROR      test score: " + str(train_result["modelInfo"]["metrics"]["MEAN_SQUARED_ERROR"]["test"]))
-print("MEAN_ABSOLUTE_ERROR     test score: " + str(train_result["modelInfo"]["metrics"]["MEAN_ABSOLUTE_ERROR"]["test"]))
+print("MEAN_SQUARED_ERROR      test score: " + str(train_result.model_info["metrics"]["MEAN_SQUARED_ERROR"]["test"]))
+print("MEAN_ABSOLUTE_ERROR     test score: " + str(train_result.model_info["metrics"]["MEAN_ABSOLUTE_ERROR"]["test"]))
 ----
 
 [source, python, role=no-test]
@@ -463,15 +463,15 @@ nc_model_sample, train_result_sample = chameleons_nr_training.train(
 
 [source, python, role=no-test]
 ----
-print("Winning model parameters: \n\t\t" + str(train_result_sample["modelInfo"]["bestParameters"]))
+print("Winning model parameters: \n\t\t" + str(nc_model_sample.best_parameters()))
 print()
 print(
     "MEAN_SQUARED_ERROR      test score: "
-    + str(train_result_sample["modelInfo"]["metrics"]["MEAN_SQUARED_ERROR"]["test"])
+    + str(train_result_sample.model_info["metrics"]["MEAN_SQUARED_ERROR"]["test"])
 )
 print(
     "MEAN_ABSOLUTE_ERROR     test score: "
-    + str(train_result_sample["modelInfo"]["metrics"]["MEAN_ABSOLUTE_ERROR"]["test"])
+    + str(train_result_sample.model_info["metrics"]["MEAN_ABSOLUTE_ERROR"]["test"])
 )
 ----
 
@@ -492,7 +492,7 @@ merged_full = real_targets.merge(predicted_targets_full, left_on="nodeId", right
 merged_all = merged_full.merge(predicted_targets_sample, left_on="nodeId", right_on="nodeId")
 
 # Look at the last 10 rows
-print(merged_all.tail(10))
+display(merged_all.tail(10))
 ----
 
 == And we are done!
