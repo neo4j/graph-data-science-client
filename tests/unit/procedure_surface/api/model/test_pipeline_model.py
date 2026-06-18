@@ -31,7 +31,7 @@ def _model_details() -> ModelDetails:
 def _model(model_class: type[PipelineModel]) -> PipelineModel:
     model_api = mock.Mock()
     model_api.get.return_value = _model_details()
-    return model_class("model", model_api, mock.Mock())
+    return model_class("model", model_api)
 
 
 @pytest.mark.parametrize("model_class", [NodeClassificationModel, NodeRegressionModel, LinkPredictionModel])

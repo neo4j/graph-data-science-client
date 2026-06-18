@@ -166,8 +166,8 @@ def main(filter_func: Callable[[str], bool]) -> None:
 
     if failures:
         logger.error("%d of %d notebooks failed:", len(failures), len(notebook_files))
-        for nb_name, e, cell_number in failures:
-            logger.error("  - %s (code cell %s): %s: %s", nb_name, cell_number, e.ename, e.evalue)
+        for nb_name, err, cell_number in failures:
+            logger.error("  - %s (code cell %s): %s: %s", nb_name, cell_number, err.ename, err.evalue)
         raise SystemExit(1)
     else:
         logger.info("Successfully executed %d notebook(s)", len(notebook_files))
@@ -195,9 +195,11 @@ if __name__ == "__main__":
         def filter_func(notebook: str) -> bool:
             return notebook in session_self_managed_notebooks
     elif notebook_filter:
+
         def filter_func(notebook: str) -> bool:
             return notebook_filter in notebook
     else:
+
         def filter_func(notebook: str) -> bool:
             return notebook not in session_notebooks + session_self_managed_notebooks
 
