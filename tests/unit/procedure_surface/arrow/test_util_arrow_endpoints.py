@@ -57,7 +57,7 @@ def test_node_property_not_supported() -> None:
     graph = mock.Mock()
     graph.name.return_value = "g"
 
-    with pytest.raises(NotImplementedError, match="not available in AuraGDS sessions"):
+    with pytest.raises(NotImplementedError, match="not available in AGA sessions"):
         util.node_property(graph, 1, "rank")
 
 

@@ -14,6 +14,7 @@ class NodeClassificationPipelineInfoResult(BaseResult):
 
 class NodeClassificationModelInfoResult(BaseResult):
     best_parameters: dict[str, Any]
+    classes: list[int]
     metrics: dict[str, Any]
     model_name: str
     model_type: str

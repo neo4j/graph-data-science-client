@@ -38,7 +38,7 @@ def main() -> None:
         uri = create_result["connection_url"]
         username = create_result["username"]
         password = create_result["password"]
-        cmd = f"NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} uv run --group notebook-aura-ci ./scripts/run_notebooks.py"
+        cmd = f"NEO4J_URI={uri} NEO4J_USERNAME={username} NEO4J_PASSWORD={password} uv run --group notebook-ci ./scripts/run_notebooks.py"
         if os.system(cmd) != 0:
             raise Exception("Failed to run notebooks")
         logging.info("Notebooks ran successfully")
