@@ -5,12 +5,12 @@ set -o nounset
 set -o pipefail
 set -o xtrace
 
-python -m ruff check . --fix --unsafe-fixes
-python -m ruff format .
+uv run ruff check . --fix --unsafe-fixes
+uv run ruff format .
 
 if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then
   echo "Skipping notebooks"
   exit 0
 fi
 
-python scripts/clean_notebooks.py -i examples/ -o inplace
+uv run python scripts/clean_notebooks.py -i examples/ -o inplace

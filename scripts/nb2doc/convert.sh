@@ -16,7 +16,7 @@ do
   # --ASCIIDocExporter.file_extension=.adoc
   #   If not set, the extension is .asciidoc
 
-  jupyter nbconvert \
+  uv run jupyter nbconvert \
     --to asciidoc \
     --template=scripts/nb2doc/asciidoc-template \
     --output-dir ${DOC_DIR} \
