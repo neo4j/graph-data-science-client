@@ -36,8 +36,9 @@ test-aurads-notebooks:
     uv run scripts/ci/run_plugin_notebooks_aura.py
 
 # Run the plugin notebooks against a local Neo4j with the GDS plugin (AuraDS-like).
+# `filter` selects notebooks by name substring (e.g. `hashgnn`); empty runs all.
 # `enterprise=true` requires a license at ${HOME}/.gds_license; `enterprise=false` uses community.
-test-plugin-notebooks-local enterprise="true" filter="":
+test-plugin-notebooks-local filter="" enterprise="true":
     #!/usr/bin/env bash
     set -e
     if [ "{{enterprise}}" = "true" ]; then
