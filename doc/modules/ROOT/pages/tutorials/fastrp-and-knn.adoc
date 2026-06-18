@@ -268,7 +268,8 @@ gds.run_cypher(
         MATCH (p1:Person)-[r:SIMILAR]->(p2:Person)
         RETURN p1.name AS person1, p2.name AS person2, r.score AS similarity
         ORDER BY similarity DESCENDING, person1, person2
-    """
+    """,
+    retryable=True,
 )
 ----
 
@@ -299,7 +300,8 @@ gds.run_cypher(
         MATCH (:Person {name: "Matt"})-[:BUYS]->(p2:Product)
         WHERE not p2 in products
         RETURN p2.name as recommendation
-    """
+    """,
+    retryable=True,
 )
 ----
 
@@ -317,7 +319,7 @@ in-memory state and the database.
 G.drop()
 
 # Remove all the example data from the database
-_ = gds.run_cypher("MATCH (n) DETACH DELETE n")
+_ = gds.run_cypher("MATCH (n) DETACH DELETE n", retryable=True)
 ----
 
 == Conclusion
