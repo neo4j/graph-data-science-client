@@ -33,9 +33,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "hits.stream",
     "hits.stats",
     "hits.write",
-    "ml.kge.predict.mutate",
-    "ml.kge.predict.stream",
-    "ml.kge.predict.write",
     "split_relationships.mutate",
     "memory.summary",
     "memory.list",
@@ -68,6 +65,7 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("maxkcut", "max_k_cut"),
         ("fastrp", "fast_rp"),
         ("beta.graphSage", "graph_sage"),
+        ("ml.kge.predict", "kge.predict"),
         ("hashgnn", "hash_gnn"),
         ("astar", "a_star"),
         ("kspanning_tree", "k_spanning_tree"),
@@ -103,6 +101,7 @@ IGNORED_PARAMETERS = {
         "mutate_property",
         "relationship_weight_property",
     ],
+    r".*kge.predict.*": ["node_labels"],
     r".*scale_properties.*": ["relationship_types"],
     r".*collapse_path.*": ["relationship_types"],
     r".*graph.drop": ["username", "db_name"],
@@ -144,6 +143,11 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
     ".*(knn|node_similarity).filtered.*": {
         "source_node_filter": None,
         "target_node_filter": None,
+    },
+    ".*kge.predict.*": {
+        "source_node_filter": None,
+        "target_node_filter": None,
+        "relationship_types": ["*"],
     },
     ".*pipeline.list": {
         "pipeline_name": None,
@@ -409,7 +413,11 @@ def assert_api_spec_coverage(
     endpoints: type,
     gds_api_spec: list[EndpointWithModesSpec],
     endpoint_mappings: OrderedDict[str, str] | None = None,
+    unmapped_endpoints: set[str] | None = None,
 ) -> None:
+    if unmapped_endpoints is None:
+        unmapped_endpoints = UNMAPPED_ENDPOINTS
+
     missing_endpoints: set[str] = set()
     available_endpoints: set[str] = set()
 
@@ -420,7 +428,7 @@ def assert_api_spec_coverage(
                 endpoint_mappings=endpoint_mappings,
             )
             callable_object = resolve_callable_object(endpoints, endpoint_name)
-            if not callable_object and endpoint_name not in UNMAPPED_ENDPOINTS:
+            if not callable_object and endpoint_name not in unmapped_endpoints:
                 missing_endpoints.add(endpoint_name)
             elif callable_object:
                 available_endpoints.add(endpoint_name)
@@ -435,7 +443,7 @@ def assert_api_spec_coverage(
     print(f"Total endpoint specs found: {len(available_endpoints) + len(missing_endpoints)}")
     print(f"Available through gds.v2: {len(available_endpoints)}")
 
-    newly_available_endpoints = available_endpoints.intersection(UNMAPPED_ENDPOINTS)
+    newly_available_endpoints = available_endpoints.intersection(unmapped_endpoints)
     assert not newly_available_endpoints, (
         f"Endpoints {newly_available_endpoints} now available, please remove from MISSING_ENDPOINTS"
     )

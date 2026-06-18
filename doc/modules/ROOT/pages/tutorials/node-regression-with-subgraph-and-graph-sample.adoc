@@ -67,13 +67,11 @@ from graphdatascience import GraphDataScience
 
 # Get Neo4j DB URI, credentials and name from environment if applicable
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
-NEO4J_AUTH = None
 NEO4J_DB = os.environ.get("NEO4J_DB", "neo4j")
-if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
-    NEO4J_AUTH = (
-        os.environ.get("NEO4J_USER"),
-        os.environ.get("NEO4J_PASSWORD"),
-    )
+NEO4J_AUTH = (
+    os.environ.get("NEO4J_USER", "neo4j"),
+    os.environ.get("NEO4J_PASSWORD", ""),
+)
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 
 # Test our connection and print the Graph Data Science library version
@@ -297,7 +295,7 @@ G_animals, projection_result = gds.graph.project(
     "wiki_animals",
     ["Chameleon", "Squirrel", "Crocodile"],
     {"LINK": {"orientation": "UNDIRECTED"}},
-    nodeProperties=["features_one_hot", "target"],
+    node_properties=["features_one_hot", "target"],
 )
 print(projection_result[["graphName", "nodeCount", "relationshipCount"]])
 ----
@@ -315,9 +313,7 @@ use the WCC (Weakly Connected Components) algorithm.
 [source, python, role=no-test]
 ----
 # We use the WCC algorithm to see how many components we have
-wcc_result = gds.wcc.mutate(G_animals, mutateProperty="wcc_component")
-
-print(wcc_result[["computeMillis", "componentCount"]])
+gds.wcc.mutate(G_animals, mutate_property="wcc_component")
 ----
 
 == Component separation
@@ -330,7 +326,7 @@ the components.
 [source, python, role=no-test]
 ----
 # First, we stream the component ids
-components = gds.graph.nodeProperty.stream(G_animals, "wcc_component")
+components = gds.graph.node_properties.stream(G_animals, "wcc_component")
 
 # Second, we compute the unique component ids
 component_ids = components["propertyValue"].unique()
@@ -338,8 +334,8 @@ component_ids = components["propertyValue"].unique()
 # Third, we project a subgraph for each component
 component_graphs = [
     gds.graph.filter(
-        f"animals_component_{component_id}",
         G_animals,
+        f"animals_component_{component_id}",
         f"n.wcc_component = {component_id}",
         "*",
     )[0]
@@ -388,38 +384,38 @@ through the Pipeline object, for maximum convenience.
 [source, python, role=no-test]
 ----
 # Now, let's construct a training pipeline!
-chameleons_nr_training = gds.nr_pipe("node_regression_pipeline__Chameleons")
+chameleons_nr_training, _ = gds.pipeline.node_regression.create("node_regression_pipeline__Chameleons")
 
 # We configure the splitting
-chameleons_nr_training.configureSplit(validationFolds=5, testFraction=0.2)
+chameleons_nr_training.configure_split(validation_folds=5, test_fraction=0.2)
 
 # We add a set of model candidates
 # A linear regression model with the learningRate parameter in a search space
-chameleons_nr_training.addLinearRegression(
+chameleons_nr_training.add_linear_regression(
     penalty=1e-5,
     patience=3,
     tolerance=1e-5,
-    minEpochs=20,
-    maxEpochs=500,
-    learningRate={"range": [100, 1000]},  # We let the auto-tuner find a good value
+    min_epochs=20,
+    max_epochs=500,
+    learning_rate=(100, 1000),  # We let the auto-tuner find a good value
 )
 # Let's try a few different models
-chameleons_nr_training.configureAutoTuning(maxTrials=10)
+chameleons_nr_training.configure_auto_tuning(maxTrials=10)
 
 # Our input feature dimension is 3132
 # We can reduce the dimension to speed up training using a FastRP node embedding
-chameleons_nr_training.addNodeProperty(
+chameleons_nr_training.add_node_property(
     "fastRP",
-    embeddingDimension=256,
-    propertyRatio=0.8,
-    featureProperties=["features_one_hot"],
-    mutateProperty="frp_embedding",
-    randomSeed=420,
+    embedding_dimension=256,
+    property_ratio=0.8,
+    feature_properties=["features_one_hot"],
+    mutate_property="frp_embedding",
+    random_seed=420,
 )
 
 # And finally we select what features the model should be using
 # We rely on the FastRP embedding solely, because it encapsulates the one-hot encoded source features
-chameleons_nr_training.selectFeatures("frp_embedding")
+chameleons_nr_training.select_features("frp_embedding")
 
 # The training pipeline is now fully configured and ready to be run!
 ----
@@ -429,11 +425,11 @@ chameleons_nr_training.selectFeatures("frp_embedding")
 # We use the training pipeline to train a model
 nc_model, train_result = chameleons_nr_training.train(
     G_chameleon,  # First, we use the entire Chameleon graph
-    modelName="chameleon_nr_model",
-    targetNodeLabels=["Chameleon"],
-    targetProperty="target",
+    model_name="chameleon_nr_model",
+    target_node_labels=["Chameleon"],
+    target_property="target",
     metrics=["MEAN_SQUARED_ERROR", "MEAN_ABSOLUTE_ERROR"],
-    randomSeed=420,
+    random_seed=420,
 )
 ----
 
@@ -448,20 +444,20 @@ print("MEAN_ABSOLUTE_ERROR     test score: " + str(train_result["modelInfo"]["me
 [source, python, role=no-test]
 ----
 # Let's sample the graph to see if we can get a similarly good model
-G_chameleon_sample, _ = gds.alpha.graph.sample.rwr(
-    "cham_sample",
+G_chameleon_sample, _ = gds.graph.sample.rwr(
     G_chameleon,
-    samplingRatio=0.30,  # We'll use 30% of the graph
+    "cham_sample",
+    sampling_ratio=0.30,  # We'll use 30% of the graph
 )
 
 # Now we can use the same training pipeline to train another model, but faster!
 nc_model_sample, train_result_sample = chameleons_nr_training.train(
     G_chameleon_sample,
-    modelName="chameleon_nr_model_sample",
-    targetNodeLabels=["Chameleon"],
-    targetProperty="target",
+    model_name="chameleon_nr_model_sample",
+    target_node_labels=["Chameleon"],
+    target_property="target",
     metrics=["MEAN_SQUARED_ERROR", "MEAN_ABSOLUTE_ERROR"],
-    randomSeed=420,
+    random_seed=420,
 )
 ----
 
@@ -489,7 +485,7 @@ predicted_targets_sample = nc_model_sample.predict_stream(G_chameleon)
 predicted_targets_full = nc_model.predict_stream(G_chameleon)
 
 # The original training data for comparison
-real_targets = gds.graph.nodeProperty.stream(G_chameleon, "target")
+real_targets = gds.graph.node_properties.stream(G_chameleon, "target")
 
 # Merging the data frames
 merged_full = real_targets.merge(predicted_targets_full, left_on="nodeId", right_on="nodeId")

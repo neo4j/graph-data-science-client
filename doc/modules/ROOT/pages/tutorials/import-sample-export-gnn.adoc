@@ -113,7 +113,7 @@ instead.
 
 [source, python, role=no-test]
 ----
-G = gds.graph.load_cora()
+G = gds.graph.datasets.load_cora()
 ----
 
 [source, python, role=no-test]
@@ -128,7 +128,7 @@ It's looks correct! Now let's go ahead and sample the graph.
 [source, python, role=no-test]
 ----
 # We use the random walk with restarts sampling algorithm with default values
-G_sample, _ = gds.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
+G_sample, _ = gds.graph.sample.rwr(G, "cora_sample", random_seed=42, concurrency=1)
 ----
 
 [source, python, role=no-test]
