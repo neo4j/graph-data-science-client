@@ -81,10 +81,10 @@ In addition to having followed the setup steps in [the contribution guidelines](
 The tests will through the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) connect to a Neo4j database based on the environment variables:
 
 * `NEO4J_URI` (defaulting to "bolt://localhost:7687" if unset),
-* `NEO4J_USER`,
+* `NEO4J_USERNAME`,
 * `NEO4J_PASSWORD` (defaulting to "neo4j" if unset),
 
-However, if `NEO4J_USER` is not set the tests will try to connect without authentication.
+However, if `NEO4J_USERNAME` is not set the tests will try to connect without authentication.
 
 
 ### Running
