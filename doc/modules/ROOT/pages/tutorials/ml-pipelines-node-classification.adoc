@@ -258,7 +258,7 @@ node_pipeline.configure_split(test_fraction=0.2, validation_folds=5)
 node_pipeline.add_logistic_regression(max_epochs=200, penalty=(0.0, 0.5))
 
 # Explicit set the number of trials for autotuning (default = 10)
-node_pipeline.configure_auto_tuning(maxTrials=5)
+node_pipeline.configure_auto_tuning(max_trials=5)
 ----
 
 == Training the pipeline
@@ -472,7 +472,7 @@ Neo4j database since it has been excluded from the projected graph.
 [source, python, role=no-test]
 ----
 # Retrieve node information from Neo4j using the node IDs from the prediction result
-nodes = gds.util.asNodes(predicted_fastrp.nodeId.to_list())
+nodes = gds.util.as_nodes(predicted_fastrp.nodeId.to_list())
 
 # Create a new DataFrame containing node IDs along with node properties
 nodes_df = pd.DataFrame([(node.id, node["subject"]) for node in nodes], columns=["nodeId", "subject"])

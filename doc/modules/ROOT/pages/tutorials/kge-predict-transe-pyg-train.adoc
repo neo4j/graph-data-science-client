@@ -238,7 +238,7 @@ def create_data_from_graph(relationship_type):
         rels_tmp.targetNodeId.map(lambda x: nodeId_to_id[x]),
     ]
     edge_index = torch.tensor(topology, dtype=torch.long)
-    edge_type = torch.tensor(rels_tmp.propertyValue.astype(int), dtype=torch.long)
+    edge_type = torch.tensor(rels_tmp.rel_id.astype(int), dtype=torch.long)
     data = Data(edge_index=edge_index, edge_type=edge_type)
     data.num_nodes = len(nodeId_to_id)
     display(data)

@@ -147,7 +147,7 @@ relationship_projection = {"BUYS": {"orientation": "UNDIRECTED", "properties": "
 # Before actually going through with the projection, let's check how much memory is required
 result = gds.graph.project.estimate(node_projection, relationship_projection)
 
-print(f"Required memory for native loading: {result['requiredMemory']}")
+print(f"Required memory for native loading: {result.required_memory}")
 ----
 
 [source, python, role=no-test]
@@ -155,7 +155,7 @@ print(f"Required memory for native loading: {result['requiredMemory']}")
 # For this small graph memory requirement is low. Let us go through with the projection
 G, result = gds.graph.project("purchases", node_projection, relationship_projection)
 
-print(f"The projection took {result['projectMillis']} ms")
+print(f"The projection took {result.project_millis} ms")
 
 # We can use convenience methods on `G` to check if the projection looks correct
 print(f"Graph '{G.name()}' node count: {G.node_count()}")
