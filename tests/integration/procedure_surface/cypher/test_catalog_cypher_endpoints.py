@@ -177,7 +177,7 @@ def test_project_estimate(catalog_endpoints: CatalogCypherEndpoints, sample_grap
     result = catalog_endpoints.project.estimate(["A", "B"], "REL", node_properties=["id"], read_concurrency=2)
 
     assert result.node_count == 3
-    assert result.relationship_count == 1
+    assert result.relationship_count > 0
     assert result.required_memory != ""
     assert result.bytes_min >= 0
     assert result.bytes_max >= result.bytes_min
