@@ -297,7 +297,7 @@ G_animals, projection_result = gds.graph.project(
     {"LINK": {"orientation": "UNDIRECTED"}},
     node_properties=["features_one_hot", "target"],
 )
-print(projection_result[["graphName", "nodeCount", "relationshipCount"]])
+projection_result
 ----
 
 == Connectivity
@@ -400,7 +400,7 @@ chameleons_nr_training.add_linear_regression(
     learning_rate=(100, 1000),  # We let the auto-tuner find a good value
 )
 # Let's try a few different models
-chameleons_nr_training.configure_auto_tuning(maxTrials=10)
+chameleons_nr_training.configure_auto_tuning(max_trials=10)
 
 # Our input feature dimension is 3132
 # We can reduce the dimension to speed up training using a FastRP node embedding
