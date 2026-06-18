@@ -64,13 +64,11 @@ from graphdatascience import GraphDataScience
 [source, python, role=no-test]
 ----
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
-NEO4J_AUTH = None
 NEO4J_DB = os.environ.get("NEO4J_DB", "neo4j")
-if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
-    NEO4J_AUTH = (
-        os.environ.get("NEO4J_USER"),
-        os.environ.get("NEO4J_PASSWORD"),
-    )
+NEO4J_AUTH = (
+    os.environ.get("NEO4J_USER", "neo4j"),
+    os.environ.get("NEO4J_PASSWORD", ""),
+)
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
@@ -208,11 +206,11 @@ Project all data in graph to get mapping between `id` and internal
 [source, python, role=no-test]
 ----
 node_projection = {"Entity": {"properties": "id"}}
-relationship_projection = [
-    {"TRAIN": {"orientation": "NATURAL", "properties": "rel_id"}},
-    {"TEST": {"orientation": "NATURAL", "properties": "rel_id"}},
-    {"VALID": {"orientation": "NATURAL", "properties": "rel_id"}},
-]
+relationship_projection = {
+    "TRAIN": {"orientation": "NATURAL", "properties": "rel_id"},
+    "TEST": {"orientation": "NATURAL", "properties": "rel_id"},
+    "VALID": {"orientation": "NATURAL", "properties": "rel_id"},
+}
 
 ttv_G, result = gds.graph.project(
     "fb15k-graph-ttv",
@@ -220,11 +218,7 @@ ttv_G, result = gds.graph.project(
     relationship_projection,
 )
 
-node_properties = gds.graph.nodeProperties.stream(
-    ttv_G,
-    ["id"],
-    separate_property_columns=True,
-)
+node_properties = gds.graph.node_properties.stream(ttv_G, ["id"])
 
 nodeId_to_id = dict(zip(node_properties.nodeId, node_properties.id))
 id_to_nodeId = dict(zip(node_properties.id, node_properties.nodeId))
@@ -238,7 +232,7 @@ format it into a `Data` structure suitable for training with PyG.
 [source, python, role=no-test]
 ----
 def create_data_from_graph(relationship_type):
-    rels_tmp = gds.graph.relationshipProperty.stream(ttv_G, "rel_id", relationship_type)
+    rels_tmp = gds.graph.relationships.stream(ttv_G, relationship_type, ["rel_id"])
     topology = [
         rels_tmp.sourceNodeId.map(lambda x: nodeId_to_id[x]),
         rels_tmp.targetNodeId.map(lambda x: nodeId_to_id[x]),
@@ -386,7 +380,7 @@ property, and the embedding for the relationship to be predicted.
 [source, python, role=no-test]
 ----
 target_emb = model.node_emb.weight[rel_id_to_predict].tolist()
-transe_model = gds.model.transe.create(G_test, "emb", {rel_label_to_predict: target_emb})
+transe_model = gds.kge.transe(G_test, "emb", {rel_label_to_predict: target_emb})
 ----
 
 [source, python, role=no-test]
@@ -403,7 +397,7 @@ Now, we can use the model to make prediction.
 [source, python, role=no-test]
 ----
 result = transe_model.predict_stream(
-    source_node_filter=source_ids_df.nodeId,
+    source_node_filter=source_ids_df.nodeId.tolist(),
     target_node_filter="Entity",
     relationship_type=rel_label_to_predict,
     top_k=3,
@@ -445,7 +439,7 @@ relationship type. This approach helps to avoid mapping from `nodeId` to
 ----
 write_relationship_type = "PREDICTED_" + rel_label_to_predict
 result_write = transe_model.predict_write(
-    source_node_filter=source_ids_df.nodeId,
+    source_node_filter=source_ids_df.nodeId.tolist(),
     target_node_filter="Entity",
     relationship_type=rel_label_to_predict,
     write_relationship_type=write_relationship_type,

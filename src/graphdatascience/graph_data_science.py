@@ -43,6 +43,7 @@ from graphdatascience.procedure_surface.api.community.triangle_count_endpoints i
 from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.config_endpoints import ConfigEndpoints
+from graphdatascience.procedure_surface.api.kge.kge_endpoints import KgeEndpoints
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
@@ -113,6 +114,7 @@ from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_e
 from graphdatascience.procedure_surface.cypher.community.triangles_cypher_endpoints import TrianglesCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
+from graphdatascience.procedure_surface.cypher.kge.kge_predict_cypher_endpoints import KgePredictCypherEndpoints
 from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import (
     ModelCatalogCypherEndpoints,
@@ -423,6 +425,13 @@ class GraphDataScience:
             train_endpoints=GraphSageTrainCypherEndpoints(self._query_runner),
             predict_endpoints=GraphSagePredictCypherEndpoints(self._query_runner),
         )
+
+    @property
+    def kge(self) -> KgeEndpoints:
+        """
+        Return endpoints for KGE (TransE/DistMult) relationship prediction.
+        """
+        return KgeEndpoints(KgePredictCypherEndpoints(self._query_runner))
 
     @property
     def harmonic_centrality(self) -> ClosenessHarmonicEndpoints:

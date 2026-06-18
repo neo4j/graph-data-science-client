@@ -25,11 +25,11 @@ Tutorials for additional details.
 == Prerequisites
 
 We also need to have the `graphdatascience` Python library installed,
-version `1.18` or later, as well as `pyspark`.
+version `2.0a1` or later, as well as `pyspark`.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.22" python-dotenv "pyspark[sql]"
+%pip install "graphdatascience>=2.0a1" python-dotenv "pyspark[sql]"
 ----
 
 [source, python, role=no-test]
