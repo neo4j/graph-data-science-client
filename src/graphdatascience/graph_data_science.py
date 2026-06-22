@@ -66,6 +66,7 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
 from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
@@ -574,6 +575,13 @@ class GraphDataScience:
         Return endpoints for the node similarity algorithm.
         """
         return NodeSimilarityCypherEndpoints(self._query_runner)
+
+    @property
+    def similarity(self) -> SimilarityFunctions:
+        """
+        Return similarity functions computed client-side.
+        """
+        return SimilarityFunctions()
 
     @property
     def page_rank(self) -> PageRankEndpoints:
