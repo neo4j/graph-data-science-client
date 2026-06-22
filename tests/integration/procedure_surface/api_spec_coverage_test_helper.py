@@ -268,7 +268,9 @@ def verify_return_fields(callable_object: MethodType | FunctionType, expected_re
             f"Callable object {method_str(callable_object)} has no return annotation. Mypy should complain :/"
         )
 
-    if return_annotation is DataFrame:
+    if return_annotation is DataFrame or (
+        inspect.isclass(return_annotation) and issubclass(return_annotation, DataFrame)
+    ):
         return
 
     result_type: type[BaseModel] | None = None

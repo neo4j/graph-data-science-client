@@ -2,6 +2,7 @@ import argparse
 import os
 import subprocess
 
+
 def range_partition(total_environments: int, n_partitions: int, partition_index: int) -> tuple[int, int]:
     """Return the (start, end) indices for a partition (0-based, end-exclusive).
 
@@ -22,11 +23,12 @@ def range_partition(total_environments: int, n_partitions: int, partition_index:
 
 def get_partition_environments(n_partitions: int, partition_index: int) -> list[str]:
     """Return the list of environments for a partition (0-based)."""
-    available_environments =  subprocess.getoutput("uvx -q tox -l -q | sort").splitlines()
+    available_environments = subprocess.getoutput("uvx -q tox -l -q | sort").splitlines()
     start, end = range_partition(len(available_environments), n_partitions, partition_index)
     partition_environments = available_environments[start:end]
     print(f"Running partition {partition_index} with {len(partition_environments)} environments")
     return partition_environments
+
 
 parser = argparse.ArgumentParser(description="Run tox environments for a specific partition")
 parser.add_argument("num_partitions", type=int, help="Total number of partitions")
@@ -35,5 +37,5 @@ args = parser.parse_args()
 
 environments_to_run = ", ".join(get_partition_environments(args.num_partitions, args.partition_index))
 
-if os.system(f"uvx tox run -e \"{environments_to_run}\"") != 0:
+if os.system(f'uvx tox run -e "{environments_to_run}"') != 0:
     raise Exception("Failed to run notebooks")
