@@ -1,6 +1,9 @@
 import argparse
+import logging
 import os
 import subprocess
+
+logging.basicConfig(level=logging.INFO)
 
 
 def range_partition(total_environments: int, n_partitions: int, partition_index: int) -> tuple[int, int]:
@@ -36,6 +39,8 @@ parser.add_argument("partition_index", type=int, help="Index of the partition to
 args = parser.parse_args()
 
 environments_to_run = ", ".join(get_partition_environments(args.num_partitions, args.partition_index))
+
+logging.info(f"Running environments: {environments_to_run}")
 
 if os.system(f'uvx tox run -e "{environments_to_run}"') != 0:
     raise Exception("Failed to run notebooks")
