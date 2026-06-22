@@ -54,7 +54,7 @@ class UtilEndpoints(ABC):
         Parameters
         ----------
         G: Graph
-            The graph to get the node property from.
+            Graph object to use
         node_id: int
             The id of the node to get the property from.
         property_key: str
