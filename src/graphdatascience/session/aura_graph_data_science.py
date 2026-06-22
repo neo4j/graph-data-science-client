@@ -66,10 +66,10 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
 from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import (
     TopologicalLinkPredictionEndpoints,
 )
-from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
 from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.scale_properties_arrow_endpoints import (
