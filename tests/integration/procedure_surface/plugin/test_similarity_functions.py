@@ -2,7 +2,7 @@
 Integration test: compare the Python SimilarityFunctions implementation against
 the GDS plugin running in a real Neo4j container.
 
-10 000 random float vector pairs are generated once, all six GDS similarity
+100 000 random float vector pairs are generated once, all six GDS similarity
 functions are evaluated in a single batched Cypher UNWIND query, and the
 results are compared element-by-element against the pure-Python implementation.
 """

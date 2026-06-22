@@ -18,12 +18,10 @@ def test_jaccard_identical(sim: SimilarityFunctions) -> None:
 
 
 def test_jaccard_disjoint(sim: SimilarityFunctions) -> None:
-    # set1 = {0}, set2 = {1}: intersection = {}, union = {0, 1}
     assert sim.jaccard([1.0, 0.0], [2.0, 3.0]) == pytest.approx(0)
 
 
 def test_jaccard_partial_overlap(sim: SimilarityFunctions) -> None:
-    # set1 = {0, 1}, set2 = {1, 2}, intersection = {1}, union = {0, 1, 2}
     assert sim.jaccard([1.0, 1.0, 2.0], [0.0, 1.0, 1.0]) == pytest.approx(2 / 4)
 
 
@@ -43,7 +41,6 @@ def test_overlap_identical(sim: SimilarityFunctions) -> None:
 
 
 def test_overlap_subset(sim: SimilarityFunctions) -> None:
-    # set1 = {0}, set2 = {0, 1}: intersection = 1, min = 1
     assert sim.overlap([1.0, 0.0], [1.0, 1.0]) == pytest.approx(1 / 2)
 
 
@@ -121,7 +118,6 @@ def test_euclidean_distance_same_vector(sim: SimilarityFunctions) -> None:
 
 
 def test_euclidean_distance_known(sim: SimilarityFunctions) -> None:
-    # distance between (0,0) and (3,4) = 5
     assert sim.euclidean_distance([0.0, 0.0], [3.0, 4.0]) == pytest.approx(5.0)
 
 
@@ -138,12 +134,10 @@ def test_euclidean_distance_mismatched_lengths(sim: SimilarityFunctions) -> None
 
 
 def test_euclidean_same_vector(sim: SimilarityFunctions) -> None:
-    # distance = 0 → similarity = 1 / (1 + 0) = 1.0
     assert sim.euclidean([1.0, 2.0], [1.0, 2.0]) == pytest.approx(1.0)
 
 
 def test_euclidean_known_distance(sim: SimilarityFunctions) -> None:
-    # distance = 5 → similarity = 1 / (1 + 5) = 1/6
     assert sim.euclidean([0.0, 0.0], [3.0, 4.0]) == pytest.approx(1 / 6)
 
 
