@@ -66,6 +66,9 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import (
+    TopologicalLinkPredictionEndpoints,
+)
 from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
 from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
@@ -164,6 +167,9 @@ from graphdatascience.procedure_surface.arrow.pipeline.pipeline_arrow_endpoints 
 from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints import KnnArrowEndpoints
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
     NodeSimilarityArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.topological_link_prediction_arrow_endpoints import (
+    TopologicalLinkPredictionArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.util_arrow_endpoints import UtilArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
@@ -288,6 +294,13 @@ class AuraGraphDataScience:
         Return endpoints for collapsing relationship paths.
         """
         return CollapsePathArrowEndpoints(self._authenticated_arrow_client, show_progress=self._show_progress)
+
+    @property
+    def topological_link_prediction(self) -> TopologicalLinkPredictionEndpoints:
+        """
+        Return endpoints for topological link prediction functions.
+        """
+        return TopologicalLinkPredictionArrowEndpoints()
 
     ## Algorithms
 

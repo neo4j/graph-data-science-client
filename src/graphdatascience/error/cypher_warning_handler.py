@@ -36,6 +36,11 @@ def filter_id_func_deprecation_warning() -> Callable[[F], F]:
                 message=r"warn: feature deprecated without replacement\. id is deprecated and will be removed without a replacement\.",
             )
 
+            warnings.filterwarnings(
+                "ignore",
+                message=r".*is deprecated, use `element_id` instead",
+            )
+
             return func(self, *args, **kwargs)
 
         return cast(F, wrapper)
