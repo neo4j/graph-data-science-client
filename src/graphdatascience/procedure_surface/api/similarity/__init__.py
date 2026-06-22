@@ -14,6 +14,7 @@ from graphdatascience.procedure_surface.api.similarity.node_similarity_results i
     NodeSimilarityStatsResult,
     NodeSimilarityWriteResult,
 )
+from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
 
 __all__ = [
     "KnnEndpoints",
@@ -26,4 +27,5 @@ __all__ = [
     "NodeSimilarityMutateResult",
     "NodeSimilarityStatsResult",
     "NodeSimilarityWriteResult",
+    "SimilarityFunctions",
 ]
