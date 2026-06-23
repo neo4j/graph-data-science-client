@@ -5,6 +5,6 @@ Model Catalog Endpoints
     :exclude-members: __init__
     :members:
 
-.. autoclass:: graphdatascience.model.v2.model_details.ModelDetails
+.. autoclass:: graphdatascience.model.model_details.ModelDetails
     :members:
     :exclude-members: __init__

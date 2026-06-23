@@ -5,7 +5,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
 )
@@ -59,7 +59,7 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 
 
 @pytest.fixture
-def gs_model(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> Generator[GraphSageModelV2, None, None]:
+def gs_model(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> Generator[GraphSageModel, None, None]:
     model, _ = GraphSageTrainArrowEndpoints(arrow_client, None)(
         G=sample_graph,
         model_name="gs-model",
@@ -75,14 +75,14 @@ def gs_model(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> Gen
     arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model.name()}).encode("utf-8"))
 
 
-def test_stream(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
+def test_stream(gs_model: GraphSageModel, sample_graph: Graph) -> None:
     result = gs_model.predict_stream(sample_graph, concurrency=4)
 
     assert set(result.columns) == {"nodeId", "embedding"}
     assert len(result) == 4
 
 
-def test_mutate(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
+def test_mutate(gs_model: GraphSageModel, sample_graph: Graph) -> None:
     result = gs_model.predict_mutate(sample_graph, concurrency=4, mutate_property="embedding")
 
     assert result.node_properties_written == 4
@@ -117,12 +117,12 @@ def test_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner
         arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model.name()}).encode("utf-8"))
 
 
-def test_write_without_write_back_client(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
+def test_write_without_write_back_client(gs_model: GraphSageModel, sample_graph: Graph) -> None:
     with pytest.raises(Exception, match="Write back is not supported by this session."):
         gs_model.predict_write(sample_graph, write_property="embedding", concurrency=4, write_concurrency=2)
 
 
-def test_estimate(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
+def test_estimate(gs_model: GraphSageModel, sample_graph: Graph) -> None:
     result = gs_model.predict_estimate(sample_graph, concurrency=4)
 
     assert result.node_count == 4
@@ -134,7 +134,7 @@ def test_estimate(gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
     assert result.heap_percentage_max > 0
 
 
-def test_compute(arrow_client: AuthenticatedArrowClient, gs_model: GraphSageModelV2, sample_graph: Graph) -> None:
+def test_compute(arrow_client: AuthenticatedArrowClient, gs_model: GraphSageModel, sample_graph: Graph) -> None:
     endpoints = GraphSagePredictArrowEndpoints(arrow_client, None, show_progress=False)
     handle = endpoints.compute(G=sample_graph, model_name=gs_model.name(), concurrency=4)
     summary = handle.summary()

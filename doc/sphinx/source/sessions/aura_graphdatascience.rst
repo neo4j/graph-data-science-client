@@ -4,20 +4,20 @@ AuraGraphDataScience
 .. toctree::
    :hidden:
 
-   ../v2_endpoints/catalog_arrow_endpoints
-   ../v2_endpoints/catalog_endpoints
-   ../v2_endpoints/centrality_endpoints
-   ../v2_endpoints/community_endpoints
-   ../v2_endpoints/node_embedding_endpoints
-   ../v2_endpoints/pathfinding_endpoints
-   ../v2_endpoints/pipeline_endpoints
-   ../v2_endpoints/similarity_endpoints
-   ../v2_endpoints/estimation_result
-   ../v2_endpoints/model_endpoints
-   ../v2_endpoints/config_endpoints
-   ../v2_endpoints/util_endpoints
-   ../v2_endpoints/system_endpoints
-   ../v2_endpoints/job_endpoints
+   ../endpoints/catalog_arrow_endpoints
+   ../endpoints/catalog_endpoints
+   ../endpoints/centrality_endpoints
+   ../endpoints/community_endpoints
+   ../endpoints/node_embedding_endpoints
+   ../endpoints/pathfinding_endpoints
+   ../endpoints/pipeline_endpoints
+   ../endpoints/similarity_endpoints
+   ../endpoints/estimation_result
+   ../endpoints/model_endpoints
+   ../endpoints/config_endpoints
+   ../endpoints/util_endpoints
+   ../endpoints/system_endpoints
+   ../endpoints/job_endpoints
 
 .. autoclass:: graphdatascience.session.AuraGraphDataScience
     :members:

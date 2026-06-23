@@ -12,7 +12,7 @@ Catalog Endpoints
     :exclude-members: __init__
 
 
-.. autoclass:: graphdatascience.graph.v2.graph_api.GraphV2
+.. autoclass:: graphdatascience.graph.graph_api.Graph
     :members:
     :exclude-members: __init__
 

@@ -7,7 +7,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
 
 
 class GraphSageTrainEndpoints(ABC):
@@ -42,7 +42,7 @@ class GraphSageTrainEndpoints(ABC):
         batch_size: int = 100,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
-    ) -> tuple[GraphSageModelV2, GraphSageTrainResult]: ...
+    ) -> tuple[GraphSageModel, GraphSageTrainResult]: ...
 
     @abstractmethod
     def estimate(

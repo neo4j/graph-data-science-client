@@ -23,12 +23,6 @@ class DebugEndpoints(ABC):
 
 
 class DebugSysInfoResult(BaseResult):
-    """A curated, stable subset of the key/value pairs returned by ``gds.debug.sysInfo``.
-
-    The procedure returns many more (version- and JVM-dependent) entries, such as
-    memory-pool details; those are ignored here.
-    """
-
     gds_version: str | None = None
     gds_edition: str | None = None
     neo4j_version: str | None = None

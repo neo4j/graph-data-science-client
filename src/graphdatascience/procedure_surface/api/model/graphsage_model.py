@@ -14,7 +14,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
 )
 
 
-class GraphSageModelV2(Model):
+class GraphSageModel(Model):
     """
     Represents a GraphSAGE model in the model catalog.
     Construct this using :func:`gds.v2.graphSage.train()`.
