@@ -117,7 +117,7 @@ def start_session(
         return
 
     session_image = os.getenv(
-        "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
+        "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release"
     )
     LOGGER.info(f"Using session image: {session_image}")
 
