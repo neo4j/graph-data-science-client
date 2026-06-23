@@ -76,7 +76,7 @@ class ArrowV1GraphConstructor(GraphConstructor):
         for df in dfs:
             i = 0
             while i < len(df):
-                partitioned_dfs.append(df.iloc[i : i + self._min_partition_size].copy())
+                partitioned_dfs.append(df.iloc[i : i + self._min_partition_size])
                 i += self._min_partition_size
 
         return partitioned_dfs
