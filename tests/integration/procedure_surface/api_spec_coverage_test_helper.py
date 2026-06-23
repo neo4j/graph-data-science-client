@@ -18,6 +18,7 @@ from graphdatascience.procedure_surface.api.catalog import (
     GraphWithGenerationStats,
     GraphWithSamplingResult,
 )
+from graphdatascience.procedure_surface.api.debug_endpoints import DebugSysInfoResult
 from graphdatascience.server_version.server_version import ServerVersion
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointSpec,
@@ -54,8 +55,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "fast_path.mutate",  # Arrow-only (AGA) endpoint
     "fast_path.stream",  # Arrow-only (AGA) endpoint
     "fast_path.write",  # Arrow-only (AGA) endpoint
-    "debug.sys_info",
-    "license.state",
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(
@@ -193,9 +192,9 @@ EXPECTED_RETURN_FIELD_ALIASES = {
 
 EXPECTED_IGNORED_RETURN_FIELDS = {GraphInfo: ["schema"], GraphInfoWithDegrees: ["schema"]}
 
-# Return types that are opaque value objects rather than result models / DataFrames,
-# so their fields cannot be verified against the spec's return fields.
-RETURN_VERIFICATION_SKIPPED_TYPES = {ServerVersion}
+# Return types whose fields intentionally don't map field-by-field to the spec's return fields
+# (opaque value objects, or pivoted key/value results), so they can't be verified against the spec.
+RETURN_VERIFICATION_SKIPPED_TYPES = {ServerVersion, DebugSysInfoResult}
 
 
 def method_str(method: MethodType | FunctionType) -> str:
