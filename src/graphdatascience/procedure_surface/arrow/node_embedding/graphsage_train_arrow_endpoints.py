@@ -2,7 +2,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
@@ -59,7 +59,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
         batch_size: int = 100,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
-    ) -> tuple[GraphSageModelV2, GraphSageTrainResult]:
+    ) -> tuple[GraphSageModel, GraphSageTrainResult]:
         config = self._node_property_endpoints.create_base_config(
             G,
             model_name=model_name,
@@ -92,7 +92,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
 
         result = self._node_property_endpoints.run_job_and_get_summary("v2/embeddings.graphSage.train", config)
 
-        model = GraphSageModelV2(
+        model = GraphSageModel(
             model_name,
             self._model_api,
             predict_endpoints=GraphSagePredictArrowEndpoints(self._arrow_client, self._write_protocol),

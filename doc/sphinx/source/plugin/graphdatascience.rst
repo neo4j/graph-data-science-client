@@ -10,14 +10,8 @@ GraphDataScience
     :maxdepth: 1
     :hidden:
 
-    graph
-    algorithms
-    ml
-    model
-    misc
-    ../v2_endpoints/catalog_cypher_endpoints
-    ../v2_endpoints/license_endpoints
-    ../v2_endpoints/debug_endpoints
-    graph_object
-    graph_create_result
+    ../endpoints/catalog_cypher_endpoints
+    ../endpoints/kge_endpoints
+    ../endpoints/license_endpoints
+    ../endpoints/debug_endpoints
     server_version
