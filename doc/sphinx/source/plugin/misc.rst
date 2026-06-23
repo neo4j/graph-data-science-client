@@ -75,9 +75,9 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
    Returns the memory summary of a user
 
-.. py:function:: gds.debug.sysInfo() -> Series[Any]
+.. py:function:: gds.debug.sys_info() -> DebugSysInfoResult
 
-    Returns details about the status of the system
+    Returns details about the status of the system. Not available in AuraDS.
 
 .. py:function:: gds.debug.arrow() -> Series[Any]
 
@@ -107,7 +107,7 @@ These all assume that an object of :class:`.GraphDataScience` is available as `g
 
     Return the installed graph data science library version.
 
-.. py:function:: gds.license.state() -> Series[Any]
+.. py:function:: gds.license.state() -> LicenseStateResult
 
     Returns details about the graph data science library license.
 
