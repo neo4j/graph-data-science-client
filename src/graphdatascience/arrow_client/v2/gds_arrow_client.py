@@ -10,6 +10,7 @@ import pyarrow
 from pyarrow import RecordBatch, flight
 
 from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
+from graphdatascience.arrow_client.arrow_table_utils import table_from_pandas
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 
@@ -504,14 +505,14 @@ class GdsArrowClient:
         batch_size: int,
     ) -> list[list[pyarrow.RecordBatch]]:
         if isinstance(data, pandas.DataFrame):
-            return [pyarrow.Table.from_pandas(data).to_batches(batch_size)]
+            return [table_from_pandas(data).to_batches(batch_size)]
 
         if isinstance(data, pyarrow.Table):
             return [data.to_batches(batch_size)]
 
         if isinstance(data, list):
             if all(isinstance(entry, pandas.DataFrame) for entry in data):
-                return [pyarrow.Table.from_pandas(entry).to_batches(batch_size) for entry in data]
+                return [table_from_pandas(entry).to_batches(batch_size) for entry in data]
 
             if all(isinstance(entry, pyarrow.RecordBatch) for entry in data):
                 return [data]

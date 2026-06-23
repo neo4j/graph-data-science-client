@@ -12,6 +12,7 @@ from pyarrow.types import is_dictionary
 from pydantic import BaseModel
 
 from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
+from graphdatascience.arrow_client.arrow_table_utils import table_from_pandas
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_single
 
@@ -486,11 +487,13 @@ class GdsArrowClient:
         batch_size: int,
         progress_callback: ProgressCallback,
     ) -> None:
+        batches: list[RecordBatch]
         match data:
             case pyarrow.Table():
                 batches = data.to_batches(batch_size)
             case pandas.DataFrame():
-                batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
+                batches = table_from_pandas(data).to_batches(batch_size)
+
             case _:
                 batches = data
 

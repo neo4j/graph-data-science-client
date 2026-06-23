@@ -149,7 +149,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             # concat instead of join as we want to first have all nodes and then the rels
             # this way we don't duplicate the node property data and its cheaper
-            combined_df: DataFrame = concat(aligned_node_dfs + aligned_rel_dfs, ignore_index=True, copy=False)
+            combined_df: DataFrame = concat(aligned_node_dfs + aligned_rel_dfs, ignore_index=True)
             # sort the columns to ensure the order is the same (for testing)
             combined_df.sort_index(axis="columns", inplace=True)
             # using a list and not a set to preserve the order

@@ -48,11 +48,22 @@ class SessionDetails:
             host=data["host"],
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
             created_at=TimeParser.fromisoformat(data["created_at"]),
-            ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
+            ttl=cls._parse_ttl(ttl),
             project_id=data["project_id"],
             user_id=data["user_id"],
             cloud_location=cloud_location,
         )
+
+    @staticmethod
+    def _parse_ttl(ttl: Any | None) -> timedelta | None:
+        # datetime has no support for parsing timedelta, so we rely on pandas.
+        # The Aura API encodes days with a lowercase "d" (e.g. "1d8h1m2s"), but pandas >= 3.0
+        # deprecates the lowercase day unit in favour of the uppercase "D".
+        if not ttl:
+            return None
+        if isinstance(ttl, str):
+            ttl = ttl.replace("d", "D")
+        return Timedelta(ttl).to_pytimedelta()
 
     def bolt_connection_url(self) -> str:
         return f"neo4j+s://{self.host}"
@@ -86,7 +97,7 @@ class SessionDetailsWithErrors(SessionDetails):
             host=data["host"],
             expiry_date=TimeParser.fromisoformat(expiry_date) if expiry_date else None,
             created_at=TimeParser.fromisoformat(data["created_at"]),
-            ttl=Timedelta(ttl).to_pytimedelta() if ttl else None,  # datetime has no support for parsing timedelta
+            ttl=cls._parse_ttl(ttl),
             project_id=data["project_id"],
             user_id=data["user_id"],
             cloud_location=cloud_location,
