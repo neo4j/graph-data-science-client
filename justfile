@@ -34,11 +34,11 @@ post-release-main version="":
     ./scripts/release_helper/post_release_main.py {{version}}
 
 unit-tests extra_options="":
-    uv run pytest tests/unit {{extra_options}}
+    uv run --group test pytest tests/unit {{extra_options}}
 
-# such as `just it-v2 wcc`
+# such as `just it wcc`
 it filter="" extra_options="":
-    uv run pytest tests/integration --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run --group test pytest tests/integration --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 test-session-notebooks:
     # expects Aura API credentials to be set as env vars
@@ -83,7 +83,7 @@ test-plugin-notebooks-local filter="" enterprise="true":
     uv run --group notebook-ci ./scripts/run_notebooks.py {{filter}}
 
 test-tox-partition number-of-partitions partition-index:
-    uv run scripts/ci/run_tox_environments.py {{number-of-partitions}} {{partition-index}}
+    uv run --group test scripts/ci/run_tox_environments.py {{number-of-partitions}} {{partition-index}}
 
 
 update-session-image:
