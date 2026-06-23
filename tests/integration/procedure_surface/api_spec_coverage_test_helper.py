@@ -18,6 +18,7 @@ from graphdatascience.procedure_surface.api.catalog import (
     GraphWithGenerationStats,
     GraphWithSamplingResult,
 )
+from graphdatascience.server_version.server_version import ServerVersion
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointSpec,
     EndpointWithModesSpec,
@@ -49,6 +50,12 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "graph.relationship_property.stream",
     "graph.node_label.mutate",
     "graph.relationship_properties.stream",
+    # newly added in the spec, not supported by the python client yet
+    "fast_path.mutate",  # Arrow-only (AGA) endpoint
+    "fast_path.stream",  # Arrow-only (AGA) endpoint
+    "fast_path.write",  # Arrow-only (AGA) endpoint
+    "debug.sys_info",
+    "license.state",
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(
@@ -72,6 +79,7 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("prizesteiner_tree", "prize_steiner_tree"),
         ("spanning_tree", "spanning_tree"),
         ("steiner_tree", "steiner_tree"),
+        ("version", "server_version"),
         ("beta.pipeline.nodeClassification", "pipeline.node_classification"),
         ("alpha.pipeline.nodeClassification", "pipeline.node_classification"),
         ("beta.pipeline.linkPrediction", "pipeline.link_prediction"),
@@ -185,6 +193,10 @@ EXPECTED_RETURN_FIELD_ALIASES = {
 
 EXPECTED_IGNORED_RETURN_FIELDS = {GraphInfo: ["schema"], GraphInfoWithDegrees: ["schema"]}
 
+# Return types that are opaque value objects rather than result models / DataFrames,
+# so their fields cannot be verified against the spec's return fields.
+RETURN_VERIFICATION_SKIPPED_TYPES = {ServerVersion}
+
 
 def method_str(method: MethodType | FunctionType) -> str:
     if isinstance(method, MethodType):
@@ -271,6 +283,10 @@ def verify_return_fields(callable_object: MethodType | FunctionType, expected_re
     if return_annotation is DataFrame or (
         inspect.isclass(return_annotation) and issubclass(return_annotation, DataFrame)
     ):
+        return
+
+    # Opaque value objects that don't map field-by-field to the spec's return fields.
+    if return_annotation in RETURN_VERIFICATION_SKIPPED_TYPES:
         return
 
     result_type: type[BaseModel] | None = None

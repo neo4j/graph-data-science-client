@@ -58,19 +58,30 @@ class EndpointSpec(BaseModel, extra="forbid", populate_by_name=True):
 class EndpointWithModesSpec(BaseModel, extra="forbid", populate_by_name=True):
     """Represents a GDS procedure with its parameters and modes."""
 
-    name: str
+    name: str | None = None  # None if only exposed in the Arrow surface and not in the Cypher surface.
+    arrowEndpoint: str | None = None  # The endpoint name for the Arrow surface, if applicable.
     parameters: List[Parameter]
     modes: List[Mode]
 
     def callable_modes(self) -> List[EndpointSpec]:
+        base_name = self.name if self.name is not None else self._arrow_base_name()
         return [
             EndpointSpec(
-                name=f"{self.name}.{mode.mode}" if mode.mode.lower() != "unknown" else self.name,
+                name=f"{base_name}.{mode.mode}" if mode.mode.lower() != "unknown" else base_name,
                 parameters=self.parameters + mode.parameters,
                 returnFields=mode.returnFields,
             )
             for mode in self.modes
         ]
+
+    def arrow_only(self) -> bool:
+        return self.name is None and self.arrowEndpoint is not None
+
+    def _arrow_base_name(self) -> str:
+        # For Arrow-only endpoints derive a base name from the Arrow endpoint, dropping the
+        # `v2/` prefix and the leading category, e.g. "v2/embeddings.fastPath" -> "fastPath".
+        assert self.arrowEndpoint is not None
+        return self.arrowEndpoint.removeprefix("v2/").split(".", 1)[-1]
 
 
 def resolve_spec_from_file(file_path: Path) -> list[EndpointWithModesSpec]:
