@@ -52,10 +52,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "graph.relationship_property.stream",
     "graph.node_label.mutate",
     "graph.relationship_properties.stream",
-    # newly added in the spec, not supported by the python client yet
-    "fast_path.mutate",  # Arrow-only (AGA) endpoint
-    "fast_path.stream",  # Arrow-only (AGA) endpoint
-    "fast_path.write",  # Arrow-only (AGA) endpoint
     "util.infinity",  # built-in in python
     "util.is_finite",  # built-in in python
     "util.is_infinite",  # built-in in python
@@ -495,6 +491,7 @@ def assert_api_spec_coverage(
     gds_api_spec: list[EndpointWithModesSpec],
     endpoint_mappings: OrderedDict[str, str] | None = None,
     unmapped_endpoints: set[str] | None = None,
+    include_arrow_only: bool = False,
 ) -> None:
     if unmapped_endpoints is None:
         unmapped_endpoints = UNMAPPED_ENDPOINTS
@@ -503,6 +500,9 @@ def assert_api_spec_coverage(
     available_endpoints: set[str] = set()
 
     for endpoint_with_modes_spec in gds_api_spec:
+        # Arrow-only endpoints are not part of the Cypher surface.
+        if endpoint_with_modes_spec.arrow_only() and not include_arrow_only:
+            continue
         for endpoint_spec in endpoint_with_modes_spec.callable_modes():
             endpoint_name = pythonic_endpoint_name(
                 endpoint_spec.name,
