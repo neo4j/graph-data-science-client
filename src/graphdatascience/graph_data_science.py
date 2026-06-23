@@ -43,7 +43,9 @@ from graphdatascience.procedure_surface.api.community.triangle_count_endpoints i
 from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.config_endpoints import ConfigEndpoints
+from graphdatascience.procedure_surface.api.debug_endpoints import DebugEndpoints
 from graphdatascience.procedure_surface.api.kge.kge_endpoints import KgeEndpoints
+from graphdatascience.procedure_surface.api.license_endpoints import LicenseEndpoints
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
@@ -116,7 +118,9 @@ from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_e
 from graphdatascience.procedure_surface.cypher.community.triangles_cypher_endpoints import TrianglesCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
+from graphdatascience.procedure_surface.cypher.debug_cypher_endpoints import DebugCypherEndpoints
 from graphdatascience.procedure_surface.cypher.kge.kge_predict_cypher_endpoints import KgePredictCypherEndpoints
+from graphdatascience.procedure_surface.cypher.license_cypher_endpoints import LicenseCypherEndpoints
 from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import (
     ModelCatalogCypherEndpoints,
@@ -304,6 +308,20 @@ class GraphDataScience:
         Return utility endpoints.
         """
         return UtilCypherEndpoints(self._query_runner)
+
+    @property
+    def license(self) -> LicenseEndpoints:
+        """
+        Return license endpoints.
+        """
+        return LicenseCypherEndpoints(self._query_runner)
+
+    @property
+    def debug(self) -> DebugEndpoints:
+        """
+        Return debug endpoints.
+        """
+        return DebugCypherEndpoints(self._query_runner)
 
     @property
     def list_progress(self) -> ListProgressCypherEndpoint:

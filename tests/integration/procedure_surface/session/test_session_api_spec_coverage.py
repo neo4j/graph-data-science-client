@@ -10,8 +10,10 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
     "kge.predict.mutate",
     "kge.predict.stream",
     "kge.predict.write",
-    # server_version is only exposed on the Cypher (plugin) surface.
+    # server_version, license.state and debug.sys_info are only exposed on the Cypher (plugin) surface.
     "server_version",
+    "license.state",
+    "debug.sys_info",
 }
 
 
