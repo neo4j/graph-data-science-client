@@ -15,7 +15,9 @@ GraphDataScience
     ml
     model
     misc
-    plugin_v2_endpoints
+    ../v2_endpoints/catalog_cypher_endpoints
+    ../v2_endpoints/license_endpoints
+    ../v2_endpoints/debug_endpoints
     graph_object
     graph_create_result
     server_version
