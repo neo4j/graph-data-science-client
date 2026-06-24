@@ -30,7 +30,7 @@ def arrow_client() -> MagicMock:
 
 @pytest.fixture
 def qr() -> CollectingQueryRunner:
-    return CollectingQueryRunner(ServerVersion(2, 10, 0))
+    return CollectingQueryRunner(ServerVersion(2, 14, 0))
 
 
 class TestSelect:

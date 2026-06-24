@@ -21,8 +21,7 @@ class CypherProjectionApi:
     TARGET_NODE_LABEL = "targetNodeLabels"
     SOURCE_NODE_PROPERTIES = "sourceNodeProperties"
     TARGET_NODE_PROPERTIES = "targetNodeProperties"
-    REL_PROPERTIES = "properties"
-    REL_PROPERTIES_NEW = "relationshipProperties"
+    REL_PROPERTIES = "relationshipProperties"
 
 
 @dataclass
@@ -136,13 +135,7 @@ class CypherGraphConstructor(GraphConstructor):
                     f"but the columns {same_cols} exist in both dfs. Please rename the column in one df."
                 )
 
-            is_cypher_projection_v2 = self._server_version >= ServerVersion(2, 4, 0)
-
-            rel_properties_key = (
-                CypherProjectionApi.REL_PROPERTIES_NEW
-                if is_cypher_projection_v2
-                else CypherProjectionApi.REL_PROPERTIES
-            )
+            rel_properties_key = CypherProjectionApi.REL_PROPERTIES
 
             aligned_node_dfs = self.adjust_node_dfs(node_dfs, graph_schema, rel_properties_key)
             aligned_rel_dfs = self.adjust_rel_dfs(relationship_dfs, graph_schema, rel_properties_key)
@@ -172,23 +165,18 @@ class CypherGraphConstructor(GraphConstructor):
             )
             target_id_clause = self.check_value_clause(combined_cols, "targetNodeId")
 
-            nodes_config_part = self.nodes_config_part(graph_schema.nodes_per_df, is_cypher_projection_v2)
+            nodes_config_part = self.nodes_config_part(graph_schema.nodes_per_df)
             rels_config_part = self.rels_config_part(graph_schema.rels_per_df, rel_properties_key)
 
-            if is_cypher_projection_v2:
-                data_config = f"{{{', '.join(itertools.chain(nodes_config_part, rels_config_part))}}}"
-            else:
-                data_config = f"{{{', '.join(nodes_config_part)}}}, {{{', '.join(rels_config_part)}}}"
+            data_config = f"{{{', '.join(itertools.chain(nodes_config_part, rels_config_part))}}}"
 
             property_clauses_str = f"{os.linesep}" if len(property_clauses) > 0 else ""
             property_clauses_str += f"{os.linesep}".join(property_clauses)[:-2]  # remove the final comma
 
-            tier = "" if is_cypher_projection_v2 else ".alpha"
-
             query = (
                 "UNWIND $data AS data"
                 f" WITH data, {source_node_labels_clause}{rel_type_clause}{target_id_clause}{property_clauses_str}"
-                f" RETURN gds{tier}.graph.project("
+                f" RETURN gds.graph.project("
                 f"$graph_name, data[{combined_cols.index('sourceNodeId')}], targetNodeId, "
                 f"{data_config}, $configuration)"
             )
@@ -307,7 +295,7 @@ class CypherGraphConstructor(GraphConstructor):
 
             return adjusted_dfs
 
-        def nodes_config_part(self, node_cols: list[EntityColumnSchema], is_cypher_projection_v2: bool) -> list[str]:
+        def nodes_config_part(self, node_cols: list[EntityColumnSchema]) -> list[str]:
             # Cannot use a dictionary as we need to refer to the `data` variable in the cypher query.
             # Otherwise we would just pass a string such as `data[0]`
             nodes_config_fields: list[str] = []
@@ -315,20 +303,18 @@ class CypherGraphConstructor(GraphConstructor):
                 nodes_config_fields.append(
                     f"{CypherProjectionApi.SOURCE_NODE_LABEL}: {CypherProjectionApi.SOURCE_NODE_LABEL}"
                 )
-                if is_cypher_projection_v2:
-                    nodes_config_fields.append(
-                        f"{CypherProjectionApi.TARGET_NODE_LABEL}: NULL",
-                    )
+                nodes_config_fields.append(
+                    f"{CypherProjectionApi.TARGET_NODE_LABEL}: NULL",
+                )
 
             # as we first list all nodes at the top of the df, we don't need to lookup properties for the target node
             if any(x.has_properties() for x in node_cols):
                 nodes_config_fields.append(
                     f"{CypherProjectionApi.SOURCE_NODE_PROPERTIES}: {CypherProjectionApi.SOURCE_NODE_PROPERTIES}"
                 )
-                if is_cypher_projection_v2:
-                    nodes_config_fields.append(
-                        f"{CypherProjectionApi.TARGET_NODE_PROPERTIES}: NULL",
-                    )
+                nodes_config_fields.append(
+                    f"{CypherProjectionApi.TARGET_NODE_PROPERTIES}: NULL",
+                )
 
             return nodes_config_fields
 

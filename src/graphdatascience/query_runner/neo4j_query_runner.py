@@ -144,9 +144,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._last_bookmarks: Any | None = None
         self._server_version: ServerVersion | None = None
         self._show_progress = show_progress
-        self._progress_logger = QueryProgressLogger(
-            self.__run_cypher_simplified_for_query_progress_logger, self.server_version
-        )
+        self._progress_logger = QueryProgressLogger(self.__run_cypher_simplified_for_query_progress_logger)
         self._instance_description = instance_description
 
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: str | None) -> DataFrame:
