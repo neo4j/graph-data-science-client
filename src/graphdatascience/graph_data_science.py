@@ -256,7 +256,7 @@ class GraphDataScience:
         self._arrow_client: GdsArrowClient | None = None
 
         arrow_info = ArrowInfo.create(self._query_runner)
-        if arrow and arrow_info.enabled and self._server_version >= ServerVersion(2, 1, 0):
+        if arrow and arrow_info.enabled:
             arrow_auth = None
             if auth is not None:
                 username, password = auth

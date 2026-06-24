@@ -33,45 +33,10 @@ def test_call_through_functions() -> None:
         progress_fetched_event.wait(5)
         return DataFrame([{"result": 42}])
 
-    qpl = QueryProgressLogger(fake_run_cypher, lambda: ServerVersion(3, 0, 0))
+    qpl = QueryProgressLogger(fake_run_cypher)
     df = qpl.run_with_progress_logging(fake_query, "foo", "database")
 
     assert len(progress_called) > 0
-    assert df["result"][0] == 42
-
-
-def test_skips_progress_logging_for_old_server_version() -> None:
-    def fake_run_cypher(query: str, database: str | None = None) -> DataFrame:
-        print("Should not be called!")
-        assert False
-
-    def fake_query() -> DataFrame:
-        return DataFrame([{"result": 42}])
-
-    qpl = QueryProgressLogger(fake_run_cypher, lambda: ServerVersion(2, 0, 0))
-    df = qpl.run_with_progress_logging(fake_query, "foo", "database")
-
-    assert df["result"][0] == 42
-
-
-def test_uses_beta_endpoint() -> None:
-    progress_fetched_event = threading.Event()
-
-    def fake_run_cypher(query: str, database: str | None = None) -> DataFrame:
-        assert "CALL gds.beta.listProgress('foo')" in query
-        assert database == "database"
-
-        progress_fetched_event.set()
-
-        return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
-
-    def fake_query() -> DataFrame:
-        progress_fetched_event.wait(5)
-        return DataFrame([{"result": 42}])
-
-    qpl = QueryProgressLogger(fake_run_cypher, lambda: ServerVersion(2, 4, 0))
-    df = qpl.run_with_progress_logging(fake_query, "foo", "database")
-
     assert df["result"][0] == 42
 
 
@@ -82,7 +47,7 @@ def test_uses_query_provider() -> None:
     def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
         return query_runner.run_cypher(query, QueryType.USER_ACTION, db=database)
 
-    qpl = QueryProgressLogger(simple_run_cypher, lambda: server_version)
+    qpl = QueryProgressLogger(simple_run_cypher)
     progress_provider = qpl._select_progress_provider("test-job")
     assert isinstance(progress_provider, QueryProgressProvider)
 
@@ -104,7 +69,7 @@ def test_uses_query_provider_with_task_description() -> None:
     def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
         return query_runner.run_cypher(query, QueryType.USER_ACTION, db=database)
 
-    qpl = QueryProgressLogger(simple_run_cypher, lambda: server_version)
+    qpl = QueryProgressLogger(simple_run_cypher)
     progress_provider = qpl._select_progress_provider("test-job")
     assert isinstance(progress_provider, QueryProgressProvider)
 
@@ -121,7 +86,6 @@ def test_progress_bar_quantitive_output() -> None:
     with StringIO() as pbarOutputStream:
         qpl = QueryProgressLogger(
             simple_run_cypher,
-            lambda: ServerVersion(3, 0, 0),
             progress_bar_options={"file": pbarOutputStream, "mininterval": 0, "ascii": True},
         )
 
@@ -158,7 +122,6 @@ def test_progress_bar_qualitative_output() -> None:
     with StringIO() as pbarOutputStream:
         qpl = QueryProgressLogger(
             simple_run_cypher,
-            lambda: ServerVersion(3, 0, 0),
             progress_bar_options={"file": pbarOutputStream, "mininterval": 100},
         )
 
@@ -200,7 +163,6 @@ def test_progress_bar_with_failing_query() -> None:
     with StringIO() as pbarOutputStream:
         qpl = QueryProgressLogger(
             simple_run_cypher,
-            lambda: ServerVersion(3, 0, 0),
             progress_bar_options={"file": pbarOutputStream, "mininterval": 100},
         )
 
@@ -224,7 +186,7 @@ def test_uses_static_store() -> None:
     def fake_run_cypher(query: str, database: str | None = None) -> DataFrame:
         return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
 
-    qpl = QueryProgressLogger(fake_run_cypher, lambda: ServerVersion(3, 0, 0))
+    qpl = QueryProgressLogger(fake_run_cypher)
     StaticProgressStore.register_task_with_unknown_volume("test-job", "Test task")
 
     progress_provider = qpl._select_progress_provider("test-job")
