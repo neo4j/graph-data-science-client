@@ -100,7 +100,8 @@ notebook-base = [
 ]
 notebook-aura-ci = [
     { include-group = "notebook-base" },
-    "python-dotenv==1.2.1"
+    "python-dotenv==1.2.1",
+    "pyspark[sql]"
 ]
 notebook-ci = [
     { include-group = "notebook-base" },

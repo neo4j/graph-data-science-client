@@ -235,7 +235,7 @@ arrow_client.triplet_load_done(job_id)
 while not arrow_client.job_status(job_id).succeeded():
     time.sleep(1)
 
-G = gds.v2.graph.get(graph_name)
+G = gds.graph.get(graph_name)
 G
 ----
 
@@ -247,7 +247,7 @@ Python Client API. See the other tutorials for more examples.
 [source, python, role=no-test]
 ----
 print("Running PageRank ...")
-pr_result = gds.v2.page_rank.mutate(G, mutate_property="pagerank")
+pr_result = gds.page_rank.mutate(G, mutate_property="pagerank")
 ----
 
 == Sending the computation result back to Spark
