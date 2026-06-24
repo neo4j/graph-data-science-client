@@ -41,8 +41,13 @@ it filter="" extra_options="":
     uv run --group test pytest tests/integration --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 test-session-notebooks:
+    #!/usr/bin/env bash
     # expects Aura API credentials to be set as env vars
-    uv run scripts/ci/run_session_notebooks.py
+    set -uo pipefail
+    rc=0
+    uv run scripts/ci/run_session_notebooks.py              || rc=1
+    uv run scripts/ci/run_session_notebooks_self_managed.py || rc=1
+    exit $rc
 
 test-aurads-notebooks:
     # expects Aura API credentials to be set as env vars
