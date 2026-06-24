@@ -1095,8 +1095,8 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "multimethod", specifier = ">=1.0,<3.0" },
-    { name = "neo4j", specifier = ">=4.4.12,<7.0" },
-    { name = "neo4j-rust-ext", marker = "extra == 'rust-ext'", specifier = ">=4.4.12,<7.0" },
+    { name = "neo4j", specifier = ">=5.26.0,<7.0" },
+    { name = "neo4j-rust-ext", marker = "extra == 'rust-ext'", specifier = ">=5.26.0,<7.0" },
     { name = "networkx", marker = "extra == 'networkx'", specifier = ">=2.0,<4.0" },
     { name = "numpy", specifier = "<3.0" },
     { name = "ogb", marker = "extra == 'ogb'", specifier = ">=1.0,<2.0" },
