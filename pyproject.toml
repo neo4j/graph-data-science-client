@@ -29,7 +29,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "multimethod >= 1.0, < 3.0",
-    "neo4j >= 4.4.12, < 7.0",
+    "neo4j >= 5.26.0, < 7.0",
     "numpy < 3.0",
     "pandas>=2.0,<4.0",
     "pyarrow >= 18.0, < 24.0",
@@ -50,7 +50,7 @@ BugTracker = "https://github.com/neo4j/graph-data-science-client/issues"
 [project.optional-dependencies]
 networkx = ["networkx >= 2.0, < 4.0"]
 ogb = ["ogb >= 1.0, < 2.0"]
-rust-ext = ["neo4j-rust-ext >= 4.4.12, < 7.0"]
+rust-ext = ["neo4j-rust-ext >= 5.26.0, < 7.0"]
 
 
 [dependency-groups]
