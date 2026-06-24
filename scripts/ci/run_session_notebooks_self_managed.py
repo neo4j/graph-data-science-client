@@ -7,6 +7,7 @@ from pathlib import Path
 from types import FrameType
 from typing import Optional
 
+from aura_api_ci import AuraApiCI
 from dateutil.relativedelta import relativedelta
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
@@ -61,9 +62,10 @@ def latest_neo4j_version() -> str:
 
 
 def main() -> None:
-    client_id = os.environ["AURA_API_CLIENT_ID"]
-    client_secret = os.environ["AURA_API_CLIENT_SECRET"]
-    project_id = os.environ.get("AURA_PROJECT_ID")
+    aura_api = AuraApiCI.from_env()
+    client_id = aura_api.client_id
+    client_secret = aura_api.client_secret
+    project_id = aura_api.get_tenant_id()
 
     logger.info("Using project_id=%s", project_id)
 
@@ -118,10 +120,8 @@ def main() -> None:
                 signal.signal(signal.SIGINT, handle_signal)
                 signal.signal(signal.SIGTERM, handle_signal)
 
-                project_id_part = f"PROJECT_ID={project_id}" if project_id else ""
-
                 cmd = (
-                    f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} {project_id_part} "
+                    f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} PROJECT_ID={project_id} "
                     f"NEO4J_URI={neo4j_uri} NEO4J_USERNAME=neo4j NEO4J_PASSWORD=password "
                     f"uv run --group notebook-aura-ci ./scripts/run_notebooks.py sessions-self-managed-db"
                 )

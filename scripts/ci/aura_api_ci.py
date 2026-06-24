@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from time import sleep
 from typing import Any
@@ -26,6 +27,31 @@ class AuraApiCI:
         self._logger = logging.getLogger()
         self._auth = (client_id, client_secret)
         self._project_id = project_id
+
+    @classmethod
+    def from_env(cls) -> "AuraApiCI":
+        """Build an AuraApiCI from the standard CI environment variables.
+
+        Reads AURA_API_CLIENT_ID and AURA_API_CLIENT_SECRET (required) and
+        AURA_PROJECT_ID (optional).
+        """
+        return cls(
+            client_id=os.environ["AURA_API_CLIENT_ID"],
+            client_secret=os.environ["AURA_API_CLIENT_SECRET"],
+            project_id=os.environ.get("AURA_PROJECT_ID"),
+        )
+
+    @property
+    def client_id(self) -> str:
+        return self._auth[0]
+
+    @property
+    def client_secret(self) -> str:
+        return self._auth[1]
+
+    @property
+    def project_id(self) -> str | None:
+        return self._project_id
 
     def _build_header(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self._auth_token()}", "User-agent": "neo4j-graphdatascience-ci"}
@@ -158,4 +184,5 @@ class AuraApiCI:
         raw_data = response.json()["data"]
         assert len(raw_data) == 1, f"Expected exactly one tenant for the given credentials, but got {raw_data}"
 
-        return raw_data[0]["id"]  # type: ignore
+        self._project_id = raw_data[0]["id"]  # type: ignore
+        return self._project_id
