@@ -14,6 +14,9 @@ def main() -> None:
     client_id = os.environ["AURA_API_CLIENT_ID"]
     client_secret = os.environ["AURA_API_CLIENT_SECRET"]
     project_id = os.environ.get("AURA_PROJECT_ID")
+
+    logging.info("Using project_id=%s", project_id)
+
     aura_api = AuraApiCI(client_id=client_id, client_secret=client_secret, project_id=project_id)
 
     build_id = os.environ.get("BUILD_ID", None)
