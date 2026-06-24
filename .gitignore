@@ -210,3 +210,5 @@ examples/dev/*
 dataset/
 /graph-data-science-client.iml
 data_from_zip/
+# Dataset downloaded by the spark session notebook
+bike_trips_data/

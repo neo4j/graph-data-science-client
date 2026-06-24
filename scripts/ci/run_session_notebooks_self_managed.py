@@ -65,6 +65,8 @@ def main() -> None:
     client_secret = os.environ["AURA_API_CLIENT_SECRET"]
     project_id = os.environ.get("AURA_PROJECT_ID")
 
+    logger.info("Using project_id=%s", project_id)
+
     default_neo4j_image = (
         f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
     )
