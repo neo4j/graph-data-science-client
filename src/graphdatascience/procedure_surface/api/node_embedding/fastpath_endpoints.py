@@ -71,7 +71,7 @@ class FastPathEndpoints(ABC):
         categorical_event_properties
             Event node properties holding categorical values.
         relationship_types
-            Filter the graph using the given relationship types.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         context_node_label
             Optional node label for context nodes describing events.
         decay_factor
@@ -148,7 +148,7 @@ class FastPathEndpoints(ABC):
         categorical_event_properties
             Event node properties holding categorical values.
         relationship_types
-            Filter the graph using the given relationship types.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         context_node_label
             Optional node label for context nodes describing events.
         decay_factor
@@ -229,7 +229,7 @@ class FastPathEndpoints(ABC):
         categorical_event_properties
             Event node properties holding categorical values.
         relationship_types
-            Filter the graph using the given relationship types.
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         context_node_label
             Optional node label for context nodes describing events.
         decay_factor
