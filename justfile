@@ -87,7 +87,7 @@ test-plugin-notebooks-local filter="" enterprise="true":
     # (bolt://localhost:7687, user "neo4j", empty password).
     uv run --group notebook-ci ./scripts/run_notebooks.py {{filter}}
 
-test-tox-partition number-of-partitions partition-index:
+test-tox-partition number-of-partitions partition-index: update-test-images
     uv run --group test scripts/ci/run_tox_environments.py {{number-of-partitions}} {{partition-index}}
 
 
