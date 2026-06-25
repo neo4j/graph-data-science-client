@@ -119,6 +119,29 @@ PYTHON_RUNTIME_API_NETWORK_ALIAS = "python-runtime-api"
 PYTHON_RUNTIME_API_PORT = 8000
 
 
+def _remove_spawned_runtime_containers(network: Network, image: str) -> None:
+    """Remove python-runtime containers the mock runtime API spawned via the docker socket.
+
+    These are created by the API container (not by testcontainers), so they are not tracked
+    and would leak after the runtime API is stopped. We scope the cleanup to this run's network
+    so parallel runs don't remove each other's containers.
+    """
+    try:
+        containers = DockerClient().client.containers.list(
+            all=True, filters={"ancestor": image, "network": network.name}
+        )
+    except Exception as e:
+        LOGGER.warning(f"Failed to list spawned python-runtime containers for cleanup: {e}")
+        return
+
+    for container in containers:
+        try:
+            container.remove(force=True)
+            LOGGER.info(f"[v2-it] removed spilled python-runtime container {container.id[:12]}")
+        except Exception as e:
+            LOGGER.warning(f"Failed to remove spawned python-runtime container {container.id[:12]}: {e}")
+
+
 def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureRequest) -> Generator[str, None, None]:
     """Start the mock python-runtime API container.
 
@@ -153,6 +176,7 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
         .with_network_aliases(PYTHON_RUNTIME_API_NETWORK_ALIAS)
         .waiting_for(LogMessageWaitStrategy("Application startup complete."))
     )
+
     with runtime_api_container as runtime_api_container:
         try:
             # The session reaches the runtime API over the shared network by its alias.
@@ -172,6 +196,10 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
             out_file = runtime_api_logs_dir / "runtime_api_container.log"
             with open(out_file, "w") as f:
                 f.write(stdout.decode("utf-8"))
+
+            # The API spawns python-runtime containers via the docker socket; remove any that
+            # are still around now that the API itself is stopped.
+            _remove_spawned_runtime_containers(network, python_runtime_image)
 
 
 # --------------------------------------------------------------------------- #
@@ -209,7 +237,7 @@ def start_session(
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
         .with_env("ENVIRONMENT", "local")
-        .with_env("SESSION_ID", 42)
+        .with_env("SESSION_ID", session_alias)  # using session-alias for runtime-api resolving to the right host
         .with_env("EXTRA_FLAGS", "--disable-authentication")
         .with_volume_mapping(model_dir, "/models", mode="rw")
         .with_exposed_ports(SESSION_ARROW_PORT, 8080)

@@ -29,19 +29,6 @@ graph = """
             (b)-[:HAS_EVENT]->(e3)
         """
 
-# Common required configuration shared by all FastPath modes.
-FAST_PATH_CONFIG = dict(
-    base_node_label="Base",
-    dimension=16,
-    event_node_label="Event",
-    max_elapsed_time=10,
-    num_elapsed_times=4,
-    first_relationship_type="HAS_EVENT",
-    next_relationship_type="NEXT",
-    time_node_property="time",
-    output_time=3,
-)
-
 
 @pytest.fixture
 def sample_graph(arrow_client_runtime: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
@@ -57,10 +44,16 @@ def db_graph(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Query
         "g",
         graph,
         """
-                    MATCH (n)-->(m)
-                    WITH gds.graph.project.remote(n, m) as g
-                    RETURN g
-                """,
+        MATCH (n)-[r]->(m)
+        WITH gds.graph.project.remote(n, m, {
+            sourceNodeLabels: labels(n), 
+            sourceNodeProperties: properties(n), 
+            targetNodeLabels: labels(m), 
+            targetNodeProperties: properties(m), 
+            relationshipType: type(r)
+        }) as g
+        RETURN g
+        """,
     ) as g:
         yield g
 
@@ -73,7 +66,18 @@ def fastpath_endpoints(arrow_client_runtime: AuthenticatedArrowClient) -> Genera
 @ignore_preview_warning
 def test_fastpath_stream(fastpath_endpoints: FastPathArrowEndpoints, sample_graph: Graph) -> None:
     """Test FastPath stream operation."""
-    result_df = fastpath_endpoints.stream(G=sample_graph, **FAST_PATH_CONFIG)
+    result_df = fastpath_endpoints.stream(
+        G=sample_graph,
+        base_node_label="Base",
+        event_node_label="Event",
+        dimension=16,
+        max_elapsed_time=10,
+        num_elapsed_times=4,
+        first_relationship_type="HAS_EVENT",
+        next_relationship_type="NEXT",
+        time_node_property="time",
+        output_time=3,
+    )
 
     assert "nodeId" in result_df.columns
     assert "embeddings" in result_df.columns
@@ -85,14 +89,21 @@ def test_fastpath_mutate(fastpath_endpoints: FastPathArrowEndpoints, sample_grap
     result = fastpath_endpoints.mutate(
         G=sample_graph,
         mutate_property="fastpath_embedding",
-        **FAST_PATH_CONFIG,
+        base_node_label="Base",
+        event_node_label="Event",
+        dimension=16,
+        max_elapsed_time=10,
+        num_elapsed_times=4,
+        first_relationship_type="HAS_EVENT",
+        next_relationship_type="NEXT",
+        time_node_property="time",
+        output_time=3,
     )
 
-    assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written > 0
-    assert result.configuration is not None
+    assert result.configuration is None  # wait for session release to change this
 
 
 @pytest.mark.db_integration
@@ -101,21 +112,32 @@ def test_fastpath_write(
     arrow_client_runtime: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
     endpoints = FastPathArrowEndpoints(arrow_client_runtime, WriteProtocol.select(arrow_client_runtime, query_runner))
-    result = endpoints.write(G=db_graph, write_property="fastpath_embedding", **FAST_PATH_CONFIG)
+    result = endpoints.write(
+        G=db_graph,
+        write_property="fastpath_embedding",
+        base_node_label="Base",
+        event_node_label="Event",
+        dimension=16,
+        max_elapsed_time=10,
+        num_elapsed_times=4,
+        first_relationship_type="HAS_EVENT",
+        next_relationship_type="NEXT",
+        time_node_property="time",
+        output_time=3,
+    )
 
     assert isinstance(result, FastPathWriteResult)
-    assert result.pre_processing_millis >= 0
     assert result.compute_millis >= 0
     assert result.write_millis >= 0
     assert result.node_properties_written > 0
-    assert result.configuration is not None
+    assert result.configuration is None  # wait for session release to change this
 
     assert (
         query_runner.run_cypher(
             "MATCH (n) WHERE n.fastpath_embedding IS NOT NULL RETURN COUNT(*) AS count",
             query_type=QueryType.USER_ACTION,
         ).iloc[0, 0]
-        > 0
+        == 2  # one embedding per Base node
     )
 
 

@@ -91,8 +91,12 @@ test-tox-partition number-of-partitions partition-index:
     uv run --group test scripts/ci/run_tox_environments.py {{number-of-partitions}} {{partition-index}}
 
 
-update-session-image:
-    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
+update-aga-images:
+    # docker pull is incremental: it only downloads layers when the remote digest is new,
+    # otherwise it reports "Image is up to date".
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest
 
 update-neo4j-image:
     docker pull neo4j:enterprise
@@ -102,7 +106,7 @@ update-neo4j-aura-image:
     docker pull europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:2026.03.1
 
 update-test-images:
-    just update-session-image
+    just update-aga-images
     just update-neo4j-image
     just update-neo4j-aura-image
 

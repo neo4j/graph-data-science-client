@@ -183,6 +183,7 @@ if __name__ == "__main__":
         "graph-analytics-serverless-self-managed.ipynb",
         "graph-analytics-serverless-standalone.ipynb",
         "graph-analytics-serverless-spark.ipynb",
+        "graph-analytics-serverless-standalone-fastpath.ipynb",
     ]
 
     logger.info("Notebook filter: %s", notebook_filter)

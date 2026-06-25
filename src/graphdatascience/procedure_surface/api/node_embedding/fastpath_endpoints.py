@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from pandas import DataFrame
+from pydantic import Field
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -264,18 +265,14 @@ class FastPathEndpoints(ABC):
 
 
 class FastPathMutateResult(BaseResult):
-    node_count: int
-    pre_processing_millis: int
-    compute_millis: int
+    compute_millis: int = Field(alias="predict_ms")
     mutate_millis: int
     node_properties_written: int
-    configuration: dict[str, Any]
+    configuration: dict[str, Any] | None = None
 
 
 class FastPathWriteResult(BaseResult):
-    node_count: int
-    pre_processing_millis: int
-    compute_millis: int
+    compute_millis: int = Field(alias="predict_ms")
     write_millis: int
-    node_properties_written: int
-    configuration: dict[str, Any]
+    node_properties_written: int = Field(alias="propertiesWritten")
+    configuration: dict[str, Any] | None = None 
