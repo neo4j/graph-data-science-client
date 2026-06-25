@@ -45,11 +45,19 @@ def inside_ci() -> bool:
     return os.environ.get("BUILD_ID") is not None
 
 
+DEFAULT_SESSION_ALIAS = "gds-session"
+SESSION_ARROW_PORT = 8491
+
+
 @dataclass
 class GdsSessionConnectionInfo:
     host: str
     arrow_port: int
     bolt_port: int
+    # Address the session advertises to the DB / python-runtime for remote projection and
+    # writeback. Defaults to the standard session alias; a second concurrent session on the
+    # same network must use a distinct alias to avoid DNS collisions.
+    advertised_address: tuple[str, int] = (DEFAULT_SESSION_ALIAS, SESSION_ARROW_PORT)
 
 
 def _current_container_id() -> Optional[str]:
@@ -104,16 +112,84 @@ def network() -> Generator[Network, None, None]:
 
 
 # --------------------------------------------------------------------------- #
+# Python runtime API (mock) container
+# --------------------------------------------------------------------------- #
+
+PYTHON_RUNTIME_API_NETWORK_ALIAS = "python-runtime-api"
+PYTHON_RUNTIME_API_PORT = 8000
+
+
+def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureRequest) -> Generator[str, None, None]:
+    """Start the mock python-runtime API container.
+
+    The GDS session talks to this API to spawn python-runtime containers for endpoints
+    such as FastPath. The returned URI is the session-internal network address; the test
+    process itself does not talk to the API directly.
+    """
+    # When pointing at an externally managed session we don't manage the runtime API either.
+    if (runtime_api_uri := os.environ.get("PYTHON_RUNTIME_API_URI")) is not None:
+        yield runtime_api_uri
+        return
+    if os.environ.get("GDS_SESSION_URI") is not None:
+        yield f"http://{PYTHON_RUNTIME_API_NETWORK_ALIAS}:{PYTHON_RUNTIME_API_PORT}"
+        return
+
+    runtime_api_image = os.getenv(
+        "MOCK_RUNTIME_API_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest"
+    )
+    python_runtime_image = os.getenv(
+        "PYTHON_RUNTIME_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest"
+    )
+    LOGGER.info(f"Using mock runtime api image: {runtime_api_image} (python runtime image: {python_runtime_image})")
+
+    runtime_api_container = (
+        DockerContainer(image=runtime_api_image)
+        # python-runtime containers must be spawned in the same network as the GDS session.
+        .with_env("DOCKER_NETWORK", network.name)
+        .with_env("PYTHON_RUNTIME_IMAGE", python_runtime_image)
+        .with_volume_mapping("/var/run/docker.sock", "/var/run/docker.sock", mode="rw")
+        .with_exposed_ports(PYTHON_RUNTIME_API_PORT)
+        .with_network(network)
+        .with_network_aliases(PYTHON_RUNTIME_API_NETWORK_ALIAS)
+        .waiting_for(LogMessageWaitStrategy("Application startup complete."))
+    )
+    with runtime_api_container as runtime_api_container:
+        try:
+            # The session reaches the runtime API over the shared network by its alias.
+            yield f"http://{PYTHON_RUNTIME_API_NETWORK_ALIAS}:{PYTHON_RUNTIME_API_PORT}"
+        finally:
+            stdout, stderr = runtime_api_container.get_logs()
+            if stderr:
+                LOGGER.info(f"Error logs from runtime api container:\n{stderr.decode('utf-8', errors='replace')}")
+
+            if inside_ci():
+                print(f"Runtime api container logs:\n{stdout}")
+
+            runtime_api_logs_dir = logs_dir / request.node.name
+            runtime_api_logs_dir.mkdir(parents=True, exist_ok=True)
+            runtime_api_logs_dir.chmod(0o777)
+
+            out_file = runtime_api_logs_dir / "runtime_api_container.log"
+            with open(out_file, "w") as f:
+                f.write(stdout.decode("utf-8"))
+
+
+# --------------------------------------------------------------------------- #
 # GDS Session (Arrow-only) container
 # --------------------------------------------------------------------------- #
 
 
 def start_session(
-    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, network: Network, request: pytest.FixtureRequest
+    logs_dir: Path,
+    tmp_path_factory: pytest.TempPathFactory,
+    network: Network,
+    request: pytest.FixtureRequest,
+    runtime_api_uri: Optional[str] = None,
+    session_alias: str = DEFAULT_SESSION_ALIAS,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
         uri_parts = session_uri.split(":")
-        yield GdsSessionConnectionInfo(host=uri_parts[0], arrow_port=8491, bolt_port=int(uri_parts[1]))
+        yield GdsSessionConnectionInfo(host=uri_parts[0], arrow_port=SESSION_ARROW_PORT, bolt_port=int(uri_parts[1]))
         return
 
     session_image = os.getenv(
@@ -129,34 +205,39 @@ def start_session(
             image=session_image,
         )
         .with_env("ALLOW_LIST", "DEFAULT")
-        .with_env("DNS_NAME", "gds-session")
+        .with_env("DNS_NAME", session_alias)
         .with_env("PAGE_CACHE_SIZE", "100M")
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
         .with_env("ENVIRONMENT", "local")
         .with_env("SESSION_ID", 42)
         .with_env("EXTRA_FLAGS", "--disable-authentication")
         .with_volume_mapping(model_dir, "/models", mode="rw")
-        .with_exposed_ports(8491, 8080)
+        .with_exposed_ports(SESSION_ARROW_PORT, 8080)
         .waiting_for(HttpWaitStrategy(8080, path="/available"))
     )
-    session_container = session_container.with_network(network).with_network_aliases("gds-session")
+    if runtime_api_uri is not None:
+        # Points the session at the python-runtime API so it can spawn python-runtime
+        # containers for endpoints like FastPath.
+        session_container = session_container.with_env("PYTHON_RUNTIME_API_LOCATION", runtime_api_uri)
+    session_container = session_container.with_network(network).with_network_aliases(session_alias)
     with session_container as session_container:
         try:
             # When the test process itself is attached to the test network (CI),
             # reach the session by its alias + internal port. Otherwise we are
             # on the docker host and must use the exposed host port.
             if _current_container_id() is not None:
-                host, arrow_port = "gds-session", 8491
+                host, arrow_port = session_alias, SESSION_ARROW_PORT
             else:
                 host, arrow_port = (
                     session_container.get_container_host_ip(),
-                    int(session_container.get_exposed_port(8491)),
+                    int(session_container.get_exposed_port(SESSION_ARROW_PORT)),
                 )
             print(f"[v2-it] session reachable at {host}:{arrow_port}", flush=True)
             yield GdsSessionConnectionInfo(
                 host=host,
                 arrow_port=arrow_port,
                 bolt_port=-1,  # not used in tests
+                advertised_address=(session_alias, SESSION_ARROW_PORT),
             )
         finally:
             stdout, stderr = session_container.get_logs()
@@ -186,7 +267,7 @@ def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedA
         (session_uri.host, session_uri.arrow_port),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
         encrypted=False,
-        advertised_listen_address=("gds-session", 8491),
+        advertised_listen_address=session_uri.advertised_address,
     )
 
 

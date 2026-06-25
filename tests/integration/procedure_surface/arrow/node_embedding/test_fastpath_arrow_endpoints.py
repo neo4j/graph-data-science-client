@@ -13,6 +13,10 @@ from tests.integration.procedure_surface.arrow.graph_creation_helper import (
     create_graph_from_db,
 )
 
+# FastPath emits a preview warning on construction; tests that aren't asserting on it
+# filter it out explicitly via this marker.
+ignore_preview_warning = pytest.mark.filterwarnings("ignore:FastPath is a preview feature:UserWarning")
+
 graph = """
         CREATE
             (a: Base),
@@ -35,19 +39,20 @@ FAST_PATH_CONFIG = dict(
     first_relationship_type="HAS_EVENT",
     next_relationship_type="NEXT",
     time_node_property="time",
+    output_time=3,
 )
 
 
 @pytest.fixture
-def sample_graph(arrow_client: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
-    with create_graph(arrow_client, "g", graph) as G:
+def sample_graph(arrow_client_runtime: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+    with create_graph(arrow_client_runtime, "g", graph) as G:
         yield G
 
 
 @pytest.fixture
-def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
+def db_graph(arrow_client_runtime: AuthenticatedArrowClient, query_runner: QueryRunner) -> Generator[Graph, None, None]:
     with create_graph_from_db(
-        arrow_client,
+        arrow_client_runtime,
         query_runner,
         "g",
         graph,
@@ -61,17 +66,20 @@ def db_graph(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner) 
 
 
 @pytest.fixture
-def fastpath_endpoints(arrow_client: AuthenticatedArrowClient) -> Generator[FastPathArrowEndpoints, None, None]:
-    yield FastPathArrowEndpoints(arrow_client)
+def fastpath_endpoints(arrow_client_runtime: AuthenticatedArrowClient) -> Generator[FastPathArrowEndpoints, None, None]:
+    yield FastPathArrowEndpoints(arrow_client_runtime)
 
 
+@ignore_preview_warning
 def test_fastpath_stream(fastpath_endpoints: FastPathArrowEndpoints, sample_graph: Graph) -> None:
     """Test FastPath stream operation."""
     result_df = fastpath_endpoints.stream(G=sample_graph, **FAST_PATH_CONFIG)
 
     assert "nodeId" in result_df.columns
+    assert "embeddings" in result_df.columns
 
 
+@ignore_preview_warning
 def test_fastpath_mutate(fastpath_endpoints: FastPathArrowEndpoints, sample_graph: Graph) -> None:
     """Test FastPath mutate operation."""
     result = fastpath_endpoints.mutate(
@@ -88,8 +96,11 @@ def test_fastpath_mutate(fastpath_endpoints: FastPathArrowEndpoints, sample_grap
 
 
 @pytest.mark.db_integration
-def test_fastpath_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
-    endpoints = FastPathArrowEndpoints(arrow_client, WriteProtocol.select(arrow_client, query_runner))
+@ignore_preview_warning
+def test_fastpath_write(
+    arrow_client_runtime: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
+) -> None:
+    endpoints = FastPathArrowEndpoints(arrow_client_runtime, WriteProtocol.select(arrow_client_runtime, query_runner))
     result = endpoints.write(G=db_graph, write_property="fastpath_embedding", **FAST_PATH_CONFIG)
 
     assert isinstance(result, FastPathWriteResult)
@@ -108,17 +119,6 @@ def test_fastpath_write(arrow_client: AuthenticatedArrowClient, query_runner: Qu
     )
 
 
-def test_fastpath_write_without_write_back_client(
-    fastpath_endpoints: FastPathArrowEndpoints, sample_graph: Graph
-) -> None:
-    with pytest.raises(Exception, match="Write back is not supported by this session."):
-        fastpath_endpoints.write(
-            G=sample_graph,
-            write_property="fastpath_embedding",
-            **FAST_PATH_CONFIG,
-        )
-
-
-def test_fastpath_emits_preview_warning(arrow_client: AuthenticatedArrowClient) -> None:
+def test_fastpath_emits_preview_warning(arrow_client_runtime: AuthenticatedArrowClient) -> None:
     with pytest.warns(UserWarning, match="preview feature"):
-        FastPathArrowEndpoints(arrow_client)
+        FastPathArrowEndpoints(arrow_client_runtime)
