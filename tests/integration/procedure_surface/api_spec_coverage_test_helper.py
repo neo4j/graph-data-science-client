@@ -5,6 +5,7 @@ from collections import OrderedDict
 from types import FunctionType, MethodType, UnionType
 from typing import Any
 
+from neo4j.graph import Node
 from pandas import DataFrame
 from pydantic import BaseModel
 
@@ -55,6 +56,10 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "fast_path.mutate",  # Arrow-only (AGA) endpoint
     "fast_path.stream",  # Arrow-only (AGA) endpoint
     "fast_path.write",  # Arrow-only (AGA) endpoint
+    "util.infinity",  # built-in in python
+    "util.is_finite",  # built-in in python
+    "util.is_infinite",  # built-in in python
+    "util.na_n",  # built-in in python
 }
 
 BASE_ENDPOINT_MAPPINGS = OrderedDict(
@@ -64,6 +69,7 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("betweenness", "betweenness_centrality"),
         ("degree", "degree_centrality"),
         ("eigenvector", "eigenvector_centrality"),
+        ("linkprediction", "topological_link_prediction"),
         ("influenceMaximization.celf", "influence_maximization_celf"),
         ("cliquecounting", "clique_counting"),
         ("k1coloring", "k1_coloring"),
@@ -194,7 +200,26 @@ EXPECTED_IGNORED_RETURN_FIELDS = {GraphInfo: ["schema"], GraphInfoWithDegrees: [
 
 # Return types whose fields intentionally don't map field-by-field to the spec's return fields
 # (opaque value objects, or pivoted key/value results), so they can't be verified against the spec.
-RETURN_VERIFICATION_SKIPPED_TYPES = {ServerVersion, DebugSysInfoResult}
+RETURN_VERIFICATION_SKIPPED_TYPES = {DebugSysInfoResult}
+
+# Python return types that wrap a single scalar value and should be verified against the spec's scalar
+# return type rather than structurally (e.g. ServerVersion wraps a version String).
+SCALAR_RETURN_CLASS_OVERRIDES: dict[type, type] = {ServerVersion: str}
+
+# Maps a scalar spec return-type name (lower-cased) to the Python type the endpoint is expected to return.
+SCALAR_RETURN_TYPES: dict[str, type] = {
+    "boolean": bool,
+    "double": float,
+    "float": float,
+    "long": int,
+    "int": int,
+    "integer": int,
+    "string": str,
+    "node": Node,
+}
+
+# Spec return-type names that carry no usable Python type (opaque/dynamic), so any annotation is accepted.
+OPAQUE_RETURN_TYPES = {"object"}
 
 
 def method_str(method: MethodType | FunctionType) -> str:
@@ -274,6 +299,9 @@ def verify_return_fields(callable_object: MethodType | FunctionType, expected_re
         if return_annotation is expected:
             return_annotation = override
 
+    if isinstance(return_annotation, type):
+        return_annotation = SCALAR_RETURN_CLASS_OVERRIDES.get(return_annotation, return_annotation)
+
     if not return_annotation:
         raise ValueError(
             f"Callable object {method_str(callable_object)} has no return annotation. Mypy should complain :/"
@@ -307,15 +335,12 @@ def verify_return_fields(callable_object: MethodType | FunctionType, expected_re
             model_types = [arg for arg in args if inspect.isclass(arg) and issubclass(arg, BaseModel)]
             if len(model_types) == 1:
                 result_type = model_types[0]
-        else:
-            raise ValueError(
-                f"Return annotation {return_annotation} has unsupported origin {origin}. Please add support here for testing."
-            )
 
+    # No structured result type: the endpoint returns a single raw value (scalar, Node, list, ...),
+    # so verify its type against the spec's scalar return field instead of matching field-by-field.
     if not result_type:
-        raise ValueError(
-            f"Return annotation {return_annotation} is not a supported result type. Please add support here for testing."
-        )
+        verify_scalar_return_type(callable_object, return_annotation, expected_return_fields)
+        return
 
     actual_return_fields = set(result_type.model_fields.keys())
     expected_return_field_keys = set({to_snake(field.name) for field in expected_return_fields})
@@ -336,6 +361,46 @@ def verify_return_fields(callable_object: MethodType | FunctionType, expected_re
         raise ValueError(
             f"Callable object {callable_object} has mismatching return fields. "
             f"Missing fields: {missing_fields}, Extra fields: {extra_fields}"
+        )
+
+
+def verify_scalar_return_type(
+    callable_object: MethodType | FunctionType,
+    return_annotation: Any,
+    expected_return_fields: list[ReturnField],
+) -> None:
+    """Verify a raw-value return annotation against the spec's single scalar return field."""
+    if len(expected_return_fields) != 1:
+        raise ValueError(
+            f"Expected exactly one return field for scalar-returning {method_str(callable_object)}, "
+            f"got {len(expected_return_fields)}: {[f.name for f in expected_return_fields]}"
+        )
+
+    spec_type = expected_return_fields[0].type.typeName.lower()
+
+    # Opaque/dynamic spec types accept any return annotation.
+    if spec_type in OPAQUE_RETURN_TYPES:
+        return
+
+    if spec_type.startswith("list"):
+        if typing.get_origin(return_annotation) is not list:
+            raise ValueError(
+                f"{method_str(callable_object)} returns {return_annotation}, but the spec expects a list "
+                f"({spec_type})."
+            )
+        return
+
+    expected_type = SCALAR_RETURN_TYPES.get(spec_type)
+    if expected_type is None:
+        raise ValueError(
+            f"Unsupported scalar return spec type '{spec_type}' for {method_str(callable_object)}. "
+            f"Please add support here for testing."
+        )
+
+    if not (inspect.isclass(return_annotation) and issubclass(return_annotation, expected_type)):
+        raise ValueError(
+            f"{method_str(callable_object)} return type {return_annotation} does not match "
+            f"spec type '{spec_type}' (expected {expected_type})."
         )
 
 

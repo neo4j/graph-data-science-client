@@ -11,6 +11,12 @@ class SourceKind(Enum):
     CONFIG = "CONFIG"
 
 
+class EndpointType(Enum):
+    PROCEDURE = "PROCEDURE"
+    FUNCTION = "FUNCTION"
+    ARROW = "ARROW"
+
+
 class TypeInfo(BaseModel, extra="forbid", populate_by_name=True):
     """Represents type information for a parameter or return field."""
 
@@ -58,13 +64,13 @@ class EndpointSpec(BaseModel, extra="forbid", populate_by_name=True):
 class EndpointWithModesSpec(BaseModel, extra="forbid", populate_by_name=True):
     """Represents a GDS procedure with its parameters and modes."""
 
-    name: str | None = None  # None if only exposed in the Arrow surface and not in the Cypher surface.
-    arrowEndpoint: str | None = None  # The endpoint name for the Arrow surface, if applicable.
+    name: str
+    type: EndpointType
     parameters: List[Parameter]
     modes: List[Mode]
 
     def callable_modes(self) -> List[EndpointSpec]:
-        base_name = self.name if self.name is not None else self._arrow_base_name()
+        base_name = self._arrow_base_name() if self.arrow_only() else self.name
         return [
             EndpointSpec(
                 name=f"{base_name}.{mode.mode}" if mode.mode.lower() != "unknown" else base_name,
@@ -75,13 +81,12 @@ class EndpointWithModesSpec(BaseModel, extra="forbid", populate_by_name=True):
         ]
 
     def arrow_only(self) -> bool:
-        return self.name is None and self.arrowEndpoint is not None
+        return self.type == EndpointType.ARROW
 
     def _arrow_base_name(self) -> str:
-        # For Arrow-only endpoints derive a base name from the Arrow endpoint, dropping the
-        # `v2/` prefix and the leading category, e.g. "v2/embeddings.fastPath" -> "fastPath".
-        assert self.arrowEndpoint is not None
-        return self.arrowEndpoint.removeprefix("v2/").split(".", 1)[-1]
+        # For Arrow-only endpoints the `name` is the Arrow endpoint, e.g. "v2/embeddings.fastPath".
+        # Derive a base name by dropping the `v2/` prefix and the leading category -> "fastPath".
+        return self.name.removeprefix("v2/").split(".", 1)[-1]
 
 
 def resolve_spec_from_file(file_path: Path) -> list[EndpointWithModesSpec]:

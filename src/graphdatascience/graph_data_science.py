@@ -845,3 +845,11 @@ class GraphDataScience:
 
     def server_version(self) -> ServerVersion:
         return self._server_version
+
+    def is_licensed(self) -> bool:
+        """
+        Return whether the installed GDS library is licensed.
+        """
+        return self._query_runner.call_function(  # type: ignore[no-any-return]
+            endpoint="gds.isLicensed",
+        )
