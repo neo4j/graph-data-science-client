@@ -53,12 +53,6 @@ def write_container_logs(out_file: Path, stdout: bytes, stderr: bytes) -> None:
         f.write(stderr.decode("utf-8", errors="replace"))
 
 
-def echo_container_logs(name: str, stdout: bytes, stderr: bytes) -> None:
-    """Echo both container streams to stdout so CI captures them in the job output."""
-    print(f"{name} container stdout:\n{stdout.decode('utf-8', errors='replace')}")
-    print(f"{name} container stderr:\n{stderr.decode('utf-8', errors='replace')}")
-
-
 DEFAULT_SESSION_ALIAS = "gds-session"
 SESSION_ARROW_PORT = 8491
 
@@ -200,9 +194,6 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
             if stderr:
                 LOGGER.error(f"Error logs from runtime api container:\n{stderr.decode('utf-8', errors='replace')}")
 
-            if inside_ci():
-                echo_container_logs("Runtime api", stdout, stderr)
-
             runtime_api_logs_dir = logs_dir / request.node.name
             runtime_api_logs_dir.mkdir(parents=True, exist_ok=True)
             runtime_api_logs_dir.chmod(0o777)
@@ -287,9 +278,6 @@ def start_session(
             if stderr_lines:
                 log_lines = "\n".join(stderr_lines)
                 LOGGER.info(f"Error logs from session container:\n{log_lines}")
-
-            if inside_ci():
-                echo_container_logs(f"Session {session_alias}", stdout, stderr)
 
             session_logs_dir = logs_dir / request.node.name
             session_logs_dir.mkdir(parents=True, exist_ok=True)
@@ -386,9 +374,6 @@ def start_database(
             if stderr:
                 print(f"Error logs from database container:\n{stderr}")
 
-            if inside_ci():
-                echo_container_logs("Database", stdout, stderr)
-
             write_container_logs(db_logs_dir / "stdout.log", stdout, stderr)
 
 
@@ -459,9 +444,6 @@ def start_gds_plugin_database(
             stdout, stderr = neo4j_db.get_logs()
             if stderr:
                 print(f"Error logs from Neo4j container:\n{stderr}")
-
-            if inside_ci():
-                echo_container_logs("Neo4j", stdout, stderr)
 
             write_container_logs(db_logs_dir / "stdout.log", stdout, stderr)
 
