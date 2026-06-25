@@ -1,5 +1,6 @@
 import warnings
-from typing import Any
+from contextlib import contextmanager
+from typing import Any, Iterator
 
 from pandas import DataFrame
 
@@ -15,6 +16,28 @@ from graphdatascience.procedure_surface.arrow.node_property_endpoints import Nod
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 FAST_PATH_ENDPOINT = "v2/embeddings.fastPath"
+
+
+class FeatureNotEnabledError(Exception):
+    """Raised when endpoint is invoked against a session that does not have the feature enabled."""
+
+
+_NOT_ENABLED_MESSAGE = (
+    "FastPath is not enabled for this session. It is a preview feature; "
+    "please reach out to the Neo4j GDS team to have it enabled for your session."
+)
+
+
+@contextmanager
+def _translate_feature_not_enabled() -> Iterator[None]:
+    """Translate the session's "unsupported action" error into a clear feature-not-enabled error."""
+    try:
+        yield
+    except Exception as e:
+        message = str(e)
+        if "Unsupported action" in message and FAST_PATH_ENDPOINT in message:
+            raise FeatureNotEnabledError(_NOT_ENABLED_MESSAGE) from e
+        raise
 
 
 class FastPathArrowEndpoints(FastPathEndpoints):
@@ -81,7 +104,8 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             time_node_property=time_node_property,
         )
 
-        result = self._node_property_endpoints.run_job_and_mutate(FAST_PATH_ENDPOINT, config, mutate_property)
+        with _translate_feature_not_enabled():
+            result = self._node_property_endpoints.run_job_and_mutate(FAST_PATH_ENDPOINT, config, mutate_property)
 
         return FastPathMutateResult(**result)
 
@@ -132,7 +156,8 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             time_node_property=time_node_property,
         )
 
-        return self._node_property_endpoints.run_job_and_stream(FAST_PATH_ENDPOINT, G, config)
+        with _translate_feature_not_enabled():
+            return self._node_property_endpoints.run_job_and_stream(FAST_PATH_ENDPOINT, G, config)
 
     def write(
         self,
@@ -183,12 +208,13 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             time_node_property=time_node_property,
         )
 
-        result = self._node_property_endpoints.run_job_and_write(
-            FAST_PATH_ENDPOINT,
-            G,
-            config,
-            property_overwrites=write_property,
-            write_concurrency=write_concurrency,
-        )
+        with _translate_feature_not_enabled():
+            result = self._node_property_endpoints.run_job_and_write(
+                FAST_PATH_ENDPOINT,
+                G,
+                config,
+                property_overwrites=write_property,
+                write_concurrency=write_concurrency,
+            )
 
         return FastPathWriteResult(**result)

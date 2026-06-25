@@ -5,7 +5,10 @@ import pytest
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathWriteResult
-from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import FastPathArrowEndpoints
+from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import (
+    FastPathArrowEndpoints,
+    FeatureNotEnabledError,
+)
 from graphdatascience.query_runner import QueryRunner, QueryType
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from tests.integration.procedure_surface.arrow.graph_creation_helper import (
@@ -144,3 +147,23 @@ def test_fastpath_write(
 def test_fastpath_emits_preview_warning(arrow_client_runtime: AuthenticatedArrowClient) -> None:
     with pytest.warns(UserWarning, match="preview feature"):
         FastPathArrowEndpoints(arrow_client_runtime)
+
+
+@ignore_preview_warning
+def test_fastpath_not_enabled_without_runtime(arrow_client: AuthenticatedArrowClient) -> None:
+    # arrow_client is the plain session WITHOUT the python-runtime API, so FastPath is unavailable.
+    with create_graph(arrow_client, "g_plain", graph) as G:
+        endpoints = FastPathArrowEndpoints(arrow_client)
+        with pytest.raises(FeatureNotEnabledError, match="not enabled for this session"):
+            endpoints.stream(
+                G=G,
+                base_node_label="Base",
+                dimension=16,
+                event_node_label="Event",
+                max_elapsed_time=10,
+                num_elapsed_times=4,
+                first_relationship_type="HAS_EVENT",
+                next_relationship_type="NEXT",
+                time_node_property="time",
+                output_time=3,
+            )
