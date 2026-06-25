@@ -275,4 +275,4 @@ class FastPathWriteResult(BaseResult):
     compute_millis: int = Field(alias="predict_ms")
     write_millis: int
     node_properties_written: int = Field(alias="propertiesWritten")
-    configuration: dict[str, Any] | None = None 
+    configuration: dict[str, Any] | None = None
