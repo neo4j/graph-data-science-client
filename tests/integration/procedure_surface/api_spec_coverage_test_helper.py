@@ -385,8 +385,7 @@ def verify_scalar_return_type(
     if spec_type.startswith("list"):
         if typing.get_origin(return_annotation) is not list:
             raise ValueError(
-                f"{method_str(callable_object)} returns {return_annotation}, but the spec expects a list "
-                f"({spec_type})."
+                f"{method_str(callable_object)} returns {return_annotation}, but the spec expects a list ({spec_type})."
             )
         return
 

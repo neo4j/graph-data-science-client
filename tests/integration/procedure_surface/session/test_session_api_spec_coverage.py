@@ -7,9 +7,9 @@ from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSp
 
 # KGE predict is only mapped for the Cypher (plugin) surface; Arrow is not mapped yet.
 SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
-    "kge.predict.mutate", # not mapped on the Server yet
-    "kge.predict.stream", # not mapped on the Server yet
-    "kge.predict.write", # not mapped on the Server yet
+    "kge.predict.mutate",  # not mapped on the Server yet
+    "kge.predict.stream",  # not mapped on the Server yet
+    "kge.predict.write",  # not mapped on the Server yet
     "server_version",  # AGA is versionless
     "is_licensed",  # AGA is always licensed
     "license.state",  # AGA is always licensed
