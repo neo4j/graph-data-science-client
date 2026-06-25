@@ -69,6 +69,9 @@ from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
 from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
+from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import (
+    TopologicalLinkPredictionEndpoints,
+)
 from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
@@ -168,6 +171,9 @@ from graphdatascience.procedure_surface.cypher.pipeline.pipeline_cypher_endpoint
 from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints import KnnCypherEndpoints
 from graphdatascience.procedure_surface.cypher.similarity.node_similarity_cypher_endpoints import (
     NodeSimilarityCypherEndpoints,
+)
+from graphdatascience.procedure_surface.cypher.topological_link_prediction_cypher_endpoints import (
+    TopologicalLinkPredictionCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -336,6 +342,13 @@ class GraphDataScience:
         Return endpoints for collapsing relationship paths.
         """
         return CollapsePathCypherEndpoints(self._query_runner)
+
+    @property
+    def topological_link_prediction(self) -> TopologicalLinkPredictionEndpoints:
+        """
+        Return endpoints for topological link prediction functions.
+        """
+        return TopologicalLinkPredictionCypherEndpoints(self._query_runner)
 
     ## Algorithms
 
