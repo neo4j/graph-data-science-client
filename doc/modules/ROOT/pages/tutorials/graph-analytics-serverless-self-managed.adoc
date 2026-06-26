@@ -169,46 +169,45 @@ just connect to the existing database.
 
 [source, python, role=no-test]
 ----
+# We use MERGE so the query is idempotent and can safely be retried.
 data_query = """
-  CREATE
-    (dan:Person {name: 'Dan',     age: 18, experience: 63, hipster: 0}),
-    (annie:Person {name: 'Annie', age: 12, experience: 5, hipster: 0}),
-    (matt:Person {name: 'Matt',   age: 22, experience: 42, hipster: 0}),
-    (jeff:Person {name: 'Jeff',   age: 51, experience: 12, hipster: 0}),
-    (brie:Person {name: 'Brie',   age: 31, experience: 6, hipster: 0}),
-    (elsa:Person {name: 'Elsa',   age: 65, experience: 23, hipster: 1}),
-    (john:Person {name: 'John',   age: 4, experience: 100, hipster: 0}),
+  MERGE (dan:Person   {name: 'Dan',   age: 18, experience: 63, hipster: 0})
+  MERGE (annie:Person {name: 'Annie', age: 12, experience: 5, hipster: 0})
+  MERGE (matt:Person  {name: 'Matt',  age: 22, experience: 42, hipster: 0})
+  MERGE (jeff:Person  {name: 'Jeff',  age: 51, experience: 12, hipster: 0})
+  MERGE (brie:Person  {name: 'Brie',  age: 31, experience: 6, hipster: 0})
+  MERGE (elsa:Person  {name: 'Elsa',  age: 65, experience: 23, hipster: 1})
+  MERGE (john:Person  {name: 'John',  age: 4, experience: 100, hipster: 0})
 
-    (apple:Fruit {name: 'Apple',   tropical: 0, sourness: 0.3, sweetness: 0.6}),
-    (banana:Fruit {name: 'Banana', tropical: 1, sourness: 0.1, sweetness: 0.9}),
-    (mango:Fruit {name: 'Mango',   tropical: 1, sourness: 0.3, sweetness: 1.0}),
-    (plum:Fruit {name: 'Plum',     tropical: 0, sourness: 0.5, sweetness: 0.8})
+  MERGE (apple:Fruit  {name: 'Apple',  tropical: 0, sourness: 0.3, sweetness: 0.6})
+  MERGE (banana:Fruit {name: 'Banana', tropical: 1, sourness: 0.1, sweetness: 0.9})
+  MERGE (mango:Fruit  {name: 'Mango',  tropical: 1, sourness: 0.3, sweetness: 1.0})
+  MERGE (plum:Fruit   {name: 'Plum',   tropical: 0, sourness: 0.5, sweetness: 0.8})
 
-  CREATE
-    (dan)-[:LIKES]->(apple),
-    (annie)-[:LIKES]->(banana),
-    (matt)-[:LIKES]->(mango),
-    (jeff)-[:LIKES]->(mango),
-    (brie)-[:LIKES]->(banana),
-    (elsa)-[:LIKES]->(plum),
-    (john)-[:LIKES]->(plum),
+  MERGE (dan)-[:LIKES]->(apple)
+  MERGE (annie)-[:LIKES]->(banana)
+  MERGE (matt)-[:LIKES]->(mango)
+  MERGE (jeff)-[:LIKES]->(mango)
+  MERGE (brie)-[:LIKES]->(banana)
+  MERGE (elsa)-[:LIKES]->(plum)
+  MERGE (john)-[:LIKES]->(plum)
 
-    (dan)-[:KNOWS]->(annie),
-    (dan)-[:KNOWS]->(matt),
-    (annie)-[:KNOWS]->(matt),
-    (annie)-[:KNOWS]->(jeff),
-    (annie)-[:KNOWS]->(brie),
-    (matt)-[:KNOWS]->(brie),
-    (brie)-[:KNOWS]->(elsa),
-    (brie)-[:KNOWS]->(jeff),
-    (john)-[:KNOWS]->(jeff);
+  MERGE (dan)-[:KNOWS]->(annie)
+  MERGE (dan)-[:KNOWS]->(matt)
+  MERGE (annie)-[:KNOWS]->(matt)
+  MERGE (annie)-[:KNOWS]->(jeff)
+  MERGE (annie)-[:KNOWS]->(brie)
+  MERGE (matt)-[:KNOWS]->(brie)
+  MERGE (brie)-[:KNOWS]->(elsa)
+  MERGE (brie)-[:KNOWS]->(jeff)
+  MERGE (john)-[:KNOWS]->(jeff)
 """
 
 # making sure the database is actually empty
 assert gds.run_cypher("MATCH (n) RETURN count(n)", retryable=True).squeeze() == 0, "Database is not empty!"
 
 # let's now write our graph!
-gds.run_cypher(data_query)
+gds.run_cypher(data_query, retryable=True)
 
 gds.run_cypher("MATCH (n) RETURN count(n) AS nodeCount", retryable=True)
 ----

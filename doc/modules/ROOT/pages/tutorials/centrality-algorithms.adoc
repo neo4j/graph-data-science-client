@@ -99,17 +99,19 @@ batching, `neo4j-admin import` or Arrow `CREATE DATABASE`.
 [source, python, role=no-test]
 ----
 gds.run_cypher(
-    "UNWIND $nodes AS node CREATE (n:City {node_id: node.node_id, name: node.name, population: node.metro_pop})",
+    "UNWIND $nodes AS node MERGE (n:City {node_id: node.node_id, name: node.name, population: node.metro_pop})",
     params={"nodes": nodes_info_df.to_dict("records")},
+    retryable=True,
 )
 
 gds.run_cypher(
     """
     UNWIND $rels AS rel
     MATCH (source:City {node_id: rel.Origin}), (target:City {node_id: rel.Destination})
-    CREATE (source)-[:HAS_FLIGHT_TO]->(target)
+    MERGE (source)-[:HAS_FLIGHT_TO]->(target)
     """,
     params={"rels": routes_df.to_dict("records")},
+    retryable=True,
 )
 ----
 

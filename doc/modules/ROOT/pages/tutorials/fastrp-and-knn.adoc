@@ -88,48 +88,49 @@ money spent by a customer on a given product.
 [source, python, role=no-test]
 ----
 # The `run_cypher` method can be used to run arbitrary Cypher queries on the database.
+# We use MERGE so the query is idempotent and can safely be retried.
 _ = gds.run_cypher(
     """
-        CREATE
-         (dan:Person {name: 'Dan'}),
-         (annie:Person {name: 'Annie'}),
-         (matt:Person {name: 'Matt'}),
-         (jeff:Person {name: 'Jeff'}),
-         (brie:Person {name: 'Brie'}),
-         (elsa:Person {name: 'Elsa'}),
+        MERGE (dan:Person {name: 'Dan'})
+        MERGE (annie:Person {name: 'Annie'})
+        MERGE (matt:Person {name: 'Matt'})
+        MERGE (jeff:Person {name: 'Jeff'})
+        MERGE (brie:Person {name: 'Brie'})
+        MERGE (elsa:Person {name: 'Elsa'})
 
-         (cookies:Product {name: 'Cookies'}),
-         (tomatoes:Product {name: 'Tomatoes'}),
-         (cucumber:Product {name: 'Cucumber'}),
-         (celery:Product {name: 'Celery'}),
-         (kale:Product {name: 'Kale'}),
-         (milk:Product {name: 'Milk'}),
-         (chocolate:Product {name: 'Chocolate'}),
+        MERGE (cookies:Product {name: 'Cookies'})
+        MERGE (tomatoes:Product {name: 'Tomatoes'})
+        MERGE (cucumber:Product {name: 'Cucumber'})
+        MERGE (celery:Product {name: 'Celery'})
+        MERGE (kale:Product {name: 'Kale'})
+        MERGE (milk:Product {name: 'Milk'})
+        MERGE (chocolate:Product {name: 'Chocolate'})
 
-         (dan)-[:BUYS {amount: 1.2}]->(cookies),
-         (dan)-[:BUYS {amount: 3.2}]->(milk),
-         (dan)-[:BUYS {amount: 2.2}]->(chocolate),
+        MERGE (dan)-[:BUYS {amount: 1.2}]->(cookies)
+        MERGE (dan)-[:BUYS {amount: 3.2}]->(milk)
+        MERGE (dan)-[:BUYS {amount: 2.2}]->(chocolate)
 
-         (annie)-[:BUYS {amount: 1.2}]->(cucumber),
-         (annie)-[:BUYS {amount: 3.2}]->(milk),
-         (annie)-[:BUYS {amount: 3.2}]->(tomatoes),
+        MERGE (annie)-[:BUYS {amount: 1.2}]->(cucumber)
+        MERGE (annie)-[:BUYS {amount: 3.2}]->(milk)
+        MERGE (annie)-[:BUYS {amount: 3.2}]->(tomatoes)
 
-         (matt)-[:BUYS {amount: 3}]->(tomatoes),
-         (matt)-[:BUYS {amount: 2}]->(kale),
-         (matt)-[:BUYS {amount: 1}]->(cucumber),
+        MERGE (matt)-[:BUYS {amount: 3}]->(tomatoes)
+        MERGE (matt)-[:BUYS {amount: 2}]->(kale)
+        MERGE (matt)-[:BUYS {amount: 1}]->(cucumber)
 
-         (jeff)-[:BUYS {amount: 3}]->(cookies),
-         (jeff)-[:BUYS {amount: 2}]->(milk),
+        MERGE (jeff)-[:BUYS {amount: 3}]->(cookies)
+        MERGE (jeff)-[:BUYS {amount: 2}]->(milk)
 
-         (brie)-[:BUYS {amount: 1}]->(tomatoes),
-         (brie)-[:BUYS {amount: 2}]->(milk),
-         (brie)-[:BUYS {amount: 2}]->(kale),
-         (brie)-[:BUYS {amount: 3}]->(cucumber),
-         (brie)-[:BUYS {amount: 0.3}]->(celery),
+        MERGE (brie)-[:BUYS {amount: 1}]->(tomatoes)
+        MERGE (brie)-[:BUYS {amount: 2}]->(milk)
+        MERGE (brie)-[:BUYS {amount: 2}]->(kale)
+        MERGE (brie)-[:BUYS {amount: 3}]->(cucumber)
+        MERGE (brie)-[:BUYS {amount: 0.3}]->(celery)
 
-         (elsa)-[:BUYS {amount: 3}]->(chocolate),
-         (elsa)-[:BUYS {amount: 3}]->(milk)
-    """
+        MERGE (elsa)-[:BUYS {amount: 3}]->(chocolate)
+        MERGE (elsa)-[:BUYS {amount: 3}]->(milk)
+    """,
+    retryable=True,
 )
 ----
 
