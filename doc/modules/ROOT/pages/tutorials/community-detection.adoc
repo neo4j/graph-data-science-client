@@ -112,17 +112,19 @@ GDS graph.
 [source, python, role=no-test]
 ----
 gds.run_cypher(
-    "UNWIND $nodes AS node CREATE (n:Subreddit {name: node.SUBREDDIT})",
+    "UNWIND $nodes AS node MERGE (n:Subreddit {name: node.SUBREDDIT})",
     params={"nodes": nodes_df.to_dict("records")},
+    retryable=True,
 )
 
 gds.run_cypher(
     """
     UNWIND $rels AS rel
     MATCH (source:Subreddit {name: rel.SOURCE_SUBREDDIT}), (target:Subreddit {name: rel.TARGET_SUBREDDIT})
-    CREATE (source)-[:HYPERLINKED_TO]->(target)
+    MERGE (source)-[:HYPERLINKED_TO]->(target)
     """,
     params={"rels": relationship_df.to_dict("records")},
+    retryable=True,
 )
 ----
 

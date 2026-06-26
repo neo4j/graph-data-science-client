@@ -243,7 +243,8 @@ gds.run_cypher(
     WITH feature
       ORDER BY feature ASC
     WITH collect(distinct feature) AS orderedTotality
-    CREATE (:Feature {animal: 'chameleon', totality: orderedTotality})
+    MERGE (f:Feature {animal: 'chameleon'})
+    SET f.totality = orderedTotality
     RETURN orderedTotality
 """,
     retryable=True,
@@ -256,7 +257,8 @@ gds.run_cypher(
     WITH feature
       ORDER BY feature ASC
     WITH collect(distinct feature) AS orderedTotality
-    CREATE (:Feature {animal: 'crocodile', totality: orderedTotality})
+    MERGE (f:Feature {animal: 'crocodile'})
+    SET f.totality = orderedTotality
     RETURN orderedTotality
 """,
     retryable=True,
@@ -269,7 +271,8 @@ gds.run_cypher(
     WITH feature
       ORDER BY feature ASC
     WITH collect(distinct feature) AS orderedTotality
-    CREATE (:Feature {animal: 'squirrel', totality: orderedTotality})
+    MERGE (f:Feature {animal: 'squirrel'})
+    SET f.totality = orderedTotality
     RETURN orderedTotality
 """,
     retryable=True,
