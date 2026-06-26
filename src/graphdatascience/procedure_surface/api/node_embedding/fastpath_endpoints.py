@@ -37,16 +37,16 @@ class FastPathEndpoints(ABC):
         categorical_event_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float | None = None,
+        decay_factor: float = 1.0,
         event_features: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int | None = None,
+        ignored_event_category: int = -1,
         next_relationship_type: str | None = None,
         output_time: float | None = None,
         output_time_property: str | None = None,
         random_seed: Any | None = None,
-        smoothing_rate: float | None = None,
-        smoothing_window: int | None = None,
+        smoothing_rate: float = 0.0,
+        smoothing_window: int = 0,
         time_node_property: str | None = None,
     ) -> FastPathMutateResult:
         """
@@ -116,16 +116,16 @@ class FastPathEndpoints(ABC):
         categorical_event_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float | None = None,
+        decay_factor: float = 1.0,
         event_features: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int | None = None,
+        ignored_event_category: int = -1,
         next_relationship_type: str | None = None,
         output_time: float | None = None,
         output_time_property: str | None = None,
         random_seed: Any | None = None,
-        smoothing_rate: float | None = None,
-        smoothing_window: int | None = None,
+        smoothing_rate: float = 0.0,
+        smoothing_window: int = 0,
         time_node_property: str | None = None,
     ) -> DataFrame:
         """
@@ -194,16 +194,16 @@ class FastPathEndpoints(ABC):
         categorical_event_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float | None = None,
+        decay_factor: float = 1.0,
         event_features: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int | None = None,
+        ignored_event_category: int = -1,
         next_relationship_type: str | None = None,
         output_time: float | None = None,
         output_time_property: str | None = None,
         random_seed: Any | None = None,
-        smoothing_rate: float | None = None,
-        smoothing_window: int | None = None,
+        smoothing_rate: float = 0.0,
+        smoothing_window: int = 0,
         time_node_property: str | None = None,
         write_concurrency: int | None = None,
     ) -> FastPathWriteResult:
@@ -265,6 +265,7 @@ class FastPathEndpoints(ABC):
 
 
 class FastPathMutateResult(BaseResult):
+    pre_processing_millis: int | None = None
     compute_millis: int = Field(alias="predict_ms")
     mutate_millis: int
     node_properties_written: int
@@ -272,6 +273,7 @@ class FastPathMutateResult(BaseResult):
 
 
 class FastPathWriteResult(BaseResult):
+    pre_processing_millis: int | None = None
     compute_millis: int = Field(alias="predict_ms")
     write_millis: int
     node_properties_written: int = Field(alias="propertiesWritten")
