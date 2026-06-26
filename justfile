@@ -38,7 +38,7 @@ unit-tests extra_options="":
 
 # such as `just it wcc`
 it filter="" extra_options="":
-    uv run --group test pytest tests/integration --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run --group test pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 test-session-notebooks:
     #!/usr/bin/env bash

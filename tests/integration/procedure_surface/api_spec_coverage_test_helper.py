@@ -20,10 +20,6 @@ from graphdatascience.procedure_surface.api.catalog import (
     GraphWithSamplingResult,
 )
 from graphdatascience.procedure_surface.api.debug_endpoints import DebugSysInfoResult
-from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import (
-    FastPathMutateResult,
-    FastPathWriteResult,
-)
 from graphdatascience.server_version.server_version import ServerVersion
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointSpec,
@@ -199,9 +195,6 @@ EXPECTED_RETURN_FIELD_ALIASES = {
 EXPECTED_IGNORED_RETURN_FIELDS = {
     GraphInfo: ["schema"],
     GraphInfoWithDegrees: ["schema"],
-    # TODO: FastPath result types don't expose these spec fields; ignore until the session returns them.
-    FastPathMutateResult: ["node_count", "pre_processing_millis"],
-    FastPathWriteResult: ["node_count", "pre_processing_millis"],
 }
 
 # Return types whose fields intentionally don't map field-by-field to the spec's return fields
