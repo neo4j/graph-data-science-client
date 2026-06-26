@@ -6,4 +6,4 @@ from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSp
 
 
 def test_plugin_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
-    assert_api_spec_coverage(GraphDataScience, gds_api_spec)
+    assert_api_spec_coverage(GraphDataScience, gds_api_spec, include_arrow_only=False)

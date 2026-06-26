@@ -18,4 +18,9 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
 
 
 def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
-    assert_api_spec_coverage(AuraGraphDataScience, gds_api_spec, unmapped_endpoints=SESSION_UNMAPPED_ENDPOINTS)
+    assert_api_spec_coverage(
+        AuraGraphDataScience,
+        gds_api_spec,
+        unmapped_endpoints=SESSION_UNMAPPED_ENDPOINTS,
+        include_arrow_only=True,
+    )

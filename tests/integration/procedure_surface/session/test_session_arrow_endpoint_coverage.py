@@ -31,6 +31,7 @@ ENDPOINT_MAPPINGS = {
     "maxkcut": "max_k_cut",
     # embedding algos
     "fastrp": "fast_rp",
+    "fastPath": "fast_path",
     "hashgnn": "hash_gnn",
     # pathfinding algos
     "sourceTarget": "shortest_path",

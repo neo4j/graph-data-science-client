@@ -41,7 +41,11 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
         super().__init__(**kw)  # type: ignore
 
     def init_notebook(
-        self, notebook_name: str, total_code_cells: int, version_cell_index: int, tear_down_cells: list[IndexedCell]
+        self,
+        notebook_name: str,
+        total_code_cells: int,
+        version_cell_index: int | None,
+        tear_down_cells: list[IndexedCell],
     ) -> None:
         self.notebook_name = notebook_name
         self.total_code_cells = total_code_cells
@@ -72,7 +76,11 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
             if not self._skip_rest:
                 super().preprocess_cell(cell, resources, index)  # type: ignore
         except CellExecutionError as e:
-            if e.ename == "AssertionError" and index == self.version_verify_cell_index:
+            if (
+                self.version_verify_cell_index
+                and e.ename == "AssertionError"
+                and index == self.version_verify_cell_index
+            ):
                 logger.info("Skipping notebook %s due to incompatible GDS version", self.notebook_name)
                 self._skip_rest = True
                 return
@@ -137,15 +145,11 @@ def main(filter_func: Callable[[str], bool]) -> None:
             verify_version_cell_index = [
                 idx for idx, cell in enumerate(nb["cells"]) if VERSION_CELL_TAG in cell["metadata"].get("tags", [])
             ]
-            if not verify_version_cell_index or len(verify_version_cell_index) > 1:
-                raise ValueError(
-                    f"Notebook {notebook_filename} does not have a cell tagged with '{VERSION_CELL_TAG}'."
-                    "Required to run the notebook only against compatible versions."
-                )
+
             ep.init_notebook(
                 notebook_name=notebook_filename.name,
                 total_code_cells=sum(1 for cell in nb["cells"] if cell["cell_type"] == "code"),
-                version_cell_index=verify_version_cell_index[0],
+                version_cell_index=verify_version_cell_index[0] if verify_version_cell_index else None,
                 tear_down_cells=td_collector.tear_down_cells(),
             )
 
@@ -183,6 +187,7 @@ if __name__ == "__main__":
         "graph-analytics-serverless-self-managed.ipynb",
         "graph-analytics-serverless-standalone.ipynb",
         "graph-analytics-serverless-spark.ipynb",
+        "graph-analytics-serverless-standalone-fastpath.ipynb",
     ]
 
     logger.info("Notebook filter: %s", notebook_filter)
