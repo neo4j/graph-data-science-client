@@ -5,11 +5,10 @@ from pathlib import Path
 from typing import Generator
 
 import pytest
-from testcontainers.core.network import Network
 
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integration.conftest import create_db_query_runner, start_database
+from tests.integration.conftest import create_db_query_runner
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointWithModesSpec,
     resolve_spec_from_file,
@@ -59,13 +58,6 @@ def download_gds_api_spec(destination: Path) -> None:
 
     with open(destination, "wb") as f:
         f.write(response.content)
-
-
-@pytest.fixture(scope="package")
-def neo4j_connection(
-    network: Network, logs_dir: Path, request: pytest.FixtureRequest
-) -> Generator[DbmsConnectionInfo, None, None]:
-    yield from start_database(logs_dir, network, request)
 
 
 @pytest.fixture(scope="package")

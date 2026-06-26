@@ -91,7 +91,7 @@ def _current_container_id() -> Optional[str]:
     return str(container.id)
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="session")
 def network() -> Generator[Network, None, None]:
     with Network() as network:
         self_id = _current_container_id()
@@ -297,7 +297,7 @@ def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedA
     )
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="session")
 def session_connection(
     network: Network,
     tmp_path_factory: pytest.TempPathFactory,
@@ -341,7 +341,7 @@ def start_database(
 
     advertise_address = "neo4j-db" if inside_ci() else "localhost"
 
-    db_logs_dir = logs_dir / request.node.name / "db_logs"
+    db_logs_dir = logs_dir / request.node.name / "neo4j_db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
     db_container = (
@@ -387,6 +387,18 @@ def create_db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Ne
     query_runner.close()
 
 
+@pytest.fixture(scope="session")
+def neo4j_connection(
+    network: Network, logs_dir: Path, request: pytest.FixtureRequest
+) -> Generator[DbmsConnectionInfo, None, None]:
+    """Shared plain Neo4j (no GDS) database, reused across all packages that need a bare DB.
+
+    Packages that need a Neo4j+GDS-plugin database instead override this fixture (see
+    procedure_surface/plugin/conftest.py).
+    """
+    yield from start_database(logs_dir, network, request)
+
+
 # --------------------------------------------------------------------------- #
 # Neo4j + GDS plugin container
 # --------------------------------------------------------------------------- #
@@ -403,8 +415,8 @@ def start_gds_plugin_database(
     if GDS_LICENSE_KEY is None:
         raise ValueError("Trying to start a Plugin database, but no GDS_LICENSE_KEY environment variable was set")
 
-    db_logs_dir = logs_dir / request.node.name / "db_logs"
-    db_logs_dir.mkdir(parents=True)
+    db_logs_dir = logs_dir / request.node.name / "gds_plugin_db_logs"
+    db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
 
     models_dir = tmp_path_factory.mktemp("models")
@@ -475,7 +487,7 @@ def create_gds_arrow_client(container: Neo4jContainer) -> Generator[GdsArrowClie
         yield client
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="session")
 def gds_plugin_container(
     logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
 ) -> Generator[Neo4jContainer, None, None]:
