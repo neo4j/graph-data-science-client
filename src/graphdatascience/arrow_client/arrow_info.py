@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
-from graphdatascience.server_version.server_version import ServerVersion
 
 
 @dataclass(frozen=True)
@@ -16,12 +15,11 @@ class ArrowInfo:
 
     @staticmethod
     def create(query_runner: QueryRunner) -> ArrowInfo:
-        debugYields = ["listenAddress", "enabled", "running"]
-        if query_runner.server_version() > ServerVersion(2, 6, 0):
-            debugYields.append("versions")
-
         procResult = query_runner.call_procedure(
-            endpoint="gds.debug.arrow", query_type=QueryType.SYSTEM, custom_error=False, yields=debugYields
+            endpoint="gds.debug.arrow",
+            query_type=QueryType.SYSTEM,
+            custom_error=False,
+            yields=["listenAddress", "enabled", "running", "versions"],
         ).iloc[0]
 
         return ArrowInfo(

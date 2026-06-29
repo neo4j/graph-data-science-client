@@ -11,6 +11,7 @@ def _train_payload(**overrides: object) -> dict[str, object]:
         "configuration": {},
         "modelInfo": {
             "bestParameters": {"maxDepth": 3},
+            "classes": [0, 1, 2],
             "metrics": {"F1_WEIGHTED": 0.9},
             "modelName": "model",
             "modelType": "NodeClassification",
@@ -30,3 +31,5 @@ def test_node_classification_train_result_materializes_typed_model_info() -> Non
     assert result.model_info.model_name == "model"
     assert result.model_info.model_type == "NodeClassification"
     assert result.model_info.best_parameters == {"maxDepth": 3}
+    assert result.model_info.classes == [0, 1, 2]
+    assert result.model_info["classes"] == [0, 1, 2]

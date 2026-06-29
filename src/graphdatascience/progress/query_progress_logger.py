@@ -5,10 +5,9 @@ from typing import Any, Callable
 from pandas import DataFrame
 
 from graphdatascience.progress.progress_bar import TqdmProgressBar
-from graphdatascience.server_version.server_version import ServerVersion
 
 from .progress_provider import ProgressProvider, TaskWithProgress
-from .query_progress_provider import CypherQueryFunction, QueryProgressProvider, ServerVersionFunction
+from .query_progress_provider import CypherQueryFunction, QueryProgressProvider
 from .static_progress_provider import StaticProgressProvider, StaticProgressStore
 
 DataFrameProducer = Callable[[], DataFrame]
@@ -18,13 +17,11 @@ class QueryProgressLogger:
     def __init__(
         self,
         run_cypher_func: CypherQueryFunction,
-        server_version_func: ServerVersionFunction,
         polling_interval: float = 0.5,
         progress_bar_options: dict[str, Any] = {},
     ):
-        self._server_version_func = server_version_func
         self._static_progress_provider = StaticProgressProvider()
-        self._query_progress_provider = QueryProgressProvider(run_cypher_func, server_version_func)
+        self._query_progress_provider = QueryProgressProvider(run_cypher_func)
         self._polling_interval = polling_interval
         self._progress_bar_options = progress_bar_options
 
@@ -33,9 +30,6 @@ class QueryProgressLogger:
     def run_with_progress_logging(
         self, runnable: DataFrameProducer, job_id: str, database: str | None = None
     ) -> DataFrame:
-        if self._server_version_func() < ServerVersion(2, 1, 0):
-            return runnable()
-
         # Select progress provider based on whether the job id is in the static progress store.
         # Entries in the static progress store are already visible at this point.
         progress_provider = self._select_progress_provider(job_id)

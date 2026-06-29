@@ -3,19 +3,19 @@ from __future__ import annotations
 from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.model.model import Model
 from graphdatascience.model.model_api import ModelApi
+from graphdatascience.procedure_surface.api.model.pipeline_model import PipelineModel
 from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_endpoints import (
     NodeRegressionPipelinePredictEndpoints,
     NodeRegressionPipelinePredictMutateResult,
 )
 
 
-class NodeRegressionModelV2(Model):
+class NodeRegressionModel(PipelineModel):
     """
     Represents a node regression model in the model catalog.
 
-    Construct this using: func:`gds.v2.pipeline.node_regression.train()`.
+    Construct this using: func:`gds.pipeline.node_regression.train()`.
     """
 
     def __init__(

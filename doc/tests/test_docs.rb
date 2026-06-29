@@ -16,13 +16,13 @@ from graphdatascience.graph.v2.graph_api import ServerVersion
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
 
-NEO4J_USER = "neo4j"
+NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "password"
-if os.environ.get("NEO4J_USER"):
-    NEO4J_USER = os.environ.get("NEO4J_USER", "DUMMY")
+if os.environ.get("NEO4J_USERNAME"):
+    NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME", "DUMMY")
     NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "neo4j")
 
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 gds.set_database("neo4j")
 '
 

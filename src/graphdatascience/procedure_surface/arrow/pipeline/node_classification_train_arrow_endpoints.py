@@ -7,7 +7,7 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineTrainResult,
 )
@@ -57,7 +57,7 @@ class NodeClassificationTrainArrowEndpoints(NodeClassificationPipelineTrainEndpo
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[NodeClassificationModelV2, NodeClassificationPipelineTrainResult]:
+    ) -> tuple[NodeClassificationModel, NodeClassificationPipelineTrainResult]:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             metrics=metrics,
@@ -83,7 +83,7 @@ class NodeClassificationTrainArrowEndpoints(NodeClassificationPipelineTrainEndpo
         )
         result = JobClient.get_summary(self._arrow_client, result_job_id)
         return (
-            NodeClassificationModelV2(
+            NodeClassificationModel(
                 model_name,
                 self._model_api,
                 predict_endpoints=self._predict_endpoints,

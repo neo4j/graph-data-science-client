@@ -2,7 +2,7 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModelV2
+from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
@@ -50,7 +50,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
         batch_size: int = 100,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
-    ) -> tuple[GraphSageModelV2, GraphSageTrainResult]:
+    ) -> tuple[GraphSageModel, GraphSageTrainResult]:
         config = ConfigConverter.convert_to_gds_config(
             model_name=model_name,
             feature_properties=feature_properties,
@@ -87,7 +87,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
             endpoint="gds.beta.graphSage.train", params=params, logging=log_progress
         ).iloc[0]
 
-        return GraphSageModelV2(
+        return GraphSageModel(
             name=model_name,
             model_api=ModelApiCypher(self._query_runner),
             predict_endpoints=GraphSagePredictCypherEndpoints(self._query_runner),

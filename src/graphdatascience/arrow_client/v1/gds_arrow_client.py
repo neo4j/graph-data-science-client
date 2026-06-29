@@ -12,11 +12,11 @@ from pyarrow.types import is_dictionary
 from pydantic import BaseModel
 
 from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
+from graphdatascience.arrow_client.arrow_table_utils import table_from_pandas
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.arrow_client.v1.data_mapper_utils import deserialize_single
 
 from ...procedure_surface.arrow.error_handler import handle_flight_error
-from ...semantic_version.semantic_version import SemanticVersion
 from ..progress_callback import ProgressCallback
 
 
@@ -487,11 +487,13 @@ class GdsArrowClient:
         batch_size: int,
         progress_callback: ProgressCallback,
     ) -> None:
+        batches: list[RecordBatch]
         match data:
             case pyarrow.Table():
                 batches = data.to_batches(batch_size)
             case pandas.DataFrame():
-                batches = pyarrow.Table.from_pandas(data).to_batches(batch_size)
+                batches = table_from_pandas(data).to_batches(batch_size)
+
             case _:
                 batches = data
 
@@ -562,11 +564,7 @@ class GdsArrowClient:
         except Exception as e:
             handle_flight_error(e)
         arrow_table = self._sanitize_arrow_table(arrow_table)
-        if SemanticVersion.from_string(pandas.__version__) >= SemanticVersion(2, 0, 0):
-            return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
-        else:
-            arrow_table = self._sanitize_arrow_table(arrow_table)
-            return arrow_table.to_pandas()  # type: ignore
+        return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
 
     def __enter__(self) -> GdsArrowClient:
         return self

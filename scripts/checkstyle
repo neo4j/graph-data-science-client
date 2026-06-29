@@ -4,15 +4,12 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-python -m ruff check .
-python -m ruff format --check .
+echo "Checking ruff"
+uv run ruff check .
+uv run ruff format --check .
+echo "Checking mypy"
+uv run mypy .
 
-if [ "${MYPY_DAEMON:-false}" == "true" ]; then
-  dmypy start # using the daemon is a bit fast on multiple runs
-  dmypy .
-else
-  mypy .
-fi
 
 
 if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then
@@ -25,7 +22,7 @@ NOTEBOOKS="./examples/*.ipynb" # ./examples/dev/*.ipynb"
 for f in $NOTEBOOKS
 do
   NB=$(cat $f)
-  FORMATTED_NB=$(python scripts/clean_notebooks.py -i "$f" -o stdout)
+  FORMATTED_NB=$(uv run python scripts/clean_notebooks.py -i "$f" -o stdout)
 
   if [[ "$FORMATTED_NB" != "$NB" ]];
   then

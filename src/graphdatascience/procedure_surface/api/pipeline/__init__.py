@@ -1,4 +1,4 @@
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import LinkPredictionPipeline
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
     LinkPredictionPipelineEndpoints,
@@ -47,7 +47,7 @@ from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
 __all__ = [
     "PipelineEndpoints",
     "PipelineCatalogEntry",
-    "LinkPredictionModelV2",
+    "LinkPredictionModel",
     "LinkPredictionPipeline",
     "LinkPredictionPipelineEndpoints",
     "LinkPredictionPipelineInfoResult",

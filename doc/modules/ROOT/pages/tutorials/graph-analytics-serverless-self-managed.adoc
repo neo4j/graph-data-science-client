@@ -31,11 +31,11 @@ https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 is enabled for your Neo4j Aura project.
 
 You also need to have the `graphdatascience` Python library installed,
-version `1.15` or later.
+version `2.0` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.15" python-dotenv "neo4j_viz[gds]"
+%pip install "graphdatascience>=2.0a1" python-dotenv "neo4j_viz[gds]"
 ----
 
 [source, python, role=no-test]
@@ -205,12 +205,12 @@ data_query = """
 """
 
 # making sure the database is actually empty
-assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+assert gds.run_cypher("MATCH (n) RETURN count(n)", retryable=True).squeeze() == 0, "Database is not empty!"
 
 # let's now write our graph!
 gds.run_cypher(data_query)
 
-gds.run_cypher("MATCH (n) RETURN count(n) AS nodeCount")
+gds.run_cypher("MATCH (n) RETURN count(n) AS nodeCount", retryable=True)
 ----
 
 == Projecting Graphs
@@ -261,13 +261,13 @@ str(G)
 [source, python, role=no-test]
 ----
 # Let us visualize the projected graph
-from neo4j_viz.gds import from_gds
-
-VG = from_gds(gds, G, db_node_properties=["name"])
-for node in VG.nodes:
-    node.caption = node.properties.get("name")
-
-VG.render(initial_zoom=1.2)
+# from neo4j_viz.gds import from_gds
+#
+# VG = from_gds(gds, G, db_node_properties=["name"])
+# for node in VG.nodes:
+#     node.caption = node.properties.get("name")
+#
+# VG.render(initial_zoom=1.2)
 ----
 
 == Running Algorithms
@@ -278,23 +278,23 @@ Python Client API. See the other tutorials for more examples.
 [source, python, role=no-test]
 ----
 print("Running PageRank ...")
-pr_result = gds.pageRank.mutate(G, mutateProperty="pagerank")
-print(f"Compute millis: {pr_result['computeMillis']}")
-print(f"Node properties written: {pr_result['nodePropertiesWritten']}")
-print(f"Centrality distribution: {pr_result['centralityDistribution']}")
+pr_result = gds.page_rank.mutate(G, mutate_property="pagerank")
+print(f"Compute millis: {pr_result.compute_millis}")
+print(f"Node properties written: {pr_result.node_properties_written}")
+print(f"Centrality distribution: {pr_result.centrality_distribution}")
 
 print("Running FastRP ...")
-frp_result = gds.fastRP.mutate(
+frp_result = gds.fast_rp.mutate(
     G,
-    mutateProperty="fastRP",
-    embeddingDimension=8,
-    featureProperties=["pagerank"],
-    propertyRatio=0.2,
-    nodeSelfInfluence=0.2,
+    mutate_property="fastRP",
+    embedding_dimension=8,
+    feature_properties=["pagerank"],
+    property_ratio=0.2,
+    node_self_influence=0.2,
 )
-print(f"Compute millis: {frp_result['computeMillis']}")
+print(f"Compute millis: {frp_result.compute_millis}")
 # stream back the results
-gds.graph.nodeProperties.stream(G, ["pagerank", "fastRP"], separate_property_columns=True, db_node_properties=["name"])
+gds.graph.node_properties.stream(G, ["pagerank", "fastRP"], db_node_properties=["name"])
 ----
 
 == Writing back to Neo4j
@@ -308,7 +308,7 @@ the PageRank and FastRP algorithms to the Neo4j database.
 ----
 # if this fails once with some error like "unable to retrieve routing table"
 # then run it again. this is a transient error with a stale server cache.
-gds.graph.nodeProperties.write(G, ["pagerank", "fastRP"])
+gds.graph.node_properties.write(G, ["pagerank", "fastRP"])
 ----
 
 Of course, you can just use `.write` modes as well. Let's run Louvain in
@@ -316,7 +316,7 @@ write mode to show:
 
 [source, python, role=no-test]
 ----
-gds.louvain.write(G, writeProperty="louvain")
+gds.louvain.write(G, write_property="louvain")
 ----
 
 You can now use the `gds.run++_++cypher()` method to query the updated
@@ -330,7 +330,8 @@ gds.run_cypher(
     MATCH (p:Person)
     RETURN p.name, p.pagerank AS rank, p.louvain
      ORDER BY rank DESC
-    """
+    """,
+    retryable=True,
 )
 ----
 
@@ -359,5 +360,5 @@ sessions.list()
 [source, python, role=no-test]
 ----
 # Lastly, let's clean up the database
-gds.run_cypher("MATCH (n:Person|Fruit) DETACH DELETE n")
+gds.run_cypher("MATCH (n:Person|Fruit) DETACH DELETE n", retryable=True)
 ----

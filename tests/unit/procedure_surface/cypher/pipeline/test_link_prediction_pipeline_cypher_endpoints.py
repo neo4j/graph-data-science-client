@@ -3,7 +3,7 @@ from unittest import mock
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModelV2
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.cypher.pipeline.link_prediction_pipeline_cypher_endpoints import (
@@ -273,7 +273,7 @@ def test_link_prediction_train_runs_query() -> None:
         target_relationship_type="REL",
     )
 
-    assert isinstance(model, LinkPredictionModelV2)
+    assert isinstance(model, LinkPredictionModel)
     assert model.name() == "model"
     assert result.train_millis == 7
     assert result.model_info is not None

@@ -2,6 +2,19 @@ style skip_notebooks="false":
      uv sync --frozen
      SKIP_NOTEBOOKS={{skip_notebooks}} ./scripts/makestyle && ./scripts/checkstyle
 
+# Comprehensive CI-style check: Python style, notebook docs, and Ruby style
+checkstyle-all:
+    #!/usr/bin/env bash
+    set -e
+    uv sync --group dev-base
+    # Python style
+    ./scripts/checkstyle
+    ./scripts/nb2doc/check.sh
+    # Ruby style
+    cd doc/tests
+    bundle install
+    bundle exec rubocop
+
 check-notebooks:
     ./scripts/nb2doc/check.sh
 
@@ -21,49 +34,69 @@ post-release-main version="":
     ./scripts/release_helper/post_release_main.py {{version}}
 
 unit-tests extra_options="":
-    uv run pytest tests/unit {{extra_options}}
+    uv run --group test pytest tests/unit {{extra_options}}
 
-# just it test true "--durations=20"
-it filter="" enterprise="true" extra_options="":
+# such as `just it wcc`
+it filter="" extra_options="":
+    uv run --group test pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+
+test-session-notebooks:
+    #!/usr/bin/env bash
+    # expects Aura API credentials to be set as env vars
+    set -uo pipefail
+    rc=0
+    uv run scripts/ci/run_session_notebooks.py              || rc=1
+    uv run scripts/ci/run_session_notebooks_self_managed.py || rc=1
+    exit $rc
+
+test-aurads-notebooks:
+    # expects Aura API credentials to be set as env vars
+    uv run scripts/ci/run_plugin_notebooks_aura.py
+
+# Run the plugin notebooks against a local Neo4j with the GDS plugin (AuraDS-like).
+# `filter` selects notebooks by name substring (e.g. `hashgnn`); empty runs all.
+# `enterprise=true` requires a license at ${HOME}/.gds_license; `enterprise=false` uses community.
+test-plugin-notebooks-local filter="" enterprise="true":
     #!/usr/bin/env bash
     set -e
     if [ "{{enterprise}}" = "true" ]; then
         ENV_DIR="scripts/test_envs/gds_plugin_enterprise"
-        EXTRA_FLAGS="--include-model-store-location --include-enterprise {{extra_options}}"
+        if [ ! -f "${HOME}/.gds_license" ]; then
+            echo "Error: GDS enterprise license file not found at ${HOME}/.gds_license"
+            exit 1
+        fi
     else
         ENV_DIR="scripts/test_envs/gds_plugin_community"
-        EXTRA_FLAGS="{{extra_options}}"
     fi
     trap "cd $ENV_DIR && docker compose down" EXIT
     cd $ENV_DIR && docker compose up -d
     cd -
-    uv run pytest tests/integration $EXTRA_FLAGS --basetemp=tmp/ {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    echo "Waiting for Neo4j to be ready on http://localhost:7474 ..."
+    for i in $(seq 1 90); do
+        if curl -sf http://localhost:7474 > /dev/null 2>&1; then
+            echo "Neo4j is up"
+            break
+        fi
+        if [ "$i" = "90" ]; then
+            echo "Error: Neo4j did not become ready in time"
+            exit 1
+        fi
+        sleep 2
+    done
+    # The compose env runs with NEO4J_AUTH=none, matching the notebook defaults
+    # (bolt://localhost:7687, user "neo4j", empty password).
+    uv run --group notebook-ci ./scripts/run_notebooks.py {{filter}}
+
+test-tox-partition number-of-partitions partition-index: update-test-images
+    uv run --group test scripts/ci/run_tox_environments.py {{number-of-partitions}} {{partition-index}}
 
 
-# such as `just it-v2 wcc`
-it-v2 filter="" extra_options="":
-    uv run pytest tests/integrationV2 --include-integration-v2 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
-
-
-# runs the session related v1 integration tests
-session-v1-it:
-    #!/usr/bin/env bash
-    set -e
-    ENV_DIR="scripts/test_envs/gds_session"
-    trap "cd $ENV_DIR && docker compose down" EXIT
-    cd $ENV_DIR && docker compose up -d
-    cd -
-    sleep 5 # wait for the containers to be ready
-    NEO4J_URI=bolt://localhost:7688 \
-    NEO4J_USER=neo4j \
-    NEO4J_PASSWORD=password \
-    NEO4J_DB=neo4j \
-    NEO4J_AURA_DB_URI=bolt://localhost:7687 \
-    uv run pytest tests --include-cloud-architecture
-
-
-update-session-image:
-    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest
+update-aga-images:
+    # docker pull is incremental: it only downloads layers when the remote digest is new,
+    # otherwise it reports "Image is up to date".
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest
 
 update-neo4j-image:
     docker pull neo4j:enterprise
@@ -73,7 +106,7 @@ update-neo4j-aura-image:
     docker pull europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:2026.03.1
 
 update-test-images:
-    just update-session-image
+    just update-aga-images
     just update-neo4j-image
     just update-neo4j-aura-image
 

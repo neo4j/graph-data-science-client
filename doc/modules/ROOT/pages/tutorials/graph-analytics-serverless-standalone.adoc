@@ -30,11 +30,11 @@ https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 enabled for your Neo4j Aura project.
 
 You also need to have the `graphdatascience` Python library installed,
-version `1.15` or later.
+version `2.0a1` or later.
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>=1.15" python-dotenv "neo4j_viz[gds]"
+%pip install "graphdatascience>=2.0a1" python-dotenv "neo4j_viz[gds]"
 ----
 
 [source, python, role=no-test]
@@ -213,19 +213,19 @@ str(G)
 [source, python, role=no-test]
 ----
 # Let us visualize the projected graph
-from neo4j_viz.gds import from_gds
-
-VG = from_gds(gds, G)
-
-# Concatenate the dataframes with name and nodeId columns
-names = pd.concat([people_df[["nodeId", "name"]], fruits_df[["nodeId", "name"]]])
-# Create a dictionary mapping nodeId to name
-names_mapping = names.set_index("nodeId")["name"]
-
-for node in VG.nodes:
-    node.caption = names_mapping[node.id]
-
-VG.render(initial_zoom=1.2)
+# from neo4j_viz.gds import from_gds
+#
+# VG = from_gds(gds, G)
+#
+# # Concatenate the dataframes with name and nodeId columns
+# names = pd.concat([people_df[["nodeId", "name"]], fruits_df[["nodeId", "name"]]])
+# # Create a dictionary mapping nodeId to name
+# names_mapping = names.set_index("nodeId")["name"]
+#
+# for node in VG.nodes:
+#     node.caption = names_mapping[node.id]
+#
+# VG.render(initial_zoom=1.2)
 ----
 
 == Running Algorithms
@@ -236,23 +236,23 @@ Python Client API. See the other tutorials for more examples.
 [source, python, role=no-test]
 ----
 print("Running PageRank ...")
-pr_result = gds.pageRank.mutate(G, mutateProperty="pagerank")
-print(f"Compute millis: {pr_result['computeMillis']}")
-print(f"Node properties written: {pr_result['nodePropertiesWritten']}")
-print(f"Centrality distribution: {pr_result['centralityDistribution']}")
+pr_result = gds.page_rank.mutate(G, mutate_property="pagerank")
+print(f"Compute millis: {pr_result.compute_millis}")
+print(f"Node properties written: {pr_result.node_properties_written}")
+print(f"Centrality distribution: {pr_result.centrality_distribution}")
 
 print("Running FastRP ...")
-frp_result = gds.fastRP.mutate(
+frp_result = gds.fast_rp.mutate(
     G,
-    mutateProperty="fastRP",
-    embeddingDimension=8,
-    featureProperties=["pagerank"],
-    propertyRatio=0.2,
-    nodeSelfInfluence=0.2,
+    mutate_property="fastRP",
+    embedding_dimension=8,
+    feature_properties=["pagerank"],
+    property_ratio=0.2,
+    node_self_influence=0.2,
 )
-print(f"Compute millis: {frp_result['computeMillis']}")
+print(f"Compute millis: {frp_result.compute_millis}")
 # stream back the results
-result = gds.graph.nodeProperties.stream(G, ["pagerank", "fastRP"], separate_property_columns=True)
+result = gds.graph.node_properties.stream(G, ["pagerank", "fastRP"])
 
 result
 ----

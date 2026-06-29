@@ -48,13 +48,11 @@ When using a local Neo4j setup, the default connection URI is
 ----
 # Get Neo4j DB URI, credentials and name from environment if applicable
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
-NEO4J_AUTH = None
 NEO4J_DB = os.environ.get("NEO4J_DB", "neo4j")
-if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
-    NEO4J_AUTH = (
-        os.environ.get("NEO4J_USER"),
-        os.environ.get("NEO4J_PASSWORD"),
-    )
+NEO4J_AUTH = (
+    os.environ.get("NEO4J_USERNAME", "neo4j"),
+    os.environ.get("NEO4J_PASSWORD", ""),
+)
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
@@ -194,7 +192,7 @@ the graph, printing only the first 10.
 
 [source, python, role=no-test]
 ----
-gds.graph.nodeProperties.stream(G, ["subject"]).head(10)
+gds.graph.node_properties.stream(G, ["subject"]).head(10)
 ----
 
 == Cleanup

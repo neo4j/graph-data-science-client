@@ -89,9 +89,9 @@ torch.cuda.manual_seed_all(42)
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_AUTH = None
 NEO4J_DB = os.environ.get("NEO4J_DB", "neo4j")
-if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
+if os.environ.get("NEO4J_USERNAME") and os.environ.get("NEO4J_PASSWORD"):
     NEO4J_AUTH = (
-        os.environ.get("NEO4J_USER"),
+        os.environ.get("NEO4J_USERNAME"),
         os.environ.get("NEO4J_PASSWORD"),
     )
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
@@ -113,7 +113,7 @@ instead.
 
 [source, python, role=no-test]
 ----
-G = gds.graph.load_cora()
+G = gds.graph.datasets.load_cora()
 ----
 
 [source, python, role=no-test]
@@ -128,7 +128,7 @@ It's looks correct! Now let's go ahead and sample the graph.
 [source, python, role=no-test]
 ----
 # We use the random walk with restarts sampling algorithm with default values
-G_sample, _ = gds.graph.sample.rwr("cora_sample", G, randomSeed=42, concurrency=1)
+G_sample, _ = gds.graph.sample.rwr(G, "cora_sample", random_seed=42, concurrency=1)
 ----
 
 [source, python, role=no-test]
@@ -187,11 +187,7 @@ Great, it looks like we have the format we need to create a PyG
 ----
 # We also need to export the node properties corresponding to our node labels and features, represented by the
 # "subject" and "features" node properties respectively
-sample_node_properties = gds.graph.nodeProperties.stream(
-    G_sample,
-    ["subject", "features"],
-    separate_property_columns=True,
-)
+sample_node_properties = gds.graph.node_properties.stream(G_sample, ["subject", "features"])
 ----
 
 [source, python, role=no-test]

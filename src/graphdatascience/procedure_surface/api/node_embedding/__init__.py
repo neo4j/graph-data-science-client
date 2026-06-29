@@ -1,3 +1,8 @@
+from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import (
+    FastPathEndpoints,
+    FastPathMutateResult,
+    FastPathWriteResult,
+)
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import (
     FastRPEndpoints,
     FastRPMutateResult,
@@ -30,6 +35,9 @@ __all__ = [
     "FastRPMutateResult",
     "FastRPStatsResult",
     "FastRPWriteResult",
+    "FastPathEndpoints",
+    "FastPathMutateResult",
+    "FastPathWriteResult",
     "GraphSageEndpoints",
     "GraphSageMutateResult",
     "GraphSagePredictEndpoints",

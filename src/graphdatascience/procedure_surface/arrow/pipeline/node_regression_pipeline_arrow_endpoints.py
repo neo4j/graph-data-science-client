@@ -7,7 +7,7 @@ from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_singl
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModelV2
+from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModel
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline import NodeRegressionPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_endpoints import (
@@ -193,7 +193,7 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
         sudo: bool = False,
         concurrency: int | None = None,
         job_id: str | None = None,
-    ) -> tuple[NodeRegressionModelV2, NodeRegressionPipelineTrainResult]:
+    ) -> tuple[NodeRegressionModel, NodeRegressionPipelineTrainResult]:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             metrics=[metric.value if isinstance(metric, NodeRegressionMetric) else metric for metric in metrics],
@@ -219,7 +219,7 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
         )
         result = JobClient.get_summary(self._arrow_client, result_job_id)
         return (
-            NodeRegressionModelV2(
+            NodeRegressionModel(
                 model_name,
                 self._model_api,
                 predict_endpoints=self._predict,

@@ -53,13 +53,11 @@ GDS Client docs] for more details.
 ----
 # Get Neo4j DB URI, credentials and name from environment if applicable
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
-NEO4J_AUTH = None
 NEO4J_DB = os.environ.get("NEO4J_DB", "neo4j")
-if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
-    NEO4J_AUTH = (
-        os.environ.get("NEO4J_USER"),
-        os.environ.get("NEO4J_PASSWORD"),
-    )
+NEO4J_AUTH = (
+    os.environ.get("NEO4J_USERNAME", "neo4j"),
+    os.environ.get("NEO4J_PASSWORD", ""),
+)
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 
 # On AuraDS:
@@ -85,7 +83,6 @@ load the data, and `numpy` and `pandas` for further data processing.
 import json
 
 import numpy as np
-import pandas as pd
 ----
 
 == Loading the Cora dataset
@@ -173,8 +170,8 @@ load_relationships = f"""
 """
 
 # Load nodes and relationships on Neo4j
-gds.run_cypher(load_nodes)
-gds.run_cypher(load_relationships)
+gds.run_cypher(load_nodes, retryable=True)
+gds.run_cypher(load_relationships, retryable=True)
 ----
 
 With the data loaded on Neo4j, we can now project a graph including all
@@ -209,7 +206,7 @@ machine learning pipeline.
 [source, python, role=no-test]
 ----
 # Create the pipeline
-node_pipeline, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline")
+node_pipeline, _ = gds.pipeline.node_classification.create("cora-pipeline")
 ----
 
 We can check that the pipeline has actually been created with the `list`
@@ -221,7 +218,7 @@ method:
 gds.pipeline.list()
 
 # Alternatively, get the details of a specific pipeline object
-gds.pipeline.list(node_pipeline)
+gds.pipeline.list(node_pipeline.name())
 ----
 
 == Configuring the pipeline
@@ -250,17 +247,17 @@ candidates to try. Here we choose 5 to keep the training time short.
 [source, python, role=no-test]
 ----
 # "Mark" some node properties that will be used as features
-node_pipeline.selectFeatures(["features"])
+node_pipeline.select_features(["features"])
 
 # If needed, change the train/test split ratio and the number of folds
 # for k-fold cross-validation
-node_pipeline.configureSplit(testFraction=0.2, validationFolds=5)
+node_pipeline.configure_split(test_fraction=0.2, validation_folds=5)
 
 # Add a model candidate to train
-node_pipeline.addLogisticRegression(maxEpochs=200, penalty=(0.0, 0.5))
+node_pipeline.add_logistic_regression(max_epochs=200, penalty=(0.0, 0.5))
 
 # Explicit set the number of trials for autotuning (default = 10)
-node_pipeline.configureAutoTuning(maxTrials=5)
+node_pipeline.configure_auto_tuning(max_trials=5)
 ----
 
 == Training the pipeline
@@ -281,11 +278,11 @@ library is limited to 4 for Neo4j Community Edition.
 # Estimate the resources needed for training the model
 node_pipeline.train_estimate(
     G,
-    targetNodeLabels=["Paper"],
-    modelName="cora-pipeline-model",
-    targetProperty="subject",
+    target_node_labels=["Paper"],
+    model_name="cora-pipeline-model",
+    target_property="subject",
     metrics=["F1_WEIGHTED"],
-    randomSeed=42,
+    random_seed=42,
     concurrency=4,
 )
 ----
@@ -295,11 +292,11 @@ node_pipeline.train_estimate(
 # Perform the actual training
 model, stats = node_pipeline.train(
     G,
-    targetNodeLabels=["Paper"],
-    modelName="cora-pipeline-model",
-    targetProperty="subject",
+    target_node_labels=["Paper"],
+    model_name="cora-pipeline-model",
+    target_property="subject",
     metrics=["F1_WEIGHTED"],
-    randomSeed=42,
+    random_seed=42,
     concurrency=4,
 )
 ----
@@ -313,7 +310,7 @@ evaluation metrics of the trained model.
 # print(stats.to_json(indent=2))
 
 # Print F1_WEIGHTED metric
-stats["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"]
+stats.model_info["metrics"]["F1_WEIGHTED"]["test"]
 ----
 
 == Using the model for prediction
@@ -326,9 +323,7 @@ it should be only used for experimentation purposes.
 
 [source, python, role=no-test]
 ----
-predicted = model.predict_stream(
-    G, modelName="cora-pipeline-model", includePredictedProbabilities=True, targetNodeLabels=["UnclassifiedPaper"]
-)
+predicted = model.predict_stream(G, include_predicted_probabilities=True, target_node_labels=["UnclassifiedPaper"])
 ----
 
 The result of the prediction is a Pandas `DataFrame` containing the
@@ -352,7 +347,7 @@ model, _not_ its position.
 [source, python, role=no-test]
 ----
 # List of class labels
-classes = stats["modelInfo"]["classes"]
+classes = stats.model_info["classes"]
 print("Class labels:", classes)
 
 # Calculate the confidence percentage for the predicted class
@@ -385,26 +380,26 @@ Book].
 
 [source, python, role=no-test]
 ----
-node_pipeline_fastrp, _ = gds.beta.pipeline.nodeClassification.create("cora-pipeline-fastrp")
+node_pipeline_fastrp, _ = gds.pipeline.node_classification.create("cora-pipeline-fastrp")
 
 # Add a step in the pipeline that mutates the graph
-node_pipeline_fastrp.addNodeProperty(
+node_pipeline_fastrp.add_node_property(
     "fastRP",
-    mutateProperty="embedding",
-    embeddingDimension=512,
-    propertyRatio=1.0,
-    randomSeed=42,
-    featureProperties=["features"],
-    contextNodeLabels=["Paper", "UnclassifiedPaper"],
+    mutate_property="embedding",
+    embedding_dimension=512,
+    property_ratio=1.0,
+    random_seed=42,
+    feature_properties=["features"],
+    context_node_labels=["Paper", "UnclassifiedPaper"],
 )
 
 # With the node embeddings available as features, we no longer use the original raw `features`.
-node_pipeline_fastrp.selectFeatures(["embedding"])
+node_pipeline_fastrp.select_features(["embedding"])
 
 # Configure the pipeline as before
-node_pipeline_fastrp.configureSplit(testFraction=0.2, validationFolds=5)
-node_pipeline_fastrp.addLogisticRegression(maxEpochs=200, penalty=(0.0, 0.5))
-node_pipeline.configureAutoTuning(maxTrials=5)
+node_pipeline_fastrp.configure_split(test_fraction=0.2, validation_folds=5)
+node_pipeline_fastrp.add_logistic_regression(max_epochs=200, penalty=(0.0, 0.5))
+node_pipeline.configure_auto_tuning(max_trials=5)
 ----
 
 The training then proceeds as in the previous section:
@@ -414,11 +409,11 @@ The training then proceeds as in the previous section:
 # Perform the actual training
 model_fastrp, stats_fastrp = node_pipeline_fastrp.train(
     G,
-    targetNodeLabels=["Paper"],
-    modelName="cora-pipeline-model-fastrp",
-    targetProperty="subject",
+    target_node_labels=["Paper"],
+    model_name="cora-pipeline-model-fastrp",
+    target_property="subject",
     metrics=["F1_WEIGHTED"],
-    randomSeed=42,
+    random_seed=42,
     concurrency=4,
 )
 ----
@@ -427,7 +422,7 @@ The `F1++_++WEIGHTED` metrics is better with embeddings:
 
 [source, python, role=no-test]
 ----
-print(stats_fastrp["modelInfo"]["metrics"]["F1_WEIGHTED"]["test"])
+print(stats_fastrp.model_info["metrics"]["F1_WEIGHTED"]["test"])
 ----
 
 The classification using `predict++_++stream` can be run in the same
@@ -437,9 +432,8 @@ way:
 ----
 predicted_fastrp = model_fastrp.predict_stream(
     G,
-    modelName="cora-pipeline-model-fastrp",
-    includePredictedProbabilities=True,
-    targetNodeLabels=["UnclassifiedPaper"],
+    include_predicted_probabilities=True,
+    target_node_labels=["UnclassifiedPaper"],
 )
 ----
 
@@ -457,39 +451,15 @@ used multiple times. The predicted nodes can be retrieved using the
 ----
 model_fastrp.predict_mutate(
     G,
-    mutateProperty="predictedClass",
-    modelName="cora-pipeline-model-fastrp",
-    predictedProbabilityProperty="predictedProbabilities",
-    targetNodeLabels=["UnclassifiedPaper"],
+    mutate_property="predictedClass",
+    predicted_probability_property="predictedProbabilities",
+    target_node_labels=["UnclassifiedPaper"],
 )
 
-predicted_fastrp = gds.graph.nodeProperty.stream(G, "predictedClass", ["UnclassifiedPaper"])
-----
-
-[source, python, role=no-test]
-----
+predicted_fastrp = gds.graph.node_properties.stream(
+    G, "predictedClass", node_labels=["UnclassifiedPaper"], db_node_properties=["subject"]
+)
 predicted_fastrp
-----
-
-This is useful to compare the result of classification with the original
-`subject` value of the test nodes, which must be retrieved from the
-Neo4j database since it has been excluded from the projected graph.
-
-[source, python, role=no-test]
-----
-# Retrieve node information from Neo4j using the node IDs from the prediction result
-nodes = gds.util.asNodes(predicted_fastrp.nodeId.to_list())
-
-# Create a new DataFrame containing node IDs along with node properties
-nodes_df = pd.DataFrame([(node.id, node["subject"]) for node in nodes], columns=["nodeId", "subject"])
-
-# Merge with the prediction result on node IDs, to check the predicted value
-# against the original subject
-#
-# NOTE: This could also be replaced by just appending `node["subject"]` as a
-# Series since the node order would not change, but a proper merge (or join)
-# is clearer and less prone to errors.
-predicted_fastrp.merge(nodes_df, on="nodeId")
 ----
 
 As we can see, the prediction for all the test nodes is accurate.
@@ -504,7 +474,7 @@ notebook on AuraDS.*
 
 [source, python, role=no-test]
 ----
-gds.graph.nodeProperties.write(
+gds.graph.node_properties.write(
     G,
     node_properties=["predictedClass"],
     node_labels=["UnclassifiedPaper"],
@@ -533,7 +503,7 @@ longer useful:
 
 [source, python, role=no-test]
 ----
-gds.run_cypher("MATCH (n) WHERE n:Paper OR n:UnclassifiedPaper DETACH DELETE n")
+gds.run_cypher("MATCH (n) WHERE n:Paper OR n:UnclassifiedPaper DETACH DELETE n", retryable=True)
 ----
 
 It is good practice to close the client as well:

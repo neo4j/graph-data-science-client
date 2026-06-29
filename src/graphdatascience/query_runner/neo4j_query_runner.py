@@ -110,9 +110,7 @@ class Neo4jQueryRunner(QueryRunner):
         config.setdefault("max_connection_lifetime", 60 * 50)  # 50 minutes
         config.setdefault("keep_alive", True)
         config.setdefault("max_connection_pool_size", 50)
-
-        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 16, 0):
-            config.setdefault("liveness_check_timeout", 60 * 5)  # 5 minutes
+        config.setdefault("liveness_check_timeout", 60 * 5)  # 5 minutes
 
     @staticmethod
     def parse_protocol(endpoint: str) -> str:
@@ -144,9 +142,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._last_bookmarks: Any | None = None
         self._server_version: ServerVersion | None = None
         self._show_progress = show_progress
-        self._progress_logger = QueryProgressLogger(
-            self.__run_cypher_simplified_for_query_progress_logger, self.server_version
-        )
+        self._progress_logger = QueryProgressLogger(self.__run_cypher_simplified_for_query_progress_logger)
         self._instance_description = instance_description
 
     def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: str | None) -> DataFrame:
@@ -204,10 +200,7 @@ class Neo4jQueryRunner(QueryRunner):
 
             df = result.to_df()
 
-            if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 0, 0):
-                self._last_bookmarks = [session.last_bookmark()]  # type: ignore
-            else:
-                self._last_bookmarks = session.last_bookmarks()
+            self._last_bookmarks = session.last_bookmarks()
 
             result_summary = result.consume()
             self._handle_notifications(result_summary)
@@ -227,9 +220,6 @@ class Neo4jQueryRunner(QueryRunner):
     ) -> DataFrame:
         if not database:
             database = self._database
-
-        if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 5, 0):
-            return self.run_cypher(query, query_type, params, database, mode, custom_error, connectivity_retry_config)
 
         if not mode:
             routing = neo4j.RoutingControl.WRITE
@@ -426,13 +416,7 @@ class Neo4jQueryRunner(QueryRunner):
         retrys = 0
         while retrys < retry_config.max_retries:
             try:
-                if self._NEO4J_DRIVER_VERSION < SemanticVersion(5, 0, 0):
-                    warnings.filterwarnings(
-                        "ignore",
-                        category=neo4j.ExperimentalWarning,
-                        message=r"^The configuration may change in the future.$",
-                    )
-                elif self._NEO4J_DRIVER_VERSION < SemanticVersion(6, 0, 0):
+                if self._NEO4J_DRIVER_VERSION < SemanticVersion(6, 0, 0):
                     warnings.filterwarnings(
                         "ignore",
                         category=neo4j.ExperimentalWarning,
@@ -464,25 +448,22 @@ class Neo4jQueryRunner(QueryRunner):
             raise UnableToConnectError(f"Unable to connect to the {self._instance_description}") from exception
 
     def __configure_warnings_filter(self) -> None:
-        if Neo4jQueryRunner._NEO4J_DRIVER_VERSION >= SemanticVersion(5, 21, 0):
-            notifications_logger = logging.getLogger("neo4j.notifications")
-            # the client does not expose YIELD fields so we just skip these warnings for now
-            notifications_logger.addFilter(
-                lambda record: (
-                    "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
-                )
+        notifications_logger = logging.getLogger("neo4j.notifications")
+        # the client does not expose YIELD fields so we just skip these warnings for now
+        notifications_logger.addFilter(
+            lambda record: (
+                "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
             )
-            notifications_logger.addFilter(
-                lambda record: "The procedure has a deprecated field" in record.msg and "gds." in record.msg
-            )
+        )
+        notifications_logger.addFilter(
+            lambda record: "The procedure has a deprecated field" in record.msg and "gds." in record.msg
+        )
         warnings.filterwarnings(
             "ignore",
             message=r"^pandas support is experimental and might be changed or removed in future versions$",
         )
         # neo4j 2025.04
         warnings.filterwarnings("ignore", message=r".*The procedure has a deprecated field.*by 'gds.*")
-        # neo4j driver 4.4
-        warnings.filterwarnings("ignore", message=r".*The query used a deprecated field from a procedure.*by 'gds.*")
         # neo4j driver 6.0
         warnings.filterwarnings("ignore", message=r".*returned by the procedure.* is deprecated.*")
         warnings.filterwarnings("ignore", message=r".*procedure field deprecated..*")

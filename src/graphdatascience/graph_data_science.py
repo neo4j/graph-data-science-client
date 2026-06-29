@@ -43,6 +43,9 @@ from graphdatascience.procedure_surface.api.community.triangle_count_endpoints i
 from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.config_endpoints import ConfigEndpoints
+from graphdatascience.procedure_surface.api.debug_endpoints import DebugEndpoints
+from graphdatascience.procedure_surface.api.kge.kge_endpoints import KgeEndpoints
+from graphdatascience.procedure_surface.api.license_endpoints import LicenseEndpoints
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
@@ -65,6 +68,11 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
+from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import (
+    TopologicalLinkPredictionEndpoints,
+)
+from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.scale_properties_cypher_endpoints import (
     ScalePropertiesCypherEndpoints,
@@ -113,6 +121,9 @@ from graphdatascience.procedure_surface.cypher.community.triangle_count_cypher_e
 from graphdatascience.procedure_surface.cypher.community.triangles_cypher_endpoints import TrianglesCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.wcc_cypher_endpoints import WccCypherEndpoints
 from graphdatascience.procedure_surface.cypher.config_cypher_endpoints import ConfigCypherEndpoints
+from graphdatascience.procedure_surface.cypher.debug_cypher_endpoints import DebugCypherEndpoints
+from graphdatascience.procedure_surface.cypher.kge.kge_predict_cypher_endpoints import KgePredictCypherEndpoints
+from graphdatascience.procedure_surface.cypher.license_cypher_endpoints import LicenseCypherEndpoints
 from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
 from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import (
     ModelCatalogCypherEndpoints,
@@ -161,6 +172,10 @@ from graphdatascience.procedure_surface.cypher.similarity.knn_cypher_endpoints i
 from graphdatascience.procedure_surface.cypher.similarity.node_similarity_cypher_endpoints import (
     NodeSimilarityCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.topological_link_prediction_cypher_endpoints import (
+    TopologicalLinkPredictionCypherEndpoints,
+)
+from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
 from graphdatascience.query_runner.query_mode import QueryMode
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
@@ -247,7 +262,7 @@ class GraphDataScience:
         self._arrow_client: GdsArrowClient | None = None
 
         arrow_info = ArrowInfo.create(self._query_runner)
-        if arrow and arrow_info.enabled and self._server_version >= ServerVersion(2, 1, 0):
+        if arrow and arrow_info.enabled:
             arrow_auth = None
             if auth is not None:
                 username, password = auth
@@ -294,6 +309,27 @@ class GraphDataScience:
         return ConfigCypherEndpoints(self._query_runner)
 
     @property
+    def util(self) -> UtilEndpoints:
+        """
+        Return utility endpoints.
+        """
+        return UtilCypherEndpoints(self._query_runner)
+
+    @property
+    def license(self) -> LicenseEndpoints:
+        """
+        Return license endpoints.
+        """
+        return LicenseCypherEndpoints(self._query_runner)
+
+    @property
+    def debug(self) -> DebugEndpoints:
+        """
+        Return debug endpoints.
+        """
+        return DebugCypherEndpoints(self._query_runner)
+
+    @property
     def list_progress(self) -> ListProgressCypherEndpoint:
         """
         Return endpoint for listing progress.
@@ -306,6 +342,13 @@ class GraphDataScience:
         Return endpoints for collapsing relationship paths.
         """
         return CollapsePathCypherEndpoints(self._query_runner)
+
+    @property
+    def topological_link_prediction(self) -> TopologicalLinkPredictionEndpoints:
+        """
+        Return endpoints for topological link prediction functions.
+        """
+        return TopologicalLinkPredictionCypherEndpoints(self._query_runner)
 
     ## Algorithms
 
@@ -423,6 +466,13 @@ class GraphDataScience:
             train_endpoints=GraphSageTrainCypherEndpoints(self._query_runner),
             predict_endpoints=GraphSagePredictCypherEndpoints(self._query_runner),
         )
+
+    @property
+    def kge(self) -> KgeEndpoints:
+        """
+        Return endpoints for KGE (TransE/DistMult) relationship prediction.
+        """
+        return KgeEndpoints(KgePredictCypherEndpoints(self._query_runner))
 
     @property
     def harmonic_centrality(self) -> ClosenessHarmonicEndpoints:
@@ -556,6 +606,13 @@ class GraphDataScience:
         Return endpoints for the node similarity algorithm.
         """
         return NodeSimilarityCypherEndpoints(self._query_runner)
+
+    @property
+    def similarity(self) -> SimilarityFunctions:
+        """
+        Return similarity functions computed client-side.
+        """
+        return SimilarityFunctions()
 
     @property
     def page_rank(self) -> PageRankEndpoints:
@@ -788,3 +845,11 @@ class GraphDataScience:
 
     def server_version(self) -> ServerVersion:
         return self._server_version
+
+    def is_licensed(self) -> bool:
+        """
+        Return whether the installed GDS library is licensed.
+        """
+        return self._query_runner.call_function(  # type: ignore[no-any-return]
+            endpoint="gds.isLicensed",
+        )

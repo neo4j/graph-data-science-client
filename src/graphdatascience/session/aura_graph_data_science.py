@@ -45,6 +45,7 @@ from graphdatascience.procedure_surface.api.community.triangles_endpoints import
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.list_progress_endpoint import ListProgressEndpoint
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
@@ -66,6 +67,11 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
 from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
 from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
+from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import (
+    TopologicalLinkPredictionEndpoints,
+)
+from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.scale_properties_arrow_endpoints import (
     ScalePropertiesArrowEndpoints,
@@ -119,6 +125,7 @@ from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint impor
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import (
     ModelCatalogArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import FastPathArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.fastrp_arrow_endpoints import FastRPArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
@@ -163,6 +170,10 @@ from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints imp
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
     NodeSimilarityArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.topological_link_prediction_arrow_endpoints import (
+    TopologicalLinkPredictionArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.util_arrow_endpoints import UtilArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -257,6 +268,13 @@ class AuraGraphDataScience:
         return ConfigArrowEndpoints(self._authenticated_arrow_client)
 
     @property
+    def util(self) -> UtilEndpoints:
+        """
+        Return utility endpoints.
+        """
+        return UtilArrowEndpoints(self._db_query_runner)
+
+    @property
     def list_progress(self) -> ListProgressEndpoint:
         """
         Return system-related endpoints.
@@ -278,6 +296,13 @@ class AuraGraphDataScience:
         Return endpoints for collapsing relationship paths.
         """
         return CollapsePathArrowEndpoints(self._authenticated_arrow_client, show_progress=self._show_progress)
+
+    @property
+    def topological_link_prediction(self) -> TopologicalLinkPredictionEndpoints:
+        """
+        Return endpoints for topological link prediction functions.
+        """
+        return TopologicalLinkPredictionArrowEndpoints()
 
     ## Algorithms
 
@@ -407,6 +432,15 @@ class AuraGraphDataScience:
         Return endpoints for the eigenvector centrality algorithm.
         """
         return EigenvectorArrowEndpoints(
+            self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
+        )
+
+    @property
+    def fast_path(self) -> FastPathEndpoints:
+        """
+        Return endpoints for the FastPath algorithm.
+        """
+        return FastPathArrowEndpoints(
             self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
         )
 
@@ -594,6 +628,13 @@ class AuraGraphDataScience:
         return NodeSimilarityArrowEndpoints(
             self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
         )
+
+    @property
+    def similarity(self) -> SimilarityFunctions:
+        """
+        Return similarity functions computed client-side.
+        """
+        return SimilarityFunctions()
 
     @property
     def page_rank(self) -> PageRankEndpoints:

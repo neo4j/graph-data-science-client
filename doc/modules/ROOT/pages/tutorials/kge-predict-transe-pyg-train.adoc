@@ -64,13 +64,11 @@ from graphdatascience import GraphDataScience
 [source, python, role=no-test]
 ----
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
-NEO4J_AUTH = None
 NEO4J_DB = os.environ.get("NEO4J_DB", "neo4j")
-if os.environ.get("NEO4J_USER") and os.environ.get("NEO4J_PASSWORD"):
-    NEO4J_AUTH = (
-        os.environ.get("NEO4J_USER"),
-        os.environ.get("NEO4J_PASSWORD"),
-    )
+NEO4J_AUTH = (
+    os.environ.get("NEO4J_USERNAME", "neo4j"),
+    os.environ.get("NEO4J_PASSWORD", ""),
+)
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
@@ -185,6 +183,7 @@ def process():
             MERGE (n)-[:{rel_type} {{rel_id:l.rel_id}}]->(m)
             """,
             params={"ll": list_of_dicts},
+            retryable=True,
         )
 
     print("Writing relationships as different relationship types")
@@ -196,6 +195,7 @@ def process():
             MERGE (n)-[:{REL_TYPE} {{rel_id:$rel_id, text:$text}}]->(m)
             """,
             params={"ll": rels, "rel_id": rel_id, "text": rel_id_to_text_dict[rel_id]},
+            retryable=True,
         )
 
 
@@ -208,11 +208,11 @@ Project all data in graph to get mapping between `id` and internal
 [source, python, role=no-test]
 ----
 node_projection = {"Entity": {"properties": "id"}}
-relationship_projection = [
-    {"TRAIN": {"orientation": "NATURAL", "properties": "rel_id"}},
-    {"TEST": {"orientation": "NATURAL", "properties": "rel_id"}},
-    {"VALID": {"orientation": "NATURAL", "properties": "rel_id"}},
-]
+relationship_projection = {
+    "TRAIN": {"orientation": "NATURAL", "properties": "rel_id"},
+    "TEST": {"orientation": "NATURAL", "properties": "rel_id"},
+    "VALID": {"orientation": "NATURAL", "properties": "rel_id"},
+}
 
 ttv_G, result = gds.graph.project(
     "fb15k-graph-ttv",
@@ -220,11 +220,7 @@ ttv_G, result = gds.graph.project(
     relationship_projection,
 )
 
-node_properties = gds.graph.nodeProperties.stream(
-    ttv_G,
-    ["id"],
-    separate_property_columns=True,
-)
+node_properties = gds.graph.node_properties.stream(ttv_G, ["id"])
 
 nodeId_to_id = dict(zip(node_properties.nodeId, node_properties.id))
 id_to_nodeId = dict(zip(node_properties.id, node_properties.nodeId))
@@ -238,13 +234,13 @@ format it into a `Data` structure suitable for training with PyG.
 [source, python, role=no-test]
 ----
 def create_data_from_graph(relationship_type):
-    rels_tmp = gds.graph.relationshipProperty.stream(ttv_G, "rel_id", relationship_type)
+    rels_tmp = gds.graph.relationships.stream(ttv_G, relationship_type, ["rel_id"])
     topology = [
         rels_tmp.sourceNodeId.map(lambda x: nodeId_to_id[x]),
         rels_tmp.targetNodeId.map(lambda x: nodeId_to_id[x]),
     ]
     edge_index = torch.tensor(topology, dtype=torch.long)
-    edge_type = torch.tensor(rels_tmp.propertyValue.astype(int), dtype=torch.long)
+    edge_type = torch.tensor(rels_tmp.rel_id.astype(int), dtype=torch.long)
     data = Data(edge_index=edge_index, edge_type=edge_type)
     data.num_nodes = len(nodeId_to_id)
     display(data)
@@ -339,10 +335,23 @@ database.
 
 [source, python, role=no-test]
 ----
-for i in tqdm(range(len(nodeId_to_id))):
+node_embeddings = model.node_emb.weight.detach().cpu()
+num_nodes = node_embeddings.size(0)
+
+batch_size = 1000
+for start in tqdm(range(0, num_nodes, batch_size)):
+    rows = [
+        {"id": start + offset, "emb": emb}
+        for offset, emb in enumerate(node_embeddings[start : start + batch_size].tolist())
+    ]
     gds.run_cypher(
-        "MATCH (n:Entity {id: $i}) SET n.emb=$EMBEDDING",
-        params={"i": i, "EMBEDDING": model.node_emb.weight[i].tolist()},
+        """
+        UNWIND $rows AS row
+        MATCH (n:Entity {id: row.id})
+        SET n.emb = row.emb
+        """,
+        params={"rows": rows},
+        retryable=True,
     )
 ----
 
@@ -386,7 +395,7 @@ property, and the embedding for the relationship to be predicted.
 [source, python, role=no-test]
 ----
 target_emb = model.node_emb.weight[rel_id_to_predict].tolist()
-transe_model = gds.model.transe.create(G_test, "emb", {rel_label_to_predict: target_emb})
+transe_model = gds.kge.transe(G_test, "emb", {rel_label_to_predict: target_emb})
 ----
 
 [source, python, role=no-test]
@@ -395,6 +404,7 @@ source_node_list = ["/m/07l450", "/m/0ds2l81", "/m/0jvt9"]
 source_ids_df = gds.run_cypher(
     "UNWIND $node_text_list AS t MATCH (n:Entity) WHERE n.text=t RETURN id(n) as nodeId",
     params={"node_text_list": source_node_list},
+    retryable=True,
 )
 ----
 
@@ -403,7 +413,7 @@ Now, we can use the model to make prediction.
 [source, python, role=no-test]
 ----
 result = transe_model.predict_stream(
-    source_node_filter=source_ids_df.nodeId,
+    source_node_filter=source_ids_df.nodeId.tolist(),
     target_node_filter="Entity",
     relationship_type=rel_label_to_predict,
     top_k=3,
@@ -422,6 +432,7 @@ ids_in_result = pd.unique(pd.concat([result.sourceNodeId, result.targetNodeId]))
 ids_to_text = gds.run_cypher(
     "UNWIND $ids AS id MATCH (n:Entity) WHERE id(n)=id RETURN id(n) AS nodeId, n.text AS tag, n.id AS id",
     params={"ids": ids_in_result},
+    retryable=True,
 )
 
 nodeId_to_text_res = dict(zip(ids_to_text.nodeId, ids_to_text.tag))
@@ -445,7 +456,7 @@ relationship type. This approach helps to avoid mapping from `nodeId` to
 ----
 write_relationship_type = "PREDICTED_" + rel_label_to_predict
 result_write = transe_model.predict_write(
-    source_node_filter=source_ids_df.nodeId,
+    source_node_filter=source_ids_df.nodeId.tolist(),
     target_node_filter="Entity",
     relationship_type=rel_label_to_predict,
     write_relationship_type=write_relationship_type,
@@ -462,7 +473,8 @@ Extract the result from the database.
 gds.run_cypher(
     "MATCH (n)-[r:"
     + write_relationship_type
-    + "]->(m) RETURN n.id AS sourceId, n.text AS sourceTag, m.id AS targetId, m.text AS targetTag, r.transe_score AS score"
+    + "]->(m) RETURN n.id AS sourceId, n.text AS sourceTag, m.id AS targetId, m.text AS targetTag, r.transe_score AS score",
+    retryable=True,
 )
 ----
 

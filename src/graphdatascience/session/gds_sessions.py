@@ -58,7 +58,7 @@ class GdsSessions:
     Primary API class for managing GDS sessions hosted in Neo4j Aura.
     """
 
-    def create(self, api_credentials: AuraAPICredentials) -> None:
+    def __init__(self, api_credentials: AuraAPICredentials) -> None:
         """
         Create a new instance of the GdsSessions class.
 
@@ -74,17 +74,6 @@ class GdsSessions:
             client_secret=api_credentials.client_secret,
             project_id=api_credentials.project_id,
         )
-
-    def __init__(self, aura_api: AuraApi) -> None:
-        """
-        Initializes a new instance of the GdsSessions class.
-
-        Parameters
-        ----------
-        aura_api
-            A connector to the Aura API.
-        """
-        self._aura_api = aura_api
 
     def estimate(
         self,

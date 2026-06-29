@@ -3,7 +3,7 @@ from unittest import mock
 import pandas as pd
 import pytest
 
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModelV2
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
     NodeClassificationPipeline,
@@ -35,6 +35,7 @@ def _train_summary(**overrides: object) -> dict[str, object]:
         "configuration": {},
         "modelInfo": {
             "bestParameters": {},
+            "classes": [0, 1],
             "metrics": {},
             "modelName": "model",
             "modelType": "NodeClassification",
@@ -63,7 +64,7 @@ def test_node_classification_train_runs_query() -> None:
     pipeline, _ = NodeClassificationPipelineCypherEndpoints(query_runner).create("pipe")
     model, result = pipeline.train(graph, metrics=["F1_WEIGHTED"], model_name="model", target_property="y")
 
-    assert isinstance(model, NodeClassificationModelV2)
+    assert isinstance(model, NodeClassificationModel)
     assert model.name() == "model"
     assert result.train_millis == 7
     assert result.model_info is not None
@@ -292,7 +293,7 @@ def test_node_classification_model_predict_estimate_delegates_to_predict_endpoin
     expected = mock.Mock()
     predict_endpoints.estimate.return_value = expected
 
-    model = NodeClassificationModelV2("model", model_api, predict_endpoints)
+    model = NodeClassificationModel("model", model_api, predict_endpoints)
 
     result = model.predict_estimate(graph, concurrency=4)
 
