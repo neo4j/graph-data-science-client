@@ -16,7 +16,7 @@ Use the Neo4j URI and credentials according to your setup.
 from graphdatascience import GraphDataScience
 
 # For example, in a local setup `NEO4J_URI` would be "neo4j://127.0.0.1:7687".
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 ----
 
 The `GraphDataScience` object needs the Neo4j database to be available upon construction, and uses the default `neo4j` database by default.
@@ -24,7 +24,7 @@ If the `neo4j` database does not exist or you want to use a different database, 
 
 [source, python, role=no-test]
 ----
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD), database="my-db")
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="my-db")
 ----
 
 You can also change the database after creating the `GraphDataScience` object:
@@ -52,7 +52,7 @@ sessions = GdsSessions(api_credentials=AuraAPICredentials(AURA_API_CLIENT_ID, AU
 gds = sessions.get_or_create(
     session_name="my-session",
     memory=SessionMemory.m_4GB,
-    db_connection=DbmsConnectionInfo(NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD),
+    db_connection=DbmsConnectionInfo(NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD),
 )
 ----
 =====
@@ -69,7 +69,7 @@ from graphdatascience import GraphDataScience
 # `NEO4J_URI` has the format "neo4j+s://xxxxxxxx.databases.neo4j.io:7687".
 gds = GraphDataScience(
     NEO4J_URI,
-    auth=(NEO4J_USER, NEO4J_PASSWORD),
+    auth=(NEO4J_USERNAME, NEO4J_PASSWORD),
     aura_ds=True
 )
 ----
