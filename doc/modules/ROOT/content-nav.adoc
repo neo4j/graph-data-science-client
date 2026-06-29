@@ -5,6 +5,7 @@
 * xref:getting-started.adoc[]
 * xref:cypher-mapping.adoc[]
 * xref:aura-graph-analytics.adoc[]
+* xref:common-datasets.adoc[]
 * xref:tutorials/index.adoc[]
 // https://docs.antora.org/antora/latest/navigation/include-lists/
 +
@@ -14,12 +15,14 @@ include::partial$tutorial-list.adoc[]
 
 * *Graph algorithms*
 * xref:graph-object.adoc[]
+* Data from different sources
+** xref:load-from-pandas.adoc[]
+** xref:load-from-networkx.adoc[]
 * xref:algorithms.adoc[]
 
 * *Machine learning*
 * xref:pipelines.adoc[]
 * xref:model-object.adoc[]
-* xref:common-datasets.adoc[]
 * xref:rel-embedding-models.adoc[]
 * xref:bookmarks.adoc[]
 
