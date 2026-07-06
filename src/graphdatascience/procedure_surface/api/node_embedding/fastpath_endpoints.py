@@ -265,16 +265,16 @@ class FastPathEndpoints(ABC):
 
 
 class FastPathMutateResult(BaseResult):
-    pre_processing_millis: int | None = None
+    pre_processing_millis: int
     compute_millis: int = Field(alias="predict_ms")
     mutate_millis: int
     node_properties_written: int
-    configuration: dict[str, Any] | None = None
+    configuration: dict[str, Any]
 
 
 class FastPathWriteResult(BaseResult):
-    pre_processing_millis: int | None = None
+    pre_processing_millis: int
     compute_millis: int = Field(alias="predict_ms")
     write_millis: int
     node_properties_written: int = Field(alias="propertiesWritten")
-    configuration: dict[str, Any] | None = None
+    configuration: dict[str, Any]
