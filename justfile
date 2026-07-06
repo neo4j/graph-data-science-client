@@ -101,6 +101,7 @@ update-aga-images:
     docker pull "${session_image}"
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest
 
 update-neo4j-image:
     docker pull neo4j:enterprise
