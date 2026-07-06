@@ -28,6 +28,7 @@ def session_connection_runtime(
     tmp_path_factory: pytest.TempPathFactory,
     logs_dir: Path,
     runtime_api: str,
+    gds_api_connection: str,
     request: pytest.FixtureRequest,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     yield from start_session(
@@ -36,6 +37,7 @@ def session_connection_runtime(
         network,
         request,
         runtime_api_uri=runtime_api,
+        gds_api_uri=gds_api_connection,
         session_alias=RUNTIME_SESSION_ALIAS,
     )
 

@@ -206,6 +206,56 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
 
 
 # --------------------------------------------------------------------------- #
+# Mock GDS API (model catalog) container
+# --------------------------------------------------------------------------- #
+
+MOCK_GDS_API_NETWORK_ALIAS = "mock-gds-api"
+MOCK_GDS_API_PORT = 8000
+
+
+def start_gds_api(logs_dir: Path, network: Network, request: pytest.FixtureRequest) -> Generator[str, None, None]:
+    """Start the mock GDS API container.
+    The session routes model-catalog operations (createModel / listModels / deleteModel /
+    publish) to this API
+    """
+    if (gds_api_uri := os.environ.get("GDS_API_URL")) is not None:
+        yield gds_api_uri
+        return
+    # if explicit session is given, we default to the standard mock gds-api address
+    if os.environ.get("GDS_SESSION_URI") is not None:
+        yield f"http://{MOCK_GDS_API_NETWORK_ALIAS}:{MOCK_GDS_API_PORT}"
+        return
+
+    gds_api_image = os.getenv(
+        "MOCK_GDS_API_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest"
+    )
+    LOGGER.info(f"Using mock gds api image: {gds_api_image}")
+
+    gds_api_container = (
+        DockerContainer(image=gds_api_image)
+        .with_exposed_ports(MOCK_GDS_API_PORT)
+        .with_network(network)
+        .with_network_aliases(MOCK_GDS_API_NETWORK_ALIAS)
+        .waiting_for(HttpWaitStrategy(MOCK_GDS_API_PORT, path="/health"))
+    )
+
+    with gds_api_container as gds_api_container:
+        try:
+            # The session reaches the GDS API over the shared network by its alias.
+            yield f"http://{MOCK_GDS_API_NETWORK_ALIAS}:{MOCK_GDS_API_PORT}"
+        finally:
+            stdout, stderr = gds_api_container.get_logs()
+            if stderr:
+                LOGGER.error(f"Error logs from gds api container:\n{stderr.decode('utf-8', errors='replace')}")
+
+            gds_api_logs_dir = logs_dir / request.node.name
+            gds_api_logs_dir.mkdir(parents=True, exist_ok=True)
+            gds_api_logs_dir.chmod(0o777)
+
+            write_container_logs(gds_api_logs_dir / "gds_api_container.log", stdout, stderr)
+
+
+# --------------------------------------------------------------------------- #
 # GDS Session (Arrow-only) container
 # --------------------------------------------------------------------------- #
 
@@ -215,6 +265,7 @@ def start_session(
     tmp_path_factory: pytest.TempPathFactory,
     network: Network,
     request: pytest.FixtureRequest,
+    gds_api_uri: str,
     runtime_api_uri: Optional[str] = None,
     session_alias: str = DEFAULT_SESSION_ALIAS,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
@@ -238,7 +289,7 @@ def start_session(
         .with_env("ALLOW_LIST", "DEFAULT")
         .with_env("DNS_NAME", session_alias)
         .with_env("PAGE_CACHE_SIZE", "100M")
-        .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
+        .with_env("MODEL_STORAGE_BASE_LOCATION", "file:///models")
         .with_env("ENVIRONMENT", "local")
         .with_env("SESSION_ID", session_alias)  # using session-alias for runtime-api resolving to the right host
         .with_env("DATABASE_USERNAME", "neo4j")  # required to use remote model catalog features
@@ -251,6 +302,9 @@ def start_session(
         # Points the session at the python-runtime API so it can spawn python-runtime
         # containers for endpoints like FastPath.
         session_container = session_container.with_env("PYTHON_RUNTIME_API_LOCATION", runtime_api_uri)
+    # Points the session at the (mock) GDS API so model-catalog operations
+    # (store / load / delete / publish) route there instead of the Aura app-ingress.
+    session_container = session_container.with_env("GDS_API_URL", gds_api_uri)
     session_container = session_container.with_network(network).with_network_aliases(session_alias)
     with session_container as session_container:
         try:
@@ -299,13 +353,19 @@ def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedA
 
 
 @pytest.fixture(scope="session")
+def gds_api_connection(network: Network, logs_dir: Path, request: pytest.FixtureRequest) -> Generator[str, None, None]:
+    yield from start_gds_api(logs_dir, network, request)
+
+
+@pytest.fixture(scope="session")
 def session_connection(
     network: Network,
     tmp_path_factory: pytest.TempPathFactory,
     logs_dir: Path,
+    gds_api_connection: str,
     request: pytest.FixtureRequest,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
-    yield from start_session(logs_dir, tmp_path_factory, network, request)
+    yield from start_session(logs_dir, tmp_path_factory, network, request, gds_api_uri=gds_api_connection)
 
 
 @pytest.fixture(scope="package")
