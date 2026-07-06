@@ -241,7 +241,7 @@ def start_session(
         .with_env("MODEL_STORAGE_BASE_LOCATION", "/models")
         .with_env("ENVIRONMENT", "local")
         .with_env("SESSION_ID", session_alias)  # using session-alias for runtime-api resolving to the right host
-        .with_env("DATABASE_USERNAME", "neo4j") # required to use remote model catalog features
+        .with_env("DATABASE_USERNAME", "neo4j")  # required to use remote model catalog features
         .with_env("EXTRA_FLAGS", "--disable-authentication")
         .with_volume_mapping(model_dir, "/models", mode="rw")
         .with_exposed_ports(SESSION_ARROW_PORT, 8080)
