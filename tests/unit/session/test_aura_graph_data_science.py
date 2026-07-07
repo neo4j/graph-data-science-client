@@ -18,11 +18,17 @@ def test_run_cypher_write(mocker: MockerFixture) -> None:
         session_lifecycle_manager=Noop(),
     )
 
-    gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.WRITE, database="bar", retryable=True)
+    gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.WRITE, database="bar")
 
     assert query_runner.last_query() == "RETURN 1"
     assert query_runner.last_params() == {"foo": 1}
-    assert query_runner.run_args[-1] == {"custom_error": False, "db": "bar", "mode": QueryMode.WRITE, "retryable": True}
+    assert query_runner.run_args[-1] == {
+        "custom_error": False,
+        "db": "bar",
+        "mode": QueryMode.WRITE,
+        "retryable": True,
+        "query_type": "user-direct",
+    }
 
 
 def test_run_cypher_read(mocker: MockerFixture) -> None:
@@ -34,7 +40,7 @@ def test_run_cypher_read(mocker: MockerFixture) -> None:
         session_lifecycle_manager=Noop(),
     )
 
-    gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.READ, retryable=False)
+    gds.run_cypher("RETURN 1", params={"foo": 1}, mode=QueryMode.READ)
 
     assert query_runner.last_query() == "RETURN 1"
     assert query_runner.last_params() == {"foo": 1}
@@ -42,7 +48,7 @@ def test_run_cypher_read(mocker: MockerFixture) -> None:
         "custom_error": False,
         "db": None,
         "mode": QueryMode.READ,
-        "retryable": False,
+        "retryable": True,
         "query_type": "user-direct",
     }
 

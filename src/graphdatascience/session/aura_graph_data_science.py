@@ -767,7 +767,6 @@ class AuraGraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        retryable: bool = False,
         mode: QueryMode = QueryMode.WRITE,
     ) -> DataFrame:
         """
@@ -781,8 +780,6 @@ class AuraGraphDataScience:
             parameters to the query
         database: str
             the database on which to run the query
-        retryable: bool
-            whether the query can be automatically retried. Make sure the query is idempotent if set to True.
         mode: QueryMode
             the query mode to use (READ or WRITE). Set based on the operation performed in the query.
 
@@ -794,14 +791,9 @@ class AuraGraphDataScience:
         if not self._db_query_runner:
             raise NotAvailableInStandaloneSessions("Running Cypher queries")
 
-        if retryable:
-            return self._db_query_runner.run_retryable_cypher(
-                query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode
-            )
-        else:
-            return self._db_query_runner.run_cypher(
-                query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode
-            )
+        return self._db_query_runner.run_retryable_cypher(
+            query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode
+        )
 
     def arrow_client(self) -> GdsArrowClient:
         """

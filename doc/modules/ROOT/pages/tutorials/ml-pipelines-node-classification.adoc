@@ -155,7 +155,7 @@ load_nodes = f"""
       toInteger(row[0]) AS extId,
       row[1] AS subject,
       toIntegerList(row[2..]) AS features
-    MERGE (p:Paper {{extId: extId, subject: subject_to_id[subject], features: features}})
+    CREATE (p:Paper {{extId: extId, subject: subject_to_id[subject], features: features}})
     WITH p LIMIT {HOLDOUT_NODES}
     REMOVE p:Paper
     SET p:UnclassifiedPaper
@@ -166,12 +166,15 @@ load_relationships = f"""
     LOAD CSV FROM "{CORA_CITES}" AS row
     MATCH (n), (m)
     WHERE n.extId = toInteger(row[0]) AND m.extId = toInteger(row[1])
-    MERGE (n)-[:CITES]->(m)
+    CREATE (n)-[:CITES]->(m)
 """
 
 # Load nodes and relationships on Neo4j
-gds.run_cypher(load_nodes, retryable=True)
-gds.run_cypher(load_relationships, retryable=True)
+# making sure the database is empty
+assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+
+gds.run_cypher(load_nodes)
+gds.run_cypher(load_relationships)
 ----
 
 With the data loaded on Neo4j, we can now project a graph including all
@@ -503,7 +506,7 @@ longer useful:
 
 [source, python, role=no-test]
 ----
-gds.run_cypher("MATCH (n) WHERE n:Paper OR n:UnclassifiedPaper DETACH DELETE n", retryable=True)
+gds.run_cypher("MATCH (n) WHERE n:Paper OR n:UnclassifiedPaper DETACH DELETE n")
 ----
 
 It is good practice to close the client as well:
