@@ -28,10 +28,10 @@ api-docs:
    ./scripts/render_api_docs
 
 pre-release:
-    ./scripts/release_helper/pre_release.py
+    uv run --group dev-base scripts/release_helper/pre_release.py
 
 post-release-main version="":
-    ./scripts/release_helper/post_release_main.py {{version}}
+    uv run scripts/release_helper/post_release_main.py {{version}}
 
 unit-tests extra_options="":
     uv run --group test pytest tests/unit {{extra_options}}
