@@ -498,4 +498,29 @@ merged_all = merged_full.merge(predicted_targets_sample, left_on="nodeId", right
 display(merged_all.tail(10))
 ----
 
+== Cleanup
+
+Before finishing we clean up the example data from both the GDS
+in-memory state and the database.
+
+[source, python, role=no-test]
+----
+# Cleanup GDS
+# Drop the in-memory graphs that are still in the Graph Catalog
+G_animals.drop()
+G_chameleon.drop()
+G_chameleon_sample.drop()
+----
+
+[source, python, role=no-test]
+----
+# Cleanup database
+# Remove the nodes we created, and drop the constraints, so the database is left empty
+gds.run_cypher("MATCH (n) DETACH DELETE n")
+
+gds.run_cypher("DROP CONSTRAINT chameleons IF EXISTS")
+gds.run_cypher("DROP CONSTRAINT crocodiles IF EXISTS")
+gds.run_cypher("DROP CONSTRAINT squirrels IF EXISTS")
+----
+
 == And we are done!
