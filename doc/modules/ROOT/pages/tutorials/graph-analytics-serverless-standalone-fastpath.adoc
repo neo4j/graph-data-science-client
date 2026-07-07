@@ -1,0 +1,285 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+= Aura Graph Analytics: FastPath embeddings on temporal data
+
+
+
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless-standalone-fastpath.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook shows how to use the `graphdatascience` Python library to
+run the *FastPath* node embedding algorithm on an Aura Graph Analytics
+(AGA) Session.
+
+FastPath is a lightweight path-embedding algorithm designed for
+*temporal graphs*. It computes vector embeddings for _base_ nodes (e.g.
+customers, entities) by aggregating the feature vectors of their
+associated _event_ nodes (e.g. transactions, interactions) weighted by
+how recently each event occurred.
+
+____
+*Note:* FastPath is a *preview feature* and may change or be removed in
+future releases. It requires a session backed by the new Python runtime.
+____
+
+We model a small temporal graph of `Entity` nodes and `Event` nodes
+where each event carries a numerical feature vector and a timestamp. We
+load this graph from Pandas DataFrames, run FastPath in stream mode, and
+inspect the resulting embeddings.
+
+If you are using AuraDB, follow link:../graph-analytics-serverless[this
+example]. If you are using a self-managed Neo4j instance, follow
+link:../graph-analytics-serverless-self-managed[this example].
+
+== Prerequisites
+
+This notebook requires having the Aura Graph Analytics
+https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
+enabled for your Neo4j Aura project, and a session backed by the *Python
+runtime* (required for FastPath support).
+
+You also need to have the `graphdatascience` Python library installed,
+version `2.0a1` or later.
+
+[source, python, role=no-test]
+----
+%pip install "graphdatascience>=2.0a1" python-dotenv
+----
+
+[source, python, role=no-test]
+----
+from dotenv import load_dotenv
+
+# This allows to load required secrets from `.env` file in local directory
+# This can include Aura API Credentials. If file does not exist this is a noop.
+load_dotenv(".env")
+----
+
+== Aura API credentials
+
+The entry point for managing GDS Sessions is the `GdsSessions` object,
+which requires creating
+https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
+
+[source, python, role=no-test]
+----
+import os
+
+from graphdatascience.session import AuraAPICredentials, GdsSessions
+
+# you can also use AuraAPICredentials.from_env() to load credentials from environment variables
+api_credentials = AuraAPICredentials(
+    client_id=os.environ["CLIENT_ID"],
+    client_secret=os.environ["CLIENT_SECRET"],
+    # If your account is a member of several project, you must also specify the project ID to use
+    project_id=os.environ.get("PROJECT_ID", None),
+)
+
+sessions = GdsSessions(api_credentials=api_credentials)
+----
+
+== Creating a new session
+
+A new session is created by calling `sessions.get++_++or++_++create()`
+with the following parameters:
+
+* A session name, which lets you reconnect to an existing session by
+calling `get++_++or++_++create` again.
+* The session memory.
+* The cloud location.
+* A time-to-live (TTL), which ensures that the session is automatically
+deleted after being unused for the set time, to avoid incurring costs.
+
+See the API reference
+https://neo4j.com/docs/graph-data-science-client/current/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.get_or_create[documentation]
+or the manual for more details on the parameters.
+
+[source, python, role=no-test]
+----
+from graphdatascience.session import AlgorithmCategory, CloudLocation, SessionMemory
+
+# Estimate the memory needed for the GDS session
+memory = sessions.estimate(
+    node_count=20,
+    relationship_count=10,
+    algorithm_categories=[AlgorithmCategory.NODE_EMBEDDING],
+)
+
+print(f"Estimated memory: {memory}")
+
+# Explicitly define the size of the session
+memory = SessionMemory.m_2GB
+
+# Specify your cloud location
+cloud_location = CloudLocation("gcp", "europe-west1")
+
+# You can find available cloud locations by calling
+cloud_locations = sessions.available_cloud_locations()
+print(f"Available locations: {cloud_locations}")
+----
+
+[source, python, role=no-test]
+----
+from datetime import timedelta
+
+# Create a GDS session!
+gds = sessions.get_or_create(
+    # we give it a representative name
+    session_name="fastpath-temporal",
+    memory=memory,
+    ttl=timedelta(minutes=30),
+    cloud_location=cloud_location,
+)
+----
+
+[source, python, role=no-test]
+----
+# Verify the connectivity. Hints towards TLS or firewall issues if this fails directly after get_or_create
+gds.verify_connectivity()
+----
+
+== Listing sessions
+
+You can use `sessions.list()` to see the details for each created
+session.
+
+[source, python, role=no-test]
+----
+from pandas import DataFrame
+
+gds_sessions = sessions.list()
+
+# for better visualization
+DataFrame(gds_sessions)
+----
+
+== Projecting a temporal dataset
+
+FastPath operates on a bipartite temporal graph consisting of two node
+types:
+
+* *Entity* nodes — the base nodes for which embeddings are computed.
+Each Entity has an `output++_++time` property that defines the reference
+timestamp up to which events are considered.
+* *Event* nodes — the event nodes linked to each Entity. Each Event has
+an `event++_++time` timestamp and an `event++_++features` vector of
+numerical features.
+
+Events are connected to their Entity via `HAS++_++EVENT` relationships.
+
+AGA sessions always start empty, with no data. So our first step will be
+to project data into the session. In this example, we will illustrate
+how to do this using Pandas DataFrames.
+
+[source, python, role=no-test]
+----
+import pandas as pd
+
+nodes = [
+    pd.DataFrame(
+        [
+            {"nodeId": 1, "labels": "Entity", "output_time": 120},
+            {"nodeId": 2, "labels": "Entity", "output_time": 240},
+            {"nodeId": 3, "labels": "Entity", "output_time": 300},
+        ]
+    ),
+    pd.DataFrame(
+        [
+            {"nodeId": 101, "labels": "Event", "event_time": 10, "event_features": [0.1, 0.0, 0.3, 0.2]},
+            {"nodeId": 102, "labels": "Event", "event_time": 30, "event_features": [0.0, 0.2, 0.1, 0.4]},
+            {"nodeId": 103, "labels": "Event", "event_time": 60, "event_features": [0.3, 0.1, 0.0, 0.2]},
+            {"nodeId": 104, "labels": "Event", "event_time": 90, "event_features": [0.2, 0.3, 0.2, 0.1]},
+            {"nodeId": 105, "labels": "Event", "event_time": 150, "event_features": [0.4, 0.1, 0.2, 0.0]},
+            {"nodeId": 106, "labels": "Event", "event_time": 210, "event_features": [0.1, 0.4, 0.2, 0.3]},
+        ]
+    ),
+]
+
+relationships = [
+    pd.DataFrame(
+        [
+            {"sourceNodeId": 1, "targetNodeId": 101, "relationshipType": "HAS_EVENT"},
+            {"sourceNodeId": 1, "targetNodeId": 102, "relationshipType": "HAS_EVENT"},
+            {"sourceNodeId": 2, "targetNodeId": 103, "relationshipType": "HAS_EVENT"},
+            {"sourceNodeId": 2, "targetNodeId": 104, "relationshipType": "HAS_EVENT"},
+            {"sourceNodeId": 3, "targetNodeId": 105, "relationshipType": "HAS_EVENT"},
+            {"sourceNodeId": 3, "targetNodeId": 106, "relationshipType": "HAS_EVENT"},
+        ]
+    )
+]
+----
+
+== Construct Graph from DataFrames
+
+With DataFrames in hand, the next step is to build a graph from them. We
+do that by using the `gds.graph.construct()` function.
+
+After calling this function, we will get a Graph Object back,
+representing the graph that now exists within the AGA session. We will
+use it as input to the FastPath algorithm.
+
+[source, python, role=no-test]
+----
+G = gds.graph.construct("temporal-events", nodes, relationships)
+str(G)
+----
+
+== Running FastPath
+
+FastPath computes embeddings for the `Entity` nodes by aggregating the
+`event++_++features` vectors of their linked `Event` nodes, weighted by
+the elapsed time between each event and the entity's `output++_++time`.
+
+We run it in *stream mode*, which returns the embeddings as a DataFrame
+without storing them in the session.
+
+____
+*Note:* You may see a `UserWarning` that FastPath is a preview feature —
+this is expected.
+____
+
+[source, python, role=no-test]
+----
+embedding_df = gds.fast_path.stream(
+    G,
+    base_node_label="Entity",
+    event_node_label="Event",
+    dimension=8,
+    max_elapsed_time=365 * 2,
+    num_elapsed_times=30,
+    event_features="event_features",
+    output_time_property="output_time",
+    time_node_property="event_time",
+    smoothing_rate=0.9,
+    smoothing_window=2,
+    decay_factor=0.0,
+)
+
+embedding_df
+----
+
+The result is a DataFrame with one row per `Entity` node. The
+`embeddings` column contains the computed embedding vector for each
+entity.
+
+== Deleting the session
+
+After the analysis is done, you can delete the session. As this example
+is not connected to a Neo4j DB, you need to make sure the algorithm
+results are persisted on your own.
+
+Deleting the session will release all resources associated with it, and
+stop incurring costs.
+
+[source, python, role=no-test]
+----
+# or gds.delete()
+sessions.delete(session_name="fastpath-temporal")
+----
+
+[source, python, role=no-test]
+----
+# let's also make sure the deleted session is truly gone:
+sessions.list()
+----

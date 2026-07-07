@@ -490,3 +490,17 @@ gds.run_cypher(
 ----
 gds.graph.drop(G_test)
 ----
+
+== Cleanup
+
+Before finishing we clean up the example data from the database.
+
+[source, python, role=no-test]
+----
+# Cleanup database
+# Remove the entities and relationships we created, and drop the constraint,
+# so the database is left empty (as it was expected to be at the start of this notebook)
+gds.run_cypher("MATCH (n) DETACH DELETE n")
+
+gds.run_cypher("DROP CONSTRAINT entity_id IF EXISTS")
+----
