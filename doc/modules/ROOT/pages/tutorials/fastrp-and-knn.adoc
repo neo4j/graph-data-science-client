@@ -87,6 +87,9 @@ money spent by a customer on a given product.
 
 [source, python, role=no-test]
 ----
+# making sure the database is empty
+assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+
 # The `run_cypher` method can be used to run arbitrary Cypher queries on the database.
 _ = gds.run_cypher(
     """
@@ -269,7 +272,6 @@ gds.run_cypher(
         RETURN p1.name AS person1, p2.name AS person2, r.score AS similarity
         ORDER BY similarity DESCENDING, person1, person2
     """,
-    retryable=True,
 )
 ----
 
@@ -301,7 +303,6 @@ gds.run_cypher(
         WHERE not p2 in products
         RETURN p2.name as recommendation
     """,
-    retryable=True,
 )
 ----
 
@@ -319,7 +320,7 @@ in-memory state and the database.
 G.drop()
 
 # Remove all the example data from the database
-_ = gds.run_cypher("MATCH (n) DETACH DELETE n", retryable=True)
+_ = gds.run_cypher("MATCH (n) DETACH DELETE n")
 ----
 
 == Conclusion

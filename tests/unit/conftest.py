@@ -115,7 +115,15 @@ class CollectingQueryRunner(QueryRunner):
 
         self.queries.append(query)
         self.params.append(dict(params.items()))
-        self.run_args.append({"db": database, "mode": mode, "custom_error": custom_error, "retryable": True})
+        self.run_args.append(
+            {
+                "db": database,
+                "mode": mode,
+                "custom_error": custom_error,
+                "retryable": True,
+                "query_type": query_type.value,
+            }
+        )
 
         result = self.get_mock_result(query)
 

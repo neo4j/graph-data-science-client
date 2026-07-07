@@ -137,6 +137,7 @@ rel_dict = {}
 
 def process():
     node_dict_ = {}
+    edges_by_rel_type = {}
     for file_name in raw_file_names:
         file_name_path = data_dir + "/" + file_name
 
@@ -173,17 +174,28 @@ def process():
                 }
             )
 
-        rel_type = rel_types[file_name]
-        print(f"Writing {len(list_of_dicts)} entities of {rel_type}")
+        edges_by_rel_type[rel_types[file_name]] = list_of_dicts
+
+    # making sure the database is empty
+    assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+
+    # Create the (unique) entity nodes once
+    print(f"Writing {len(node_dict_)} entities")
+    gds.run_cypher(
+        "UNWIND $nodes AS n CREATE (:Entity {id: n.id, text: n.text})",
+        params={"nodes": [{"id": node_id, "text": text} for text, node_id in node_dict_.items()]},
+    )
+
+    # Create the relationships, one relationship type per source file
+    for rel_type, list_of_dicts in edges_by_rel_type.items():
+        print(f"Writing {len(list_of_dicts)} relationships of {rel_type}")
         gds.run_cypher(
             f"""
-            UNWIND $ll as l
-            MERGE (n:Entity {{id:l.source, text:l.source_text}})
-            MERGE (m:Entity {{id:l.target, text:l.target_text}})
-            MERGE (n)-[:{rel_type} {{rel_id:l.rel_id}}]->(m)
+            UNWIND $ll AS l
+            MATCH (n:Entity {{id: l.source}}), (m:Entity {{id: l.target}})
+            CREATE (n)-[:{rel_type} {{rel_id: l.rel_id}}]->(m)
             """,
             params={"ll": list_of_dicts},
-            retryable=True,
         )
 
     print("Writing relationships as different relationship types")
@@ -191,11 +203,11 @@ def process():
         REL_TYPE = f"REL_{rel_id}"
         gds.run_cypher(
             f"""
-            UNWIND $ll AS l MATCH (n:Entity {{id:l.source}}), (m:Entity {{id:l.target}})
-            MERGE (n)-[:{REL_TYPE} {{rel_id:$rel_id, text:$text}}]->(m)
+            UNWIND $ll AS l
+            MATCH (n:Entity {{id: l.source}}), (m:Entity {{id: l.target}})
+            CREATE (n)-[:{REL_TYPE} {{rel_id: $rel_id, text: $text}}]->(m)
             """,
             params={"ll": rels, "rel_id": rel_id, "text": rel_id_to_text_dict[rel_id]},
-            retryable=True,
         )
 
 
@@ -351,7 +363,6 @@ for start in tqdm(range(0, num_nodes, batch_size)):
         SET n.emb = row.emb
         """,
         params={"rows": rows},
-        retryable=True,
     )
 ----
 
@@ -404,7 +415,6 @@ source_node_list = ["/m/07l450", "/m/0ds2l81", "/m/0jvt9"]
 source_ids_df = gds.run_cypher(
     "UNWIND $node_text_list AS t MATCH (n:Entity) WHERE n.text=t RETURN id(n) as nodeId",
     params={"node_text_list": source_node_list},
-    retryable=True,
 )
 ----
 
@@ -432,7 +442,6 @@ ids_in_result = pd.unique(pd.concat([result.sourceNodeId, result.targetNodeId]))
 ids_to_text = gds.run_cypher(
     "UNWIND $ids AS id MATCH (n:Entity) WHERE id(n)=id RETURN id(n) AS nodeId, n.text AS tag, n.id AS id",
     params={"ids": ids_in_result},
-    retryable=True,
 )
 
 nodeId_to_text_res = dict(zip(ids_to_text.nodeId, ids_to_text.tag))
@@ -474,7 +483,6 @@ gds.run_cypher(
     "MATCH (n)-[r:"
     + write_relationship_type
     + "]->(m) RETURN n.id AS sourceId, n.text AS sourceTag, m.id AS targetId, m.text AS targetTag, r.transe_score AS score",
-    retryable=True,
 )
 ----
 
