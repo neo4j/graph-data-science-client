@@ -1121,7 +1121,7 @@ dev = [
     { name = "nbclient", specifier = "==0.10.4" },
     { name = "nbconvert", specifier = "==7.16.6" },
     { name = "nbformat", specifier = "==5.10.4" },
-    { name = "neo4j-viz" },
+    { name = "neo4j-viz", specifier = ">=1.6.0" },
     { name = "networkx", specifier = ">=2.0,<4.0" },
     { name = "pandas-stubs", specifier = "==2.2.3.241009" },
     { name = "pytest", specifier = "==9.0.2" },
@@ -1166,7 +1166,7 @@ notebook-aura-ci = [
     { name = "nbclient", specifier = "==0.10.4" },
     { name = "nbconvert", specifier = "==7.16.6" },
     { name = "nbformat", specifier = "==5.10.4" },
-    { name = "neo4j-viz" },
+    { name = "neo4j-viz", specifier = ">=1.6.0" },
     { name = "pyspark", extras = ["sql"] },
     { name = "python-dotenv", specifier = "==1.2.1" },
 ]
@@ -1175,14 +1175,14 @@ notebook-base = [
     { name = "nbclient", specifier = "==0.10.4" },
     { name = "nbconvert", specifier = "==7.16.6" },
     { name = "nbformat", specifier = "==5.10.4" },
-    { name = "neo4j-viz" },
+    { name = "neo4j-viz", specifier = ">=1.6.0" },
 ]
 notebook-ci = [
     { name = "ipykernel", specifier = "==7.1.0" },
     { name = "nbclient", specifier = "==0.10.4" },
     { name = "nbconvert", specifier = "==7.16.6" },
     { name = "nbformat", specifier = "==5.10.4" },
-    { name = "neo4j-viz" },
+    { name = "neo4j-viz", specifier = ">=1.6.0" },
     { name = "scipy", specifier = "==1.14.0" },
     { name = "torch", specifier = "==2.3.0" },
     { name = "torch-geometric", specifier = ">=2.5.0" },
@@ -2231,7 +2231,7 @@ wheels = [
 
 [[package]]
 name = "neo4j-viz"
-version = "1.5.0"
+version = "1.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anywidget" },
@@ -2243,9 +2243,9 @@ dependencies = [
     { name = "pydantic-extra-types" },
     { name = "traitlets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/2b/e39c7da8ce55b0227082f3b72758d300702d27b7b27dcea3013762f5cfd3/neo4j_viz-1.5.0.tar.gz", hash = "sha256:f8cbcda9d442a6544cbbfaf5f3290769f313caf7fd4250c048c75c9cb01b92ec", size = 2969860, upload-time = "2026-06-12T15:27:21.486Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/87/cd/ccf5cec183ebf838ee802a29d8d41f97acfb5e9740acf0313a2bba5f7c79/neo4j_viz-1.6.0.tar.gz", hash = "sha256:20c85d875d8f8fe337480b8d1955b296f6b532c27b1aedb83488221d4fed2387", size = 2972497, upload-time = "2026-06-26T14:46:13.628Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e5/e4/1dbdcd108c012cb84c05846d8a7e564d33c3799c3daf240ce8b2e7b3b953/neo4j_viz-1.5.0-py3-none-any.whl", hash = "sha256:7d7bf9d463b50d3ff1b962efc5078e5af37598b8bf27081cd918a707833afd5b", size = 2999299, upload-time = "2026-06-12T15:27:19.782Z" },
+    { url = "https://files.pythonhosted.org/packages/a5/5b/2bda6b49ee485624dab12351d334716273a1a4b67dbc0c2e47616dca49d2/neo4j_viz-1.6.0-py3-none-any.whl", hash = "sha256:6b0c817ed26ee5c3f1ab2109c4f43439c582d86bad7b23710e2e5735fa6b650a", size = 3001434, upload-time = "2026-06-26T14:46:11.781Z" },
 ]
 
 [[package]]
