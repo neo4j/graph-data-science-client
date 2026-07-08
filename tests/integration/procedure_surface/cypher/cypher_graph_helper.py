@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from typing import Any, Generator
 
 from graphdatascience.graph import Graph
-from graphdatascience.graph.graph_backend_cypher import get_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 

@@ -40,7 +40,7 @@ class CypherGraphBackend(GraphBackend):
             params=CallParameters(graph_name=self._name),
             custom_error=False,
         )
-        return result.iloc[0]["exists"]  # type: ignore
+        return bool(result.iloc[0]["exists"])
 
     def drop(self, fail_if_missing: bool = True) -> GraphInfo | None:
         info = self._query_runner.call_procedure(

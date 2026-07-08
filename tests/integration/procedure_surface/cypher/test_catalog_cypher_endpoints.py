@@ -6,9 +6,9 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.graph.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import RelationshipPropertySpec
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.query_runner import QueryRunner, QueryType
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from tests.integration.procedure_surface.cypher.cypher_graph_helper import (
