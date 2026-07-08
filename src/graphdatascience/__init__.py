@@ -1,3 +1,4 @@
+from .graph.graph_api import Graph
 from .graph_data_science import GraphDataScience
 from .server_version.server_version import ServerVersion
 from .session import GdsSessions
@@ -8,4 +9,5 @@ __all__ = [
     "ServerVersion",
     "GraphDataScience",
     "GdsSessions",
+    "Graph",
 ]

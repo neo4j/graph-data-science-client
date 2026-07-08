@@ -10,6 +10,7 @@ from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.graph.graph_backend_cypher import get_graph
+from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.graph_construction.arrow_v1_graph_constructor import ArrowV1GraphConstructor
 from graphdatascience.graph_construction.cypher_graph_constructor import CypherGraphConstructor
 from graphdatascience.graph_construction.graph_constructor import GraphConstructor
@@ -27,7 +28,6 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (

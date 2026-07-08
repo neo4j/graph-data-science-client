@@ -11,6 +11,7 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.graph_construction.arrow_v2_graph_constructor import ArrowV2GraphConstructor
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog import (
@@ -26,7 +27,6 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
