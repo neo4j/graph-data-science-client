@@ -94,18 +94,14 @@ test-tox-partition number-of-partitions partition-index: update-test-images
 update-aga-images:
     #!/usr/bin/env bash
     set -euo pipefail
-    # docker pull is incremental: it only downloads layers when the remote digest is new,
-    # otherwise it reports "Image is up to date".
-    # Use GDS_SESSION_IMAGE if set (matching tests/integration/conftest.py), else the aura-release tag.
-    session_image="${GDS_SESSION_IMAGE:-europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release}"
-    docker pull "${session_image}"
+
+    docker pull "${GDS_SESSION_IMAGE:-europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release}"
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest
 
 update-neo4j-image:
-    neo4j_image="${NEO4J_DATABASE_IMAGE:-neo4j:enterprise}"
-    docker pull "${neo4j_image}"
+    docker pull "${NEO4J_DATABASE_IMAGE:-neo4j:enterprise}"
 
 update-neo4j-aura-image:
     #!/usr/bin/env bash
