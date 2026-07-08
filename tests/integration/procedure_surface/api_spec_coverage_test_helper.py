@@ -9,11 +9,10 @@ from neo4j.graph import Node
 from pandas import DataFrame
 from pydantic import BaseModel
 
+from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog import (
     GraphFilterResult,
     GraphGenerationStats,
-    GraphInfo,
-    GraphInfoWithDegrees,
     GraphSamplingResult,
     GraphWithFilterResult,
     GraphWithGenerationStats,
