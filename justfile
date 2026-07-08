@@ -104,7 +104,8 @@ update-aga-images:
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest
 
 update-neo4j-image:
-    docker pull neo4j:enterprise
+    neo4j_image="${NEO4J_DATABASE_IMAGE:-neo4j:enterprise}"
+    docker pull "${neo4j_image}"
 
 update-neo4j-aura-image:
     #!/usr/bin/env bash
