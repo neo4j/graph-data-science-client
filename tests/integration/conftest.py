@@ -1,6 +1,7 @@
 import logging
 import os
 import socket
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -51,6 +52,33 @@ def write_container_logs(out_file: Path, stdout: bytes, stderr: bytes) -> None:
         f.write(stdout.decode("utf-8", errors="replace"))
         f.write("\n=== stderr ===\n")
         f.write(stderr.decode("utf-8", errors="replace"))
+
+
+@contextmanager
+def running_container(container: DockerContainer, log_file: Path, name: str) -> Generator[DockerContainer, None, None]:
+    """Start `container` and always persist its logs, including when startup fails.
+
+    testcontainers only exposes logs after a successful start, so a wait-strategy timeout would otherwise drop the failure reason on the floor.
+    """
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+
+    def dump_logs() -> None:
+        stdout, stderr = container.get_logs()
+        if stderr:
+            LOGGER.error(f"Error logs from {name} container:\n{stderr.decode('utf-8', errors='replace')}")
+        write_container_logs(log_file, stdout, stderr)
+
+    try:
+        container.start()
+    except Exception:
+        dump_logs()
+        raise
+
+    try:
+        yield container
+    finally:
+        dump_logs()
+        container.stop()
 
 
 DEFAULT_SESSION_ALIAS = "gds-session"
@@ -185,21 +213,12 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
         .waiting_for(LogMessageWaitStrategy("Application startup complete."))
     )
 
-    with runtime_api_container as runtime_api_container:
+    log_file = logs_dir / request.node.name / "runtime_api_container.log"
+    with running_container(runtime_api_container, log_file, "runtime api"):
         try:
             # The session reaches the runtime API over the shared network by its alias.
             yield f"http://{PYTHON_RUNTIME_API_NETWORK_ALIAS}:{PYTHON_RUNTIME_API_PORT}"
         finally:
-            stdout, stderr = runtime_api_container.get_logs()
-            if stderr:
-                LOGGER.error(f"Error logs from runtime api container:\n{stderr.decode('utf-8', errors='replace')}")
-
-            runtime_api_logs_dir = logs_dir / request.node.name
-            runtime_api_logs_dir.mkdir(parents=True, exist_ok=True)
-            runtime_api_logs_dir.chmod(0o777)
-
-            write_container_logs(runtime_api_logs_dir / "runtime_api_container.log", stdout, stderr)
-
             # The API spawns python-runtime containers via the docker socket; remove any that
             # are still around now that the API itself is stopped.
             _remove_spawned_runtime_containers(network, python_runtime_image)
@@ -239,20 +258,10 @@ def start_gds_api(logs_dir: Path, network: Network, request: pytest.FixtureReque
         .waiting_for(HttpWaitStrategy(MOCK_GDS_API_PORT, path="/health"))
     )
 
-    with gds_api_container as gds_api_container:
-        try:
-            # The session reaches the GDS API over the shared network by its alias.
-            yield f"http://{MOCK_GDS_API_NETWORK_ALIAS}:{MOCK_GDS_API_PORT}"
-        finally:
-            stdout, stderr = gds_api_container.get_logs()
-            if stderr:
-                LOGGER.error(f"Error logs from gds api container:\n{stderr.decode('utf-8', errors='replace')}")
-
-            gds_api_logs_dir = logs_dir / request.node.name
-            gds_api_logs_dir.mkdir(parents=True, exist_ok=True)
-            gds_api_logs_dir.chmod(0o777)
-
-            write_container_logs(gds_api_logs_dir / "gds_api_container.log", stdout, stderr)
+    log_file = logs_dir / request.node.name / "gds_api_container.log"
+    with running_container(gds_api_container, log_file, "gds api"):
+        # The session reaches the GDS API over the shared network by its alias.
+        yield f"http://{MOCK_GDS_API_NETWORK_ALIAS}:{MOCK_GDS_API_PORT}"
 
 
 # --------------------------------------------------------------------------- #
@@ -306,39 +315,25 @@ def start_session(
     # (store / load / delete / publish) route there instead of the Aura app-ingress.
     session_container = session_container.with_env("GDS_API_URL", gds_api_uri)
     session_container = session_container.with_network(network).with_network_aliases(session_alias)
-    with session_container as session_container:
-        try:
-            # When the test process itself is attached to the test network (CI),
-            # reach the session by its alias + internal port. Otherwise we are
-            # on the docker host and must use the exposed host port.
-            if _current_container_id() is not None:
-                host, arrow_port = session_alias, SESSION_ARROW_PORT
-            else:
-                host, arrow_port = (
-                    session_container.get_container_host_ip(),
-                    int(session_container.get_exposed_port(SESSION_ARROW_PORT)),
-                )
-            print(f"[v2-it] session reachable at {host}:{arrow_port}", flush=True)
-            yield GdsSessionConnectionInfo(
-                host=host,
-                arrow_port=arrow_port,
-                bolt_port=-1,  # not used in tests
-                advertised_address=(session_alias, SESSION_ARROW_PORT),
+    log_file = logs_dir / request.node.name / f"session_container_{session_alias}.log"
+    with running_container(session_container, log_file, "session"):
+        # When the test process itself is attached to the test network (CI),
+        # reach the session by its alias + internal port. Otherwise we are
+        # on the docker host and must use the exposed host port.
+        if _current_container_id() is not None:
+            host, arrow_port = session_alias, SESSION_ARROW_PORT
+        else:
+            host, arrow_port = (
+                session_container.get_container_host_ip(),
+                int(session_container.get_exposed_port(SESSION_ARROW_PORT)),
             )
-        finally:
-            stdout, stderr = session_container.get_logs()
-            stderr_lines = stderr.decode("utf-8", errors="replace").splitlines()
-            stderr_lines = [line for line in stderr_lines if line.strip() and "log4j" not in line.lower()]
-
-            if stderr_lines:
-                log_lines = "\n".join(stderr_lines)
-                LOGGER.info(f"Error logs from session container:\n{log_lines}")
-
-            session_logs_dir = logs_dir / request.node.name
-            session_logs_dir.mkdir(parents=True, exist_ok=True)
-            session_logs_dir.chmod(0o777)
-
-            write_container_logs(session_logs_dir / f"session_container_{session_alias}.log", stdout, stderr)
+        print(f"[v2-it] session reachable at {host}:{arrow_port}", flush=True)
+        yield GdsSessionConnectionInfo(
+            host=host,
+            arrow_port=arrow_port,
+            bolt_port=-1,  # not used in tests
+            advertised_address=(session_alias, SESSION_ARROW_PORT),
+        )
 
 
 def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
@@ -415,25 +410,17 @@ def start_database(
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
-    with db_container as db_container:
-        try:
-            if _current_container_id() is not None:
-                uri = "neo4j-db:7687"
-            else:
-                uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
-            print(f"[v2-it] neo4j reachable at {uri}", flush=True)
-            yield DbmsConnectionInfo(
-                uri=uri,
-                username="neo4j",
-                password="password",
-            )
-        finally:
-            stdout, stderr = db_container.get_logs()
-
-            if stderr:
-                print(f"Error logs from database container:\n{stderr}")
-
-            write_container_logs(db_logs_dir / "stdout.log", stdout, stderr)
+    with running_container(db_container, db_logs_dir / "stdout.log", "database"):
+        if _current_container_id() is not None:
+            uri = "neo4j-db:7687"
+        else:
+            uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
+        print(f"[v2-it] neo4j reachable at {uri}", flush=True)
+        yield DbmsConnectionInfo(
+            uri=uri,
+            username="neo4j",
+            password="password",
+        )
 
 
 def create_db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
@@ -508,15 +495,8 @@ def start_gds_plugin_database(
     )
     neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
 
-    with neo4j_container as neo4j_db:
-        try:
-            yield neo4j_db
-        finally:
-            stdout, stderr = neo4j_db.get_logs()
-            if stderr:
-                print(f"Error logs from Neo4j container:\n{stderr}")
-
-            write_container_logs(db_logs_dir / "stdout.log", stdout, stderr)
+    with running_container(neo4j_container, db_logs_dir / "stdout.log", "Neo4j plugin") as neo4j_db:
+        yield neo4j_db
 
 
 def create_plugin_query_runner(container: Neo4jContainer) -> Generator[Neo4jQueryRunner, None, None]:
