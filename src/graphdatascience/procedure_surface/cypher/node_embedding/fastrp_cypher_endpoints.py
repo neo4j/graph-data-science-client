@@ -71,9 +71,9 @@ class FastRPCypherEndpoints(FastRPEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.fastRP.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return FastRPMutateResult(**result.to_dict())
+        return FastRPMutateResult(**result)
 
     def stats(
         self,
@@ -118,9 +118,9 @@ class FastRPCypherEndpoints(FastRPEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.fastRP.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return FastRPStatsResult(**result.to_dict())
+        return FastRPStatsResult(**result)
 
     def stream(
         self,
@@ -214,9 +214,9 @@ class FastRPCypherEndpoints(FastRPEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.fastRP.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return FastRPWriteResult(**result.to_dict())
+        return FastRPWriteResult(**result)
 
     def estimate(
         self,

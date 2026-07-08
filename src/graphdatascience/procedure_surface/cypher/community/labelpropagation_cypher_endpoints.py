@@ -66,9 +66,9 @@ class LabelPropagationCypherEndpoints(LabelPropagationEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.labelPropagation.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LabelPropagationMutateResult(**cypher_result.to_dict())
+        return LabelPropagationMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -107,9 +107,9 @@ class LabelPropagationCypherEndpoints(LabelPropagationEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.labelPropagation.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LabelPropagationStatsResult(**cypher_result.to_dict())
+        return LabelPropagationStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -195,9 +195,9 @@ class LabelPropagationCypherEndpoints(LabelPropagationEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.labelPropagation.write", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        ).iloc[0]  # type: ignore
 
-        return LabelPropagationWriteResult(**result.to_dict())
+        return LabelPropagationWriteResult(**result)
 
     def estimate(
         self,

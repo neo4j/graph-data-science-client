@@ -64,9 +64,9 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.maxFlow.minCost.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return MaxFlowMinCostMutateResult(**cypher_result.to_dict())
+        return MaxFlowMinCostMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -107,9 +107,9 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.maxFlow.minCost.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return MaxFlowMinCostStatsResult(**cypher_result.to_dict())
+        return MaxFlowMinCostStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -197,9 +197,9 @@ class MaxFlowMinCostCypherEndpoints(MaxFlowMinCostEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.maxFlow.minCost.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return MaxFlowMinCostWriteResult(**result.to_dict())
+        return MaxFlowMinCostWriteResult(**result)
 
     def estimate(
         self,

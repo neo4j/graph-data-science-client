@@ -44,10 +44,10 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
     def create(self, pipeline_name: str) -> tuple[NodeRegressionPipeline, NodeRegressionPipelineInfoResult]:
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.create", params=CallParameters(pipeline_name=pipeline_name)
-        ).squeeze()
+        ).iloc[0]
         return (
             NodeRegressionPipeline(pipeline_name, self, self, self._pipeline_catalog),
-            NodeRegressionPipelineInfoResult(**result.to_dict()),
+            NodeRegressionPipelineInfoResult(**result),
         )
 
     def get(self, pipeline_name: str) -> NodeRegressionPipeline:
@@ -71,8 +71,8 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
                 task_name=task_name,
                 config=ConfigConverter.convert_to_gds_config(**config),
             ),
-        ).squeeze()
-        return NodeRegressionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeRegressionPipelineInfoResult(**result)
 
     def select_features(
         self, pipeline_name: str, feature_properties: str | list[str]
@@ -80,8 +80,8 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.selectFeatures",
             params=CallParameters(pipeline_name=pipeline_name, feature_properties=feature_properties),
-        ).squeeze()
-        return NodeRegressionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeRegressionPipelineInfoResult(**result)
 
     def add_linear_regression(
         self,
@@ -116,8 +116,8 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.addLinearRegression",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return NodeRegressionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeRegressionPipelineInfoResult(**result)
 
     def add_random_forest(
         self,
@@ -149,8 +149,8 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.addRandomForest",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return NodeRegressionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeRegressionPipelineInfoResult(**result)
 
     def configure_split(
         self, pipeline_name: str, *, test_fraction: float = 0.3, validation_folds: int = 3
@@ -163,8 +163,8 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
                     test_fraction=test_fraction, validation_folds=validation_folds
                 ),
             ),
-        ).squeeze()
-        return NodeRegressionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeRegressionPipelineInfoResult(**result)
 
     def configure_auto_tuning(self, pipeline_name: str, *, max_trials: int = 10) -> NodeRegressionPipelineInfoResult:
         result = self._query_runner.call_procedure(
@@ -173,8 +173,8 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
                 pipeline_name=pipeline_name,
                 config=ConfigConverter.convert_to_gds_config(max_trials=max_trials),
             ),
-        ).squeeze()
-        return NodeRegressionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeRegressionPipelineInfoResult(**result)
 
     def train(
         self,
@@ -213,12 +213,12 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         params.ensure_job_id_in_config()
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.train", params=params, logging=True
-        ).squeeze()
+        ).iloc[0]
         return (
             NodeRegressionModel(
                 name=model_name,
                 model_api=ModelApiCypher(self._query_runner),
                 predict_endpoints=self._predict,
             ),
-            NodeRegressionPipelineTrainResult(**result.to_dict()),
+            NodeRegressionPipelineTrainResult(**result),
         )

@@ -52,9 +52,9 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.articulationPoints.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return ArticulationPointsMutateResult(**cypher_result.to_dict())
+        return ArticulationPointsMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -83,9 +83,9 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.articulationPoints.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return ArticulationPointsStatsResult(**cypher_result.to_dict())
+        return ArticulationPointsStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -147,9 +147,9 @@ class ArticulationPointsCypherEndpoints(ArticulationPointsEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.articulationPoints.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return ArticulationPointsWriteResult(**cypher_result.to_dict())
+        return ArticulationPointsWriteResult(**cypher_result)
 
     def estimate(
         self,

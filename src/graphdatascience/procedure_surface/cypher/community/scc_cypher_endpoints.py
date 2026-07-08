@@ -58,9 +58,9 @@ class SccCypherEndpoints(SccEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.scc.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return SccMutateResult(**cypher_result.to_dict())
+        return SccMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -91,9 +91,9 @@ class SccCypherEndpoints(SccEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.scc.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return SccStatsResult(**cypher_result.to_dict())
+        return SccStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -155,11 +155,11 @@ class SccCypherEndpoints(SccEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            endpoint="gds.scc.write", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.scc.write", params=params, logging=log_progress).iloc[
+            0
+        ]
 
-        return SccWriteResult(**result.to_dict())
+        return SccWriteResult(**result)
 
     def estimate(
         self,

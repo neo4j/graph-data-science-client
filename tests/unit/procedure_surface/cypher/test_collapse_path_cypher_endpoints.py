@@ -1,5 +1,7 @@
 from unittest import mock
 
+import pandas as pd
+
 from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
 
 
@@ -15,7 +17,8 @@ def test_collapse_path_mutate_runs_query() -> None:
         "configuration": {"jobId": "job-1"},
     }
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value.squeeze.return_value = row
+    query_runner.call_procedure.return_value.iloc = mock.MagicMock()
+    query_runner.call_procedure.return_value.iloc.__getitem__.return_value = pd.Series(row.to_dict())
 
     result = CollapsePathCypherEndpoints(query_runner).mutate(
         G=graph,

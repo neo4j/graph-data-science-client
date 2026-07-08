@@ -55,6 +55,6 @@ def estimate_algorithm(
 
     params = CallParameters(**config)
 
-    result = query_runner.call_procedure(endpoint=endpoint, params=params).squeeze()
+    result = query_runner.call_procedure(endpoint=endpoint, params=params).iloc[0]
 
-    return EstimationResult(**result.to_dict())
+    return EstimationResult(**result)

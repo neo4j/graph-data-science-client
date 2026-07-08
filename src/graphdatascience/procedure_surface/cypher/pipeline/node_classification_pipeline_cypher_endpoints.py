@@ -51,10 +51,10 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
     def create(self, pipeline_name: str) -> tuple[NodeClassificationPipeline, NodeClassificationPipelineInfoResult]:
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.create", params=CallParameters(pipeline_name=pipeline_name)
-        ).squeeze()
+        ).iloc[0]
         return NodeClassificationPipeline(
             pipeline_name, self, self, self._pipeline_catalog
-        ), NodeClassificationPipelineInfoResult(**result.to_dict())
+        ), NodeClassificationPipelineInfoResult(**result)
 
     def get(self, pipeline_name: str) -> NodeClassificationPipeline:
         pipeline_info = self._pipeline_catalog.exists(pipeline_name)
@@ -79,8 +79,8 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
                 task_name=task_name,
                 config=ConfigConverter.convert_to_gds_config(**config),
             ),
-        ).squeeze()
-        return NodeClassificationPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelineInfoResult(**result)
 
     def select_features(
         self, pipeline_name: str, node_properties: str | list[str]
@@ -88,8 +88,8 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.selectFeatures",
             params=CallParameters(pipeline_name=pipeline_name, node_properties=node_properties),
-        ).squeeze()
-        return NodeClassificationPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelineInfoResult(**result)
 
     def add_logistic_regression(
         self,
@@ -129,8 +129,8 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.addLogisticRegression",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return NodeClassificationPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelineInfoResult(**result)
 
     def add_random_forest(
         self,
@@ -164,8 +164,8 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.addRandomForest",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return NodeClassificationPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelineInfoResult(**result)
 
     def add_mlp(
         self,
@@ -207,8 +207,8 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeClassification.addMLP",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return NodeClassificationPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelineInfoResult(**result)
 
     def configure_split(
         self, pipeline_name: str, *, test_fraction: float = 0.3, validation_folds: int = 3
@@ -221,8 +221,8 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
                     test_fraction=test_fraction, validation_folds=validation_folds
                 ),
             ),
-        ).squeeze()
-        return NodeClassificationPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelineInfoResult(**result)
 
     def configure_auto_tuning(
         self, pipeline_name: str, *, max_trials: int = 10
@@ -233,5 +233,5 @@ class NodeClassificationPipelineCypherEndpoints(NodeClassificationPipelineEndpoi
                 pipeline_name=pipeline_name,
                 config=ConfigConverter.convert_to_gds_config(max_trials=max_trials),
             ),
-        ).squeeze()
-        return NodeClassificationPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelineInfoResult(**result)

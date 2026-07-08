@@ -20,4 +20,4 @@ class ListProgressCypherEndpoint(ListProgressEndpoint):
         )
 
         result = self._query_runner.call_procedure(endpoint="gds.listProgress", params=params)
-        return [ProgressResult(**row.to_dict()) for _, row in result.iterrows()]
+        return [ProgressResult(**row) for _, row in result.iterrows()]

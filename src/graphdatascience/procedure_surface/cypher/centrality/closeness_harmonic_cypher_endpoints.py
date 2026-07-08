@@ -54,8 +54,8 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.closeness.harmonic.mutate", params=params, logging=log_progress
-        ).squeeze()
-        return ClosenessHarmonicMutateResult(**result.to_dict())
+        ).iloc[0]
+        return ClosenessHarmonicMutateResult(**result)
 
     def stats(
         self,
@@ -86,8 +86,8 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.closeness.harmonic.stats", params=params, logging=log_progress
-        ).squeeze()
-        return ClosenessHarmonicStatsResult(**result.to_dict())
+        ).iloc[0]
+        return ClosenessHarmonicStatsResult(**result)
 
     def stream(
         self,
@@ -153,8 +153,8 @@ class ClosenessHarmonicCypherEndpoints(ClosenessHarmonicEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.closeness.harmonic.write", params=params, logging=log_progress
-        ).squeeze()
-        return ClosenessHarmonicWriteResult(**result.to_dict())
+        ).iloc[0]
+        return ClosenessHarmonicWriteResult(**result)
 
     def estimate(
         self,

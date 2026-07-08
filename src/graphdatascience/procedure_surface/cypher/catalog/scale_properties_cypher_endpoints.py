@@ -59,8 +59,8 @@ class ScalePropertiesCypherEndpoints(ScalePropertiesEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.scaleProperties.mutate", params=params, logging=log_progress
-        ).squeeze()
-        return ScalePropertiesMutateResult(**result.to_dict())
+        ).iloc[0]
+        return ScalePropertiesMutateResult(**result)
 
     def stats(
         self,
@@ -96,8 +96,8 @@ class ScalePropertiesCypherEndpoints(ScalePropertiesEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.scaleProperties.stats", params=params, logging=log_progress
-        ).squeeze()
-        return ScalePropertiesStatsResult(**result.to_dict())
+        ).iloc[0]
+        return ScalePropertiesStatsResult(**result)
 
     def stream(
         self,
@@ -172,8 +172,8 @@ class ScalePropertiesCypherEndpoints(ScalePropertiesEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.scaleProperties.write", params=params, logging=log_progress
-        ).squeeze()
-        return ScalePropertiesWriteResult(**result.to_dict())
+        ).iloc[0]
+        return ScalePropertiesWriteResult(**result)
 
     def estimate(
         self,

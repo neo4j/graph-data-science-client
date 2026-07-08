@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 from typing import Any
 
 import neo4j
@@ -45,8 +46,8 @@ class PipelineCatalogCypherEndpoints:
 
         return self._to_pipeline_catalog_entry(result.iloc[0].to_dict())
 
-    def _to_pipeline_catalog_entry(self, result: dict[str, Any]) -> PipelineCatalogEntry:
+    def _to_pipeline_catalog_entry(self, result: dict[Hashable, Any]) -> PipelineCatalogEntry:
         creation_time = result.get("creationTime", None)
         if creation_time and isinstance(creation_time, neo4j.time.DateTime):
             result["creationTime"] = creation_time.to_native()
-        return PipelineCatalogEntry(**result)
+        return PipelineCatalogEntry.model_validate(result)

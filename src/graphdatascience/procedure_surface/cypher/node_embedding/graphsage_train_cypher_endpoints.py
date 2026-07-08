@@ -91,7 +91,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
             name=model_name,
             model_api=ModelApiCypher(self._query_runner),
             predict_endpoints=GraphSagePredictCypherEndpoints(self._query_runner),
-        ), GraphSageTrainResult(**result.to_dict())
+        ), GraphSageTrainResult(**result)
 
     def estimate(
         self,

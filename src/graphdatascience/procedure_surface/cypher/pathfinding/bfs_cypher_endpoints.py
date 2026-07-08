@@ -84,11 +84,11 @@ class BFSCypherEndpoints(BFSEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            endpoint="gds.bfs.mutate", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.bfs.mutate", params=params, logging=log_progress).iloc[
+            0
+        ]
 
-        return BFSMutateResult(**result.to_dict())
+        return BFSMutateResult(**result)
 
     def stats(
         self,
@@ -120,11 +120,11 @@ class BFSCypherEndpoints(BFSEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            endpoint="gds.bfs.stats", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.bfs.stats", params=params, logging=log_progress).iloc[
+            0
+        ]
 
-        return BFSStatsResult(**result.to_dict())
+        return BFSStatsResult(**result)
 
     def estimate(
         self,

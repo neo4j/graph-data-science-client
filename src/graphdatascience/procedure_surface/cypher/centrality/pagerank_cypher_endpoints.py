@@ -72,9 +72,9 @@ class PageRankCypherEndpoints(PageRankEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.pageRank.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return PageRankMutateResult(**cypher_result.to_dict())
+        return PageRankMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -118,9 +118,9 @@ class PageRankCypherEndpoints(PageRankEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.pageRank.stats", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        ).iloc[0]  # type: ignore
 
-        return PageRankStatsResult(**cypher_result.to_dict())
+        return PageRankStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -211,9 +211,9 @@ class PageRankCypherEndpoints(PageRankEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.pageRank.write", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        ).iloc[0]  # type: ignore
 
-        return PageRankWriteResult(**result.to_dict())
+        return PageRankWriteResult(**result)
 
     def estimate(
         self,

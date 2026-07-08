@@ -73,9 +73,9 @@ class LeidenCypherEndpoints(LeidenEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.leiden.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LeidenMutateResult(**cypher_result.to_dict())
+        return LeidenMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -122,9 +122,9 @@ class LeidenCypherEndpoints(LeidenEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.leiden.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LeidenStatsResult(**cypher_result.to_dict())
+        return LeidenStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -224,9 +224,9 @@ class LeidenCypherEndpoints(LeidenEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.leiden.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LeidenWriteResult(**cypher_result.to_dict())
+        return LeidenWriteResult(**cypher_result)
 
     def estimate(
         self,

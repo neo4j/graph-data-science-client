@@ -95,9 +95,7 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            "gds.steinerTree.stats", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure("gds.steinerTree.stats", params=params, logging=log_progress).iloc[0]
 
         return SteinerTreeStatsResult(**result)
 
@@ -138,9 +136,9 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            "gds.steinerTree.mutate", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure("gds.steinerTree.mutate", params=params, logging=log_progress).iloc[
+            0
+        ]
 
         return SteinerTreeMutateResult(**result)
 
@@ -183,9 +181,7 @@ class SteinerTreeCypherEndpoints(SteinerTreeEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            "gds.steinerTree.write", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure("gds.steinerTree.write", params=params, logging=log_progress).iloc[0]
 
         return SteinerTreeWriteResult(**result)
 

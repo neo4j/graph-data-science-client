@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 from pandas import DataFrame
 
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import aggregate_traversal_rels
@@ -11,4 +13,4 @@ def test_aggregate_traversal_rels() -> None:
 
     assert actual.shape[0] == 1
     assert actual["sourceNode"].iat[0] == 0
-    assert actual["nodeIds"].iat[0].tolist(), [2, 1, 3]
+    assert cast("Any", actual["nodeIds"].iat[0]).tolist() == [2, 1, 3]

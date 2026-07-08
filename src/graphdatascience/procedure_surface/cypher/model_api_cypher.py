@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 from typing import Any
 
 import neo4j
@@ -41,9 +42,9 @@ class ModelApiCypher(ModelApi):
 
         return self._to_model_details(result.iloc[0].to_dict())
 
-    def _to_model_details(self, result: dict[str, Any]) -> ModelDetails:
+    def _to_model_details(self, result: dict[Hashable, Any]) -> ModelDetails:
         creation_time = result.get("creationTime", None)
         if creation_time and isinstance(creation_time, neo4j.time.DateTime):
             result["creationTime"] = creation_time.to_native()
 
-        return ModelDetails(**result)
+        return ModelDetails.model_validate(result)

@@ -87,9 +87,9 @@ class SpanningTreeCypherEndpoints(SpanningTreeEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            "gds.spanningTree.stats", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure("gds.spanningTree.stats", params=params, logging=log_progress).iloc[
+            0
+        ]
 
         return SpanningTreeStatsResult(**result)
 
@@ -126,9 +126,9 @@ class SpanningTreeCypherEndpoints(SpanningTreeEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            "gds.spanningTree.mutate", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure("gds.spanningTree.mutate", params=params, logging=log_progress).iloc[
+            0
+        ]
 
         return SpanningTreeMutateResult(**result)
 
@@ -167,9 +167,9 @@ class SpanningTreeCypherEndpoints(SpanningTreeEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            "gds.spanningTree.write", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure("gds.spanningTree.write", params=params, logging=log_progress).iloc[
+            0
+        ]
 
         return SpanningTreeWriteResult(**result)
 

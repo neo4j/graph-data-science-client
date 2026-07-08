@@ -60,8 +60,8 @@ class CelfCypherEndpoints(CelfEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.influenceMaximization.celf.mutate", params=params, logging=log_progress
-        ).squeeze()
-        return CelfMutateResult(**result.to_dict())
+        ).iloc[0]
+        return CelfMutateResult(**result)
 
     def stats(
         self,
@@ -100,8 +100,8 @@ class CelfCypherEndpoints(CelfEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.influenceMaximization.celf.stats", params=params, logging=log_progress
-        ).squeeze()
-        return CelfStatsResult(**result.to_dict())
+        ).iloc[0]
+        return CelfStatsResult(**result)
 
     def stream(
         self,
@@ -183,8 +183,8 @@ class CelfCypherEndpoints(CelfEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.influenceMaximization.celf.write", params=params, logging=log_progress
-        ).squeeze()
-        return CelfWriteResult(**result.to_dict())
+        ).iloc[0]
+        return CelfWriteResult(**result)
 
     def estimate(
         self,

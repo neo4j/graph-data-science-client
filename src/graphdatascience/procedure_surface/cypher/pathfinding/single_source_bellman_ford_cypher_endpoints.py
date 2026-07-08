@@ -94,7 +94,7 @@ class BellmanFordCypherEndpoints(SingleSourceBellmanFordEndpoints):
 
         result = self._query_runner.call_procedure("gds.bellmanFord.stats", params=params, logging=log_progress).iloc[0]
 
-        return BellmanFordStatsResult(**result.to_dict())
+        return BellmanFordStatsResult(**result)
 
     def mutate(
         self,
@@ -131,7 +131,7 @@ class BellmanFordCypherEndpoints(SingleSourceBellmanFordEndpoints):
             0
         ]
 
-        return BellmanFordMutateResult(**result.to_dict())
+        return BellmanFordMutateResult(**result)
 
     def write(
         self,
@@ -172,7 +172,7 @@ class BellmanFordCypherEndpoints(SingleSourceBellmanFordEndpoints):
 
         result = self._query_runner.call_procedure("gds.bellmanFord.write", params=params, logging=log_progress).iloc[0]
 
-        return BellmanFordWriteResult(**result.to_dict())
+        return BellmanFordWriteResult(**result)
 
     def estimate(
         self,

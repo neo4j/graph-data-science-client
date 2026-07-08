@@ -68,9 +68,9 @@ class MaxFlowCypherEndpoints(MaxFlowEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.maxFlow.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return MaxFlowMutateResult(**cypher_result.to_dict())
+        return MaxFlowMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -107,14 +107,14 @@ class MaxFlowCypherEndpoints(MaxFlowEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.maxFlow.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
         raw_result = cypher_result.to_dict()
         # return field got added in 2.24
         if "postProcessingMillis" not in raw_result:
             raw_result["postProcessingMillis"] = 0
 
-        return MaxFlowStatsResult(**raw_result)
+        return MaxFlowStatsResult.model_validate(raw_result)
 
     def stream(
         self,
@@ -192,9 +192,9 @@ class MaxFlowCypherEndpoints(MaxFlowEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.maxFlow.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return MaxFlowWriteResult(**result.to_dict())
+        return MaxFlowWriteResult(**result)
 
     def estimate(
         self,

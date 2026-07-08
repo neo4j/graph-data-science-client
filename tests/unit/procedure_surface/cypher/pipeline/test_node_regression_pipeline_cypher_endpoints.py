@@ -9,6 +9,14 @@ from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol i
 from graphdatascience.procedure_surface.cypher.pipeline import NodeRegressionPipelineCypherEndpoints
 
 
+def _iloc_df(row: mock.Mock) -> mock.Mock:
+    """A DataFrame-like mock whose `.iloc[0]` returns the row as a real Series."""
+    df = mock.Mock()
+    df.iloc = mock.MagicMock()
+    df.iloc.__getitem__.return_value = pd.Series(row.to_dict())
+    return df
+
+
 def _info_payload(**overrides: object) -> dict[str, object]:
     payload: dict[str, object] = {
         "autoTuningConfig": {},
@@ -46,8 +54,8 @@ def test_node_regression_add_linear_regression_runs_query() -> None:
     step_row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
-        mock.Mock(squeeze=mock.Mock(return_value=create_row)),
-        mock.Mock(squeeze=mock.Mock(return_value=step_row)),
+        _iloc_df(create_row),
+        _iloc_df(step_row),
     ]
 
     from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
@@ -72,7 +80,7 @@ def test_node_regression_add_linear_regression_accepts_tuple_range_inputs() -> N
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
         NodeRegressionPipelineCypherEndpoints,
@@ -113,7 +121,7 @@ def test_node_regression_add_node_property_runs_query_with_config() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
         NodeRegressionPipelineCypherEndpoints,
@@ -162,8 +170,8 @@ def test_node_regression_train_runs_query() -> None:
     row.to_dict.return_value = _train_summary()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
-        mock.Mock(squeeze=mock.Mock(return_value=create_row)),
-        mock.Mock(squeeze=mock.Mock(return_value=row)),
+        _iloc_df(create_row),
+        _iloc_df(row),
     ]
     graph = mock.Mock()
     graph.name.return_value = "g"
@@ -189,8 +197,8 @@ def test_node_regression_train_accepts_pipeline_name() -> None:
     row.to_dict.return_value = _train_summary()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
-        mock.Mock(squeeze=mock.Mock(return_value=row)),
-        mock.Mock(squeeze=mock.Mock(return_value=row)),
+        _iloc_df(row),
+        _iloc_df(row),
     ]
     graph = mock.Mock()
     graph.name.return_value = "g"
@@ -251,7 +259,7 @@ def test_node_regression_predict_stream_and_mutate_run_queries() -> None:
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
         pd.DataFrame({"nodeId": [0], "predictedValue": [1.0]}),
-        mock.Mock(squeeze=mock.Mock(return_value=mutate_row)),
+        _iloc_df(mutate_row),
     ]
     graph = mock.Mock()
     graph.name.return_value = "g"

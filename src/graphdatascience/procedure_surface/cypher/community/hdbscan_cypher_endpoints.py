@@ -65,7 +65,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
             endpoint="gds.hdbscan.mutate", params=params, logging=log_progress
         ).iloc[0]
 
-        return HdbscanMutateResult(**cypher_result.to_dict())
+        return HdbscanMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -104,7 +104,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
             endpoint="gds.hdbscan.stats", params=params, logging=log_progress
         ).iloc[0]
 
-        return HdbscanStatsResult(**cypher_result.to_dict())
+        return HdbscanStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -186,7 +186,7 @@ class HdbscanCypherEndpoints(HdbscanEndpoints):
             endpoint="gds.hdbscan.write", params=params, logging=log_progress
         ).iloc[0]
 
-        return HdbscanWriteResult(**cypher_result.to_dict())
+        return HdbscanWriteResult(**cypher_result)
 
     def estimate(
         self,

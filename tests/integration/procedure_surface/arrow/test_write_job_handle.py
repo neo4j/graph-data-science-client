@@ -57,7 +57,7 @@ def _assert_properties_written_to_db(query_runner: QueryRunner) -> None:
     written = query_runner.run_cypher(
         "MATCH (n) RETURN n.prop AS prop",
         query_type=QueryType.USER_ACTION,
-    ).squeeze()
+    ).iloc[:, 0]
 
     assert set(written.to_list()) == {42, 43, 44}
 

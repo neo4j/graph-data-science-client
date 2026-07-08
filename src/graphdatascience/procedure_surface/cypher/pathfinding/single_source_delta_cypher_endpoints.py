@@ -93,7 +93,7 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
             "gds.allShortestPaths.delta.stats", params=params, logging=log_progress
         ).iloc[0]
 
-        return DeltaSteppingStatsResult(**result.to_dict())
+        return DeltaSteppingStatsResult(**result)
 
     def mutate(
         self,
@@ -131,7 +131,7 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
             "gds.allShortestPaths.delta.mutate", params=params, logging=log_progress
         ).iloc[0]
 
-        return DeltaSteppingMutateResult(**result.to_dict())
+        return DeltaSteppingMutateResult(**result)
 
     def write(
         self,
@@ -175,7 +175,7 @@ class DeltaSteppingCypherEndpoints(SingleSourceDeltaEndpoints):
             "gds.allShortestPaths.delta.write", params=params, logging=log_progress
         ).iloc[0]
 
-        return DeltaSteppingWriteResult(**result.to_dict())
+        return DeltaSteppingWriteResult(**result)
 
     def estimate(
         self,

@@ -173,7 +173,7 @@ class RemoteWriteBackV4(WriteProtocol):
         row: Series[Any] = self._query_runner.run_cypher(
             f"CALL gds.arrow.job.status.v4('{job_id}')",
             QueryType.USER_TRANSPILED,
-        ).squeeze()
+        ).iloc[0]
 
         if row.get("error") is not None:
             raise Exception(row["error"])
