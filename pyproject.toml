@@ -55,7 +55,6 @@ rust-ext = ["neo4j-rust-ext >= 5.26.0, < 7.0"]
 
 [dependency-groups]
 dev = [
-    "tox>4.24",
     { include-group = "dev-base" },
     { include-group = "test" },
     { include-group = "docs-ci" },
@@ -63,25 +62,25 @@ dev = [
 ]
 
 dev-base = [
-    "ruff == 0.14.11",
-    "mypy == 1.19.1",
+    "ruff == 0.15.20",
+    "mypy == 2.2.0",
     "pandas-stubs == 2.2.3.241009",
-    "tox == 4.34.1",
-    "types-setuptools == 80.9.0.20251223",
+    "tox == 4.56.2",
+    "types-setuptools == 83.0.0.20260706",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
     "types-requests",
     "types-tqdm",
     "types-python-dateutil",
-    "python-dotenv==1.2.1",
+    "python-dotenv<2",
     "types-colorama",
 ]
 test = [
-    "pytest == 9.0.2",
+    "pytest == 9.1.1",
     "pytest-timeout",
     "requests_mock == 1.12.1",
     "pytest_mock == 3.15.1",
-    "testcontainers == 4.14.0",
+    "testcontainers == 4.14.2",
     "python-dateutil >= 2.9",
 ]
 
@@ -95,17 +94,17 @@ notebook-base = [
     "nbconvert==7.16.6",
     "nbformat==5.10.4",
     "nbclient==0.10.4",
-    "ipykernel==7.1.0",
+    "ipykernel==7.3.0",
     "neo4j-viz>=1.6.0"
 ]
 notebook-aura-ci = [
     { include-group = "notebook-base" },
-    "python-dotenv==1.2.1",
+    "python-dotenv",
     "pyspark[sql]"
 ]
 notebook-ci = [
     { include-group = "notebook-base" },
-    "scipy == 1.14.0",
+    "scipy < 2",
     "torch==2.12.1",
     "torch-scatter==2.1.2",
     "torch-sparse==0.6.18",
