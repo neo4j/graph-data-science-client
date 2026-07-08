@@ -101,7 +101,7 @@ class AStarCypherEndpoints(SourceTargetAStarEndpoints):
             "gds.shortestPath.astar.mutate", params=params, logging=log_progress
         ).iloc[0]
 
-        return AStarMutateResult(**result.to_dict())
+        return AStarMutateResult(**result)
 
     def write(
         self,
@@ -148,7 +148,7 @@ class AStarCypherEndpoints(SourceTargetAStarEndpoints):
             "gds.shortestPath.astar.write", params=params, logging=log_progress
         ).iloc[0]
 
-        return AStarWriteResult(**result.to_dict())
+        return AStarWriteResult(**result)
 
     def estimate(
         self,

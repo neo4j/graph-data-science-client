@@ -56,9 +56,9 @@ class MaxKCutCypherEndpoints(MaxKCutEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.maxkcut.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.maxkcut.mutate", params=params).iloc[0]
 
-        return MaxKCutMutateResult(**result.to_dict())
+        return MaxKCutMutateResult(**result)
 
     def stream(
         self,

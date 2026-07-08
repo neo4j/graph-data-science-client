@@ -73,9 +73,9 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.kmeans.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return KMeansMutateResult(**cypher_result.to_dict())
+        return KMeansMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -122,9 +122,9 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.kmeans.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return KMeansStatsResult(**cypher_result.to_dict())
+        return KMeansStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -220,9 +220,9 @@ class KMeansCypherEndpoints(KMeansEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.kmeans.write", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        ).iloc[0]  # type: ignore
 
-        return KMeansWriteResult(**result.to_dict())
+        return KMeansWriteResult(**result)
 
     def estimate(
         self,

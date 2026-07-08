@@ -69,8 +69,8 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.eigenvector.mutate", params=params, logging=log_progress
-        ).squeeze()
-        return EigenvectorMutateResult(**result.to_dict())
+        ).iloc[0]
+        return EigenvectorMutateResult(**result)
 
     def stats(
         self,
@@ -113,8 +113,8 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.eigenvector.stats", params=params, logging=log_progress
-        ).squeeze()
-        return EigenvectorStatsResult(**result.to_dict())
+        ).iloc[0]
+        return EigenvectorStatsResult(**result)
 
     def stream(
         self,
@@ -202,8 +202,8 @@ class EigenvectorCypherEndpoints(EigenvectorEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.eigenvector.write", params=params, logging=log_progress
-        ).squeeze()
-        return EigenvectorWriteResult(**result.to_dict())
+        ).iloc[0]
+        return EigenvectorWriteResult(**result)
 
     def estimate(
         self,

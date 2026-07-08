@@ -32,7 +32,7 @@ class CypherGraphBackend(GraphBackend):
             # for multiple dbs we can have the same graph name. But db + graph name is unique
             info = info[info["database"] == self._db]
 
-        return GraphInfoWithDegrees(**info.squeeze())
+        return GraphInfoWithDegrees(**info.iloc[0])
 
     def exists(self) -> bool:
         result = self._query_runner.call_procedure(
@@ -40,7 +40,7 @@ class CypherGraphBackend(GraphBackend):
             params=CallParameters(graph_name=self._name),
             custom_error=False,
         )
-        return result.squeeze()["exists"]  # type: ignore
+        return result.iloc[0]["exists"]  # type: ignore
 
     def drop(self, fail_if_missing: bool = True) -> GraphInfo | None:
         info = self._query_runner.call_procedure(
@@ -52,4 +52,4 @@ class CypherGraphBackend(GraphBackend):
         if info.empty:
             return None
 
-        return GraphInfo(**info.squeeze())
+        return GraphInfo(**info.iloc[0])

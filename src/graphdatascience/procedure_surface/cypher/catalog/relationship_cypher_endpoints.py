@@ -142,9 +142,9 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint=endpoint, params=params, logging=log_progress).squeeze()
+        result = self._query_runner.call_procedure(endpoint=endpoint, params=params, logging=log_progress).iloc[0]
 
-        return RelationshipsWriteResult(**result.to_dict())
+        return RelationshipsWriteResult(**result)
 
     def drop(
         self,
@@ -161,9 +161,9 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
             relationship_type=relationship_type,
         )
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.relationships.drop", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.graph.relationships.drop", params=params).iloc[0]
 
-        return RelationshipsDropResult(**result.to_dict())
+        return RelationshipsDropResult(**result)
 
     def index_inverse(
         self,
@@ -193,9 +193,9 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.relationships.indexInverse", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return RelationshipsInverseIndexResult(**result.to_dict())
+        return RelationshipsInverseIndexResult(**result)
 
     def to_undirected(
         self,
@@ -235,9 +235,9 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.relationships.toUndirected", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return RelationshipsToUndirectedResult(**result.to_dict())
+        return RelationshipsToUndirectedResult(**result)
 
     def collapse_path(
         self,

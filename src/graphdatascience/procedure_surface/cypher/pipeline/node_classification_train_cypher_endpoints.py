@@ -63,14 +63,14 @@ class NodeClassificationTrainCypherEndpoints(NodeClassificationPipelineTrainEndp
         params.ensure_job_id_in_config()
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.train", params=params, logging=True
-        ).squeeze()
+        ).iloc[0]
         return (
             NodeClassificationModel(
                 name=model_name,
                 model_api=ModelApiCypher(self._query_runner),
                 predict_endpoints=self._predict_endpoints,
             ),
-            NodeClassificationPipelineTrainResult(**result.to_dict()),
+            NodeClassificationPipelineTrainResult(**result),
         )
 
     def estimate(
@@ -111,5 +111,5 @@ class NodeClassificationTrainCypherEndpoints(NodeClassificationPipelineTrainEndp
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.train.estimate",
             params=params,
-        ).squeeze()
+        ).iloc[0]
         return EstimationResult.from_cypher(result.to_dict())

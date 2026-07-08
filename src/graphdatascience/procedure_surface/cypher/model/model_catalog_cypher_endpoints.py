@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Hashable
 from typing import Any
 
 import neo4j
@@ -68,14 +69,14 @@ class ModelCatalogCypherEndpoints(ModelCatalogEndpoints):
             raise ValueError(f"Model with name `{model_name}` does not exist")
         if df.empty:
             return None
-        return ModelDeleteResult(**df.iloc[0].to_dict())
+        return ModelDeleteResult(**df.iloc[0])
 
     def load(self, model_name: str) -> ModelLoadResult:
         params = CallParameters(model_name=model_name)
         df = self._query_runner.call_procedure("gds.model.load", params=params, custom_error=False)
         if df.empty:
             raise ValueError(f"Model with name `{model_name}` does not exist")
-        return ModelLoadResult(**df.iloc[0].to_dict())
+        return ModelLoadResult(**df.iloc[0])
 
     def store(self, model_name: str, *, fail_if_unsupported: bool = False) -> ModelStoreResult:
         # Historical parameter name is 'fail_flag' in some versions
@@ -83,7 +84,7 @@ class ModelCatalogCypherEndpoints(ModelCatalogEndpoints):
         df = self._query_runner.call_procedure("gds.model.store", params=params, custom_error=False)
         if df.empty:
             raise ValueError(f"Model with name `{model_name}` does not exist")
-        return ModelStoreResult(**df.iloc[0].to_dict())
+        return ModelStoreResult(**df.iloc[0])
 
     def publish(self, model_name: str) -> ModelDetails:
         params = CallParameters(model_name=model_name)
@@ -92,8 +93,8 @@ class ModelCatalogCypherEndpoints(ModelCatalogEndpoints):
             raise ValueError(f"Model with name `{model_name}` does not exist")
         return self._to_model_details(df.iloc[0].to_dict())
 
-    def _to_model_details(self, result: dict[str, Any]) -> ModelDetails:
+    def _to_model_details(self, result: dict[Hashable, Any]) -> ModelDetails:
         creation_time = result.get("creationTime", None)
         if creation_time and isinstance(creation_time, neo4j.time.DateTime):
             result["creationTime"] = creation_time.to_native()
-        return ModelDetails(**result)
+        return ModelDetails.model_validate(result)

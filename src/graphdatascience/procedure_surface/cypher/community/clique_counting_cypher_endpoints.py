@@ -56,9 +56,9 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.cliqueCounting.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return CliqueCountingMutateResult(**cypher_result.to_dict())
+        return CliqueCountingMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -86,9 +86,9 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.cliqueCounting.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return CliqueCountingStatsResult(**cypher_result.to_dict())
+        return CliqueCountingStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -148,9 +148,9 @@ class CliqueCountingCypherEndpoints(CliqueCountingEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.cliqueCounting.write", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        ).iloc[0]  # type: ignore
 
-        return CliqueCountingWriteResult(**result.to_dict())
+        return CliqueCountingWriteResult(**result)
 
     def estimate(
         self,

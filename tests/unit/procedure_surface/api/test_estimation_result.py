@@ -1,3 +1,6 @@
+from collections.abc import Hashable
+from typing import Any
+
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
@@ -50,7 +53,7 @@ def test_estimation_result_getitem() -> None:
 
 
 def test_estimation_result_from_cypher() -> None:
-    cypher_result = {
+    cypher_result: dict[Hashable, Any] = {
         "nodeCount": 5,
         "relationshipCount": 10,
         "requiredMemory": "512MB",

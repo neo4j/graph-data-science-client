@@ -79,9 +79,9 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.node2vec.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return Node2VecMutateResult(**result.to_dict())
+        return Node2VecMutateResult(**result)
 
     def stream(
         self,
@@ -203,9 +203,9 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.node2vec.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return Node2VecWriteResult(**result.to_dict())
+        return Node2VecWriteResult(**result)
 
     def estimate(
         self,
@@ -255,6 +255,6 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         graph_name = G.name() if isinstance(G, Graph) else None
         params = CallParameters(graph_name=graph_name, config=config)
 
-        result = self._query_runner.call_procedure(endpoint="gds.node2vec.stream.estimate", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.node2vec.stream.estimate", params=params).iloc[0]
 
-        return EstimationResult(**result.to_dict())
+        return EstimationResult(**result)

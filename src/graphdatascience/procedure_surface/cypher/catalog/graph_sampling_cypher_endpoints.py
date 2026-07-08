@@ -62,10 +62,10 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.sample.rwr", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
         return GraphWithSamplingResult(
             get_graph(graph_name, self._query_runner),
-            GraphSamplingResult(**result.to_dict()),
+            GraphSamplingResult(**result),
         )
 
     def cnarw(
@@ -111,10 +111,10 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.sample.cnarw", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
         return GraphWithSamplingResult(
             get_graph(graph_name, self._query_runner),
-            GraphSamplingResult(**result.to_dict()),
+            GraphSamplingResult(**result),
         )
 
     def estimate(

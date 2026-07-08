@@ -90,7 +90,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
             endpoint="gds.beta.graphSage.write", params=params, logging=log_progress
         )
 
-        return GraphSageWriteResult(**raw_result.iloc[0].to_dict())
+        return GraphSageWriteResult(**raw_result.iloc[0])
 
     def mutate(
         self,
@@ -126,7 +126,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
             endpoint="gds.beta.graphSage.mutate", params=params, logging=log_progress
         )
 
-        return GraphSageMutateResult(**raw_result.iloc[0].to_dict())
+        return GraphSageMutateResult(**raw_result.iloc[0])
 
     def estimate(
         self,

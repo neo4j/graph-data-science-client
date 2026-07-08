@@ -85,7 +85,7 @@ class PrizeSteinerTreeCypherEndpoints(PrizeSteinerTreeEndpoints):
 
         result = self._query_runner.call_procedure(
             "gds.prizeSteinerTree.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
         return PrizeSteinerTreeStatsResult(**result)
 
@@ -122,7 +122,7 @@ class PrizeSteinerTreeCypherEndpoints(PrizeSteinerTreeEndpoints):
 
         result = self._query_runner.call_procedure(
             "gds.prizeSteinerTree.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
         return PrizeSteinerTreeMutateResult(**result)
 
@@ -161,7 +161,7 @@ class PrizeSteinerTreeCypherEndpoints(PrizeSteinerTreeEndpoints):
 
         result = self._query_runner.call_procedure(
             "gds.prizeSteinerTree.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
         return PrizeSteinerTreeWriteResult(**result)
 

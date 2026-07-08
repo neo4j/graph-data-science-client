@@ -82,7 +82,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
 
         result = self._query_runner.call_procedure("gds.nodeSimilarity.mutate", params=params).iloc[0]
 
-        return NodeSimilarityMutateResult(**result.to_dict())
+        return NodeSimilarityMutateResult(**result)
 
     def stats(
         self,
@@ -131,7 +131,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
             "gds.nodeSimilarity.stats", params=params, logging=log_progress
         ).iloc[0]
 
-        return NodeSimilarityStatsResult(**result.to_dict())
+        return NodeSimilarityStatsResult(**result)
 
     def stream(
         self,
@@ -231,7 +231,7 @@ class NodeSimilarityCypherEndpoints(NodeSimilarityEndpoints):
             "gds.nodeSimilarity.write", params=params, logging=log_progress
         ).iloc[0]
 
-        return NodeSimilarityWriteResult(**result.to_dict())
+        return NodeSimilarityWriteResult(**result)
 
     def estimate(
         self,

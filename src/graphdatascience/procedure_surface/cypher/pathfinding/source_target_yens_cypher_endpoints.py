@@ -97,7 +97,7 @@ class YensCypherEndpoints(SourceTargetYensEndpoints):
             "gds.shortestPath.yens.mutate", params=params, logging=log_progress
         ).iloc[0]
 
-        return YensMutateResult(**result.to_dict())
+        return YensMutateResult(**result)
 
     def write(
         self,
@@ -142,7 +142,7 @@ class YensCypherEndpoints(SourceTargetYensEndpoints):
             "gds.shortestPath.yens.write", params=params, logging=log_progress
         ).iloc[0]
 
-        return YensWriteResult(**result.to_dict())
+        return YensWriteResult(**result)
 
     def estimate(
         self,

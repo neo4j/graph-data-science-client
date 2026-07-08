@@ -50,10 +50,10 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.create",
             params=CallParameters(pipeline_name=pipeline_name),
-        ).squeeze()
+        ).iloc[0]
         return (
             LinkPredictionPipeline(pipeline_name, self, self, self._pipeline_catalog),
-            LinkPredictionPipelineInfoResult(**result.to_dict()),
+            LinkPredictionPipelineInfoResult(**result),
         )
 
     def get(self, pipeline_name: str) -> LinkPredictionPipeline:
@@ -77,8 +77,8 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
                 task_name=task_name,
                 config=ConfigConverter.convert_to_gds_config(**config),
             ),
-        ).squeeze()
-        return LinkPredictionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelineInfoResult(**result)
 
     def add_feature(
         self,
@@ -94,8 +94,8 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
                 feature_type=feature_type,
                 config=ConfigConverter.convert_to_gds_config(node_properties=node_properties),
             ),
-        ).squeeze()
-        return LinkPredictionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelineInfoResult(**result)
 
     def add_logistic_regression(
         self,
@@ -135,8 +135,8 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.addLogisticRegression",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return LinkPredictionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelineInfoResult(**result)
 
     def add_random_forest(
         self,
@@ -170,8 +170,8 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.addRandomForest",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return LinkPredictionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelineInfoResult(**result)
 
     def add_mlp(
         self,
@@ -213,8 +213,8 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.linkPrediction.addMLP",
             params=CallParameters(pipeline_name=pipeline_name, config=config),
-        ).squeeze()
-        return LinkPredictionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelineInfoResult(**result)
 
     def configure_split(
         self,
@@ -238,8 +238,8 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
                     validation_folds=validation_folds,
                 ),
             ),
-        ).squeeze()
-        return LinkPredictionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelineInfoResult(**result)
 
     def configure_auto_tuning(self, pipeline_name: str, *, max_trials: int = 10) -> LinkPredictionPipelineInfoResult:
         result = self._query_runner.call_procedure(
@@ -248,5 +248,5 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
                 pipeline_name=pipeline_name,
                 config=ConfigConverter.convert_to_gds_config(max_trials=max_trials),
             ),
-        ).squeeze()
-        return LinkPredictionPipelineInfoResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelineInfoResult(**result)

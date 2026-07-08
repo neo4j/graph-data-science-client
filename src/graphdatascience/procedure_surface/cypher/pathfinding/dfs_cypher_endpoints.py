@@ -84,11 +84,11 @@ class DFSCypherEndpoints(DFSEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            endpoint="gds.dfs.mutate", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.dfs.mutate", params=params, logging=log_progress).iloc[
+            0
+        ]
 
-        return DFSMutateResult(**result.to_dict())
+        return DFSMutateResult(**result)
 
     def stats(
         self,
@@ -120,11 +120,11 @@ class DFSCypherEndpoints(DFSEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            endpoint="gds.dfs.stats", params=params, logging=log_progress
-        ).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.dfs.stats", params=params, logging=log_progress).iloc[
+            0
+        ]
 
-        return DFSStatsResult(**result.to_dict())
+        return DFSStatsResult(**result)
 
     def estimate(
         self,

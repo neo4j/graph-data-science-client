@@ -46,7 +46,7 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.predict.stream.estimate",
             params=params,
-        ).squeeze()
+        ).iloc[0]
         return EstimationResult.from_cypher(result.to_dict())
 
     def stream(
@@ -111,8 +111,8 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         params.ensure_job_id_in_config()
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.predict.mutate", params=params
-        ).squeeze()
-        return NodeClassificationPipelinePredictMutateResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelinePredictMutateResult(**result)
 
     def write(
         self,
@@ -147,5 +147,5 @@ class NodeClassificationPredictCypherEndpoints(NodeClassificationPipelinePredict
         params.ensure_job_id_in_config()
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.nodeClassification.predict.write", params=params
-        ).squeeze()
-        return NodeClassificationPipelinePredictWriteResult(**result.to_dict())
+        ).iloc[0]
+        return NodeClassificationPipelinePredictWriteResult(**result)

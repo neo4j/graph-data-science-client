@@ -100,7 +100,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
         result = self._cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
-        return [GraphInfoWithDegrees(**row.to_dict()) for _, row in result.iterrows()]
+        return [GraphInfoWithDegrees(**row) for _, row in result.iterrows()]
 
     def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
         graph_name = G if isinstance(G, str) else G.name()
@@ -113,7 +113,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
         if len(result) > 0:
-            return GraphInfo(**result.iloc[0].to_dict())
+            return GraphInfo(**result.iloc[0])
         else:
             return None
 
@@ -154,8 +154,8 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.filter", params=params, logging=log_progress
-        ).squeeze()
-        return GraphWithFilterResult(get_graph(graph_name, self._cypher_runner), GraphFilterResult(**result.to_dict()))
+        ).iloc[0]
+        return GraphWithFilterResult(get_graph(graph_name, self._cypher_runner), GraphFilterResult(**result))
 
     def generate(
         self,
@@ -200,10 +200,8 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.generate", params=params, logging=log_progress
-        ).squeeze()
-        return GraphWithGenerationStats(
-            get_graph(graph_name, self._cypher_runner), GraphGenerationStats(**result.to_dict())
-        )
+        ).iloc[0]
+        return GraphWithGenerationStats(get_graph(graph_name, self._cypher_runner), GraphGenerationStats(**result))
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
@@ -289,8 +287,8 @@ class GraphNativeProjectEndpoints:
 
         result = self._cypher_runner.call_procedure(
             endpoint="gds.graph.project", params=params, logging=log_progress
-        ).squeeze()
-        project_result = GraphProjectResult(**result.to_dict())
+        ).iloc[0]
+        project_result = GraphProjectResult(**result)
         return GraphWithProjectResult(get_graph(project_result.graph_name, self._cypher_runner), project_result)
 
     def estimate(
@@ -341,5 +339,5 @@ class GraphNativeProjectEndpoints:
             config=config,
         )
 
-        result = self._cypher_runner.call_procedure(endpoint="gds.graph.project.estimate", params=params).squeeze()
-        return EstimationResult(**result.to_dict())
+        result = self._cypher_runner.call_procedure(endpoint="gds.graph.project.estimate", params=params).iloc[0]
+        return EstimationResult(**result)

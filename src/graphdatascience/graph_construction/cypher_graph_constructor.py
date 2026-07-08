@@ -87,13 +87,14 @@ class CypherGraphConstructor(GraphConstructor):
 
     def _should_warn_about_arrow_missing(self) -> bool:
         try:
-            license: str = self._query_runner.run_retryable_cypher(
+            gds_license: str = self._query_runner.run_retryable_cypher(  # type: ignore
                 "CALL gds.debug.sysInfo() YIELD key, value WHERE key = 'gdsEdition' RETURN value",
                 QueryType.SYSTEM,
                 custom_error=False,
                 mode=QueryMode.READ,
-            ).squeeze()
-            should_warn = license == "Licensed"
+            ).iloc[0, 0]
+
+            should_warn = gds_license == "Licensed"
         except Exception as e:
             # It's not a user's concern whether Arrow is set up or not in AuraDS.
             if "There is no procedure with the name `gds.debug.sysInfo` registered for this database instance." in str(

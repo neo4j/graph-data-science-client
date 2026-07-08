@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, cast
 
 import pytest
 
@@ -118,9 +118,12 @@ def test_knn_write(arrow_client: AuthenticatedArrowClient, query_runner: QueryRu
     assert result.node_pairs_considered > 0
 
     # Check that relationships were written to the database
-    count_result = query_runner.run_cypher(
-        "MATCH ()-[r:SIMILAR]->() RETURN COUNT(r) AS count", query_type=QueryType.USER_ACTION
-    ).squeeze()
+    count_result = cast(
+        "int",
+        query_runner.run_cypher(
+            "MATCH ()-[r:SIMILAR]->() RETURN COUNT(r) AS count", query_type=QueryType.USER_ACTION
+        ).iloc[0, 0],
+    )
 
     assert count_result >= result.relationships_written
 
