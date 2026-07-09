@@ -2,9 +2,9 @@ import pandas as pd
 import pytest
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.graph.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.api.kge.kge_endpoints import KgeEndpoints
 from graphdatascience.procedure_surface.api.kge.kge_predict_endpoints import KgeMutateResult, KgeWriteResult
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.kge.kge_predict_cypher_endpoints import KgePredictCypherEndpoints
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
