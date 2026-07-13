@@ -19,7 +19,7 @@ from graphdatascience.procedure_surface.api.catalog import (
     GraphWithSamplingResult,
 )
 from graphdatascience.procedure_surface.api.debug_endpoints import DebugSysInfoResult
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.versions import ServerVersion
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointSpec,
     EndpointWithModesSpec,

@@ -177,6 +177,7 @@ from graphdatascience.procedure_surface.cypher.topological_link_prediction_cyphe
 )
 from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.versions import ServerVersion
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from .arrow_client.arrow_info import ArrowInfo
@@ -185,7 +186,6 @@ from .arrow_client.v1.gds_arrow_client import GdsArrowClient
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .query_runner.query_type import QueryType
-from .server_version.server_version import ServerVersion
 from .version import __min_server_version__
 
 
