@@ -7,13 +7,13 @@ from graphdatascience.arrow_client.authenticated_flight_client import (
     AuthenticatedArrowClient,
     ConnectionInfo,
 )
-from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.remote_ops.status import Status
 from graphdatascience.session.remote_ops.write_protocols import (
     JobStatus,
     RemoteWriteBackV3,
     RemoteWriteBackV4,
 )
+from graphdatascience.versions import ServerVersion
 from tests.unit.conftest import CollectingQueryRunner
 
 

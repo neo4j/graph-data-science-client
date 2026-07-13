@@ -6,7 +6,7 @@ from pathlib import Path
 import colorama
 import requests
 
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.versions import ServerVersion
 
 
 def read_library_version(repo_dir: Path) -> str:

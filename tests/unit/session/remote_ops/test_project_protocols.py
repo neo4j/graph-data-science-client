@@ -8,7 +8,6 @@ from graphdatascience.arrow_client.authenticated_flight_client import (
     ConnectionInfo,
 )
 from graphdatascience.query_runner.termination_flag import TerminationFlagNoop
-from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
 from graphdatascience.session.remote_ops.project_protocols import (
@@ -17,6 +16,7 @@ from graphdatascience.session.remote_ops.project_protocols import (
     ProjectProtocolV4,
 )
 from graphdatascience.session.remote_ops.status import Status
+from graphdatascience.versions import ServerVersion
 from tests.unit.conftest import CollectingQueryRunner
 
 

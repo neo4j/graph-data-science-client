@@ -10,7 +10,7 @@ from pandas import DataFrame, concat
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.versions import ServerVersion
 
 from .graph_constructor import GraphConstructor
 

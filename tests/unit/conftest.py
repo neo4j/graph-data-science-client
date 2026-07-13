@@ -14,10 +14,10 @@ from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
-from graphdatascience.server_version.server_version import ServerVersion
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
+from graphdatascience.versions import ServerVersion
 
 # Should mirror the latest GDS server version under development.
 DEFAULT_SERVER_VERSION = ServerVersion(2, 10, 0)

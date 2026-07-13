@@ -10,18 +10,16 @@ import neo4j
 from pandas import DataFrame
 from tenacity import retry, retry_if_exception, stop_after_delay, wait_fixed
 
+from graphdatascience.call_parameters import CallParameters
+from graphdatascience.error.gds_not_installed import GdsNotFound
+from graphdatascience.error.unable_to_connect import UnableToConnectError
 from graphdatascience.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
-
-from ..call_parameters import CallParameters
-from ..error.gds_not_installed import GdsNotFound
-from ..error.unable_to_connect import UnableToConnectError
-from ..semantic_version.semantic_version import SemanticVersion
-from ..server_version.server_version import ServerVersion
-from ..version import __version__
+from graphdatascience.version import __version__
+from graphdatascience.versions import SemanticVersion, ServerVersion
 
 
 class Neo4jQueryRunner(QueryRunner):
