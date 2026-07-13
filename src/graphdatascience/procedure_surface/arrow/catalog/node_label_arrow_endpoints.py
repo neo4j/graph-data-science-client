@@ -35,8 +35,6 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
         log_progress: bool = True,
         username: str | None = None,
         concurrency: int | None = None,
-        write_concurrency: int | None = None,
-        job_id: str | None = None,
     ) -> NodeLabelMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
@@ -46,8 +44,6 @@ class NodeLabelArrowEndpoints(NodeLabelEndpoints):
             log_progress=log_progress,
             username=username,
             concurrency=concurrency,
-            write_concurrency=write_concurrency,
-            job_id=job_id,
         )
 
         show_progress = self._show_progress and log_progress
