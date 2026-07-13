@@ -38,6 +38,13 @@ class ProjectionRunner:
         batch_size: int | None = None,
         show_progress: bool = True,
     ) -> dict[str, Any]:
+
+        if "gds.graph.project" in query and "gds.graph.project.remote" not in query:
+            getLogger("gds_arrow_client").warning(
+                "Remote cypher projections need to call `gds.graph.project.remote` instead of `gds.graph.project`."
+            )
+            query = query.replace("gds.graph.project", "gds.graph.project.remote")
+
         actual_job_id, query_runner = self._project_protocol.start_cypher_projection(
             graph_name,
             query,
