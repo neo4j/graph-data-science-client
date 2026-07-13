@@ -14,6 +14,8 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
     "is_licensed",  # AGA is always licensed
     "license.state",  # AGA is always licensed
     "debug.sys_info",  # AGA cannot spill internal runtime details
+    "memory.summary",  # plugin only; no Arrow/Session equivalent
+    "memory.list",  # plugin only; no Arrow/Session equivalent
 }
 
 
