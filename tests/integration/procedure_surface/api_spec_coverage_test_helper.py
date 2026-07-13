@@ -36,8 +36,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "hits.stream",
     "hits.stats",
     "hits.write",
-    "memory.summary",
-    "memory.list",
     "graph.export",
     "graph.export.csv",
     "graph.exists",
