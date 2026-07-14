@@ -1,3 +1,4 @@
+import logging
 from typing import Generator
 
 import pytest
@@ -63,7 +64,7 @@ def test_projection_with_query_parameters(
     try:
         G, result = endpoints.project.cypher(
             graph_name="g",
-            query="UNWIND range(1, $LIMIT) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
+            query="UNWIND range(1, $LIMIT) AS x WITH gds.graph.project.remote(x, null, {undirectedRelationshipTypes:['foo']}) as g RETURN g",
             query_parameters={"LIMIT": 10},
         )
 
@@ -82,12 +83,22 @@ def test_projection_with_query_parameters(
 
 @pytest.mark.db_integration
 def test_projection_with_query_rewrite(
-    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
+    arrow_client: AuthenticatedArrowClient,
+    query_runner: QueryRunner,
+    endpoints: CatalogArrowEndpoints,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     try:
-        G, result = endpoints.project.cypher(
-            graph_name="g",
-            query="UNWIND range(1, 10) AS x WITH gds.graph.project(x, null) as g RETURN g",
+        with caplog.at_level(logging.WARNING, logger="gds_arrow_client"):
+            G, result = endpoints.project.cypher(
+                graph_name="g",
+                query="UNWIND range(1, 10) AS x WITH gds.graph.project(x, null) as g RETURN g",
+            )
+
+        assert any(
+            "Remote cypher projections need to call `gds.graph.project.remote` instead of `gds.graph.project`."
+            in record.message
+            for record in caplog.records
         )
 
         assert isinstance(result, ProjectionResult)
@@ -101,6 +112,30 @@ def test_projection_with_query_rewrite(
         assert len(endpoints.list("g")) == 1
     finally:
         endpoints.drop("g", fail_if_missing=False)
+
+
+@pytest.mark.db_integration
+def test_projection_undirected_relationship_types_in_query(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
+) -> None:
+    with pytest.raises(ValueError, match="undirectedRelationshipTypes.*need to be specified as separate arguments"):
+        endpoints.project.cypher(
+            graph_name="g",
+            query="UNWIND range(1, 10) AS x WITH gds.graph.project(x, null, {undirectedRelationshipTypes: ['TYPE']}) as g RETURN g",
+        )
+
+
+@pytest.mark.db_integration
+def test_projection_inversed_indexed_relationship_types_in_query(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
+) -> None:
+    with pytest.raises(
+        ValueError, match=".*inverseIndexedRelationshipTypes.*need to be specified as separate arguments"
+    ):
+        endpoints.project.cypher(
+            graph_name="g",
+            query="UNWIND range(1, 10) AS x WITH gds.graph.project(x, null, {inverseIndexedRelationshipTypes: ['TYPE']}) as g RETURN g",
+        )
 
 
 @pytest.mark.db_integration
