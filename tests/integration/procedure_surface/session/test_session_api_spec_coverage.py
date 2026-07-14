@@ -16,6 +16,7 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
     "debug.sys_info",  # AGA cannot spill internal runtime details
     "memory.summary",  # plugin only; no Arrow/Session equivalent
     "memory.list",  # plugin only; no Arrow/Session equivalent
+    "dag.topological_sort.stream",  # plugin only; no Arrow/Session equivalent
 }
 
 

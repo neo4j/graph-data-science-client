@@ -31,7 +31,6 @@ from tests.integration.procedure_surface.gds_api_spec import (
 # endpoints not mapped yet in the v2 endpoints of the python client
 UNMAPPED_ENDPOINTS: set[str] = {
     # TODO
-    "dag.topological_sort.stream",
     "hits.mutate",
     "hits.stream",
     "hits.stats",
