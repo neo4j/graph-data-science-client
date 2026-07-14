@@ -54,7 +54,6 @@ from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints imp
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.bfs_endpoints import BFSEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.dag_endpoints import DagEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.dfs_endpoints import DFSEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
@@ -439,7 +438,7 @@ class GraphDataScience:
         return ClosenessCypherEndpoints(self._query_runner)
 
     @property
-    def dag(self) -> DagEndpoints:
+    def dag(self) -> DagCypherEndpoints:
         """
         Return endpoints for Directed Acyclic Graph (DAG) algorithms.
         """

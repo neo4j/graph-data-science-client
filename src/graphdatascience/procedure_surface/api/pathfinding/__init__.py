@@ -87,6 +87,7 @@ from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints i
     SteinerTreeStatsResult,
     SteinerTreeWriteResult,
 )
+from graphdatascience.procedure_surface.api.pathfinding.topological_sort_endpoints import TopologicalSortEndpoints
 
 __all__ = [
     "AllShortestPathEndpoints",
@@ -144,6 +145,7 @@ __all__ = [
     "SteinerTreeMutateResult",
     "SteinerTreeStatsResult",
     "SteinerTreeWriteResult",
+    "TopologicalSortEndpoints",
     "YensMutateResult",
     "YensWriteResult",
 ]
