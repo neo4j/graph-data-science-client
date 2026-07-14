@@ -18,6 +18,7 @@ from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol i
     PipelineCatalogEntryProtocol,
     PipelineCatalogProtocol,
 )
+from graphdatascience.procedure_surface.api.pipeline.pipeline_info_mapping import to_pipeline_info
 
 
 class LinkPredictionPipeline:
@@ -145,8 +146,13 @@ class LinkPredictionPipeline:
     def configure_auto_tuning(self, *, max_trials: int = 10) -> LinkPredictionPipelineInfoResult:
         return self._ops.configure_auto_tuning(self._name, max_trials=max_trials)
 
+    def details(self) -> LinkPredictionPipelineInfoResult:
+        """Return the stored configuration of the pipeline (feature steps, split, parameter space)."""
+        entry = self._catalog.get(self._name)
+        return LinkPredictionPipelineInfoResult.model_validate(to_pipeline_info(entry, feature_key="featureSteps"))
+
     def exists(self) -> bool:
-        return self._catalog.exists(self._name) is not None
+        return self._catalog.exists(self._name)
 
     def drop(self, fail_if_missing: bool = False) -> PipelineCatalogEntryProtocol | None:
         return self._catalog.drop(self._name, fail_if_missing=fail_if_missing)

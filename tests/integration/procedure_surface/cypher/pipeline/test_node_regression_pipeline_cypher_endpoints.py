@@ -44,6 +44,36 @@ def endpoints(query_runner: Neo4jQueryRunner) -> NodeRegressionPipelineCypherEnd
     return NodeRegressionPipelineCypherEndpoints(query_runner)
 
 
+def test_node_regression_details_cypher_pipeline(
+    query_runner: Neo4jQueryRunner,
+    endpoints: NodeRegressionPipelineCypherEndpoints,
+) -> None:
+    pipeline_name = f"nr-cypher-pipe-{uuid4().hex[:8]}"
+
+    try:
+        pipeline, _ = endpoints.create(pipeline_name)
+        pipeline.add_node_property("pageRank", mutate_property="pr")
+        pipeline.select_features(feature_properties=["pr"])
+        pipeline.add_linear_regression(max_epochs=1, min_epochs=1)
+        pipeline.configure_split(test_fraction=0.2, validation_folds=2)
+        pipeline.configure_auto_tuning(max_trials=2)
+
+        details = pipeline.details()
+
+        assert details.name == pipeline_name
+        assert [step["name"] for step in details.node_property_steps] == ["gds.pageRank.mutate"]
+        assert details.feature_properties == [{"feature": "pr"}]
+        assert details.split_config["testFraction"] == 0.2
+        assert details.auto_tuning_config["maxTrials"] == 2
+        assert "LinearRegression" in details.parameter_space
+    finally:
+        query_runner.run_cypher(
+            "CALL gds.pipeline.drop($name, false)",
+            query_type=QueryType.USER_ACTION,
+            params={"name": pipeline_name},
+        )
+
+
 def test_node_regression_train_cypher_pipeline(
     query_runner: Neo4jQueryRunner,
     endpoints: NodeRegressionPipelineCypherEndpoints,

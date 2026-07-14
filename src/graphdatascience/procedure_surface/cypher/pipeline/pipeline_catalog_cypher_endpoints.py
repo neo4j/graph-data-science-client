@@ -4,10 +4,7 @@ from typing import Any
 import neo4j
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
-    PipelineCatalogEntry,
-    PipelineExistsResult,
-)
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import PipelineCatalogEntry
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -22,18 +19,18 @@ class PipelineCatalogCypherEndpoints:
         result = self._query_runner.call_procedure("gds.pipeline.list", params=params, custom_error=False)
         return [self._to_pipeline_catalog_entry(row.to_dict()) for _, row in result.iterrows()]
 
-    def exists(self, pipeline_name: str) -> PipelineExistsResult | None:
+    def exists(self, pipeline_name: str) -> bool:
+        params = CallParameters(pipeline_name=pipeline_name)
+        result = self._query_runner.call_procedure("gds.pipeline.list", params=params, custom_error=False)
+        return not result.empty
+
+    def get(self, pipeline_name: str) -> PipelineCatalogEntry:
         params = CallParameters(pipeline_name=pipeline_name)
         result = self._query_runner.call_procedure("gds.pipeline.list", params=params, custom_error=False)
         if result.empty:
-            return None
+            raise ValueError(f"There is no '{pipeline_name}' in the pipeline catalog")
 
-        row = result.iloc[0].to_dict()
-        return PipelineExistsResult(
-            pipelineName=str(row["pipelineName"]),
-            pipelineType=str(row["pipelineType"]),
-            exists=True,
-        )
+        return self._to_pipeline_catalog_entry(result.iloc[0].to_dict())
 
     def drop(self, pipeline_name: str, *, fail_if_missing: bool = False) -> PipelineCatalogEntry | None:
         params = CallParameters(pipeline_name=pipeline_name, fail_if_missing=fail_if_missing)

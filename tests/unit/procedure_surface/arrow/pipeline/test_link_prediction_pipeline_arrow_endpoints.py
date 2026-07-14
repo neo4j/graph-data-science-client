@@ -238,7 +238,7 @@ def test_link_prediction_configure_auto_tuning_runs_arrow_action() -> None:
 def test_link_prediction_get_uses_shared_pipeline_catalog() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
-    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+    pipeline_catalog.get.return_value = PipelineCatalogEntry(
         pipelineName="pipe", pipelineType="Link prediction training pipeline"
     )
 
@@ -249,7 +249,7 @@ def test_link_prediction_get_uses_shared_pipeline_catalog() -> None:
         pipeline = LinkPredictionPipelineArrowEndpoints(arrow_client, None).get("pipe")
 
     assert pipeline.name() == "pipe"
-    pipeline_catalog.exists.assert_called_once_with("pipe")
+    pipeline_catalog.get.assert_called_once_with("pipe")
 
 
 def test_link_prediction_train_runs_arrow_job_and_returns_arrow_wired_model() -> None:

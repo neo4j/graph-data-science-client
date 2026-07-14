@@ -78,13 +78,11 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
         )
 
     def get(self, pipeline_name: str) -> NodeClassificationPipeline:
-        pipeline_info = self._pipeline_catalog.exists(pipeline_name)
-        if not pipeline_info:
-            raise ValueError(f"No pipeline named '{pipeline_name}' exists")
-        if pipeline_info.pipeline_type != "Node classification training pipeline":
+        entry = self._pipeline_catalog.get(pipeline_name)
+        if entry.pipeline_type != "Node classification training pipeline":
             raise ValueError(f"Pipeline '{pipeline_name}' is not a node classification pipeline")
         return NodeClassificationPipeline(
-            pipeline_info.pipeline_name,
+            entry.pipeline_name,
             self,
             self,
             self._pipeline_catalog,

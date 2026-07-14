@@ -37,15 +37,12 @@ def test_pipeline_arrow_exists_and_drop_round_trip(arrow_client: AuthenticatedAr
     try:
         NodeRegressionPipelineArrowEndpoints(arrow_client, show_progress=False).create(pipeline_name)
 
-        exists_result = pipeline_surface.exists(pipeline_name)
-        assert exists_result is not None
-        assert exists_result.pipeline_name == pipeline_name
-        assert exists_result.exists is True
+        assert pipeline_surface.exists(pipeline_name) is True
 
         drop_result = pipeline_surface.drop(pipeline_name)
         assert drop_result is not None
         assert drop_result.pipeline_name == pipeline_name
-        assert pipeline_surface.exists(pipeline_name) is None
+        assert pipeline_surface.exists(pipeline_name) is False
         assert pipeline_surface.drop(pipeline_name) is None
 
         with pytest.raises(Exception):
