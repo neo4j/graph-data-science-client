@@ -94,9 +94,12 @@ print(gds.server_version())
 [.include-with-Aura-Graph-Analytics]
 =====
 
+There is no server version in an Aura Graph Analytics session.
+You can check the network connection instead.
+
 [source, python, role=no-test]
 ----
-print(gds.server_version())
+gds.verify_connectivity()
 ----
 =====
 
@@ -126,19 +129,13 @@ print(gds.is_licensed())
 [.include-with-Aura-Graph-Analytics]
 =====
 
-[source, python, role=no-test]
-----
-print(gds.is_licensed())
-----
+Aura Graph Analytics sessions always use an enterprise license.
 =====
 
 [.include-with-AuraDS]
 =====
 
-[source, python, role=no-test]
-----
-print(gds.is_licensed())
-----
+AuraDS instances always use an enterprise license.
 =====
 ====
 
