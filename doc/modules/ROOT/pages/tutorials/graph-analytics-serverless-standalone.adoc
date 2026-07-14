@@ -11,11 +11,11 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless-standalone.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook shows how to use the `graphdatascience` Python library to
+The notebook shows how to use the `+graphdatascience+` Python library to
 create, manage, and use an Aura Graph Analytics (AGA) Session.
 
 We consider a graph of people and fruits, which we're using as a simple
-example to show how to load data from Pandas `DataFrame` to an AGA
+example to show how to load data from Pandas `+DataFrame+` to an AGA
 Session, run algorithms, and inspect the results. We will cover all
 management operations: creation, listing, and deletion.
 
@@ -29,8 +29,8 @@ This notebook requires having the Aura Graph Analytics
 https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 enabled for your Neo4j Aura project.
 
-You also need to have the `graphdatascience` Python library installed,
-version `2.0a1` or later.
+You also need to have the `+graphdatascience+` Python library installed,
+version `+2.0a1+` or later.
 
 [source, python, role=no-test]
 ----
@@ -48,7 +48,7 @@ load_dotenv(".env")
 
 == Aura API credentials
 
-The entry point for managing GDS Sessions is the `GdsSessions` object,
+The entry point for managing GDS Sessions is the `+GdsSessions+` object,
 which requires creating
 https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
 
@@ -71,11 +71,11 @@ sessions = GdsSessions(api_credentials=api_credentials)
 
 == Creating a new session
 
-A new session is created by calling `sessions.get++_++or++_++create()`
-with the following parameters:
+A new session is created by calling `+sessions.get_or_create()+` with
+the following parameters:
 
 * A session name, which lets you reconnect to an existing session by
-calling `get++_++or++_++create` again.
+calling `+get_or_create+` again.
 * The session memory.
 * The cloud location.
 * A time-to-live (TTL), which ensures that the session is automatically
@@ -131,7 +131,7 @@ gds.verify_connectivity()
 
 == Listing sessions
 
-You can use `sessions.list()` to see the details for each created
+You can use `+sessions.list()+` to see the details for each created
 session.
 
 [source, python, role=no-test]
@@ -194,7 +194,7 @@ knows_df["relationshipType"] = "KNOWS"
 == Construct Graph from DataFrames
 
 With DataFrames in hand, the next step is to build a graph from them. We
-do that by using the `gds.graph.construct()` function.
+do that by using the `+gds.graph.construct()+` function.
 
 After calling this function, we will get a Graph Object back,
 representing the graph that now exists within the AGA session. We will
@@ -257,7 +257,7 @@ result = gds.graph.node_properties.stream(G, ["pagerank", "fastRP"])
 result
 ----
 
-To resolve each `nodeId` to name, we can merge it back with the source
+To resolve each `+nodeId+` to name, we can merge it back with the source
 data frames.
 
 [source, python, role=no-test]

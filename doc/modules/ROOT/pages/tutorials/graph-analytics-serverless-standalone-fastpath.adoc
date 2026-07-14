@@ -8,7 +8,7 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless-standalone-fastpath.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook shows how to use the `graphdatascience` Python library to
+The notebook shows how to use the `+graphdatascience+` Python library to
 run the *FastPath* node embedding algorithm on an Aura Graph Analytics
 (AGA) Session.
 
@@ -23,7 +23,7 @@ ____
 future releases. It requires a session backed by the new Python runtime.
 ____
 
-We model a small temporal graph of `Entity` nodes and `Event` nodes
+We model a small temporal graph of `+Entity+` nodes and `+Event+` nodes
 where each event carries a numerical feature vector and a timestamp. We
 load this graph from Pandas DataFrames, run FastPath in stream mode, and
 inspect the resulting embeddings.
@@ -39,8 +39,8 @@ https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
 enabled for your Neo4j Aura project, and a session backed by the *Python
 runtime* (required for FastPath support).
 
-You also need to have the `graphdatascience` Python library installed,
-version `2.0a1` or later.
+You also need to have the `+graphdatascience+` Python library installed,
+version `+2.0a1+` or later.
 
 [source, python, role=no-test]
 ----
@@ -58,7 +58,7 @@ load_dotenv(".env")
 
 == Aura API credentials
 
-The entry point for managing GDS Sessions is the `GdsSessions` object,
+The entry point for managing GDS Sessions is the `+GdsSessions+` object,
 which requires creating
 https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
 
@@ -81,11 +81,11 @@ sessions = GdsSessions(api_credentials=api_credentials)
 
 == Creating a new session
 
-A new session is created by calling `sessions.get++_++or++_++create()`
-with the following parameters:
+A new session is created by calling `+sessions.get_or_create()+` with
+the following parameters:
 
 * A session name, which lets you reconnect to an existing session by
-calling `get++_++or++_++create` again.
+calling `+get_or_create+` again.
 * The session memory.
 * The cloud location.
 * A time-to-live (TTL), which ensures that the session is automatically
@@ -141,7 +141,7 @@ gds.verify_connectivity()
 
 == Listing sessions
 
-You can use `sessions.list()` to see the details for each created
+You can use `+sessions.list()+` to see the details for each created
 session.
 
 [source, python, role=no-test]
@@ -160,13 +160,13 @@ FastPath operates on a bipartite temporal graph consisting of two node
 types:
 
 * *Entity* nodes — the base nodes for which embeddings are computed.
-Each Entity has an `output++_++time` property that defines the reference
+Each Entity has an `+output_time+` property that defines the reference
 timestamp up to which events are considered.
 * *Event* nodes — the event nodes linked to each Entity. Each Event has
-an `event++_++time` timestamp and an `event++_++features` vector of
+an `+event_time+` timestamp and an `+event_features+` vector of
 numerical features.
 
-Events are connected to their Entity via `HAS++_++EVENT` relationships.
+Events are connected to their Entity via `+HAS_EVENT+` relationships.
 
 AGA sessions always start empty, with no data. So our first step will be
 to project data into the session. In this example, we will illustrate
@@ -213,7 +213,7 @@ relationships = [
 == Construct Graph from DataFrames
 
 With DataFrames in hand, the next step is to build a graph from them. We
-do that by using the `gds.graph.construct()` function.
+do that by using the `+gds.graph.construct()+` function.
 
 After calling this function, we will get a Graph Object back,
 representing the graph that now exists within the AGA session. We will
@@ -227,16 +227,16 @@ str(G)
 
 == Running FastPath
 
-FastPath computes embeddings for the `Entity` nodes by aggregating the
-`event++_++features` vectors of their linked `Event` nodes, weighted by
-the elapsed time between each event and the entity's `output++_++time`.
+FastPath computes embeddings for the `+Entity+` nodes by aggregating the
+`+event_features+` vectors of their linked `+Event+` nodes, weighted by
+the elapsed time between each event and the entity's `+output_time+`.
 
 We run it in *stream mode*, which returns the embeddings as a DataFrame
 without storing them in the session.
 
 ____
-*Note:* You may see a `UserWarning` that FastPath is a preview feature —
-this is expected.
+*Note:* You may see a `+UserWarning+` that FastPath is a preview feature
+— this is expected.
 ____
 
 [source, python, role=no-test]
@@ -259,8 +259,8 @@ embedding_df = gds.fast_path.stream(
 embedding_df
 ----
 
-The result is a DataFrame with one row per `Entity` node. The
-`embeddings` column contains the computed embedding vector for each
+The result is a DataFrame with one row per `+Entity+` node. The
+`+embeddings+` column contains the computed embedding vector for each
 entity.
 
 == Deleting the session
