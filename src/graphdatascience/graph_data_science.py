@@ -18,6 +18,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_endpoints impor
 from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
+from graphdatascience.procedure_surface.api.centrality.hits_endpoints import HitsEndpoints
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
 from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
@@ -90,6 +91,7 @@ from graphdatascience.procedure_surface.cypher.centrality.closeness_harmonic_cyp
 )
 from graphdatascience.procedure_surface.cypher.centrality.degree_cypher_endpoints import DegreeCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.eigenvector_cypher_endpoints import EigenvectorCypherEndpoints
+from graphdatascience.procedure_surface.cypher.centrality.hits_cypher_endpoints import HitsCypherEndpoints
 from graphdatascience.procedure_surface.cypher.centrality.pagerank_cypher_endpoints import PageRankCypherEndpoints
 from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
 from graphdatascience.procedure_surface.cypher.community.clique_counting_cypher_endpoints import (
@@ -373,6 +375,13 @@ class GraphDataScience:
         Return endpoints for the article rank algorithm.
         """
         return ArticleRankCypherEndpoints(self._query_runner)
+
+    @property
+    def hits(self) -> HitsEndpoints:
+        """
+        Return endpoints for the HITS algorithm.
+        """
+        return HitsCypherEndpoints(self._query_runner)
 
     @property
     def bfs(self) -> BFSEndpoints:
