@@ -10,7 +10,7 @@ You can use the client-specific graph, model, and pipeline objects form a Python
 * Run graph algorithms.
 * Train and use machine learning pipelines.
 
-For more details on how the Python client objects and functions map to the Cypher API, see the xref:cypher-mapping.adoc[] page.
+For more details on how the Python client objects and functions map to the Cypher API, see xref:cypher-mapping.adoc[].
 
 == Development
 

@@ -3,7 +3,6 @@
 * *Getting started*
 * xref:installation.adoc[]
 * xref:getting-started.adoc[]
-* xref:cypher-mapping.adoc[]
 * xref:aura-graph-analytics.adoc[]
 * xref:common-datasets.adoc[]
 * xref:tutorials/index.adoc[]
@@ -13,9 +12,9 @@
 include::partial$tutorial-list.adoc[]
 --
 
-* *Graph algorithms [RENAME]*
+* *Graph operations*
 * xref:graph-object.adoc[]
-* Data from different sources
+* Non-Neo4j data sources
 ** xref:load-from-pandas.adoc[]
 ** xref:load-from-networkx.adoc[]
 * xref:algorithms.adoc[]
@@ -27,6 +26,7 @@ include::partial$tutorial-list.adoc[]
 * xref:rel-embedding-models.adoc[]
 
 * *Reference*
+* xref:cypher-mapping.adoc[]
 * xref:visualization.adoc[]
 * xref:known-limitations.adoc[]
 * xref:v2_endpoints.adoc[]
