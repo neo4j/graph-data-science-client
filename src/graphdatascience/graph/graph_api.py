@@ -127,16 +127,16 @@ class Graph:
         """
         return self._backend.exists()
 
-    def drop(self, failIfMissing: bool = True) -> GraphInfo | None:
+    def drop(self, fail_if_missing: bool = True) -> GraphInfo | None:
         """
         Args:
-            failIfMissing: whether to fail if the graph does not exist
+            fail_if_missing: whether to fail if the graph does not exist
 
         Returns:
             the result of the drop operation
 
         """
-        return self._backend.drop(fail_if_missing=failIfMissing)
+        return self._backend.drop(fail_if_missing=fail_if_missing)
 
     def creation_time(self) -> datetime:
         """

@@ -146,7 +146,7 @@ def test_drop_defaults_to_fail_if_missing(backend: FakeGraphBackend, G: Graph) -
 
 
 def test_drop_passes_fail_if_missing_flag(backend: FakeGraphBackend, G: Graph) -> None:
-    G.drop(failIfMissing=False)
+    G.drop(fail_if_missing=False)
     assert backend.drop_calls == [False]
 
 

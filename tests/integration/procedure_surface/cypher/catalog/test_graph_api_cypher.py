@@ -114,10 +114,10 @@ def test_graph_drop(G: Graph) -> None:
         G.node_count()
 
     # Should not raise error
-    G.drop(failIfMissing=False)
+    G.drop(fail_if_missing=False)
 
     with pytest.raises(Exception, match="Graph with name `g` does not exist on database `neo4j`."):
-        G.drop(failIfMissing=True)
+        G.drop(fail_if_missing=True)
 
 
 def test_graph_creation_time(G: Graph) -> None:
