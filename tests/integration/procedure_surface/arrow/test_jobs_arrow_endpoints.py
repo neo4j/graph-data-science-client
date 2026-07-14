@@ -96,7 +96,7 @@ def test_get_returns_projection_handle_for_projection_job(
     try:
         query_runner.run_cypher(DB_GDL, QueryType.USER_ACTION)
 
-        projection_handle = catalog.project_async(graph_name=graph_name, query=DB_PROJECT_QUERY)
+        projection_handle = catalog.project.cypher_async(graph_name=graph_name, query=DB_PROJECT_QUERY)
         projection_handle.wait(log_progress=False)
         G, _ = projection_handle.result()
 
