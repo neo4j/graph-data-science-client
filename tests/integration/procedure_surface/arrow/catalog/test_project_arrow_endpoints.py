@@ -64,7 +64,7 @@ def test_projection_with_query_parameters(
     try:
         G, result = endpoints.project.cypher(
             graph_name="g",
-            query="UNWIND range(1, $LIMIT) AS x WITH gds.graph.project.remote(x, null, {undirectedRelationshipTypes:['foo']}) as g RETURN g",
+            query="UNWIND range(1, $LIMIT) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
             query_parameters={"LIMIT": 10},
         )
 
