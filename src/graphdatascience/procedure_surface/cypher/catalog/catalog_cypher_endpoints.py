@@ -27,9 +27,13 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
+from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_export_cypher_endpoints import (
+    GraphExportCypherEndpoints,
+)
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
@@ -146,6 +150,10 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     @property
     def project(self) -> GraphNativeProjectEndpoints:
         return GraphNativeProjectEndpoints(self._cypher_runner)
+
+    @property
+    def export(self) -> GraphExportEndpoints:
+        return GraphExportCypherEndpoints(self._cypher_runner)
 
     def filter(
         self,

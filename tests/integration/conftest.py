@@ -477,6 +477,7 @@ def start_gds_plugin_database(
         .with_env("NEO4J_gds_arrow_enabled", "true")
         .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
         .with_env("NEO4J_gds_model_store__location", "/models")
+        .with_env("NEO4J_gds_export_location", "/exports")
         .with_exposed_ports(8491)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
         .with_volume_mapping(models_dir, "/models", mode="rw")
@@ -496,6 +497,9 @@ def start_gds_plugin_database(
     neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
 
     with running_container(neo4j_container, db_logs_dir / "stdout.log", "Neo4j plugin") as neo4j_db:
+        # target of `gds.export.location`; kept inside the container so the files
+        # written by the neo4j user do not outlive the container on the host
+        neo4j_db.exec(["mkdir", "-p", "-m", "0777", "/exports"])
         yield neo4j_db
 
 

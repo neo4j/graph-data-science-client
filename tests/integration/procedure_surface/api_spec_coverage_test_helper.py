@@ -31,9 +31,7 @@ from tests.integration.procedure_surface.gds_api_spec import (
 # endpoints not mapped yet in the v2 endpoints of the python client
 UNMAPPED_ENDPOINTS: set[str] = {
     # TODO
-    "graph.export",
-    "graph.export.csv",
-    "graph.exists",
+    "dag.topological_sort.stream",
     # explicitly unmapped
     "split_relationships.mutate",  # no knowledge of usage. use pipelines instead
     "list",  # listing only available endpoints, doesnt make sense as we mapout the important endpoints
@@ -193,6 +191,8 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
         "fail_if_missing": False,
     },
     r".*graph.filter": {"parameters": None},
+    # spec default is an empty map, mapped to None in python
+    r".*graph.export": {"additional_node_properties": None},
     r".*graph.generate": {"relationship_property": None},
     r".*graph.list": {"G": None},
 }

@@ -11,6 +11,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.graph.graph_info import GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.dataset_endpoints import DatasetEndpoints
+from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
@@ -206,6 +207,12 @@ class CatalogEndpoints(ABC):
         GraphGenerationStats:
             tuple of the generated graph object and the result object containing stats about the generation.
         """
+
+    @property
+    @abstractmethod
+    def export(self) -> GraphExportEndpoints:
+        """Endpoints for exporting graphs to a new database or CSV files."""
+        pass
 
     @property
     @abstractmethod
