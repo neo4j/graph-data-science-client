@@ -67,9 +67,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            endpoint="gds.modularityOptimization.mutate", params=params
-        ).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.mutate", params=params).iloc[0]
 
         return ModularityOptimizationMutateResult(**result)
 
@@ -113,7 +111,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.stats", params=params).iloc[0]
 
         return ModularityOptimizationStatsResult(**result)
 
@@ -209,7 +207,7 @@ class ModularityOptimizationCypherEndpoints(ModularityOptimizationEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.modularityOptimization.write", params=params).iloc[0]
 
         return ModularityOptimizationWriteResult(**result)
 

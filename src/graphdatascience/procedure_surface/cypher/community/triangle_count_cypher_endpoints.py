@@ -52,9 +52,9 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.triangleCount.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.triangleCount.mutate", params=params).iloc[0]
 
-        return TriangleCountMutateResult(**result.to_dict())
+        return TriangleCountMutateResult(**result)
 
     def stats(
         self,
@@ -85,9 +85,9 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.triangleCount.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.triangleCount.stats", params=params).iloc[0]
 
-        return TriangleCountStatsResult(**result.to_dict())
+        return TriangleCountStatsResult(**result)
 
     def stream(
         self,
@@ -155,9 +155,9 @@ class TriangleCountCypherEndpoints(TriangleCountEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.triangleCount.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.triangleCount.write", params=params).iloc[0]
 
-        return TriangleCountWriteResult(**result.to_dict())
+        return TriangleCountWriteResult(**result)
 
     def estimate(
         self,

@@ -6,6 +6,7 @@ AuraGraphDataScience
 
    ../endpoints/catalog_arrow_endpoints
    ../endpoints/catalog_endpoints
+   ../endpoints/graph
    ../endpoints/centrality_endpoints
    ../endpoints/community_endpoints
    ../endpoints/node_embedding_endpoints

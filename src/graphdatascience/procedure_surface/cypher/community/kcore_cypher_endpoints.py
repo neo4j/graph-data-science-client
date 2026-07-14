@@ -56,9 +56,9 @@ class KCoreCypherEndpoints(KCoreEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.kcore.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return KCoreMutateResult(**cypher_result.to_dict())
+        return KCoreMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -87,9 +87,9 @@ class KCoreCypherEndpoints(KCoreEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.kcore.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return KCoreStatsResult(**cypher_result.to_dict())
+        return KCoreStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -149,9 +149,9 @@ class KCoreCypherEndpoints(KCoreEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.kcore.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return KCoreWriteResult(**result.to_dict())
+        return KCoreWriteResult(**result)
 
     def estimate(
         self,

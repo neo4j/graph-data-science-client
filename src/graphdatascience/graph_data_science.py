@@ -46,6 +46,7 @@ from graphdatascience.procedure_surface.api.config_endpoints import ConfigEndpoi
 from graphdatascience.procedure_surface.api.debug_endpoints import DebugEndpoints
 from graphdatascience.procedure_surface.api.kge.kge_endpoints import KgeEndpoints
 from graphdatascience.procedure_surface.api.license_endpoints import LicenseEndpoints
+from graphdatascience.procedure_surface.api.memory_endpoints import MemoryEndpoints
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
@@ -125,6 +126,7 @@ from graphdatascience.procedure_surface.cypher.debug_cypher_endpoints import Deb
 from graphdatascience.procedure_surface.cypher.kge.kge_predict_cypher_endpoints import KgePredictCypherEndpoints
 from graphdatascience.procedure_surface.cypher.license_cypher_endpoints import LicenseCypherEndpoints
 from graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint import ListProgressCypherEndpoint
+from graphdatascience.procedure_surface.cypher.memory_cypher_endpoints import MemoryCypherEndpoints
 from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import (
     ModelCatalogCypherEndpoints,
 )
@@ -177,6 +179,7 @@ from graphdatascience.procedure_surface.cypher.topological_link_prediction_cyphe
 )
 from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
 from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.versions import ServerVersion
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from .arrow_client.arrow_info import ArrowInfo
@@ -185,7 +188,6 @@ from .arrow_client.v1.gds_arrow_client import GdsArrowClient
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .query_runner.query_type import QueryType
-from .server_version.server_version import ServerVersion
 from .version import __min_server_version__
 
 
@@ -328,6 +330,13 @@ class GraphDataScience:
         Return debug endpoints.
         """
         return DebugCypherEndpoints(self._query_runner)
+
+    @property
+    def memory(self) -> MemoryEndpoints:
+        """
+        Return memory usage endpoints.
+        """
+        return MemoryCypherEndpoints(self._query_runner)
 
     @property
     def list_progress(self) -> ListProgressCypherEndpoint:
@@ -772,7 +781,6 @@ class GraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        retryable: bool = False,
         mode: QueryMode = QueryMode.WRITE,
     ) -> DataFrame:
         """
@@ -786,8 +794,6 @@ class GraphDataScience:
             parameters to the query
         database: str
             the database on which to run the query
-        retryable: bool
-            whether the query can be automatically retried. Make sure the query is idempotent if set to True.
         mode: QueryMode
             the query mode to use (READ or WRITE). Set based on the operation performed in the query.
 
@@ -796,12 +802,9 @@ class GraphDataScience:
         """
         query_type = QueryType.USER_DIRECTED
 
-        if retryable:
-            return self._query_runner.run_retryable_cypher(
-                query, query_type, params, database, custom_error=False, mode=mode
-            )
-        else:
-            return self._query_runner.run_cypher(query, query_type, params, database, custom_error=False, mode=mode)
+        return self._query_runner.run_retryable_cypher(
+            query, query_type, params, database, custom_error=False, mode=mode
+        )
 
     def driver_config(self) -> dict[str, Any]:
         """

@@ -18,8 +18,6 @@ class NodeLabelEndpoints(ABC):
         log_progress: bool = True,
         username: str | None = None,
         concurrency: int | None = None,
-        write_concurrency: int | None = None,
-        job_id: str | None = None,
     ) -> NodeLabelMutateResult:
         """
         Attaches the specified node label to the filtered nodes in the graph.
@@ -40,10 +38,6 @@ class NodeLabelEndpoints(ABC):
             As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
-        write_concurrency
-            Number of concurrent threads to use for writing.
-        job_id
-            Identifier for the computation.
         Returns
         -------
         NodeLabelMutateResult

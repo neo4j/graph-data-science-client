@@ -76,9 +76,9 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.hashgnn.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return HashGNNMutateResult(**result.to_dict())
+        return HashGNNMutateResult(**result)
 
     def stream(
         self,
@@ -182,9 +182,9 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.hashgnn.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return HashGNNWriteResult(**result.to_dict())
+        return HashGNNWriteResult(**result)
 
     def estimate(
         self,

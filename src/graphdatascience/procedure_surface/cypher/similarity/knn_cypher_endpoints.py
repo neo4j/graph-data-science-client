@@ -80,7 +80,7 @@ class KnnCypherEndpoints(KnnEndpoints):
 
         result = self._query_runner.call_procedure("gds.knn.mutate", params=params).iloc[0]
 
-        return KnnMutateResult(**result.to_dict())
+        return KnnMutateResult(**result)
 
     def stats(
         self,
@@ -127,7 +127,7 @@ class KnnCypherEndpoints(KnnEndpoints):
 
         result = self._query_runner.call_procedure("gds.knn.stats", params=params, logging=log_progress).iloc[0]
 
-        return KnnStatsResult(**result.to_dict())
+        return KnnStatsResult(**result)
 
     def stream(
         self,
@@ -227,7 +227,7 @@ class KnnCypherEndpoints(KnnEndpoints):
 
         result = self._query_runner.call_procedure("gds.knn.write", params=params, logging=log_progress).iloc[0]
 
-        return KnnWriteResult(**result.to_dict())
+        return KnnWriteResult(**result)
 
     def estimate(
         self,

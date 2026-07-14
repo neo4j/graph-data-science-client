@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo, GraphInfoWithDegrees
+from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
 
 
 class GraphBackend(ABC):

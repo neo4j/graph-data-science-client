@@ -11,6 +11,14 @@ from graphdatascience.procedure_surface.cypher.pipeline.link_prediction_pipeline
 )
 
 
+def _iloc_df(row: mock.Mock) -> mock.Mock:
+    """A DataFrame-like mock whose `.iloc[0]` returns the row as a real Series."""
+    df = mock.Mock()
+    df.iloc = mock.MagicMock()
+    df.iloc.__getitem__.return_value = pd.Series(row.to_dict())
+    return df
+
+
 def _info_payload(**overrides: object) -> dict[str, object]:
     payload: dict[str, object] = {
         "autoTuningConfig": {},
@@ -45,7 +53,7 @@ def test_link_prediction_create_returns_info_result() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     pipeline, result = LinkPredictionPipelineCypherEndpoints(query_runner).create("pipe")
 
@@ -58,7 +66,7 @@ def test_link_prediction_add_feature_runs_query() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = LinkPredictionPipelineCypherEndpoints(query_runner).add_feature(
         "pipe",
@@ -78,7 +86,7 @@ def test_link_prediction_configure_split_runs_query() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = LinkPredictionPipelineCypherEndpoints(query_runner).configure_split(
         "pipe",
@@ -105,7 +113,7 @@ def test_link_prediction_add_mlp_runs_query() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = LinkPredictionPipelineCypherEndpoints(query_runner).add_mlp(
         "pipe",
@@ -141,7 +149,7 @@ def test_link_prediction_add_mlp_uses_default_hidden_layer_sizes() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = LinkPredictionPipelineCypherEndpoints(query_runner).add_mlp("pipe")
 
@@ -153,7 +161,7 @@ def test_link_prediction_add_random_forest_runs_query() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = LinkPredictionPipelineCypherEndpoints(query_runner).add_random_forest(
         "pipe",
@@ -185,7 +193,7 @@ def test_link_prediction_add_node_property_runs_query_with_config() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = LinkPredictionPipelineCypherEndpoints(query_runner).add_node_property(
         "pipe",
@@ -209,7 +217,7 @@ def test_link_prediction_configure_auto_tuning_runs_query() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload(autoTuningConfig={"maxTrials": 42})
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = LinkPredictionPipelineCypherEndpoints(query_runner).configure_auto_tuning("pipe", max_trials=42)
 
@@ -259,8 +267,8 @@ def test_link_prediction_train_runs_query() -> None:
     row.to_dict.return_value = _train_summary()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
-        mock.Mock(squeeze=mock.Mock(return_value=create_row)),
-        mock.Mock(squeeze=mock.Mock(return_value=row)),
+        _iloc_df(create_row),
+        _iloc_df(row),
     ]
     graph = mock.Mock()
     graph.name.return_value = "g"
@@ -296,7 +304,7 @@ def test_link_prediction_train_estimate_runs_query() -> None:
         "heapPercentageMax": 0.2,
     }
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
     graph = mock.Mock()
     graph.name.return_value = "g"
 
@@ -328,7 +336,7 @@ def test_link_prediction_predict_stream_and_mutate_run_queries() -> None:
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
         pd.DataFrame({"sourceNodeId": [0], "targetNodeId": [1], "probability": [0.9]}),
-        mock.Mock(squeeze=mock.Mock(return_value=mutate_row)),
+        _iloc_df(mutate_row),
     ]
     graph = mock.Mock()
     graph.name.return_value = "g"
@@ -429,7 +437,7 @@ def test_link_prediction_predict_estimate_runs_query() -> None:
         "heapPercentageMax": 0.2,
     }
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
     graph = mock.Mock()
     graph.name.return_value = "g"
 

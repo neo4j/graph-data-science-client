@@ -47,7 +47,7 @@ class LinkPredictionPredictCypherEndpoints(LinkPredictionPipelinePredictEndpoint
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.predict.stream.estimate",
             params=params,
-        ).squeeze()
+        ).iloc[0]
         return EstimationResult.from_cypher(result.to_dict())
 
     def stream(
@@ -153,5 +153,5 @@ class LinkPredictionPredictCypherEndpoints(LinkPredictionPipelinePredictEndpoint
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.predict.mutate",
             params=params,
-        ).squeeze()
-        return LinkPredictionPipelinePredictMutateResult(**result.to_dict())
+        ).iloc[0]
+        return LinkPredictionPipelinePredictMutateResult(**result)

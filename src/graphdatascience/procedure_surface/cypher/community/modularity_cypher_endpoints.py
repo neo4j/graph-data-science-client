@@ -53,7 +53,7 @@ class ModularityCypherEndpoints(ModularityEndpoints):
             endpoint="gds.modularity.stats", params=params, logging=log_progress
         ).iloc[0]
 
-        return ModularityStatsResult(**result.to_dict())
+        return ModularityStatsResult(**result)
 
     def stream(
         self,

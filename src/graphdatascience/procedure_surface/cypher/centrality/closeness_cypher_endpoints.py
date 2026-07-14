@@ -56,8 +56,8 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.closeness.mutate", params=params, logging=log_progress
-        ).squeeze()
-        return ClosenessMutateResult(**result.to_dict())
+        ).iloc[0]
+        return ClosenessMutateResult(**result)
 
     def stats(
         self,
@@ -90,8 +90,8 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.closeness.stats", params=params, logging=log_progress
-        ).squeeze()
-        return ClosenessStatsResult(**result.to_dict())
+        ).iloc[0]
+        return ClosenessStatsResult(**result)
 
     def stream(
         self,
@@ -159,8 +159,8 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.closeness.write", params=params, logging=log_progress
-        ).squeeze()
-        return ClosenessWriteResult(**result.to_dict())
+        ).iloc[0]
+        return ClosenessWriteResult(**result)
 
     def estimate(
         self,

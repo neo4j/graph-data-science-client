@@ -17,6 +17,14 @@ from graphdatascience.procedure_surface.cypher.pipeline.node_classification_pipe
 )
 
 
+def _iloc_df(row: mock.Mock) -> mock.Mock:
+    """A DataFrame-like mock whose `.iloc[0]` returns the row as a real Series."""
+    df = mock.Mock()
+    df.iloc = mock.MagicMock()
+    df.iloc.__getitem__.return_value = pd.Series(row.to_dict())
+    return df
+
+
 def _info_payload(**overrides: object) -> dict[str, object]:
     payload: dict[str, object] = {
         "autoTuningConfig": {},
@@ -55,8 +63,8 @@ def test_node_classification_train_runs_query() -> None:
     row.to_dict.return_value = _train_summary()
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
-        mock.Mock(squeeze=mock.Mock(return_value=create_row)),
-        mock.Mock(squeeze=mock.Mock(return_value=row)),
+        _iloc_df(create_row),
+        _iloc_df(row),
     ]
     graph = mock.Mock()
     graph.name.return_value = "g"
@@ -88,7 +96,7 @@ def test_node_classification_train_estimate_runs_query() -> None:
         "heapPercentageMax": 0.2,
     }
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
     graph = mock.Mock()
     graph.name.return_value = "g"
 
@@ -146,7 +154,7 @@ def test_node_classification_create_returns_info_result() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     pipeline, result = NodeClassificationPipelineCypherEndpoints(query_runner).create("pipe")
 
@@ -207,8 +215,8 @@ def test_node_classification_predict_stream_mutate_and_write_run_queries() -> No
     query_runner = mock.Mock()
     query_runner.call_procedure.side_effect = [
         pd.DataFrame({"nodeId": [0], "predictedClass": [1], "predictedProbabilities": [[0.1, 0.9]]}),
-        mock.Mock(squeeze=mock.Mock(return_value=mutate_row)),
-        mock.Mock(squeeze=mock.Mock(return_value=write_row)),
+        _iloc_df(mutate_row),
+        _iloc_df(write_row),
     ]
     graph = mock.Mock()
     graph.name.return_value = "g"
@@ -270,7 +278,7 @@ def test_node_classification_predict_estimate_runs_query() -> None:
         "heapPercentageMax": 0.2,
     }
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
     graph = mock.Mock()
     graph.name.return_value = "g"
 
@@ -315,7 +323,7 @@ def test_node_classification_add_mlp_runs_query() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = NodeClassificationPipelineCypherEndpoints(query_runner).add_mlp(
         "pipe",
@@ -351,7 +359,7 @@ def test_node_classification_add_mlp_uses_default_hidden_layer_sizes() -> None:
     row = mock.Mock()
     row.to_dict.return_value = _info_payload()
     query_runner = mock.Mock()
-    query_runner.call_procedure.return_value = mock.Mock(squeeze=mock.Mock(return_value=row))
+    query_runner.call_procedure.return_value = _iloc_df(row)
 
     result = NodeClassificationPipelineCypherEndpoints(query_runner).add_mlp("pipe")
 

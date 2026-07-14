@@ -99,7 +99,7 @@ class KgePredictCypherEndpoints(KgePredictEndpoints):
             endpoint="gds.ml.kge.predict.mutate", params=params, logging=log_progress
         )
 
-        return KgeMutateResult(**raw_result.iloc[0].to_dict())
+        return KgeMutateResult(**raw_result.iloc[0])
 
     def write(
         self,
@@ -145,4 +145,4 @@ class KgePredictCypherEndpoints(KgePredictEndpoints):
             endpoint="gds.ml.kge.predict.write", params=params, logging=log_progress
         )
 
-        return KgeWriteResult(**raw_result.iloc[0].to_dict())
+        return KgeWriteResult(**raw_result.iloc[0])

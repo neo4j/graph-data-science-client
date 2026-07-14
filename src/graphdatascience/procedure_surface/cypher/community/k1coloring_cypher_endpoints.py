@@ -59,9 +59,9 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.k1coloring.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return K1ColoringMutateResult(**cypher_result.to_dict())
+        return K1ColoringMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -94,9 +94,9 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.k1coloring.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return K1ColoringStatsResult(**cypher_result.to_dict())
+        return K1ColoringStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -168,9 +168,9 @@ class K1ColoringCypherEndpoints(K1ColoringEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.k1coloring.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return K1ColoringWriteResult(**result.to_dict())
+        return K1ColoringWriteResult(**result)
 
     def estimate(
         self,

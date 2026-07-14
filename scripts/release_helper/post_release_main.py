@@ -5,7 +5,7 @@ import re
 import sys
 from pathlib import Path
 
-from graphdatascience.semantic_version.semantic_version import SemanticVersion
+from graphdatascience.versions import SemanticVersion
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 VERSION_FILE = REPO_ROOT / "src" / "graphdatascience" / "version.py"

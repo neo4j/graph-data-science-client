@@ -28,10 +28,10 @@ api-docs:
    ./scripts/render_api_docs
 
 pre-release:
-    ./scripts/release_helper/pre_release.py
+    uv run --group dev-base scripts/release_helper/pre_release.py
 
 post-release-main version="":
-    ./scripts/release_helper/post_release_main.py {{version}}
+    uv run scripts/release_helper/post_release_main.py {{version}}
 
 unit-tests extra_options="":
     uv run --group test pytest tests/unit {{extra_options}}
@@ -92,18 +92,31 @@ test-tox-partition number-of-partitions partition-index: update-test-images
 
 
 update-aga-images:
-    # docker pull is incremental: it only downloads layers when the remote digest is new,
-    # otherwise it reports "Image is up to date".
-    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    docker pull "${GDS_SESSION_IMAGE:-europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release}"
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest
     docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest
+    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest
 
 update-neo4j-image:
-    docker pull neo4j:enterprise
+    docker pull "${NEO4J_DATABASE_IMAGE:-neo4j:enterprise}"
 
 update-neo4j-aura-image:
-    # check https://console.cloud.google.com/artifacts/docker/neo4j-aura-image-artifacts/europe-west1/aura-dev/neo4j-enterprise?project=neo4j-aura-image-artifacts to pull a later image
-    docker pull europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:2026.03.1
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Use NEO4J_AURA_DATABASE_IMAGE if set, else the version from latest_neo4j_version()
+    # (the same logic the integration tests use in tests/integration/conftest.py).
+    # check https://console.cloud.google.com/artifacts/docker/neo4j-aura-image-artifacts/europe-west1/aura-dev/neo4j-enterprise?project=neo4j-aura-image-artifacts to inspect available tags
+    if [ -n "${NEO4J_AURA_DATABASE_IMAGE:-}" ]; then
+        image="${NEO4J_AURA_DATABASE_IMAGE}"
+    else
+        version=$(uv run --group test python -c "from tests.integration.conftest import latest_neo4j_version; print(latest_neo4j_version())")
+        image="europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:${version}"
+    fi
+    echo "Pulling ${image}"
+    docker pull "${image}"
 
 update-test-images:
     just update-aga-images

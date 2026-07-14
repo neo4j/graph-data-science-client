@@ -63,9 +63,9 @@ class WccCypherEndpoints(WccEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.wcc.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return WccMutateResult(**cypher_result.to_dict())
+        return WccMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -101,9 +101,9 @@ class WccCypherEndpoints(WccEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.wcc.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return WccStatsResult(**cypher_result.to_dict())
+        return WccStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -179,11 +179,11 @@ class WccCypherEndpoints(WccEndpoints):
         params = CallParameters(graph_name=G.name(), config=config)
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(
-            endpoint="gds.wcc.write", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        result = self._query_runner.call_procedure(endpoint="gds.wcc.write", params=params, logging=log_progress).iloc[
+            0
+        ]  # type: ignore
 
-        return WccWriteResult(**result.to_dict())
+        return WccWriteResult(**result)
 
     def estimate(
         self,

@@ -91,7 +91,7 @@ class SingleSourceDijkstraCypherEndpoints(SingleSourceDijkstraEndpoints):
             "gds.allShortestPaths.dijkstra.mutate", params=params, logging=log_progress
         ).iloc[0]
 
-        return SingleSourceDijkstraMutateResult(**result.to_dict())
+        return SingleSourceDijkstraMutateResult(**result)
 
     def write(
         self,
@@ -133,7 +133,7 @@ class SingleSourceDijkstraCypherEndpoints(SingleSourceDijkstraEndpoints):
             "gds.allShortestPaths.dijkstra.write", params=params, logging=log_progress
         ).iloc[0]
 
-        return SingleSourceDijkstraWriteResult(**result.to_dict())
+        return SingleSourceDijkstraWriteResult(**result)
 
     def estimate(
         self,

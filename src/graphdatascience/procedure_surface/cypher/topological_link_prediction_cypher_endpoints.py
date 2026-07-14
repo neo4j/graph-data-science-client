@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from neo4j.graph import Node
 
@@ -135,4 +135,4 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         if result.empty:
             raise ValueError("Could not find the specified nodes in the graph")
 
-        return result.squeeze()  # type: ignore[no-any-return]
+        return cast("float", result.iloc[0, 0])

@@ -106,7 +106,7 @@ def test_fastpath_mutate(fastpath_endpoints: FastPathArrowEndpoints, sample_grap
     assert result.compute_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written > 0
-    assert result.configuration is None  # wait for session release to change this
+    assert result.configuration is not None
 
 
 @pytest.mark.db_integration
@@ -133,7 +133,7 @@ def test_fastpath_write(
     assert result.compute_millis >= 0
     assert result.write_millis >= 0
     assert result.node_properties_written > 0
-    assert result.configuration is None  # wait for session release to change this
+    assert result.configuration is not None
 
     assert (
         query_runner.run_cypher(

@@ -1,10 +1,15 @@
 from functools import reduce
+from typing import Any, cast
 
 from pandas import DataFrame
 
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
+
+
+def single_row(df: DataFrame) -> dict[str, Any]:
+    return cast("dict[str, Any]", df.iloc[0].to_dict())
 
 
 def transpose_property_columns(result: DataFrame, list_node_labels: bool) -> DataFrame:

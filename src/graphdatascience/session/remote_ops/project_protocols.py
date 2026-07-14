@@ -6,6 +6,7 @@ from typing import Any, Tuple
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.procedure_surface.utils.result_utils import single_row
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -119,14 +120,16 @@ class ProjectProtocolV3(ProjectProtocol):
 
         self._parameter_cache[job_id] = CallParameters(params)
 
-        response = self._query_runner.run_cypher(
-            "CALL gds.arrow.project.v3($graph_name, $query, $jobId, $arrow_config, $configuration)",
-            QueryType.USER_TRANSPILED,
-            params,
-        ).squeeze()
+        response = single_row(
+            self._query_runner.run_cypher(
+                "CALL gds.arrow.project.v3($graph_name, $query, $jobId, $arrow_config, $configuration)",
+                QueryType.USER_TRANSPILED,
+                params,
+            )
+        )
 
         member_host = response["host"]
-        member_port = response["port"] if ("port" in response.index) else 7687
+        member_port = response["port"] if ("port" in response) else 7687
 
         projection_query_runner = self._query_runner.cloneWithoutRouting(member_host, member_port)
 
@@ -159,14 +162,12 @@ class ProjectProtocolV3(ProjectProtocol):
         params = self._parameter_cache[job_id]
 
         self._termination_flag.assert_running()
-        projection_result: dict[str, Any] = (
+        projection_result: dict[str, Any] = single_row(
             query_runner.run_cypher(
                 "CALL gds.arrow.project.v3($graph_name, $query, $jobId, $arrow_config, $configuration)",
                 QueryType.USER_TRANSPILED,
                 params,
             )
-            .squeeze()
-            .to_dict()
         )
 
         if projection_result["status"] == Status.DONE.name:
@@ -249,13 +250,8 @@ class ProjectProtocolV4(ProjectProtocol):
     def get_status(self, job_id: str, query_runner: QueryRunner) -> dict[str, Any]:
         self._termination_flag.assert_running()
 
-        status_result: dict[str, Any] = (
-            query_runner.run_cypher(
-                f"CALL gds.arrow.job.status.v4('{job_id}')",
-                QueryType.USER_TRANSPILED,
-            )
-            .squeeze()
-            .to_dict()
+        status_result = single_row(
+            query_runner.run_cypher(f"CALL gds.arrow.job.status.v4('{job_id}')", QueryType.USER_TRANSPILED)
         )
 
         if status_result["error"] is not None:
@@ -264,16 +260,18 @@ class ProjectProtocolV4(ProjectProtocol):
         return status_result
 
     def _start_job(self, query: str, params: dict[str, Any]) -> Tuple[str, QueryRunner]:
-        start_response = self._query_runner.run_cypher(
-            query,
-            QueryType.USER_TRANSPILED,
-            params=params,
-        ).squeeze()
+        start_response = single_row(
+            self._query_runner.run_cypher(
+                query,
+                QueryType.USER_TRANSPILED,
+                params=params,
+            )
+        )
 
         actual_job_id = start_response["jobId"]
 
         member_host = start_response["host"]
-        member_port = start_response["port"] if ("port" in start_response.index) else 7687
+        member_port = start_response["port"] if ("port" in start_response) else 7687
         projection_query_runner = self._query_runner.cloneWithoutRouting(member_host, member_port)
 
         return actual_job_id, projection_query_runner

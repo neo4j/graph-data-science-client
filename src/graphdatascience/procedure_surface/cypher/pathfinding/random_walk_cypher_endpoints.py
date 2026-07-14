@@ -106,9 +106,9 @@ class RandomWalkCypherEndpoints(RandomWalkEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.randomWalk.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return RandomWalkMutateResult(**result.to_dict())
+        return RandomWalkMutateResult(**result)
 
     def stats(
         self,
@@ -152,9 +152,9 @@ class RandomWalkCypherEndpoints(RandomWalkEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.randomWalk.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return RandomWalkStatsResult(**result.to_dict())
+        return RandomWalkStatsResult(**result)
 
     def estimate(
         self,

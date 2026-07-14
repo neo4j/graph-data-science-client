@@ -45,5 +45,5 @@ class CollapsePathCypherEndpoints(CollapsePathEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.collapsePath.mutate", params=params).squeeze()
-        return CollapsePathResult(**result.to_dict())
+        result = self._query_runner.call_procedure(endpoint="gds.collapsePath.mutate", params=params).iloc[0]
+        return CollapsePathResult(**result)

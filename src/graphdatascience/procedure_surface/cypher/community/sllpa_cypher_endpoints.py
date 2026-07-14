@@ -61,7 +61,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.sllpa.mutate", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.sllpa.mutate", params=params).iloc[0]
 
         return SllpaMutateResult(**result)
 
@@ -99,7 +99,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.sllpa.stats", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.sllpa.stats", params=params).iloc[0]
 
         return SllpaStatsResult(**result)
 
@@ -179,7 +179,7 @@ class SllpaCypherEndpoints(SllpaEndpoints):
         )
         params.ensure_job_id_in_config()
 
-        result = self._query_runner.call_procedure(endpoint="gds.sllpa.write", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.sllpa.write", params=params).iloc[0]
 
         return SllpaWriteResult(**result)
 

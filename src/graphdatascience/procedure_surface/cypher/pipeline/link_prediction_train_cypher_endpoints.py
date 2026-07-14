@@ -66,14 +66,14 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
             endpoint="gds.beta.pipeline.linkPrediction.train",
             params=params,
             logging=True,
-        ).squeeze()
+        ).iloc[0]
         return (
             LinkPredictionModel(
                 name=model_name,
                 model_api=ModelApiCypher(self._query_runner),
                 predict_endpoints=self._predict_endpoints,
             ),
-            LinkPredictionPipelineTrainResult(**result.to_dict()),
+            LinkPredictionPipelineTrainResult(**result),
         )
 
     def estimate(
@@ -116,5 +116,5 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
         result = self._query_runner.call_procedure(
             endpoint="gds.beta.pipeline.linkPrediction.train.estimate",
             params=params,
-        ).squeeze()
+        ).iloc[0]
         return EstimationResult.from_cypher(result.to_dict())

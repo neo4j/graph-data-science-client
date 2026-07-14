@@ -99,9 +99,9 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.graph.nodeProperties.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return NodePropertiesWriteResult(**result.to_dict())
+        return NodePropertiesWriteResult(**result)
 
     def drop(
         self,
@@ -120,6 +120,6 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
         params = CallParameters(graph_name=G.name(), node_properties=node_properties, config=config)
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.nodeProperties.drop", params=params).squeeze()
+        result = self._query_runner.call_procedure(endpoint="gds.graph.nodeProperties.drop", params=params).iloc[0]
 
-        return NodePropertiesDropResult(**result.to_dict())
+        return NodePropertiesDropResult(**result)

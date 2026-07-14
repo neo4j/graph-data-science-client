@@ -93,7 +93,7 @@ class DijkstraCypherEndpoints(SourceTargetDijkstraEndpoints):
             "gds.shortestPath.dijkstra.mutate", params=params, logging=log_progress
         ).iloc[0]
 
-        return DijkstraMutateResult(**result.to_dict())
+        return DijkstraMutateResult(**result)
 
     def write(
         self,
@@ -136,7 +136,7 @@ class DijkstraCypherEndpoints(SourceTargetDijkstraEndpoints):
             "gds.shortestPath.dijkstra.write", params=params, logging=log_progress
         ).iloc[0]
 
-        return DijkstraWriteResult(**result.to_dict())
+        return DijkstraWriteResult(**result)
 
     def estimate(
         self,

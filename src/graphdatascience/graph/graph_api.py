@@ -5,7 +5,7 @@ from types import TracebackType
 from typing import Any, Type
 
 from graphdatascience.graph.graph_backend import GraphBackend
-from graphdatascience.procedure_surface.api.catalog.graph_info import GraphInfo
+from graphdatascience.graph.graph_info import GraphInfo
 
 
 class Graph:

@@ -60,9 +60,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.betweenness.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return BetweennessMutateResult(**cypher_result.to_dict())
+        return BetweennessMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -96,9 +96,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.betweenness.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return BetweennessStatsResult(**cypher_result.to_dict())
+        return BetweennessStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -168,9 +168,9 @@ class BetweennessCypherEndpoints(BetweennessEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.betweenness.write", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        ).iloc[0]  # type: ignore
 
-        return BetweennessWriteResult(**result.to_dict())
+        return BetweennessWriteResult(**result)
 
     def estimate(
         self,

@@ -9,18 +9,17 @@ from neo4j.graph import Node
 from pandas import DataFrame
 from pydantic import BaseModel
 
+from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.catalog import (
     GraphFilterResult,
     GraphGenerationStats,
-    GraphInfo,
-    GraphInfoWithDegrees,
     GraphSamplingResult,
     GraphWithFilterResult,
     GraphWithGenerationStats,
     GraphWithSamplingResult,
 )
 from graphdatascience.procedure_surface.api.debug_endpoints import DebugSysInfoResult
-from graphdatascience.server_version.server_version import ServerVersion
+from graphdatascience.versions import ServerVersion
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointSpec,
     EndpointWithModesSpec,
@@ -31,27 +30,25 @@ from tests.integration.procedure_surface.gds_api_spec import (
 
 # endpoints not mapped yet in the v2 endpoints of the python client
 UNMAPPED_ENDPOINTS: set[str] = {
+    # TODO
     "dag.topological_sort.stream",
     "hits.mutate",
     "hits.stream",
     "hits.stats",
     "hits.write",
-    "split_relationships.mutate",
-    "memory.summary",
-    "memory.list",
-    "list",  # listing only available endpoints
-    "user_log",
     "graph.export",
-    "internal.graph.size_of",
-    "graph.node_property.stream",
-    "graph.relationship_properties.write",
-    "graph.exists",
-    "graph.node_label.write",
     "graph.export.csv",
-    "graph.relationship.write",
-    "graph.relationship_property.stream",
-    "graph.node_label.mutate",
-    "graph.relationship_properties.stream",
+    "graph.exists",
+    # explicitly unmapped
+    "split_relationships.mutate",  # no knowledge of usage. use pipelines instead
+    "list",  # listing only available endpoints, doesnt make sense as we mapout the important endpoints
+    "user_log",  # no relevant usage of this feature inside GDS
+    "internal.graph.size_of",  # not a user-facing endpoint
+    "graph.node_property.stream",  # mapped only the plural version. no need to use this one
+    "graph.relationship_properties.write",  # mapped via gds.relationships
+    "graph.relationship.write",  # mapped via gds.relationships
+    "graph.relationship_property.stream",  # mapped via gds.relationships
+    "graph.relationship_properties.stream",  # mapped via gds.relationships
     "util.infinity",  # built-in in python
     "util.is_finite",  # built-in in python
     "util.is_infinite",  # built-in in python
@@ -86,19 +83,23 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
         ("beta.pipeline.linkPrediction", "pipeline.link_prediction"),
         ("alpha.pipeline.linkPrediction", "pipeline.link_prediction"),
         ("alpha.pipeline.nodeRegression", "pipeline.node_regression"),
+        ("nodeLabel", "node_labels"),
     ]
 )
 
 
 IGNORED_PARAMETERS = {
+    # ignore internal parameter
     r".*\.write": ["write_to_result_store"],
     r".*shortest_path\.dijkstra.*": ["target_node"],
+    # ignoring write params exposed due to shared config in pregel-based algos
     r".*sllpa\.mutate.*": [
         "relationship_weight_property",
         "write_property",
         "write_concurrency",
         "write_to_result_store",
     ],
+    # ignoring write & mutate params exposed due to shared config in pregel-based algos
     r".*sllpa\.(stats|stream).*": [
         "write_property",
         "write_to_result_store",
@@ -106,19 +107,30 @@ IGNORED_PARAMETERS = {
         "relationship_weight_property",
         "write_concurrency",
     ],
+    # ignore mutate params as exposed due to shared config in pregel-based algos
     r".*sllpa\.write.*": [
         "mutate_property",
         "relationship_weight_property",
     ],
+    # ignore node-labels as it was wrongly exposed
     r".*kge.predict.*": ["node_labels"],
+    # ignored as relationships are irrelevant
     r".*scale_properties.*": ["relationship_types"],
+    # ignore relationship-types as it was wrongly exposed
     r".*collapse_path.*": ["relationship_types"],
+    # TODO
     r".*graph.drop": ["username", "db_name"],
+    # named parameter differently (positional G)
     r".*graph.filter": ["graph_name"],
+    # named parameter differently (positional G)
     r".*cnarw": ["graph_name"],
+    # named parameter differently (positional G)
     r".*rwr": ["graph_name"],
+    # ignore wrongly exposed params
     r".*graph.generate": ["validate_relationships", "relationship_count", "graph_name"],
+    # ignore irrelevant params
     r".*node_properties.drop": ["sudo", "log_progress"],
+    # single list through gds.model.get instead
     r".*model.list": ["model_name"],
 }
 

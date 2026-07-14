@@ -56,8 +56,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.degree.mutate", params=params, logging=log_progress
-        ).squeeze()
-        return DegreeMutateResult(**result.to_dict())
+        ).iloc[0]
+        return DegreeMutateResult(**result)
 
     def stats(
         self,
@@ -92,8 +92,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.degree.stats", params=params, logging=log_progress
-        ).squeeze()
-        return DegreeStatsResult(**result.to_dict())
+        ).iloc[0]
+        return DegreeStatsResult(**result)
 
     def stream(
         self,
@@ -164,8 +164,8 @@ class DegreeCypherEndpoints(DegreeEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.degree.write", params=params, logging=log_progress
-        ).squeeze()
-        return DegreeWriteResult(**result.to_dict())
+        ).iloc[0]
+        return DegreeWriteResult(**result)
 
     def estimate(
         self,

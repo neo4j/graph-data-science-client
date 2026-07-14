@@ -64,7 +64,7 @@ class DefaultsCypherEndpoints(DefaultsEndpoints):
         )
 
         result = self._query_runner.call_procedure(endpoint="gds.config.defaults.list", params=params)
-        return {row["key"]: row["value"] for _, row in result.iterrows()}
+        return {str(row["key"]): row["value"] for _, row in result.iterrows()}
 
 
 class LimitsCypherEndpoints(LimitsEndpoints):
@@ -106,4 +106,4 @@ class LimitsCypherEndpoints(LimitsEndpoints):
         )
 
         result = self._query_runner.call_procedure(endpoint="gds.config.limits.list", params=params)
-        return {row["key"]: row["value"] for _, row in result.iterrows()}
+        return {str(row["key"]): row["value"] for _, row in result.iterrows()}

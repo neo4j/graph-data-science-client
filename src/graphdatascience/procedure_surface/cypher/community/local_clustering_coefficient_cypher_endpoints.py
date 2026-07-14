@@ -51,9 +51,9 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.localClusteringCoefficient.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LocalClusteringCoefficientMutateResult(**cypher_result.to_dict())
+        return LocalClusteringCoefficientMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -85,9 +85,9 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.localClusteringCoefficient.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LocalClusteringCoefficientStatsResult(**cypher_result.to_dict())
+        return LocalClusteringCoefficientStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -155,9 +155,9 @@ class LocalClusteringCoefficientCypherEndpoints(LocalClusteringCoefficientEndpoi
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.localClusteringCoefficient.write", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LocalClusteringCoefficientWriteResult(**cypher_result.to_dict())
+        return LocalClusteringCoefficientWriteResult(**cypher_result)
 
     def estimate(
         self,

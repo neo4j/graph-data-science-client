@@ -98,6 +98,9 @@ batching, `neo4j-admin import` or Arrow `CREATE DATABASE`.
 
 [source, python, role=no-test]
 ----
+# making sure the database is empty
+assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+
 gds.run_cypher(
     "UNWIND $nodes AS node CREATE (n:City {node_id: node.node_id, name: node.name, population: node.metro_pop})",
     params={"nodes": nodes_info_df.to_dict("records")},
@@ -196,7 +199,7 @@ def display_top_20_cities(centrality_measure):
     ORDER BY n.{centrality_measure} DESC
     LIMIT 20
     """
-    result = gds.run_cypher(query, retryable=True)
+    result = gds.run_cypher(query)
 
     # Display the result
     print(result)
@@ -317,7 +320,7 @@ G.drop()
 [source, python, role=no-test]
 ----
 # Cleanup database
-gds.run_cypher("MATCH (n:City) DETACH DELETE n", retryable=True)
+gds.run_cypher("MATCH (n:City) DETACH DELETE n")
 ----
 
 == References

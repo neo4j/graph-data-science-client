@@ -24,29 +24,23 @@ class UtilArrowEndpoints(UtilEndpoints):
 
     @filter_id_func_deprecation_warning()
     def as_node(self, node_id: int) -> Node:
-        return (  # type: ignore[no-any-return]
-            self._require_db()
-            .run_retryable_cypher(
-                "MATCH (n) WHERE id(n) = $nodeId RETURN n",
-                QueryType.USER_TRANSPILED,
-                {"nodeId": node_id},
-                mode=QueryMode.READ,
-            )
-            .squeeze()
+        result = self._require_db().run_retryable_cypher(
+            "MATCH (n) WHERE id(n) = $nodeId RETURN n",
+            QueryType.USER_TRANSPILED,
+            {"nodeId": node_id},
+            mode=QueryMode.READ,
         )
+        return result.iloc[0, 0]  # type: ignore
 
     @filter_id_func_deprecation_warning()
     def as_nodes(self, node_ids: list[int]) -> list[Node]:
-        return (  # type: ignore[no-any-return]
-            self._require_db()
-            .run_retryable_cypher(
-                "MATCH (n) WHERE id(n) IN $nodeIds RETURN collect(n)",
-                QueryType.USER_TRANSPILED,
-                {"nodeIds": node_ids},
-                mode=QueryMode.READ,
-            )
-            .squeeze()
+        result = self._require_db().run_retryable_cypher(
+            "MATCH (n) WHERE id(n) IN $nodeIds RETURN collect(n)",
+            QueryType.USER_TRANSPILED,
+            {"nodeIds": node_ids},
+            mode=QueryMode.READ,
         )
+        return result.iloc[0, 0]  # type: ignore
 
     def node_property(self, G: Graph, node_id: int, property_key: str, node_label: str = "*") -> Any:
         raise NotImplementedError(

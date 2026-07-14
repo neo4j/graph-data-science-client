@@ -68,9 +68,9 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.louvain.mutate", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LouvainMutateResult(**cypher_result.to_dict())
+        return LouvainMutateResult(**cypher_result)
 
     def stats(
         self,
@@ -112,9 +112,9 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
         cypher_result = self._query_runner.call_procedure(
             endpoint="gds.louvain.stats", params=params, logging=log_progress
-        ).squeeze()
+        ).iloc[0]
 
-        return LouvainStatsResult(**cypher_result.to_dict())
+        return LouvainStatsResult(**cypher_result)
 
     def stream(
         self,
@@ -204,9 +204,9 @@ class LouvainCypherEndpoints(LouvainEndpoints):
 
         result = self._query_runner.call_procedure(
             endpoint="gds.louvain.write", params=params, logging=log_progress
-        ).squeeze()  # type: ignore
+        ).iloc[0]  # type: ignore
 
-        return LouvainWriteResult(**result.to_dict())
+        return LouvainWriteResult(**result)
 
     def estimate(
         self,

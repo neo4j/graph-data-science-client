@@ -74,5 +74,5 @@ class NodeRegressionPredictCypherEndpoints(NodeRegressionPipelinePredictEndpoint
         params.ensure_job_id_in_config()
         result = self._query_runner.call_procedure(
             endpoint="gds.alpha.pipeline.nodeRegression.predict.mutate", params=params
-        ).squeeze()
-        return NodeRegressionPipelinePredictMutateResult(**result.to_dict())
+        ).iloc[0]
+        return NodeRegressionPipelinePredictMutateResult(**result)

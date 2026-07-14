@@ -76,7 +76,7 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
 
         result = self._query_runner.call_procedure("gds.knn.filtered.mutate", params=params).iloc[0]
 
-        return KnnMutateResult(**result.to_dict())
+        return KnnMutateResult(**result)
 
     def stats(
         self,
@@ -131,7 +131,7 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
             0
         ]
 
-        return KnnStatsResult(**result.to_dict())
+        return KnnStatsResult(**result)
 
     def stream(
         self,
@@ -243,7 +243,7 @@ class KnnFilteredCypherEndpoints(KnnFilteredEndpoints):
             0
         ]
 
-        return KnnWriteResult(**result.to_dict())
+        return KnnWriteResult(**result)
 
     def estimate(
         self,

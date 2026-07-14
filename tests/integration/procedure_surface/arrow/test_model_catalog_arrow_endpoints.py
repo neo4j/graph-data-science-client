@@ -51,7 +51,13 @@ def gs_model_name(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -
 
     yield model.name()
 
+    # Unload the model and purge any stored / remote-catalog copy, so persisted state can't leak
+    # into the next test's training as an "already exists" collision. `drop` only unloads; `delete`
+    # removes the stored artifact and the remote (mock GDS API) entry registered under this name.
     arrow_client.do_action_with_retry("v2/model.drop", json.dumps({"modelName": model_name}).encode("utf-8"))
+    arrow_client.do_action_with_retry(
+        "v2/model.delete", json.dumps({"modelName": model_name, "failIfMissing": False}).encode("utf-8")
+    )
 
 
 @pytest.fixture
@@ -119,8 +125,6 @@ def test_store_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -
     assert dropped.stored
     assert not dropped.loaded
 
-    model_catalog.delete(gs_model_name)
-
     with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.store("nonexistent-model")
 
@@ -139,14 +143,15 @@ def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     assert loaded.stored
     assert loaded.loaded
 
-    model_catalog.delete(gs_model_name)
-
     with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.load("nonexistent-model")
 
 
 def test_publish_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -> None:
     published = model_catalog.publish(gs_model_name)
+    # cleaned up
+    model_catalog.delete(published.model_name, fail_if_missing=False)
+
     assert published is not None
     assert published.published
 

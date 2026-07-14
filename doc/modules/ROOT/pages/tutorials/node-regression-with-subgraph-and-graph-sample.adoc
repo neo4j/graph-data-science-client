@@ -120,6 +120,9 @@ gds.run_cypher(
 
 [source, python, role=no-test]
 ----
+# making sure the database is empty
+assert gds.run_cypher("MATCH (n) RETURN count(n)").squeeze() == 0, "Database is not empty!"
+
 # Create nodes and relationships
 gds.run_cypher(
     """
@@ -129,7 +132,6 @@ gds.run_cypher(
     MERGE (c1)-[:LINK]->(c2)
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -139,7 +141,6 @@ gds.run_cypher(
     MERGE (c1)-[:LINK]->(c2)
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -149,7 +150,6 @@ gds.run_cypher(
     MERGE (s1)-[:LINK]->(s2)
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 ----
 
@@ -163,7 +163,6 @@ gds.run_cypher(
     SET c.target = toInteger(row.target)
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -172,7 +171,6 @@ gds.run_cypher(
     SET c.target = toInteger(row.target)
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -181,7 +179,6 @@ gds.run_cypher(
     SET s.target = toInteger(row.target)
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 ----
 
@@ -196,7 +193,6 @@ gds.run_cypher(
     SET c.features = features
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -206,7 +202,6 @@ gds.run_cypher(
     SET c.features = features
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -216,7 +211,6 @@ gds.run_cypher(
     SET c.features = features
 """,
     {"baseUrl": baseUrl},
-    retryable=True,
 )
 ----
 
@@ -246,7 +240,6 @@ gds.run_cypher(
     CREATE (:Feature {animal: 'chameleon', totality: orderedTotality})
     RETURN orderedTotality
 """,
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -259,7 +252,6 @@ gds.run_cypher(
     CREATE (:Feature {animal: 'crocodile', totality: orderedTotality})
     RETURN orderedTotality
 """,
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -272,7 +264,6 @@ gds.run_cypher(
     CREATE (:Feature {animal: 'squirrel', totality: orderedTotality})
     RETURN orderedTotality
 """,
-    retryable=True,
 )
 
 # Do one-hot encoding
@@ -282,7 +273,6 @@ gds.run_cypher(
     MATCH (c:Chameleon)
     SET c.features_one_hot = gds.util.oneHotEncoding(f.totality, c.features)
 """,
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -290,7 +280,6 @@ gds.run_cypher(
     MATCH (c:Crocodile)
     SET c.features_one_hot = gds.util.oneHotEncoding(f.totality, c.features)
 """,
-    retryable=True,
 )
 gds.run_cypher(
     """
@@ -298,7 +287,6 @@ gds.run_cypher(
     MATCH (c:Squirrel)
     SET c.features_one_hot = gds.util.oneHotEncoding(f.totality, c.features)
 """,
-    retryable=True,
 )
 ----
 
@@ -508,6 +496,31 @@ merged_all = merged_full.merge(predicted_targets_sample, left_on="nodeId", right
 
 # Look at the last 10 rows
 display(merged_all.tail(10))
+----
+
+== Cleanup
+
+Before finishing we clean up the example data from both the GDS
+in-memory state and the database.
+
+[source, python, role=no-test]
+----
+# Cleanup GDS
+# Drop the in-memory graphs that are still in the Graph Catalog
+G_animals.drop()
+G_chameleon.drop()
+G_chameleon_sample.drop()
+----
+
+[source, python, role=no-test]
+----
+# Cleanup database
+# Remove the nodes we created, and drop the constraints, so the database is left empty
+gds.run_cypher("MATCH (n) DETACH DELETE n")
+
+gds.run_cypher("DROP CONSTRAINT chameleons IF EXISTS")
+gds.run_cypher("DROP CONSTRAINT crocodiles IF EXISTS")
+gds.run_cypher("DROP CONSTRAINT squirrels IF EXISTS")
 ----
 
 == And we are done!

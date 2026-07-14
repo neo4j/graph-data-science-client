@@ -11,8 +11,3 @@ Catalog Endpoints
     :members:
     :exclude-members: __init__
 
-
-.. autoclass:: graphdatascience.graph.graph_api.Graph
-    :members:
-    :exclude-members: __init__
-
