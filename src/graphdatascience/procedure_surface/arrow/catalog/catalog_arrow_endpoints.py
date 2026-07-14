@@ -323,6 +323,20 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         return get_graph(graph_name, self._arrow_client)
 
     def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
+        """Drop a graph from the graph catalog.
+
+        Parameters
+        ----------
+        G
+            Graph to drop by name or object.
+        fail_if_missing
+            Whether to fail if the graph is missing.
+
+        Returns
+        -------
+        GraphInfo | None
+            Metadata of the dropped graph, or None if the graph did not exist.
+        """
         graph_name = G.name() if isinstance(G, Graph) else G
 
         return self._graph_backend.drop(graph_name, fail_if_missing)

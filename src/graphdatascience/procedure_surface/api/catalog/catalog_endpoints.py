@@ -8,7 +8,7 @@ from pandas import DataFrame
 from pydantic import field_validator
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
+from graphdatascience.graph.graph_info import GraphInfoWithDegrees
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.dataset_endpoints import DatasetEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
@@ -101,23 +101,6 @@ class CatalogEndpoints(ABC):
             List of graph metadata objects containing information like node count.
         """
         pass
-
-    @abstractmethod
-    def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
-        """Drop a graph from the graph catalog.
-
-        Parameters
-        ----------
-        G
-            Graph to drop by name of object.
-        fail_if_missing
-            Whether to fail if the graph is missing
-
-        Returns
-        -------
-        GraphListResult
-            GraphV2 metadata object containing information like node count.
-        """
 
     @abstractmethod
     def filter(

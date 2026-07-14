@@ -102,14 +102,40 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         result = self._cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
         return [GraphInfoWithDegrees(**row) for _, row in result.iterrows()]
 
-    def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
+    def drop(
+        self,
+        G: Graph | str,
+        fail_if_missing: bool = True,
+        *,
+        db_name: str | None = None,
+        username: str | None = None,
+    ) -> GraphInfo | None:
+        """Drop a graph from the graph catalog.
+
+        Parameters
+        ----------
+        G
+            Graph to drop by name or object.
+        fail_if_missing
+            Whether to fail if the graph is missing.
+        db_name
+            The name of the database the graph belongs to. Defaults to the current database.
+        username
+            As an administrator, drop a graph owned by a different user.
+
+        Returns
+        -------
+        GraphInfo | None
+            Metadata of the dropped graph, or None if the graph did not exist.
+        """
         graph_name = G if isinstance(G, str) else G.name()
 
-        params = (
-            CallParameters(graphName=graph_name, failIfMissing=fail_if_missing)
-            if fail_if_missing is not None
-            else CallParameters(graphName=graph_name)
-        )
+        params = CallParameters(graphName=graph_name, failIfMissing=fail_if_missing)
+
+        if db_name is not None or username is not None:
+            # positional params. order has to be preserved
+            params["dbName"] = db_name if db_name is not None else ""
+            params["username"] = username if username is not None else ""
 
         result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
         if len(result) > 0:
