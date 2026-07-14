@@ -31,10 +31,6 @@ from tests.integration.procedure_surface.gds_api_spec import (
 # endpoints not mapped yet in the v2 endpoints of the python client
 UNMAPPED_ENDPOINTS: set[str] = {
     # TODO
-    "hits.mutate",
-    "hits.stream",
-    "hits.stats",
-    "hits.write",
     "graph.export",
     "graph.export.csv",
     "graph.exists",
@@ -131,6 +127,15 @@ IGNORED_PARAMETERS = {
     r".*node_properties.drop": ["sudo", "log_progress"],
     # single list through gds.model.get instead
     r".*model.list": ["model_name"],
+    # hits lists mutate/write-only params in the shared config block, so they surface on every mode;
+    # ignore them where they don't belong (stream/stats have none; mutate has no write params and vice versa).
+    # HITS is also unweighted (per the GDS docs) but the spec wrongly exposes relationshipWeightProperty,
+    # so ignore it on every mode.
+    r".*hits\.": ["relationship_weight_property"],
+    r".*hits\.stream": ["mutate_property", "write_property", "write_concurrency"],
+    r".*hits\.stats": ["mutate_property", "write_property", "write_concurrency", "auth_property", "hub_property"],
+    r".*hits\.mutate": ["write_property", "write_concurrency"],
+    r".*hits\.write": ["mutate_property"],
 }
 
 EXPECTED_PARAMETER_NAME_ALIASES = {

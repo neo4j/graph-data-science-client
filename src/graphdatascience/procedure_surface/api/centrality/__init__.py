@@ -47,6 +47,12 @@ from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints imp
     EigenvectorStatsResult,
     EigenvectorWriteResult,
 )
+from graphdatascience.procedure_surface.api.centrality.hits_endpoints import (
+    HitsEndpoints,
+    HitsMutateResult,
+    HitsStatsResult,
+    HitsWriteResult,
+)
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import (
     PageRankEndpoints,
     PageRankMutateResult,
@@ -88,6 +94,10 @@ __all__ = [
     "EigenvectorMutateResult",
     "EigenvectorStatsResult",
     "EigenvectorWriteResult",
+    "HitsEndpoints",
+    "HitsMutateResult",
+    "HitsStatsResult",
+    "HitsWriteResult",
     "PageRankEndpoints",
     "PageRankMutateResult",
     "PageRankStatsResult",
