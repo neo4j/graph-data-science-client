@@ -3,7 +3,8 @@ from typing import Callable
 from pandas import DataFrame
 
 from graphdatascience.graph_construction.graph_constructor import GraphConstructor
-from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import CatalogEndpoints
+from graphdatascience.procedure_surface.arrow.catalog import CatalogArrowEndpoints
+from graphdatascience.procedure_surface.cypher.catalog import CatalogCypherEndpoints
 
 
 class GraphConstructorTestBase:
@@ -21,7 +22,7 @@ class GraphConstructorTestBase:
     def test_nodes_only(
         self,
         constructor_factory: Callable[..., GraphConstructor],
-        catalog: CatalogEndpoints,
+        catalog: CatalogCypherEndpoints | CatalogArrowEndpoints,
     ) -> None:
         graph_name = f"{self.graph_name_prefix}_nodes_only"
         nodes = DataFrame({"nodeId": [0, 1, 2]})
@@ -39,7 +40,7 @@ class GraphConstructorTestBase:
     def test_nodes_with_labels_and_properties(
         self,
         constructor_factory: Callable[..., GraphConstructor],
-        catalog: CatalogEndpoints,
+        catalog: CatalogCypherEndpoints | CatalogArrowEndpoints,
     ) -> None:
         graph_name = f"{self.graph_name_prefix}_nodes_labels_props"
         nodes = DataFrame(
@@ -65,7 +66,7 @@ class GraphConstructorTestBase:
     def test_nodes_and_relationships(
         self,
         constructor_factory: Callable[..., GraphConstructor],
-        catalog: CatalogEndpoints,
+        catalog: CatalogCypherEndpoints | CatalogArrowEndpoints,
     ) -> None:
         graph_name = f"{self.graph_name_prefix}_nodes_and_rels"
         nodes = DataFrame(
@@ -97,7 +98,7 @@ class GraphConstructorTestBase:
     def test_multiple_node_dfs(
         self,
         constructor_factory: Callable[..., GraphConstructor],
-        catalog: CatalogEndpoints,
+        catalog: CatalogCypherEndpoints | CatalogArrowEndpoints,
     ) -> None:
         graph_name = f"{self.graph_name_prefix}_multi_node_dfs"
         nodes_a = DataFrame({"nodeId": [0, 1], "labels": [["A"], ["A"]]})
@@ -126,7 +127,7 @@ class GraphConstructorTestBase:
     def test_multiple_relationship_dfs(
         self,
         constructor_factory: Callable[..., GraphConstructor],
-        catalog: CatalogEndpoints,
+        catalog: CatalogCypherEndpoints | CatalogArrowEndpoints,
     ) -> None:
         graph_name = f"{self.graph_name_prefix}_multi_rel_dfs"
         nodes = DataFrame({"nodeId": [0, 1, 2]})
@@ -161,7 +162,7 @@ class GraphConstructorTestBase:
     def test_undirected_relationship_types(
         self,
         constructor_factory: Callable[..., GraphConstructor],
-        catalog: CatalogEndpoints,
+        catalog: CatalogCypherEndpoints | CatalogArrowEndpoints,
     ) -> None:
         graph_name = f"{self.graph_name_prefix}_undirected"
         nodes = DataFrame({"nodeId": [0, 1, 2]})
