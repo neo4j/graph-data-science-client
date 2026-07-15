@@ -19,20 +19,25 @@ def test_pipeline_arrow_list_runs_list_action() -> None:
     arrow_client.do_action_with_retry.assert_called_once_with("v2/pipeline.list", {"pipelineName": "pipe"})
 
 
-def test_pipeline_arrow_exists_returns_true_when_pipeline_exists() -> None:
+def test_pipeline_arrow_exists_returns_result_when_pipeline_exists() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     row = mock.Mock()
     row.body.to_pybytes.return_value = b'{"pipelineName":"pipe","pipelineType":"Node classification training pipeline"}'
     arrow_client.do_action_with_retry.return_value = [row]
 
-    assert PipelineArrowEndpoints(arrow_client, None).exists("pipe") is True
+    result = PipelineArrowEndpoints(arrow_client, None).exists("pipe")
+
+    assert result is not None
+    assert result.pipeline_name == "pipe"
+    assert result.pipeline_type == "Node classification training pipeline"
+    assert result.exists is True
 
 
-def test_pipeline_arrow_exists_returns_false_when_pipeline_is_missing() -> None:
+def test_pipeline_arrow_exists_returns_none_when_pipeline_is_missing() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     arrow_client.do_action_with_retry.return_value = []
 
-    assert PipelineArrowEndpoints(arrow_client, None).exists("missing") is False
+    assert PipelineArrowEndpoints(arrow_client, None).exists("missing") is None
 
 
 def test_pipeline_arrow_get_returns_catalog_entry_when_pipeline_exists() -> None:

@@ -42,11 +42,13 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_end
 from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
     PipelineCatalogEntry,
     PipelineEndpoints,
+    PipelineExistsResult,
 )
 
 __all__ = [
     "PipelineEndpoints",
     "PipelineCatalogEntry",
+    "PipelineExistsResult",
     "LinkPredictionModel",
     "LinkPredictionPipeline",
     "LinkPredictionPipelineEndpoints",

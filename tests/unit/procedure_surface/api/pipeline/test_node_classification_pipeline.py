@@ -5,19 +5,35 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 
 
 def test_node_classification_pipeline_exists_delegates_to_catalog_endpoint() -> None:
     ops = mock.Mock()
     trainer = mock.Mock()
     catalog = mock.Mock()
-    catalog.exists.return_value = True
+    catalog.exists.return_value = PipelineExistsResult(
+        pipelineName="pipe", pipelineType="Node classification training pipeline", exists=True
+    )
 
     pipeline = NodeClassificationPipeline("pipe", ops, trainer, catalog)
 
     assert pipeline.exists() is True
     catalog.exists.assert_called_once_with("pipe")
+
+
+def test_node_classification_pipeline_exists_returns_false_when_absent() -> None:
+    ops = mock.Mock()
+    trainer = mock.Mock()
+    catalog = mock.Mock()
+    catalog.exists.return_value = None
+
+    pipeline = NodeClassificationPipeline("pipe", ops, trainer, catalog)
+
+    assert pipeline.exists() is False
 
 
 def test_node_classification_pipeline_details_delegates_to_catalog_endpoint() -> None:

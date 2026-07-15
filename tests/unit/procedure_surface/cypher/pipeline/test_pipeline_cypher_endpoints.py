@@ -24,20 +24,25 @@ def test_pipeline_cypher_list_runs_query() -> None:
     assert query_runner.call_procedure.call_args.kwargs["params"] == {"pipeline_name": "pipe"}
 
 
-def test_pipeline_cypher_exists_returns_true_when_pipeline_exists() -> None:
+def test_pipeline_cypher_exists_returns_result_when_pipeline_exists() -> None:
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = pd.DataFrame(
         [{"pipelineName": "pipe", "pipelineType": "Node classification training pipeline"}]
     )
 
-    assert PipelineCypherEndpoints(query_runner).exists("pipe") is True
+    result = PipelineCypherEndpoints(query_runner).exists("pipe")
+
+    assert result is not None
+    assert result.pipeline_name == "pipe"
+    assert result.pipeline_type == "Node classification training pipeline"
+    assert result.exists is True
 
 
-def test_pipeline_cypher_exists_returns_false_when_pipeline_is_missing() -> None:
+def test_pipeline_cypher_exists_returns_none_when_pipeline_is_missing() -> None:
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = pd.DataFrame([])
 
-    assert PipelineCypherEndpoints(query_runner).exists("missing") is False
+    assert PipelineCypherEndpoints(query_runner).exists("missing") is None
 
 
 def test_pipeline_cypher_get_returns_catalog_entry_when_pipeline_exists() -> None:

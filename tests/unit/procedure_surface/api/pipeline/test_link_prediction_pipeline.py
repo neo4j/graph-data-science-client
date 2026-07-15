@@ -10,19 +10,35 @@ from graphdatascience.procedure_surface.api.pipeline import (
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
     LinkPredictionPipelineInfoResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 
 
 def test_link_prediction_pipeline_exists_delegates_to_catalog_endpoint() -> None:
     ops = mock.Mock()
     trainer = mock.Mock()
     catalog = mock.Mock()
-    catalog.exists.return_value = True
+    catalog.exists.return_value = PipelineExistsResult(
+        pipelineName="pipe", pipelineType="Link prediction training pipeline", exists=True
+    )
 
     pipeline = LinkPredictionPipeline("pipe", ops, trainer, catalog)
 
     assert pipeline.exists() is True
     catalog.exists.assert_called_once_with("pipe")
+
+
+def test_link_prediction_pipeline_exists_returns_false_when_absent() -> None:
+    ops = mock.Mock()
+    trainer = mock.Mock()
+    catalog = mock.Mock()
+    catalog.exists.return_value = None
+
+    pipeline = LinkPredictionPipeline("pipe", ops, trainer, catalog)
+
+    assert pipeline.exists() is False
 
 
 def test_link_prediction_pipeline_details_delegates_to_catalog_endpoint() -> None:

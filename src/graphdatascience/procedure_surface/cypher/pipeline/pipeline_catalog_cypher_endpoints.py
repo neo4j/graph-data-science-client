@@ -4,7 +4,10 @@ from typing import Any
 import neo4j
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -19,10 +22,15 @@ class PipelineCatalogCypherEndpoints:
         result = self._query_runner.call_procedure("gds.pipeline.list", params=params, custom_error=False)
         return [self._to_pipeline_catalog_entry(row.to_dict()) for _, row in result.iterrows()]
 
-    def exists(self, pipeline_name: str) -> bool:
+    def exists(self, pipeline_name: str) -> PipelineExistsResult | None:
         params = CallParameters(pipeline_name=pipeline_name)
         result = self._query_runner.call_procedure("gds.pipeline.list", params=params, custom_error=False)
-        return not result.empty
+        if result.empty:
+            return None
+        row = result.iloc[0].to_dict()
+        return PipelineExistsResult(
+            pipelineName=pipeline_name, pipelineType=str(row.get("pipelineType", "")), exists=True
+        )
 
     def get(self, pipeline_name: str) -> PipelineCatalogEntry:
         params = CallParameters(pipeline_name=pipeline_name)

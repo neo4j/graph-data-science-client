@@ -1,6 +1,9 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
-from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 
 
 class PipelineCatalogArrowEndpoints:
@@ -17,11 +20,16 @@ class PipelineCatalogArrowEndpoints:
         result = deserialize(self._arrow_client.do_action_with_retry("v2/pipeline.list", config))
         return [PipelineCatalogEntry(**item) for item in result]
 
-    def exists(self, pipeline_name: str) -> bool:
+    def exists(self, pipeline_name: str) -> PipelineExistsResult | None:
         result = deserialize(
             self._arrow_client.do_action_with_retry("v2/pipeline.list", {"pipelineName": pipeline_name})
         )
-        return len(result) > 0
+        if not result:
+            return None
+        entry = result[0]
+        return PipelineExistsResult(
+            pipelineName=pipeline_name, pipelineType=str(entry.get("pipelineType", "")), exists=True
+        )
 
     def get(self, pipeline_name: str) -> PipelineCatalogEntry:
         result = deserialize(

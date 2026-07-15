@@ -282,7 +282,7 @@ class NodeClassificationPipeline:
 
     def exists(self) -> bool:
         """Return whether the pipeline exists."""
-        return self._catalog.exists(self._name)
+        return self._catalog.exists(self._name) is not None
 
     def drop(self, fail_if_missing: bool = False) -> PipelineCatalogEntryProtocol | None:
         """Drop the pipeline and return its catalog entry when available."""

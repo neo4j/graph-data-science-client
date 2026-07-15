@@ -152,7 +152,7 @@ class LinkPredictionPipeline:
         return LinkPredictionPipelineInfoResult.model_validate(to_pipeline_info(entry, feature_key="featureSteps"))
 
     def exists(self) -> bool:
-        return self._catalog.exists(self._name)
+        return self._catalog.exists(self._name) is not None
 
     def drop(self, fail_if_missing: bool = False) -> PipelineCatalogEntryProtocol | None:
         return self._catalog.drop(self._name, fail_if_missing=fail_if_missing)

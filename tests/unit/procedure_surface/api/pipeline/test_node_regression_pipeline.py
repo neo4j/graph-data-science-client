@@ -4,19 +4,35 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline im
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_results import (
     NodeRegressionPipelineInfoResult,
 )
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 
 
 def test_node_regression_pipeline_exists_delegates_to_catalog_endpoint() -> None:
     ops = mock.Mock()
     trainer = mock.Mock()
     catalog = mock.Mock()
-    catalog.exists.return_value = True
+    catalog.exists.return_value = PipelineExistsResult(
+        pipelineName="pipe", pipelineType="Node regression training pipeline", exists=True
+    )
 
     pipeline = NodeRegressionPipeline("pipe", ops, trainer, catalog)
 
     assert pipeline.exists() is True
     catalog.exists.assert_called_once_with("pipe")
+
+
+def test_node_regression_pipeline_exists_returns_false_when_absent() -> None:
+    ops = mock.Mock()
+    trainer = mock.Mock()
+    catalog = mock.Mock()
+    catalog.exists.return_value = None
+
+    pipeline = NodeRegressionPipeline("pipe", ops, trainer, catalog)
+
+    assert pipeline.exists() is False
 
 
 def test_node_regression_pipeline_details_delegates_to_catalog_endpoint() -> None:

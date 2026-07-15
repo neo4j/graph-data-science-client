@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Protocol, Sequence
 
-from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 
 
 class PipelineCatalogEntryProtocol(Protocol):
@@ -13,7 +16,7 @@ class PipelineCatalogEntryProtocol(Protocol):
 class PipelineCatalogProtocol(Protocol):
     def list(self, pipeline_name: str | None = None) -> Sequence[PipelineCatalogEntryProtocol]: ...
 
-    def exists(self, pipeline_name: str) -> bool: ...
+    def exists(self, pipeline_name: str) -> PipelineExistsResult | None: ...
 
     def get(self, pipeline_name: str) -> PipelineCatalogEntry: ...
 

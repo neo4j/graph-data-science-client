@@ -11,10 +11,14 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_endpoints import (
     NodeRegressionPipelineEndpoints,
 )
-from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 
 __all__ = [
     "PipelineCatalogEntry",
+    "PipelineExistsResult",
     "PipelineEndpoints",
 ]
 
@@ -26,8 +30,8 @@ class PipelineEndpoints(ABC):
         pass
 
     @abstractmethod
-    def exists(self, pipeline_name: str) -> bool:
-        """Return whether a pipeline with the given name exists in the catalog."""
+    def exists(self, pipeline_name: str) -> PipelineExistsResult | None:
+        """Return pipeline existence details when present, otherwise None."""
         pass
 
     @abstractmethod
