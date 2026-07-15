@@ -39,6 +39,7 @@ dependencies = [
     "requests",
     "tenacity >= 9.0",
     "pydantic >= 2.11",
+    "pyyaml >= 6.0, < 7.0",
 ]
 
 [project.urls]
@@ -75,6 +76,7 @@ dev-base = [
     "types-python-dateutil",
     "python-dotenv<2",
     "types-colorama",
+    "types-PyYAML",
 ]
 test = [
     "pytest == 9.1.1",
@@ -145,7 +147,7 @@ include = ["graphdatascience*"]
 version = { attr = "graphdatascience.version.__version__" }
 
 [tool.setuptools.package-data]
-graphdatascience = ["py.typed", "resources/**/*.gzip"]
+graphdatascience = ["py.typed", "resources/**/*.gzip", "job/*.json"]
 
 [tool.ruff]
 line-length = 120

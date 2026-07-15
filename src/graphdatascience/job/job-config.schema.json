@@ -1,0 +1,136 @@
+{
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": ""
+        },
+        "auraInstanceId": {
+          "type": "string",
+          "description": ""
+        },
+        "version": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "required": [
+        "name",
+        "auraInstanceId",
+        "version"
+      ]
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "expression": {
+          "type": "string",
+          "description": ""
+        }
+      }
+    },
+    "projections": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Cypher projection query"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Graph name"
+              },
+              "nodeLabels": {
+                "type": "array",
+                "description": "Node label filter"
+              },
+              "relationshipTypes": {
+                "type": "array",
+                "description": "Relationship type filter"
+              },
+              "nodeProperties": {
+                "type": "array",
+                "description": ""
+              },
+              "relationshipProperties": {
+                "type": "array",
+                "description": ""
+              },
+              "undirectedRelationshipTypes": {
+                "type": "array",
+                "description": ""
+              },
+              "inverseIndexedRelationshipTypes": {
+                "type": "array",
+                "description": ""
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "description": "Native projection parameters"
+          }
+        ]
+      },
+      "minItems": 1
+    },
+    "algorithms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": ""
+          },
+          "mode": {
+            "oneOf": [
+              {
+                "pattern": "stream",
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "pattern": "(write)|(mutate)",
+                    "type": "string"
+                  },
+                  "property": {
+                    "type": "string",
+                    "description": ""
+                  }
+                },
+                "required": [
+                  "name",
+                  "property"
+                ]
+              }
+            ]
+          },
+          "config": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        "required": [
+          "name",
+          "mode"
+        ]
+      }
+    }
+  },
+  "required": [
+    "metadata",
+    "projections",
+    "algorithms"
+  ]
+}
