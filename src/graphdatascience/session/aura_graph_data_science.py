@@ -5,6 +5,7 @@ from typing import Any, Tuple
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
+from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.error.standalone_session_error import NotAvailableInStandaloneSessions
@@ -182,6 +183,8 @@ from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from graphdatascience.session.session_lifecycle_manager import LifecycleManager
 
+SUPPORTED_CLIENT_ARROW_VERSIONS = {ArrowEndpointVersion.V2}
+
 
 class AuraGraphDataScience:
     """
@@ -221,6 +224,8 @@ class AuraGraphDataScience:
                     database=db_endpoint.database,
                 )
             db_query_runner.set_bookmarks(bookmarks)
+
+        ArrowEndpointVersion.check_version_compatibility(SUPPORTED_CLIENT_ARROW_VERSIONS, authenticated_arrow_client)
 
         return cls(
             authenticated_arrow_client,

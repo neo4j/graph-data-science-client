@@ -1,16 +1,20 @@
 from typing import Generator
 
 import pytest
+from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
 
 @pytest.fixture(scope="package")
-def gds(neo4j_connection: DbmsConnectionInfo) -> Generator[GraphDataScience, None, None]:
+def gds(
+    neo4j_connection: DbmsConnectionInfo, gds_plugin_container: Neo4jContainer
+) -> Generator[GraphDataScience, None, None]:
     gds = GraphDataScience(
         endpoint=neo4j_connection.get_uri(),
         auth=(neo4j_connection.username, neo4j_connection.password),  # type: ignore
+        arrow=f"{gds_plugin_container.get_container_host_ip()}:{gds_plugin_container.get_exposed_port(8491)}",
     )
     yield gds
     gds.close()
