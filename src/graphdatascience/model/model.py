@@ -34,18 +34,18 @@ class Model(ABC):
         """
         return self._model_api.exists(self._name)
 
-    def drop(self, failIfMissing: bool = False) -> ModelDetails | None:
+    def drop(self, fail_if_missing: bool = False) -> ModelDetails | None:
         """
         Drop the model.
 
         Args:
-            failIfMissing: If True, an error is thrown if the model does not exist. If False, no error is thrown.
+            fail_if_missing: If True, an error is thrown if the model does not exist. If False, no error is thrown.
 
         Returns:
             The result of the drop operation.
 
         """
-        return self._model_api.drop(self._name, failIfMissing)
+        return self._model_api.drop(self._name, fail_if_missing)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name()}, type={self.details().model_type})"

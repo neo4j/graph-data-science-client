@@ -7,6 +7,9 @@ from graphdatascience.procedure_surface.api.model.link_prediction_model import L
 from graphdatascience.procedure_surface.api.pipeline import (
     LinkPredictionPipeline,
 )
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
+    LinkPredictionPipelineInfoResult,
+)
 from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
     PipelineCatalogEntry,
     PipelineExistsResult,
@@ -18,15 +21,56 @@ def test_link_prediction_pipeline_exists_delegates_to_catalog_endpoint() -> None
     trainer = mock.Mock()
     catalog = mock.Mock()
     catalog.exists.return_value = PipelineExistsResult(
-        pipelineName="pipe",
-        pipelineType="Link prediction training pipeline",
-        exists=True,
+        pipelineName="pipe", pipelineType="Link prediction training pipeline", exists=True
     )
 
     pipeline = LinkPredictionPipeline("pipe", ops, trainer, catalog)
 
     assert pipeline.exists() is True
     catalog.exists.assert_called_once_with("pipe")
+
+
+def test_link_prediction_pipeline_exists_returns_false_when_absent() -> None:
+    ops = mock.Mock()
+    trainer = mock.Mock()
+    catalog = mock.Mock()
+    catalog.exists.return_value = None
+
+    pipeline = LinkPredictionPipeline("pipe", ops, trainer, catalog)
+
+    assert pipeline.exists() is False
+
+
+def test_link_prediction_pipeline_details_delegates_to_catalog_endpoint() -> None:
+    ops = mock.Mock()
+    trainer = mock.Mock()
+    catalog = mock.Mock()
+    catalog.get.return_value = PipelineCatalogEntry(
+        pipelineName="pipe",
+        pipelineType="Link prediction training pipeline",
+        pipelineInfo={
+            "featurePipeline": {
+                "nodePropertySteps": [{"name": "gds.degree.mutate", "config": {"mutateProperty": "degree"}}],
+                "featureSteps": [{"name": "L2", "config": {"nodeProperties": ["degree"]}}],
+            },
+            "splitConfig": {"testFraction": 0.2, "trainFraction": 0.2, "validationFolds": 2},
+            "autoTuningConfig": {"maxTrials": 5},
+            "trainingParameterSpace": {"LogisticRegression": [{"penalty": 0.0}]},
+        },
+    )
+
+    pipeline = LinkPredictionPipeline("pipe", ops, trainer, catalog)
+
+    result = pipeline.details()
+
+    assert type(result) is LinkPredictionPipelineInfoResult
+    assert result.name == "pipe"
+    assert result.node_property_steps == [{"name": "gds.degree.mutate", "config": {"mutateProperty": "degree"}}]
+    assert result.feature_steps == [{"name": "L2", "config": {"nodeProperties": ["degree"]}}]
+    assert result.split_config == {"testFraction": 0.2, "trainFraction": 0.2, "validationFolds": 2}
+    assert result.auto_tuning_config == {"maxTrials": 5}
+    assert result.parameter_space == {"LogisticRegression": [{"penalty": 0.0}]}
+    catalog.get.assert_called_once_with("pipe")
 
 
 def test_link_prediction_pipeline_drop_delegates_to_catalog_endpoint() -> None:

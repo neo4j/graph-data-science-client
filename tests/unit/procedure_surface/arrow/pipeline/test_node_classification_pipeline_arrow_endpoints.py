@@ -161,7 +161,7 @@ def test_node_classification_select_features_uses_node_properties_payload() -> N
 def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
-    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+    pipeline_catalog.get.return_value = PipelineCatalogEntry(
         pipelineName="pipe", pipelineType="Node classification training pipeline"
     )
 
@@ -179,7 +179,7 @@ def test_node_classification_get_uses_shared_pipeline_catalog() -> None:
         arrow_client,
         show_progress=True,
     )
-    pipeline_catalog.exists.assert_called_once_with("pipe")
+    pipeline_catalog.get.assert_called_once_with("pipe")
     arrow_client.do_action_with_retry.assert_not_called()
 
 

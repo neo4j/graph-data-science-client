@@ -51,13 +51,11 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         )
 
     def get(self, pipeline_name: str) -> NodeRegressionPipeline:
-        pipeline_info = self._pipeline_catalog.exists(pipeline_name)
-        if not pipeline_info:
-            raise ValueError(f"No pipeline named '{pipeline_name}' exists")
-        if pipeline_info.pipeline_type != "Node regression training pipeline":
+        entry = self._pipeline_catalog.get(pipeline_name)
+        if entry.pipeline_type != "Node regression training pipeline":
             raise ValueError(f"Pipeline '{pipeline_name}' is not a node regression pipeline")
         return NodeRegressionPipeline(
-            pipeline_info.pipeline_name,
+            entry.pipeline_name,
             self,
             self,
             self._pipeline_catalog,

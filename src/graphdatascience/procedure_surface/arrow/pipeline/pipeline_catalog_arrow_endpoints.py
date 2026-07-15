@@ -1,6 +1,6 @@
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import (
     PipelineCatalogEntry,
     PipelineExistsResult,
 )
@@ -26,13 +26,19 @@ class PipelineCatalogArrowEndpoints:
         )
         if not result:
             return None
-
-        item = result[0]
+        entry = result[0]
         return PipelineExistsResult(
-            pipelineName=str(item["pipelineName"]),
-            pipelineType=str(item["pipelineType"]),
-            exists=True,
+            pipelineName=pipeline_name, pipelineType=str(entry.get("pipelineType", "")), exists=True
         )
+
+    def get(self, pipeline_name: str) -> PipelineCatalogEntry:
+        result = deserialize(
+            self._arrow_client.do_action_with_retry("v2/pipeline.list", {"pipelineName": pipeline_name})
+        )
+        if not result:
+            raise ValueError(f"There is no '{pipeline_name}' in the pipeline catalog")
+
+        return PipelineCatalogEntry(**result[0])
 
     def drop(self, pipeline_name: str, *, fail_if_missing: bool = False) -> PipelineCatalogEntry | None:
         result = deserialize(

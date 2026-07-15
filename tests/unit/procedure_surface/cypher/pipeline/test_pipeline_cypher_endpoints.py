@@ -24,7 +24,7 @@ def test_pipeline_cypher_list_runs_query() -> None:
     assert query_runner.call_procedure.call_args.kwargs["params"] == {"pipeline_name": "pipe"}
 
 
-def test_pipeline_cypher_exists_returns_typed_result_when_pipeline_exists() -> None:
+def test_pipeline_cypher_exists_returns_result_when_pipeline_exists() -> None:
     query_runner = mock.Mock()
     query_runner.call_procedure.return_value = pd.DataFrame(
         [{"pipelineName": "pipe", "pipelineType": "Node classification training pipeline"}]
@@ -43,6 +43,39 @@ def test_pipeline_cypher_exists_returns_none_when_pipeline_is_missing() -> None:
     query_runner.call_procedure.return_value = pd.DataFrame([])
 
     assert PipelineCypherEndpoints(query_runner).exists("missing") is None
+
+
+def test_pipeline_cypher_get_returns_catalog_entry_when_pipeline_exists() -> None:
+    query_runner = mock.Mock()
+    query_runner.call_procedure.return_value = pd.DataFrame(
+        [
+            {
+                "pipelineName": "pipe",
+                "pipelineType": "Node classification training pipeline",
+                "pipelineInfo": {"featurePipeline": {"featureProperties": []}},
+            }
+        ]
+    )
+
+    result = PipelineCypherEndpoints(query_runner).get("pipe")
+
+    assert result.pipeline_name == "pipe"
+    assert result.pipeline_type == "Node classification training pipeline"
+    assert result.pipeline_info == {"featurePipeline": {"featureProperties": []}}
+    query_runner.call_procedure.assert_called_once_with(
+        "gds.pipeline.list",
+        params=mock.ANY,
+        custom_error=False,
+    )
+    assert query_runner.call_procedure.call_args.kwargs["params"] == {"pipeline_name": "pipe"}
+
+
+def test_pipeline_cypher_get_raises_when_pipeline_is_missing() -> None:
+    query_runner = mock.Mock()
+    query_runner.call_procedure.return_value = pd.DataFrame([])
+
+    with pytest.raises(ValueError, match="There is no 'missing' in the pipeline catalog"):
+        PipelineCypherEndpoints(query_runner).get("missing")
 
 
 def test_pipeline_cypher_drop_returns_catalog_entry_when_pipeline_exists() -> None:

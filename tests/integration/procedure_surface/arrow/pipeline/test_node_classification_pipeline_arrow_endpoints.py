@@ -56,6 +56,31 @@ def endpoints(arrow_client: AuthenticatedArrowClient) -> NodeClassificationPipel
     return NodeClassificationPipelineArrowEndpoints(arrow_client, None, show_progress=False)
 
 
+def test_node_classification_details_arrow_pipeline(
+    endpoints: NodeClassificationPipelineArrowEndpoints,
+) -> None:
+    pipeline_name = f"nc-pipe-{uuid4().hex[:8]}"
+
+    pipeline, _ = endpoints.create(pipeline_name)
+    try:
+        pipeline.add_node_property("degree", mutateProperty="degree")
+        pipeline.select_features(node_properties=["degree"])
+        pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
+        pipeline.configure_split(test_fraction=0.2, validation_folds=2)
+        pipeline.configure_auto_tuning(max_trials=2)
+
+        details = pipeline.details()
+
+        assert details.name == pipeline_name
+        assert [step["name"] for step in details.node_property_steps] == ["gds.degree.mutate"]
+        assert details.feature_properties == [{"feature": "degree"}]
+        assert details.split_config["testFraction"] == 0.2
+        assert details.auto_tuning_config["maxTrials"] == 2
+        assert "LogisticRegression" in details.parameter_space
+    finally:
+        pipeline.drop(fail_if_missing=False)
+
+
 @pytest.mark.db_integration
 def test_node_classification_train_and_predict_write(
     arrow_client: AuthenticatedArrowClient,

@@ -233,7 +233,7 @@ def test_link_prediction_configure_auto_tuning_runs_query() -> None:
 def test_link_prediction_get_uses_shared_pipeline_catalog() -> None:
     query_runner = mock.Mock()
     pipeline_catalog = mock.Mock(spec=PipelineCatalogProtocol)
-    pipeline_catalog.exists.return_value = PipelineCatalogEntry(
+    pipeline_catalog.get.return_value = PipelineCatalogEntry(
         pipelineName="pipe", pipelineType="Link prediction training pipeline"
     )
 
@@ -245,7 +245,7 @@ def test_link_prediction_get_uses_shared_pipeline_catalog() -> None:
 
     assert pipeline.name() == "pipe"
     pipeline_catalog_cls.assert_called_once_with(query_runner)
-    pipeline_catalog.exists.assert_called_once_with("pipe")
+    pipeline_catalog.get.assert_called_once_with("pipe")
     query_runner.call_procedure.assert_not_called()
 
 

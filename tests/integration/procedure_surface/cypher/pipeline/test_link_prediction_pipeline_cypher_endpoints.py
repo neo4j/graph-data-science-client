@@ -68,6 +68,32 @@ def endpoints(query_runner: Neo4jQueryRunner) -> LinkPredictionPipelineCypherEnd
     return LinkPredictionPipelineCypherEndpoints(query_runner)
 
 
+def test_link_prediction_details_cypher_pipeline(
+    query_runner: Neo4jQueryRunner,
+    endpoints: LinkPredictionPipelineCypherEndpoints,
+) -> None:
+    pipeline_name = f"lp-cypher-pipe-{uuid4().hex[:8]}"
+
+    pipeline, _ = endpoints.create(pipeline_name)
+    try:
+        pipeline.add_node_property("degree", mutate_property="rank")
+        pipeline.add_feature("l2", node_properties=["rank"])
+        pipeline.configure_split(train_fraction=0.2, test_fraction=0.2, validation_folds=2)
+        pipeline.add_logistic_regression(max_epochs=1, min_epochs=1)
+        pipeline.configure_auto_tuning(max_trials=2)
+
+        details = pipeline.details()
+
+        assert details.name == pipeline_name
+        assert [step["name"] for step in details.node_property_steps] == ["gds.degree.mutate"]
+        assert [step["name"] for step in details.feature_steps] == ["L2"]
+        assert details.split_config["testFraction"] == 0.2
+        assert details.auto_tuning_config["maxTrials"] == 2
+        assert "LogisticRegression" in details.parameter_space
+    finally:
+        PipelineCatalogCypherEndpoints(query_runner).drop(pipeline_name)
+
+
 def test_link_prediction_train_and_predict_stream_cypher_pipeline(
     query_runner: Neo4jQueryRunner,
     endpoints: LinkPredictionPipelineCypherEndpoints,

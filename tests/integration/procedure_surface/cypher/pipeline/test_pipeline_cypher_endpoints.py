@@ -29,6 +29,28 @@ def test_pipeline_list_returns_created_pipeline(query_runner: Neo4jQueryRunner) 
         )
 
 
+def test_pipeline_cypher_get_returns_created_pipeline(query_runner: Neo4jQueryRunner) -> None:
+    pipeline_name = f"pipeline-get-cypher-{uuid4().hex[:8]}"
+    pipeline_surface = PipelineCypherEndpoints(query_runner)
+
+    try:
+        NodeRegressionPipelineCypherEndpoints(query_runner).create(pipeline_name)
+
+        entry = pipeline_surface.get(pipeline_name)
+        assert entry.pipeline_name == pipeline_name
+        assert entry.pipeline_type == "Node regression training pipeline"
+        assert entry.pipeline_info is not None
+
+        with pytest.raises(ValueError, match="There is no"):
+            pipeline_surface.get(f"missing-{uuid4().hex[:8]}")
+    finally:
+        query_runner.run_cypher(
+            "CALL gds.pipeline.drop($name, false)",
+            query_type=QueryType.USER_ACTION,
+            params={"name": pipeline_name},
+        )
+
+
 def test_pipeline_cypher_exists_and_drop_round_trip(query_runner: Neo4jQueryRunner) -> None:
     pipeline_name = f"pipeline-exists-cypher-{uuid4().hex[:8]}"
     pipeline_surface = PipelineCypherEndpoints(query_runner)

@@ -18,6 +18,7 @@ from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol i
     PipelineCatalogEntryProtocol,
     PipelineCatalogProtocol,
 )
+from graphdatascience.procedure_surface.api.pipeline.pipeline_info_mapping import to_pipeline_info
 
 
 class NodeClassificationPipeline:
@@ -271,6 +272,13 @@ class NodeClassificationPipeline:
             The updated pipeline state.
         """
         return self._ops.configure_auto_tuning(self._name, max_trials=max_trials)
+
+    def details(self) -> NodeClassificationPipelineInfoResult:
+        """Return the stored configuration of the pipeline (feature steps, split, parameter space)."""
+        entry = self._catalog.get(self._name)
+        return NodeClassificationPipelineInfoResult.model_validate(
+            to_pipeline_info(entry, feature_key="featureProperties")
+        )
 
     def exists(self) -> bool:
         """Return whether the pipeline exists."""

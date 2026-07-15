@@ -4,7 +4,7 @@ from typing import Any
 import neo4j
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.pipeline.pipeline_endpoints import (
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import (
     PipelineCatalogEntry,
     PipelineExistsResult,
 )
@@ -27,13 +27,18 @@ class PipelineCatalogCypherEndpoints:
         result = self._query_runner.call_procedure("gds.pipeline.list", params=params, custom_error=False)
         if result.empty:
             return None
-
         row = result.iloc[0].to_dict()
         return PipelineExistsResult(
-            pipelineName=str(row["pipelineName"]),
-            pipelineType=str(row["pipelineType"]),
-            exists=True,
+            pipelineName=pipeline_name, pipelineType=str(row.get("pipelineType", "")), exists=True
         )
+
+    def get(self, pipeline_name: str) -> PipelineCatalogEntry:
+        params = CallParameters(pipeline_name=pipeline_name)
+        result = self._query_runner.call_procedure("gds.pipeline.list", params=params, custom_error=False)
+        if result.empty:
+            raise ValueError(f"There is no '{pipeline_name}' in the pipeline catalog")
+
+        return self._to_pipeline_catalog_entry(result.iloc[0].to_dict())
 
     def drop(self, pipeline_name: str, *, fail_if_missing: bool = False) -> PipelineCatalogEntry | None:
         params = CallParameters(pipeline_name=pipeline_name, fail_if_missing=fail_if_missing)

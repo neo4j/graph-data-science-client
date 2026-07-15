@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import Any
 
-from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
     LinkPredictionPipelineEndpoints,
 )
@@ -14,19 +11,16 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_pipelin
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_endpoints import (
     NodeRegressionPipelineEndpoints,
 )
+from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result import (
+    PipelineCatalogEntry,
+    PipelineExistsResult,
+)
 
-
-class PipelineCatalogEntry(BaseResult):
-    pipeline_name: str
-    pipeline_type: str
-    creation_time: datetime | None = None
-    pipeline_info: dict[str, Any] | None = None
-
-
-class PipelineExistsResult(BaseResult):
-    pipeline_name: str
-    pipeline_type: str
-    exists: bool
+__all__ = [
+    "PipelineCatalogEntry",
+    "PipelineExistsResult",
+    "PipelineEndpoints",
+]
 
 
 class PipelineEndpoints(ABC):
@@ -38,6 +32,11 @@ class PipelineEndpoints(ABC):
     @abstractmethod
     def exists(self, pipeline_name: str) -> PipelineExistsResult | None:
         """Return pipeline existence details when present, otherwise None."""
+        pass
+
+    @abstractmethod
+    def get(self, pipeline_name: str) -> PipelineCatalogEntry:
+        """Return the catalog entry for the given pipeline, raising if it does not exist."""
         pass
 
     @abstractmethod
