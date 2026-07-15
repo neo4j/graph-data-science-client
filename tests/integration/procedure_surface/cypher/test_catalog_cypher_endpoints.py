@@ -168,7 +168,7 @@ def test_sample_property(catalog_endpoints: CatalogCypherEndpoints) -> None:
 
 
 def test_projection(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
-    G, result = catalog_endpoints.project("g2", ["A", "B"], "REL", node_properties=["id"], read_concurrency=2)
+    G, result = catalog_endpoints.project.native("g2", ["A", "B"], "REL", node_properties=["id"], read_concurrency=2)
 
     assert G.name() == "g2"
     assert result.node_count == 3

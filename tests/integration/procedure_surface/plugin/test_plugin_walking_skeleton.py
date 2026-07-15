@@ -35,7 +35,7 @@ def setup_db(gds: GraphDataScience) -> Generator[None, None, None]:
 
 @pytest.mark.db_integration
 def test_walking_skeleton(gds: GraphDataScience) -> None:
-    g_and_result = gds.graph.project("g", "*", "*")
+    g_and_result = gds.graph.project.native("g", "*", "*")
 
     G = g_and_result.graph
     project_result = g_and_result.result
