@@ -8,6 +8,7 @@ from graphdatascience.error.cypher_warning_handler import filter_id_func_depreca
 from graphdatascience.error.standalone_session_error import NotAvailableInStandaloneSessions
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
+from graphdatascience.procedure_surface.utils.node_matching import find_node_id as _find_node_id
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
@@ -21,6 +22,9 @@ class UtilArrowEndpoints(UtilEndpoints):
         if self._db_query_runner is None:
             raise NotAvailableInStandaloneSessions("Util endpoints")
         return self._db_query_runner
+
+    def find_node_id(self, labels: list[str] | None = None, properties: dict[str, Any] | None = None) -> int:
+        return _find_node_id(self._require_db(), labels, properties)
 
     @filter_id_func_deprecation_warning()
     def as_node(self, node_id: int) -> Node:
