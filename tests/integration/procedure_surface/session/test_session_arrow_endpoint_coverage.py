@@ -41,6 +41,7 @@ ENDPOINT_MAPPINGS = {
     "kspanning_tree": "k_spanning_tree",
     "prizesteiner_tree": "prize_steiner_tree",
     "longestPath": "dag.longest_path",
+    "topologicalSort": "dag.topological_sort",
     "maxFlow.minCost": "max_flow.min_cost",
     # pipelines
     "linkPrediction": "link_prediction",
