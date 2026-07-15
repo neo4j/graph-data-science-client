@@ -11,7 +11,7 @@ This Jupyter notebook is hosted
 https://github.com/neo4j/graph-data-science-client/blob/main/examples/graph-analytics-serverless-spark.ipynb[here]
 in the Neo4j Graph Data Science Client Github repository.
 
-The notebook shows how to use the `+graphdatascience+` Python library to
+The notebook shows how to use the `graphdatascience` Python library to
 create, manage, and use a GDS Session from within an Apache Spark
 cluster.
 
@@ -24,8 +24,8 @@ Tutorials for additional details.
 
 == Prerequisites
 
-We also need to have the `+graphdatascience+` Python library installed,
-version `+2.0a1+` or later, as well as `+pyspark+`.
+We also need to have the `graphdatascience` Python library installed,
+version `2.0a1` or later, as well as `pyspark`.
 
 [source, python, role=no-test]
 ----
@@ -48,7 +48,7 @@ To interact with the Spark cluster we need to first instantiate a Spark
 session. In this example we will use a local Spark session, which will
 run Spark on the same machine. Working with a remote Spark cluster will
 work similarly. For more information about setting up pyspark visit
-https://spark.apache.org/docs/latest/api/python/getting_started/
+https://spark.apache.org/docs/latest/api/python/getting++_++started/
 
 [source, python, role=no-test]
 ----
@@ -62,7 +62,7 @@ spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 
 == Aura API credentials
 
-The entry point for managing GDS Sessions is the `+GdsSessions+` object,
+The entry point for managing GDS Sessions is the `GdsSessions` object,
 which requires creating
 https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
 
@@ -85,11 +85,11 @@ sessions = GdsSessions(api_credentials=api_credentials)
 
 == Creating a new session
 
-A new session is created by calling `+sessions.get_or_create()+` with
-the following parameters:
+A new session is created by calling `sessions.get++_++or++_++create()`
+with the following parameters:
 
 * A session name, which lets you reconnect to an existing session by
-calling `+get_or_create+` again.
+calling `get++_++or++_++create` again.
 * The session memory.
 * The cloud location.
 * A time-to-live (TTL), which ensures that the session is automatically
@@ -168,25 +168,25 @@ the Arrow Server's "graph import from triplets" functionality, which
 requires the following protocol:
 
 [arabic]
-. Send an action `+v2/graph.project.fromTriplets+` This will initialize
+. Send an action `v2/graph.project.fromTriplets` This will initialize
 the import process and allows us to specify the graph name, and settings
-like `+undirected_relationship_types+`. It returns a job id, that we
-need to reference the import job in the following steps.
+like `undirected++_++relationship++_++types`. It returns a job id, that
+we need to reference the import job in the following steps.
 . Send the data in batches to the Arrow server.
-. Send another action called `+v2/graph.project.fromTriplets.done+` to
+. Send another action called `v2/graph.project.fromTriplets.done` to
 tell the import process that no more data will be sent. This will
 trigger the final graph creation inside the GDS session.
-. Wait for the import process to reach the `+DONE+` state.
+. Wait for the import process to reach the `DONE` state.
 
 The most complicated step here is to run the actual data upload on each
-spark worker. We will use the `+mapInArrow+` function to run custom code
+spark worker. We will use the `mapInArrow` function to run custom code
 on each spark worker. Each worker will receive a number of arrow record
 batches that we can directly send to the GDS session's Arrow server.
 
 The user wants to add a 1-second delay (sleep) within the loop that
-waits for the import job to finish. This requires importing the `+time+`
-module and adding `+time.sleep(1)+` inside the `+while+` loop at the end
-of the cell.
+waits for the import job to finish. This requires importing the `time`
+module and adding `time.sleep(1)` inside the `while` loop at the end of
+the cell.
 
 graph-analytics-serverless-spark.ipynb
 
