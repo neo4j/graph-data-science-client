@@ -1,0 +1,81 @@
+= Constructing a graph from DataFrames
+
+In addition to projecting a graph from the Neo4j database, it is also possible to create graphs directly from pandas `DataFrame` objects.
+
+== Syntax
+.Graph construct signature
+[opts="header",cols="1m,7m,1m,6", role="no-break"]
+|===
+| Name                            | Type                                |Default | Description
+| graph_name                      | str                                 | -      | Name of the graph to be constructed.
+| nodes                           | Union[DataFrame, List[DataFrame]]   | -      | One or more dataframes containing node data.
+| relationships                   | Union[DataFrame, List[DataFrame]]   | -      | One or more dataframes containing relationship data.
+| concurrency                     | int                                 | 4      | Number of threads used to construct the graph.
+| undirected_relationship_types   | Optional[List[str]]                 | None   | List of relationship types to be projected as undirected.
+|===
+
+
+== Example
+
+[[graph-object-construct-example]]
+[source,python,group=graph-roundtrip]
+----
+nodes = pandas.DataFrame(
+    {
+        "nodeId": [0, 1, 2, 3],
+        "labels":  ["A", "B", "C", "A"],
+        "prop1": [42, 1337, 8, 0],
+        "otherProperty": [0.1, 0.2, 0.3, 0.4]
+    }
+)
+
+relationships = pandas.DataFrame(
+    {
+        "sourceNodeId": [0, 1, 2, 3],
+        "targetNodeId": [1, 2, 3, 0],
+        "relationshipType": ["REL", "REL", "REL", "REL"],
+        "weight": [0.0, 0.0, 0.1, 42.0]
+    }
+)
+
+G = gds.graph.construct(
+    "my-graph",      # Graph name
+    nodes,           # One or more dataframes containing node data
+    relationships    # One or more dataframes containing relationship data
+)
+
+assert "REL" in G.relationship_types()
+----
+
+The above example creates a graph from two `DataFrame` objects, one for nodes and one for relationships.
+The projected graph is equivalent to a graph that the following Cypher query would create in a Neo4j database:
+
+[source,cypher]
+----
+CREATE
+    (a:A {prop1: 42,    otherProperty: 0.1),
+    (b:B {prop1: 1337,  otherProperty: 0.2),
+    (c:C {prop1: 8,     otherProperty: 0.3),
+    (d:A {prop1: 0,     otherProperty: 0.4),
+
+    (a)-[:REL {weight: 0.0}]->(b),
+    (b)-[:REL {weight: 0.0}]->(c),
+    (c)-[:REL {weight: 0.1}]->(d),
+    (d)-[:REL {weight: 42.0}]->(a),
+----
+
+The supported format for the node data frames is described in https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-node-columns[Arrow node schema] and the format for the relationship data frames is described in https://neo4j.com/docs/graph-data-science/current/graph-project-apache-arrow/#arrow-relationship-columns[Arrow relationship schema].
+
+
+[.enterprise-edition]
+== Apache Arrow flight server support
+
+The `construct` method can utilize the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS if it's enabled.
+This in particular means that:
+
+* The construction of the graph is greatly sped up,
+* It is possible to supply more than one data frame, both for nodes and relationships.
+If multiple node dataframes are used, they need to contain distinct node ids across all node data frames.
+* Prior to the `construct` call, a call to `GraphDataScience.set_database` must have been made to explicitly specify which Neo4j database should be targeted.
+
+include::ROOT:partial$/graph-construct-limitation.adoc[]

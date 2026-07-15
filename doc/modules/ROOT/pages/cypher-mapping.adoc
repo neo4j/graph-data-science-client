@@ -1,0 +1,21 @@
+= Cypher API mapping
+
+* The Python client uses Python objects and types as interfaces for GDS methods:
+** The xref:graph-object.adoc[graph object] can be used to inspect graphs from the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS graph catalog].
+** The xref:model-object.adoc[model object] can be used to inspect models from the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS model catalog].
+
++
+These objects are used in place of name strings in procedures and functions that take a graph or a model as an input.
+
+* xref:pipelines.adoc[Pipeline objects] can be used to configure and use https://neo4j.com/docs/graph-data-science/current/machine-learning/machine-learning/[machine learning pipelines].
+
+
+* Method calls corresponding to Cypher procedures (preceded by `CALL` in the docs) return:
++
+--
+* A table as a Pandas `DataFrame`, if the procedure uses the `stream` mode.
+* A method-specific return type for anything else (for example algorithms in `stats` or `mutate` mode).
+--
++
+
+* `gds.version()` returns a `ServerVersion` object.

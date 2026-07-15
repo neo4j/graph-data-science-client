@@ -1,4 +1,4 @@
-= Running algorithms
+= Run graph algorithms
 
 include::ROOT:partial$/gds-object.adoc[]
 
