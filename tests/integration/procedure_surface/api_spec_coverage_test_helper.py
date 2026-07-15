@@ -30,8 +30,6 @@ from tests.integration.procedure_surface.gds_api_spec import (
 
 # endpoints not mapped yet in the v2 endpoints of the python client
 UNMAPPED_ENDPOINTS: set[str] = {
-    # TODO
-    "dag.topological_sort.stream",
     # explicitly unmapped
     "split_relationships.mutate",  # no knowledge of usage. use pipelines instead
     "list",  # listing only available endpoints, doesnt make sense as we mapout the important endpoints
