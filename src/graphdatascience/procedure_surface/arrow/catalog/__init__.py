@@ -1,8 +1,7 @@
 from .catalog_arrow_endpoints import (
     CatalogArrowEndpoints,
-    GraphWithProjectResult,
-    ProjectionResult,
 )
+from .projection_arrow_endpoints import GraphWithProjectResult, ProjectionResult
 
 __all__ = [
     "CatalogArrowEndpoints",

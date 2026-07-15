@@ -40,7 +40,7 @@ def setup_db(db_query_runner: Neo4jQueryRunner) -> Generator[None, None, None]:
 
 @pytest.mark.db_integration
 def test_walking_skeleton(gds: AuraGraphDataScience) -> None:
-    g_and_result = gds.graph.project("g", "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
+    g_and_result = gds.graph.project.cypher("g", "MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)")
 
     G = g_and_result.graph
     project_result = g_and_result.result

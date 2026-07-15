@@ -216,8 +216,8 @@ gds.run_cypher("MATCH (n) RETURN count(n) AS nodeCount")
 == Projecting Graphs
 
 Now that you have imported a graph to the database, you can project it
-into our GDS Session. You do that by using the `gds.graph.project()`
-endpoint.
+into our GDS Session. You do that by using the
+`gds.graph.project.cypher()` endpoint.
 
 The remote projection query that you are using selects all `Person`
 nodes and their `LIKES` relationships, and all `Fruit` nodes and their
@@ -227,7 +227,7 @@ algorithms, although it is note done in this notebook.
 
 [source, python, role=no-test]
 ----
-G, result = gds.graph.project(
+G, result = gds.graph.project.cypher(
     "people-and-fruits",
     """
     CALL () {

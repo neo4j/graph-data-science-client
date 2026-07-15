@@ -52,7 +52,7 @@ def create_graph_from_db(
 ) -> Generator[Graph, Any, None]:
     try:
         query_runner.run_cypher(graph_data, QueryType.USER_ACTION)
-        result = CatalogArrowEndpoints(arrow_client, query_runner).project(
+        result = CatalogArrowEndpoints(arrow_client, query_runner).project.cypher(
             graph_name=graph_name,
             query=query,
             undirected_relationship_types=undirected_relationship_types,

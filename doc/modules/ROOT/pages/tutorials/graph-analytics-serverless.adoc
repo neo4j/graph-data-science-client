@@ -219,7 +219,7 @@ although we do not do that in this notebook.
 
 [source, python, role=no-test]
 ----
-G, result = gds.graph.project(
+G, result = gds.graph.project.cypher(
     "people-and-fruits",
     """
     CALL () {

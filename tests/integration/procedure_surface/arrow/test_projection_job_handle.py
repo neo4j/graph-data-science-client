@@ -29,7 +29,7 @@ def endpoints(arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner)
 @pytest.fixture
 def cypher_handle(endpoints: CatalogArrowEndpoints) -> Generator[ProjectionJobHandle, None, None]:
     graph_name = f"projection-handle-{uuid.uuid4()}"
-    handle = endpoints.project_async(
+    handle = endpoints.project.cypher_async(
         graph_name=graph_name,
         query="UNWIND range(1, 10) AS x WITH gds.graph.project.remote(x, null) as g RETURN g",
     )
@@ -42,7 +42,7 @@ def cypher_handle(endpoints: CatalogArrowEndpoints) -> Generator[ProjectionJobHa
 @pytest.fixture
 def native_handle(endpoints: CatalogArrowEndpoints, populated_db: None) -> Generator[ProjectionJobHandle, None, None]:
     graph_name = f"projection-handle-native-{uuid.uuid4()}"
-    handle = endpoints.project_native_async(
+    handle = endpoints.project.native_async(
         graph_name=graph_name,
         node_label_filter=["Person"],
         relationship_type_filter=["KNOWS"],
