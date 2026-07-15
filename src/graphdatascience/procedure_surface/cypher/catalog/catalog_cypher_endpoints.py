@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 from types import TracebackType
-from typing import Any, NamedTuple, Type
+from typing import Any, NamedTuple, Type, cast
 
 from pandas import DataFrame
 
@@ -27,9 +27,13 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
+from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_export_cypher_endpoints import (
+    GraphExportCypherEndpoints,
+)
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
@@ -52,6 +56,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         if not self.list(graph_name):
             raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
         return get_graph(graph_name, self._cypher_runner)
+
+    def exists(self, graph_name: str) -> bool:
+        return cast(
+            bool,
+            self._cypher_runner.call_function(endpoint="gds.graph.exists", params=CallParameters(graphName=graph_name)),
+        )
 
     def construct(
         self,
@@ -146,6 +156,10 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     @property
     def project(self) -> GraphNativeProjectEndpoints:
         return GraphNativeProjectEndpoints(self._cypher_runner)
+
+    @property
+    def export(self) -> GraphExportEndpoints:
+        return GraphExportCypherEndpoints(self._cypher_runner)
 
     def filter(
         self,

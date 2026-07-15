@@ -30,10 +30,6 @@ from tests.integration.procedure_surface.gds_api_spec import (
 
 # endpoints not mapped yet in the v2 endpoints of the python client
 UNMAPPED_ENDPOINTS: set[str] = {
-    # TODO
-    "graph.export",
-    "graph.export.csv",
-    "graph.exists",
     # explicitly unmapped
     "split_relationships.mutate",  # no knowledge of usage. use pipelines instead
     "list",  # listing only available endpoints, doesnt make sense as we mapout the important endpoints
@@ -193,6 +189,8 @@ ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
         "fail_if_missing": False,
     },
     r".*graph.filter": {"parameters": None},
+    # spec default is an empty map, mapped to None in python
+    r".*graph.export": {"additional_node_properties": None},
     r".*graph.generate": {"relationship_property": None},
     r".*graph.list": {"G": None},
 }
@@ -215,7 +213,7 @@ EXPECTED_IGNORED_RETURN_FIELDS = {
 
 # Return types whose fields intentionally don't map field-by-field to the spec's return fields
 # (opaque value objects, or pivoted key/value results), so they can't be verified against the spec.
-RETURN_VERIFICATION_SKIPPED_TYPES = {DebugSysInfoResult}
+RETURN_VERIFICATION_SKIPPED_TYPES = {DebugSysInfoResult, bool}
 
 # Python return types that wrap a single scalar value and should be verified against the spec's scalar
 # return type rather than structurally (e.g. ServerVersion wraps a version String).
@@ -431,7 +429,7 @@ def verify_configuration_fields(
             for param in ignored_params:
                 expected_configuration.pop(param, None)
 
-    if "graph_name" in expected_configuration:
+    if "graph_name" in expected_configuration and endpoint_spec.name != "gds.graph.exists":
         expected_configuration["G"] = expected_configuration.pop("graph_name")
 
     method_signature = inspect.signature(callable_object)

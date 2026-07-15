@@ -23,9 +23,13 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithGenerationStats,
     RelationshipPropertySpec,
 )
+from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_export_arrow_endpoints import (
+    GraphExportArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 from graphdatascience.procedure_surface.arrow.catalog.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.node_label_arrow_endpoints import NodeLabelArrowEndpoints
@@ -65,6 +69,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         if not self.list(graph_name):
             raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
         return get_graph(graph_name, self._arrow_client)
+
+    def exists(self, graph_name: str) -> bool:
+        return len(self.list(graph_name)) > 0
 
     def construct(
         self,
@@ -279,6 +286,10 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             graph_name = G
 
         return self._graph_backend.list(graph_name)
+
+    @property
+    def export(self) -> GraphExportEndpoints:
+        return GraphExportArrowEndpoints()
 
     @property
     def sample(self) -> GraphSamplingEndpoints:

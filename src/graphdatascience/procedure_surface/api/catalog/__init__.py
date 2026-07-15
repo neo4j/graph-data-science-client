@@ -7,6 +7,11 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     RelationshipPropertySpec,
 )
 from graphdatascience.procedure_surface.api.catalog.dataset_endpoints import DatasetEndpoints
+from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import (
+    GraphExportCsvResult,
+    GraphExportEndpoints,
+    GraphExportResult,
+)
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
@@ -45,6 +50,9 @@ __all__ = [
     "Aggregation",
     "CatalogEndpoints",
     "DatasetEndpoints",
+    "GraphExportCsvResult",
+    "GraphExportEndpoints",
+    "GraphExportResult",
     "GraphFilterResult",
     "GraphGenerationStats",
     "GraphSamplingEndpoints",
