@@ -12,6 +12,7 @@ from typing import Generator
 import numpy as np
 import pandas as pd
 import pytest
+from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
@@ -27,10 +28,13 @@ NUM_PAIRS = 100_000
 
 
 @pytest.fixture(scope="module")
-def gds(neo4j_connection: DbmsConnectionInfo) -> Generator[GraphDataScience, None, None]:
+def gds(
+    neo4j_connection: DbmsConnectionInfo, gds_plugin_container: Neo4jContainer
+) -> Generator[GraphDataScience, None, None]:
     g = GraphDataScience(
         endpoint=neo4j_connection.get_uri(),
         auth=(neo4j_connection.username, neo4j_connection.password),  # type: ignore[arg-type]
+        arrow=f"localhost:{gds_plugin_container.get_exposed_port(8491)}",
     )
     yield g
     g.close()

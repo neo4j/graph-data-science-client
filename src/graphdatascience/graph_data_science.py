@@ -183,6 +183,7 @@ from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.versions import ServerVersion
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from .arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_client.arrow_info import ArrowInfo
 from .arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from .arrow_client.v1.gds_arrow_client import GdsArrowClient
@@ -279,13 +280,19 @@ class GraphDataScience:
                     "Falling back to use Cypher for GDS. To use Arrow, you must explicitly provide the `auth` parameter."
                 )
             else:
+                listen_address = arrow if isinstance(arrow, str) else arrow_info.listenAddress
+
                 self._arrow_client = GdsArrowClient(
                     AuthenticatedArrowClient(
-                        arrow_info.listenAddress,
+                        listen_address,
                         auth=arrow_auth,
                         encrypted=self._query_runner.encrypted(),
                         arrow_client_options=arrow_client_options,
                     )
+                )
+
+                ArrowEndpointVersion.check_version_compatibility(
+                    {ArrowEndpointVersion.V1}, self._arrow_client._flight_client
                 )
 
         self._query_runner.set_show_progress(show_progress)

@@ -2,26 +2,34 @@ from __future__ import annotations
 
 from enum import Enum
 
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+
 
 class ArrowEndpointVersion(Enum):
-    V1 = "v1/"
-    V2 = "v2/"
+    V1 = "v1"
+    V2 = "v2"
 
     def version(self) -> str:
         return self._name_.lower()
 
     def prefix(self) -> str:
-        return self._value_
+        return f"{self._value_}/"
 
     @staticmethod
-    def from_arrow_info(supported_arrow_versions: list[str]) -> ArrowEndpointVersion:
-        # If the server supports versioned endpoints, we try v1 first
-        if ArrowEndpointVersion.V1.version() in supported_arrow_versions:
-            return ArrowEndpointVersion.V1
+    def check_version_compatibility(
+        compatible_versions: set[ArrowEndpointVersion], arrow_client: AuthenticatedArrowClient
+    ) -> None:
+        supported_server_versions = {action.type.split("/")[0].lower() for action in arrow_client.list_actions()}
+        for version in compatible_versions:
+            if version.version() in supported_server_versions:
+                return
 
-        raise UnsupportedArrowEndpointVersion(supported_arrow_versions)
+        raise UnsupportedArrowEndpointVersion(compatible_versions, supported_server_versions)
 
 
 class UnsupportedArrowEndpointVersion(Exception):
-    def __init__(self, server_version: list[str]) -> None:
-        super().__init__(self, f"Unsupported Arrow endpoint versions: {server_version}")
+    def __init__(self, compatible_versions: set[ArrowEndpointVersion], supported_server_versions: set[str]) -> None:
+        super().__init__(
+            self,
+            f"The GDS version is not supported by this client version, please update the `graphdatascience` package. Arrow versions supported by this client are: {compatible_versions}, but GDS supports: {supported_server_versions}",
+        )
