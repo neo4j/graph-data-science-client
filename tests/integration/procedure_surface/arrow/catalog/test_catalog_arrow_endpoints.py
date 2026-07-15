@@ -67,6 +67,11 @@ def test_list_without_graph(
     assert set(g.graph_name for g in result) == {sample_graph.name(), g2.name()}
 
 
+def test_exists(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+    assert catalog_endpoints.exists(sample_graph.name())
+    assert not catalog_endpoints.exists("nonexistent")
+
+
 def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 

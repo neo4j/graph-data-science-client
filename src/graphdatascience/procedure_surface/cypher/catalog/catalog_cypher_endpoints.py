@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 from types import TracebackType
-from typing import Any, NamedTuple, Type
+from typing import Any, NamedTuple, Type, cast
 
 from pandas import DataFrame
 
@@ -56,6 +56,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         if not self.list(graph_name):
             raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
         return get_graph(graph_name, self._cypher_runner)
+
+    def exists(self, graph_name: str) -> bool:
+        return cast(
+            bool,
+            self._cypher_runner.call_function(endpoint="gds.graph.exists", params=CallParameters(graphName=graph_name)),
+        )
 
     def construct(
         self,

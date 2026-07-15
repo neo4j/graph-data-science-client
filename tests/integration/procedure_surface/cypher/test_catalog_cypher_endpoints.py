@@ -109,6 +109,11 @@ def test_list_without_graph(
         query_runner.run_cypher("MATCH (n:Test) DELETE n", query_type=QueryType.USER_ACTION)
 
 
+def test_exists(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+    assert catalog_endpoints.exists(sample_graph.name())
+    assert not catalog_endpoints.exists("nonexistent")
+
+
 def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 

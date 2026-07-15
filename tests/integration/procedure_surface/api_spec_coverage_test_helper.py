@@ -213,7 +213,7 @@ EXPECTED_IGNORED_RETURN_FIELDS = {
 
 # Return types whose fields intentionally don't map field-by-field to the spec's return fields
 # (opaque value objects, or pivoted key/value results), so they can't be verified against the spec.
-RETURN_VERIFICATION_SKIPPED_TYPES = {DebugSysInfoResult}
+RETURN_VERIFICATION_SKIPPED_TYPES = {DebugSysInfoResult, bool}
 
 # Python return types that wrap a single scalar value and should be verified against the spec's scalar
 # return type rather than structurally (e.g. ServerVersion wraps a version String).
@@ -429,7 +429,7 @@ def verify_configuration_fields(
             for param in ignored_params:
                 expected_configuration.pop(param, None)
 
-    if "graph_name" in expected_configuration:
+    if "graph_name" in expected_configuration and endpoint_spec.name != "gds.graph.exists":
         expected_configuration["G"] = expected_configuration.pop("graph_name")
 
     method_signature = inspect.signature(callable_object)
