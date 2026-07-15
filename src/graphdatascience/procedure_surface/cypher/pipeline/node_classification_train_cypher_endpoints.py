@@ -16,7 +16,7 @@ from graphdatascience.procedure_surface.api.pipeline.node_classification_predict
 from graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints import (
     NodeClassificationPipelineTrainEndpoints,
 )
-from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
+from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -67,7 +67,7 @@ class NodeClassificationTrainCypherEndpoints(NodeClassificationPipelineTrainEndp
         return (
             NodeClassificationModel(
                 name=model_name,
-                model_api=ModelApiCypher(self._query_runner),
+                catalog=ModelCatalogCypherEndpoints(self._query_runner),
                 predict_endpoints=self._predict_endpoints,
             ),
             NodeClassificationPipelineTrainResult(**result),

@@ -15,7 +15,7 @@ from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_end
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpoints import (
     LinkPredictionPipelineTrainEndpoints,
 )
-from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
+from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -70,7 +70,7 @@ class LinkPredictionTrainCypherEndpoints(LinkPredictionPipelineTrainEndpoints):
         return (
             LinkPredictionModel(
                 name=model_name,
-                model_api=ModelApiCypher(self._query_runner),
+                catalog=ModelCatalogCypherEndpoints(self._query_runner),
                 predict_endpoints=self._predict_endpoints,
             ),
             LinkPredictionPipelineTrainResult(**result),

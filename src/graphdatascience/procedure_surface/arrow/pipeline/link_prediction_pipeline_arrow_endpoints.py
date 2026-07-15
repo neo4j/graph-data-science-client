@@ -21,7 +21,7 @@ from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpo
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
-from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
+from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pipeline.link_prediction_predict_arrow_endpoints import (
     LinkPredictionPredictArrowEndpoints,
 )
@@ -54,10 +54,10 @@ class LinkPredictionPipelineArrowEndpoints(LinkPredictionPipelineEndpoints):
             arrow_client,
             show_progress=show_progress,
         )
-        self._model_api = ModelApiArrow(arrow_client)
+        self._model_catalog = ModelCatalogArrowEndpoints(arrow_client)
         self._train = LinkPredictionTrainArrowEndpoints(
             arrow_client=arrow_client,
-            model_api=self._model_api,
+            catalog=self._model_catalog,
             predict_endpoints=self._predict,
             show_progress=show_progress,
         )
