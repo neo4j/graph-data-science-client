@@ -38,6 +38,13 @@ def map_all_shortest_path_stream_result(result: DataFrame) -> None:
     result.drop(columns=["relationshipType"], inplace=True)
 
 
+def map_topological_sort_stream_result(result: DataFrame) -> None:
+    # The Arrow result carries an `index` column encoding the topological order; sort by it and drop it.
+    result.sort_values("index", inplace=True)
+    result.drop(columns=["index"], inplace=True)
+    result.reset_index(drop=True, inplace=True)
+
+
 def aggregate_traversal_rels(result: DataFrame, source_node: int) -> DataFrame:
     result.drop(columns=["sourceNodeId", "relationshipType"], inplace=True)
 
@@ -91,6 +98,7 @@ _STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame | None]] = {
     "v2/pathfinding.singleSource.deltaStepping": map_shortest_path_stream_result,
     "v2/pathfinding.singleSource.bellmanFord": map_shortest_path_stream_result,
     "v2/pathfinding.longestPath": map_shortest_path_stream_result,
+    "v2/pathfinding.topologicalSort": map_topological_sort_stream_result,
     "v2/pathfinding.maxFlow": map_max_flow_stream_result,
     "v2/pathfinding.maxFlow.minCost": map_max_flow_stream_result,
     "v2/pathfinding.allShortestPaths": map_all_shortest_path_stream_result,
