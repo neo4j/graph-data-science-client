@@ -14,7 +14,7 @@ def gds(
     gds = GraphDataScience(
         endpoint=neo4j_connection.get_uri(),
         auth=(neo4j_connection.username, neo4j_connection.password),  # type: ignore
-        arrow=f"localhost:{gds_plugin_container.get_exposed_port(8491)}",
+        arrow=f"{gds_plugin_container.get_container_host_ip()}:{gds_plugin_container.get_exposed_port(8491)}",
     )
     yield gds
     gds.close()
