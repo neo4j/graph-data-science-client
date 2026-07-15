@@ -19,7 +19,7 @@ The default value for `undirected` varies for each dataset.
 For example:
 [source, python]
 ----
-G = gds.graph.load_cora()
+G = gds.graph.datasets.load_cora()
 
 assert G.node_count() == 2_708
 assert G.node_labels() == ["Paper"]
@@ -144,8 +144,8 @@ pip install graphdatascience[ogb]
 
 The two methods that expose the OGB dataset loading functionality are:
 
-* `gds.graph.obgn.load` for loading https://ogb.stanford.edu/docs/nodeprop/[node property prediction datasets], and
-* `gds.graph.obgl.load` for loading https://ogb.stanford.edu/docs/linkprop/[link property prediction datasets].
+* `gds.graph.datasets.ogbn.load` for loading https://ogb.stanford.edu/docs/nodeprop/[node property prediction datasets], and
+* `gds.graph.datasets.ogbl.load` for loading https://ogb.stanford.edu/docs/linkprop/[link property prediction datasets].
 
 These methods both return a `Graph` object, and take four arguments:
 
@@ -210,7 +210,7 @@ Let's see an example of loading and inspecting one of these datasets:
 .Example of loading the 'ogbn-arxiv' dataset
 [source, python, role=no-test]
 ----
-G = gds.graph.ogbn.load("ogbn-arxiv")
+G = gds.graph.datasets.ogbn.load("ogbn-arxiv")
 
 assert G.name() == "ogbn-arxiv"
 assert G.node_count() == 169_343
@@ -238,7 +238,7 @@ Let's see an example of loading and inspecting one of these datasets:
 .Example of loading the 'ogbn-mag' dataset
 [source, python, role=no-test]
 ----
-G = gds.graph.ogbn.load("ogbn-mag")
+G = gds.graph.datasets.ogbn.load("ogbn-mag")
 
 assert G.name() == "ogbn-mag"
 assert G.node_count() == 1_939_743
@@ -277,7 +277,7 @@ Let's see an example of loading and inspecting one of these datasets:
 .Example of loading the 'ogbl-ddi' dataset
 [source, python, role=no-test]
 ----
-G = gds.graph.ogbl.load("ogbl-ddi")
+G = gds.graph.datasets.ogbl.load("ogbl-ddi")
 
 assert G.name() == "ogbl-ddi"
 assert G.node_count() == 4_267
@@ -313,7 +313,7 @@ Let's see an example of loading and inspecting one of these datasets:
 .Example of loading the 'ogbl-biokg' dataset
 [source, python, role=no-test]
 ----
-G = gds.graph.ogbl.load("ogbl-biokg")
+G = gds.graph.datasets.ogbl.load("ogbl-biokg")
 
 assert G.name() == "ogbl-biokg"
 assert G.node_count() == 93_773

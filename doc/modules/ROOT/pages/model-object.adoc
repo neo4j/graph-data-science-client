@@ -43,7 +43,7 @@ gds.run_cypher(
     (e)-[:ROAD {cost: 40}]->(f);
   """
 )
-G, project_result = gds.graph.project(
+G, project_result = gds.graph.project.native(
     "road_graph",
     {"City": {"properties": ["settled"]}},
     {"ROAD": {"properties": ["cost"]}}
@@ -56,28 +56,23 @@ Now we can use the graph `G` to train a GraphSage model.
 
 [source,python,group=gs-model]
 ----
-model, train_result = gds.beta.graphSage.train(G, modelName="city-representation", featureProperties=["settled"], randomSeed=42)
+model, train_result = gds.graph_sage.train(G, model_name="city-representation", feature_properties=["settled"], random_seed=42)
 
-assert train_result["modelInfo"]["metrics"]["ranEpochs"] == 1
+assert train_result.model_info["metrics"]["ranEpochs"] == 1
 ----
 
-where `model` is the model object, and `res` is a pandas `Series` containing metadata from the underlying procedure call.
+where `model` is the model object, and `train_result` is a link:{gds-api-uri}/endpoints/node_embedding_endpoints/#graphdatascience.procedure_surface.api.node_embedding.GraphSageTrainResult[`GraphSageTrainResult`] object containing metadata from the underlying procedure call.
 
 Similarly, we can also get model objects from training xref:pipelines.adoc[machine learning pipelines].
 
-To get a model object that represents a model that has already been trained and is present in the model catalog, one can call the client-side only `get` method and passing it a name:
+To inspect a model that is already present in the model catalog, call the `get` method with its name, which returns a `ModelDetails` object with the model's metadata:
 
 [source,python,group=gs-model]
 ----
 model = gds.model.get("city-representation")
 
-assert model.name() == "city-representation"
+assert model.model_name == "city-representation"
 ----
-
-[NOTE]
-====
-The `get` method does not use any tier prefix because it is not associated to any tier. It only exists in the client and does not have a corresponding Cypher procedure.
-====
 
 
 [[model-object-inspecting]]
@@ -88,24 +83,35 @@ There are convenience methods on all model objects that let us extract informati
 .Model object methods
 [opts="header",cols="5m,6m,7m,14"]
 |===
-| Name          | Arguments                     | Return type         | Description
-| name          | -                             | str                 | The name of the model as it appears in the model catalog.
-| type          | -                             | str                 | The type of model it is, eg. "graphSage".
-| train_config  | -                             | Series              | The configuration used for training the model.
-| graph_schema  | -                             | Series              | The schema of the graph on which the model was trained.
-| loaded        | -                             | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/store/#catalog-model-load[loaded] in the in-memory model catalog, `False` otherwise.
-| stored        | -                             | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/store/#catalog-model-store[stored] on disk, `False` otherwise.
-| creation_time | -                             | neo4j.time.Datetime | Time when the model was created.
-| shared        | -                             | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/publish/[shared] between users, `False` otherwise.
-| exists        | -                             | bool                | `True` if the model exists in the GDS Model Catalog, `False` otherwise.
-| drop          | failIfMissing: Optional[bool] | Series              | https://neo4j.com/docs/graph-data-science/current/model-catalog/drop/[Removes the model] from the GDS Model Catalog.
+| Name    | Arguments                       | Return type  | Description
+| name    | -                               | str          | The name of the model as it appears in the model catalog.
+| exists  | -                               | bool         | `True` if the model exists in the GDS Model Catalog, `False` otherwise.
+| drop    | fail_if_missing: Optional[bool] | ModelDetails | https://neo4j.com/docs/graph-data-science/current/model-catalog/drop/[Removes the model] from the GDS Model Catalog.
+| details | -                               | ModelDetails | Metadata about the model.
+|===
+
+The `details()` method returns a link:{gds-api-uri}/endpoints/model_endpoints/#graphdatascience.model.model_details.ModelDetails[`ModelDetails`] object whose fields are accessed as attributes:
+
+.`ModelDetails` fields
+[opts="header",cols="6m,7m,14"]
+|===
+| Name          | Type                | Description
+| model_name    | str                 | The name of the model as it appears in the model catalog.
+| model_type    | str                 | The type of model it is, eg. "graphSage".
+| train_config  | dict[str, Any]      | The configuration used for training the model.
+| graph_schema  | dict[str, Any]      | The schema of the graph on which the model was trained.
+| loaded        | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/store/#catalog-model-load[loaded] in the in-memory model catalog, `False` otherwise.
+| stored        | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/store/#catalog-model-store[stored] on disk, `False` otherwise.
+| published     | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/publish/[published] between users, `False` otherwise.
+| model_info    | dict[str, Any]      | Additional model-specific information, such as training metrics.
+| creation_time | neo4j.time.Datetime | Time when the model was created.
 |===
 
 For example, to get the train configuration of our model object `model` created above, we would do the following:
 
 [source,python,group=gs-model]
 ----
-train_config = model.train_config()
+train_config = model.details().train_config
 
 assert train_config["concurrency"] == 4
 ----
@@ -122,9 +128,9 @@ For instance, supposing we have our model object `model` created above, we could
 [source,python,group=gs-model,enterprise=true]
 ----
 # Store the model on disk (GDS Enterprise Edition)
-_ = gds.model.store(model)
+_ = gds.model.store(model.name())
 
-gds.model.drop(model)  # same as model.drop()
+model.drop()
 
 # Load the model again for further use
 gds.model.load(model.name())
@@ -141,25 +147,26 @@ Once trained, in addition to the xref:model-object.adoc#model-object-inspecting[
 .GraphSAGE model methods
 [opts="header",cols="5m,5m,6m,11"]
 |===
-| Name           | Arguments        | Return type | Description
+| Name           | Arguments        | Return type            | Description
 | predict_mutate | G: Graph, +
-                   config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#graph-sage-trained-model-example-mutate[Predict embeddings for nodes of the input graph and mutate graph with predictions].
+                   config: **kwargs | GraphSageMutateResult  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#graph-sage-trained-model-example-mutate[Predict embeddings for nodes of the input graph and mutate graph with predictions].
 | predict_stream | G: Graph, +
-                   config: **kwargs | DataFrame   | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#_stream[Predict embeddings for nodes of the input graph and stream the results].
+                   config: **kwargs | DataFrame              | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#_stream[Predict embeddings for nodes of the input graph and stream the results].
 | predict_write  | G: Graph, +
-                   config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#graph-sage-trained-model-example-write[Predict embeddings for nodes of the input graph and write the results back to the database].
-| metrics        | -                | Series      | Returns values for the metrics computed when training.
+                   config: **kwargs | GraphSageWriteResult   | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#graph-sage-trained-model-example-write[Predict embeddings for nodes of the input graph and write the results back to the database].
 |===
+
+The training metrics are available via `model.details().model_info["metrics"]`.
 
 So given the GraphSAGE model `model` we trained above, we could do the following:
 
 [source,python,group=gs-model]
 ----
 # Make sure our training actually converged
-metrics = model.metrics()
+metrics = model.details().model_info["metrics"]
 assert metrics["didConverge"]
 
 # Predict on `G` and write embedding node properties back to the database
-predict_result = model.predict_write(G, writeProperty="embedding")
-assert predict_result["nodePropertiesWritten"] == G.node_count()
+predict_result = model.predict_write(G, write_property="embedding")
+assert predict_result.node_properties_written == G.node_count()
 ----

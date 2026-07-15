@@ -174,7 +174,7 @@ gds.run_cypher(
 
 # Create an in-memory graph called `neo4j-offices` and
 # a `G_office` object representing the projected graph.
-G_office, project_result = gds.graph.project("neo4j-offices", "City", "FLY_TO")
+G_office, project_result = gds.graph.project.native("neo4j-offices", "City", "FLY_TO")
 
 # Run the `mutate` mode of the PageRank algorithm.
 mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")
@@ -209,7 +209,7 @@ gds.run_cypher(
 # a `G_office` object representing the projected graph.
 # The Cypher query must contain the `gds.graph.project.remote()` function
 # to project the graph into the GDS Session.
-G_office, project_result = gds.graph.project(
+G_office, project_result = gds.graph.project.native(
     graph_name="my-graph",
     query="""
     CALL () {
@@ -259,7 +259,7 @@ gds.run_cypher(
 
 # Create an in-memory graph called `neo4j-offices` and
 # a `G_office` object representing the projected graph.
-G_office, project_result = gds.graph.project("neo4j-offices", "City", "FLY_TO")
+G_office, project_result = gds.graph.project.native("neo4j-offices", "City", "FLY_TO")
 
 # Run the `mutate` mode of the PageRank algorithm.
 mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")

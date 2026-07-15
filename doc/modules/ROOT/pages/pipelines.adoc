@@ -24,7 +24,7 @@ To create a new node classification pipeline one would make the following call:
 
 [source,python]
 ----
-pipe = gds.nc_pipe("my-pipe")
+pipe, _ = gds.pipeline.node_classification.create("my-pipe")
 ----
 
 where `pipe` is a pipeline object.
@@ -99,39 +99,39 @@ gds.run_cypher(
     (e)-[:KNOWS]->(f)
   """
 )
-G, project_result = gds.graph.project("person_graph", {"Person": {"properties": ["fraudster"]}}, "KNOWS")
+G, project_result = gds.graph.project.native("person_graph", {"Person": {"properties": ["fraudster"]}}, "KNOWS")
 
 assert G.node_labels() == ["Person"]
 ----
 
 [source,python,group=nc-pipe]
 ----
-pipe, _ = gds.beta.pipeline.nodeClassification.create("my-pipe")
+pipe, _ = gds.pipeline.node_classification.create("my-pipe")
 
 # Add Degree centrality as a property step producing "rank" node properties
-pipe.addNodeProperty("degree", mutateProperty="rank")
+pipe.add_node_property("degree", mutate_property="rank")
 
 # Select our "rank" property as a feature for the model training
-pipe.selectFeatures("rank")
+pipe.select_features("rank")
 
 # Verify that the features to be used in model training are what we expect
-feature_properties = pipe.feature_properties()
+feature_properties = pipe.details().feature_properties
 assert len(feature_properties) == 1
 assert feature_properties[0]["feature"] == "rank"
 
 # Configure the model training to do cross-validation over logistic regression
-pipe.addLogisticRegression(tolerance=(0.01, 0.1))
-pipe.addLogisticRegression(penalty=1.0)
+pipe.add_logistic_regression(tolerance=(0.01, 0.1))
+pipe.add_logistic_regression(penalty=1.0)
 
 # Train the pipeline targeting node property "class" as label and "ACCURACY" as only metric
 fraud_model, train_result = pipe.train(
     G,
-    modelName="fraud-model",
-    targetProperty="fraudster",
+    model_name="fraud-model",
+    target_property="fraudster",
     metrics=["ACCURACY"],
-    randomSeed=111
+    random_seed=111
 )
-assert train_result["trainMillis"] >= 0
+assert train_result.train_millis >= 0
 ----
 
 A model referred to as "fraud-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
@@ -183,7 +183,7 @@ We now continue the xref:pipelines.adoc#pipelines-nodeclassification-pipe-exampl
 metrics = fraud_model.metrics()
 assert "ACCURACY" in metrics
 
-H, project_result = gds.graph.project("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
+H, project_result = gds.graph.project.native("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
 
 # Predict on `H` and stream the results with a specific concurrency of 2
 predictions = fraud_model.predict_stream(H, concurrency=2)
@@ -203,7 +203,7 @@ To create a new link prediction pipeline one would make the following call:
 
 [source,python,role=test]
 ----
-pipe = gds.lp_pipe("my-pipe")
+pipe, _ = gds.pipeline.link_prediction.create("my-pipe")
 ----
 
 where `pipe` is a pipeline object.
@@ -278,7 +278,7 @@ gds.run_cypher(
     (e)-[:KNOWS]->(f)
   """
 )
-G, project_result = gds.graph.project("person_graph", "Person", {"KNOWS": {"orientation":"UNDIRECTED"}})
+G, project_result = gds.graph.project.native("person_graph", "Person", {"KNOWS": {"orientation":"UNDIRECTED"}})
 
 assert G.relationship_types() == ["KNOWS"]
 ----
@@ -377,7 +377,7 @@ To create a new node regression pipeline one would make the following call:
 
 [source,python]
 ----
-pipe = gds.nr_pipe("my-pipe")
+pipe, _ = gds.pipeline.node_regression.create("my-pipe")
 ----
 
 where `pipe` is a pipeline object.
@@ -447,39 +447,39 @@ gds.run_cypher(
     (e)-[:KNOWS]->(f)
   """
 )
-G, project_result = gds.graph.project("person_graph", {"Person": {"properties": ["age"]}}, "KNOWS")
+G, project_result = gds.graph.project.native("person_graph", {"Person": {"properties": ["age"]}}, "KNOWS")
 
 assert G.relationship_types() == ["KNOWS"]
 ----
 
 [source,python,group=nr-pipe]
 ----
-pipe, _ = gds.alpha.pipeline.nodeRegression.create("nr-pipe")
+pipe, _ = gds.pipeline.node_regression.create("nr-pipe")
 
 # Add Degree centrality as a property step producing "rank" node properties
-pipe.addNodeProperty("degree", mutateProperty="rank")
+pipe.add_node_property("degree", mutate_property="rank")
 
 # Select our "rank" property as a feature for the model training
-pipe.selectFeatures("rank")
+pipe.select_features("rank")
 
 # Verify that the features to be used in model training are what we expect
-feature_properties = pipe.feature_properties()
+feature_properties = pipe.details().feature_properties
 assert len(feature_properties) == 1
 assert feature_properties[0]["feature"] == "rank"
 
 # Configure the model training to do cross-validation over linear regression
-pipe.addLinearRegression(tolerance=(0.01, 0.1))
-pipe.addLinearRegression(penalty=1.0)
+pipe.add_linear_regression(tolerance=(0.01, 0.1))
+pipe.add_linear_regression(penalty=1.0)
 
 # Train the pipeline targeting node property "age" as label and "MEAN_SQUARED_ERROR" as only metric
 age_predictor, train_result = pipe.train(
     G,
-    modelName="age-predictor",
-    targetProperty="age",
+    model_name="age-predictor",
+    target_property="age",
     metrics=["MEAN_SQUARED_ERROR"],
-    randomSeed=42
+    random_seed=42
 )
-assert train_result["trainMillis"] >= 0
+assert train_result.train_millis >= 0
 ----
 
 A model referred to as "my-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
@@ -522,7 +522,7 @@ Suppose that we have a new graph `H` that we want to run predictions on.
 metrics = age_predictor.metrics()
 assert "MEAN_SQUARED_ERROR" in metrics
 
-H, project_result = gds.graph.project("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
+H, project_result = gds.graph.project.native("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
 
 # Predict on `H` and stream the results with a specific concurrency of 2
 predictions = age_predictor.predict_stream(H, concurrency=2)
@@ -540,8 +540,8 @@ For instance, supposing we have a pipeline object `pipe`, we could:
 ----
 exists_result = gds.pipeline.exists(pipe.name())
 
-if exists_result["exists"]:
-	gds.pipeline.drop(pipe)  # same as pipe.drop()
+if exists_result.exists:
+	gds.pipeline.drop(pipe.name())  # same as pipe.drop()
 ----
 
 A pipeline object that has already been created and is present in the pipeline catalog can be retrieved calling the `get` method with its name.
@@ -550,7 +550,7 @@ For example, we can list from the catalog and use the first pipeline name we fin
 [source,python,group=nc-pipe]
 ----
 list_result = gds.pipeline.list()
-first_pipeline_name = list_result["pipelineName"][0]
-pipe = gds.pipeline.get(first_pipeline_name)
+first_pipeline_name = list_result[0].pipeline_name
+pipe = gds.pipeline.node_classification.get(first_pipeline_name)
 assert pipe.name() == "my-pipe"
 ----

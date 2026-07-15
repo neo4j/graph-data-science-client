@@ -41,7 +41,7 @@ gds.run_cypher(
     (e)-[:ROAD {cost: 40}]->(f);
   """
 )
-G, project_result = gds.graph.project("road_graph", "City", {"ROAD": {"properties": ["cost"]}})
+G, project_result = gds.graph.project.native("road_graph", "City", {"ROAD": {"properties": ["cost"]}})
 
 assert G.relationship_count() == 9
 ----
@@ -53,20 +53,20 @@ Now we are ready to run algorithms on our graph `G`.
 ----
 louvain_result = gds.louvain.mutate(
     G,                            #  Graph object
-    maxIterations=5,              #  Configuration parameters
-    mutateProperty="community"
+    max_iterations=5,             #  Configuration parameters
+    mutate_property="community"
 )
-assert louvain_result["communityCount"] > 0
+assert louvain_result.community_count > 0
 
-fastrp_result = gds.fastRP.write(
-    G,                                #  Graph object
-    featureProperties=["community"],  #  Configuration parameters
-    embeddingDimension=256,
-    propertyRatio=0.3,
-    relationshipWeightProperty="cost",
-    writeProperty="embedding"
+fastrp_result = gds.fast_rp.write(
+    G,                                  #  Graph object
+    feature_properties=["community"],   #  Configuration parameters
+    embedding_dimension=256,
+    property_ratio=0.3,
+    relationship_weight_property="cost",
+    write_property="embedding"
 )
-assert fastrp_result["nodePropertiesWritten"] == G.node_count()
+assert fastrp_result.node_properties_written == G.node_count()
 ----
 
 Some algorithms deviate from the standard syntactic structure.
@@ -103,25 +103,25 @@ The Python client has special support for working with such models, which we des
 Some algorithms take (database) node ids as inputs.
 These node ids must be matched directly from the Neo4j database.
 This is straight-forward when working in Cypher.
-In the Python client there is a convenience method `gds.find_node_id` to retrieve a node id based on node labels and property key-value pairs.
+In the Python client there is a convenience method link:{gds-api-uri}/endpoints/util_endpoints/#graphdatascience.procedure_surface.api.util_endpoints.UtilEndpoints.find_node_id[`gds.util.find_node_id`] to retrieve a node id based on node labels and property key-value pairs.
 
 For example, to find a source and target node of a graph `G` with cities to run https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/[Dijkstra Source-Target Shortest Path] on, we could do the following:
 
 [source,python,group=algo]
 ----
-source_id = gds.find_node_id(["City"], {"name": "New York City"})
-target_id = gds.find_node_id(["City"], {"name": "Boston"})
+source_id = gds.util.find_node_id(["City"], {"name": "New York City"})
+target_id = gds.util.find_node_id(["City"], {"name": "Boston"})
 
-result = gds.shortestPath.dijkstra.stream(
+result = gds.shortest_path.dijkstra.stream(
     G,
-    sourceNode=source_id,
-    targetNode=target_id,
-    relationshipWeightProperty="cost"
+    source_node=source_id,
+    target_nodes=target_id,
+    relationship_weight_property="cost"
 )
 assert result["totalCost"][0] == 160
 ----
 
-`gds.find_node_id` takes a list of node labels and a dictionary of node property key-value pairs.
+`gds.util.find_node_id` takes a list of node labels and a dictionary of node property key-value pairs.
 The nodes found are those that have all labels specified and fully match all property key-value pairs given.
 Note that exactly one node per method call must be matched, otherwise an error will be raised.
 
@@ -132,7 +132,7 @@ The Python call:
 
 [source,python,group=algo]
 ----
-gds.find_node_id(["City", "Capital"], {"settled": 1790, "name": "Washington D.C."})
+gds.util.find_node_id(["City", "Capital"], {"settled": 1790, "name": "Washington D.C."})
 ----
 
 is exactly equivalent to the Cypher statement:
@@ -156,9 +156,9 @@ For example, to run the Adamic Adar algorithm, we can use the following:
 
 [source,python,group=algo]
 ----
-node1 = gds.find_node_id(["City"], {"name": "Boston"})
-node2 = gds.find_node_id(["City"], {"name": "Atlantic City"})
+node1 = gds.util.find_node_id(["City"], {"name": "Boston"})
+node2 = gds.util.find_node_id(["City"], {"name": "Atlantic City"})
 
-score = gds.alpha.linkprediction.adamicAdar(node1, node2)
+score = gds.topological_link_prediction.adamic_adar(node1, node2)
 assert round(score, 2) == 0.62
 ----

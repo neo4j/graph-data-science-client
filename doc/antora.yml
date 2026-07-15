@@ -7,3 +7,5 @@ nav:
 asciidoc:
   attributes:
     docs-version: '1.23'
+    # locally-served refdocs. Production/publish inherits this value.
+    gds-api-uri: '{neo4j-docs-base-uri}/graph-data-science-client/{docs-version}/api@'

@@ -1,17 +1,27 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'logger'
 require 'open3'
 require 'asciidoctor'
 require 'minitest/autorun'
 
+# Progress logging goes to stderr so it interleaves with (but does not corrupt) the
+# Minitest report on stdout. Set DOC_TEST_LOGLEVEL=DEBUG for per-script logging.
+LOGGER = Logger.new($stderr)
+LOGGER.level = ENV.fetch('DOC_TEST_LOGLEVEL', 'INFO')
+LOGGER.formatter = proc do |severity, datetime, _progname, msg|
+  "#{datetime.strftime('%Y-%m-%d %H:%M:%S')} #{severity.ljust(5)} #{msg}\n"
+end
+
+# Boilerplate prepended to every doc snippet: connect a GraphDataScience object to the
+# plugin/self-managed Neo4j database configured via the NEO4J_* env vars.
 INIT_GDS = '
 import os
 
 import pandas
 
-from graphdatascience import GraphDataScience
-from graphdatascience.graph.v2.graph_api import ServerVersion
+from graphdatascience import GraphDataScience, ServerVersion
 
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
 URI_TLS = os.environ.get("NEO4J_URI", "bolt+ssc://localhost:7687")
@@ -26,26 +36,49 @@ gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 gds.set_database("neo4j")
 '
 
+# Reset the database/catalog after each snippet so tests stay independent.
+# Written against the 2.0 typed API (no `beta` namespace; typed result objects; snake_case kwargs).
 CLEAN_UP = '
 finally:
-    res = gds.graph.list()
-    for graph_name in res["graphName"]:
-        gds.graph.get(graph_name).drop(failIfMissing=True)
-    res = gds.beta.pipeline.list()
-    for pipeline_name in res["pipelineName"]:
-        gds.pipeline.get(pipeline_name).drop(failIfMissing=True)
-    res = gds.beta.model.list()
-    for model_info in res["modelInfo"]:
-        model = gds.model.get(model_info["modelName"])
-        if (model.stored()):
-            gds.model.delete(model)
-        if (model.exists()):
-            model.drop(failIfMissing=True)
+    for graph_info in gds.graph.list():
+        gds.graph.drop(graph_info.graph_name, fail_if_missing=False)
+    for pipeline_entry in gds.pipeline.list():
+        gds.pipeline.drop(pipeline_entry.pipeline_name, fail_if_missing=False)
+    for model_details in gds.model.list():
+        if model_details.stored:
+            gds.model.delete(model_details.model_name)
+        gds.model.drop(model_details.model_name, fail_if_missing=False)
     gds.run_cypher("MATCH (n) DETACH DELETE (n)")
 '
 
+# The doc tests target the plugin/self-managed deployment. Snippets nested inside an Aura Graph
+# Analytics or AuraDS tab are skipped, since they use session/Aura-specific setup.
+NON_PLUGIN_TAB_ROLES = %w[
+  include-with-Aura-Graph-Analytics
+  include-with-attached
+  include-with-self-managed
+  include-with-standalone
+  include-with-AuraDS
+].freeze
+
+# A block is eligible when it is not nested inside a non-plugin deployment tab
+# (i.e. it is an untabbed snippet or lives in the `include-with-Neo4j-server` tab).
+def plugin_eligible?(block)
+  node = block
+  while node
+    roles = node.respond_to?(:roles) ? node.roles : []
+    return false if (roles & NON_PLUGIN_TAB_ROLES).any?
+
+    node = node.parent
+  end
+  true
+end
+
 def doc_files
-  Dir["#{__dir__}/../modules/ROOT/pages/**/*.adoc"]
+  files = Dir["#{__dir__}/../modules/ROOT/pages/**/*.adoc"]
+  # Optional substring filter to iterate on a single page, e.g. DOC_TEST_FILE=pipelines
+  filter = ENV.fetch('DOC_TEST_FILE', nil)
+  filter ? files.select { |f| f.include?(filter) } : files
 end
 
 def add_to_group(scripts_by_group, block)
@@ -79,16 +112,28 @@ def block_to_raw_code(block)
   end
 end
 
-def filter_source_blocks(source_blocks, scope)
-  testable_source_blocks = source_blocks.select { |b| !b.has_role?('no-test') && b.attr('language') == 'python' }
-  testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'enterprise' } unless scope == :enterprise
-  testable_source_blocks = testable_source_blocks.reject { |b| b.attr? 'session' }
+# A block is testable if it is a runnable python source block for the current deployment
+# lane and is not opted out via the `no-test` role or the `session` attribute.
+def testable?(block)
+  !block.has_role?('no-test') &&
+    block.attr('language') == 'python' &&
+    plugin_eligible?(block) &&
+    !block.attr?('session')
+end
 
+# networkx-tagged blocks are run exclusively in the :networkx scope, and excluded elsewhere.
+def filter_by_networkx(blocks, scope)
   if scope == :networkx
-    testable_source_blocks.select { |b| b.attr? 'networkx' }
+    blocks.select { |b| b.attr? 'networkx' }
   else
-    testable_source_blocks.reject { |b| b.attr? 'networkx' }
+    blocks.reject { |b| b.attr? 'networkx' }
   end
+end
+
+def filter_source_blocks(source_blocks, scope)
+  blocks = source_blocks.select { |b| testable?(b) }
+  blocks = blocks.reject { |b| b.attr? 'enterprise' } unless scope == :enterprise
+  filter_by_networkx(blocks, scope)
 end
 
 def scripts_of_file(path, scope)
@@ -118,16 +163,54 @@ end
 
 class DocTest < Minitest::Test
   def run_doc_scripts(scope)
-    files = doc_files
+    failures = []
 
-    files.each do |f|
-      scripts = scripts_of_file(f, scope)
+    # Only files that actually contain testable snippets, so the progress numbering is contiguous.
+    testable = doc_files.map { |f| [f, scripts_of_file(f, scope)] }.reject { |_f, scripts| scripts.empty? }
+    total = testable.sum { |_f, scripts| scripts.size }
 
-      scripts.each do |s|
-        # stdout, stderr, status = Open3.capture3 "#{ARGV[0]} -c '#{s}'"
-        # assert status == 0,
-        # "A doc test of file '#{f}' failed:\n\nTest script: #{s}\nstdout: #{stdout}\nstderr: #{stderr}"
-      end
+    LOGGER.info(
+      "Running doc tests (scope=#{scope}): #{total} script(s) across #{testable.size} file(s)"
+    )
+
+    testable.each_with_index do |(f, scripts), idx|
+      run_file(f, idx + 1, testable.size, scripts, failures)
+    end
+
+    LOGGER.info("Executed #{total} script(s) across #{testable.size} file(s); #{failures.size} failed")
+
+    # Report every broken snippet at once rather than stopping at the first, so a
+    # contributor sees the full list of docs to fix in a single run.
+    assert failures.empty?, "#{failures.size} doc test(s) failed:\n\n#{failures.join("\n\n#{'-' * 80}\n\n")}"
+  end
+
+  def run_file(path, position, total_files, scripts, failures)
+    name = File.basename(path)
+    LOGGER.info("[#{position}/#{total_files}] #{name}: running #{scripts.size} script(s)")
+    before = failures.size
+
+    scripts.each_with_index { |s, i| run_script(path, s, i + 1, scripts.size, failures) }
+
+    failed = failures.size - before
+    if failed.zero?
+      LOGGER.info("  #{name}: all #{scripts.size} script(s) passed")
+    else
+      LOGGER.error("  #{name}: #{failed}/#{scripts.size} script(s) failed")
+    end
+  end
+
+  def run_script(path, script, position, total, failures)
+    started = Time.now
+    # Feed the script via stdin rather than `python -c '...'`: the `-c` wrapper
+    # corrupts any snippet containing single quotes.
+    stdout, stderr, status = Open3.capture3(ARGV[0], stdin_data: script)
+    elapsed = Time.now - started
+
+    if status.success?
+      LOGGER.debug("  script #{position}/#{total} passed (#{elapsed.round(1)}s)")
+    else
+      LOGGER.error("  script #{position}/#{total} failed (#{elapsed.round(1)}s)")
+      failures << "A doc test of file '#{path}' failed:\n\nTest script: #{script}\nstdout: #{stdout}\nstderr: #{stderr}"
     end
   end
 

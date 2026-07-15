@@ -118,7 +118,7 @@ gds.run_cypher(
 
 [source, python, role=no-test]
 ----
-G, result = gds.graph.project("airline", "City", "HAS_FLIGHT_TO")
+G, result = gds.graph.project.native("airline", "City", "HAS_FLIGHT_TO")
 
 print(f"The projection took {result.project_millis} ms")
 

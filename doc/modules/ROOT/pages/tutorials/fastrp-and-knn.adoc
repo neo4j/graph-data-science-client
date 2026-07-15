@@ -156,7 +156,7 @@ print(f"Required memory for native loading: {result.required_memory}")
 [source, python, role=no-test]
 ----
 # For this small graph memory requirement is low. Let us go through with the projection
-G, result = gds.graph.project("purchases", node_projection, relationship_projection)
+G, result = gds.graph.project.native("purchases", node_projection, relationship_projection)
 
 print(f"The projection took {result.project_millis} ms")
 
