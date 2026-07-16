@@ -11,6 +11,8 @@ Use the Neo4j URI and credentials according to your setup.
 ====
 [.include-with-Neo4j-server]
 =====
+If you are connecting to a Neo4j database with the link:{gds-docs-base-uri}/installation/neo4j-server/[GDS Plugin] installed.
+
 [source, python, role=no-test]
 ----
 from graphdatascience import GraphDataScience
@@ -110,6 +112,8 @@ gds.verify_connectivity()
 ----
 print(gds.server_version())
 ----
+
+AuraDS instances always use the lastest version of GDS.
 =====
 ====
 
@@ -152,13 +156,12 @@ The following example shows how to use the `GraphDataScience` object to:
 
 [.tabbed-example]
 ====
-[.include-with-Neo4j-server]
+[.include-with-Neo4j-Server-and-AuraDS]
 =====
 
-[source, python, role=no-test]
+[source, python]
 ----
 # Create a minimal example graph.
-# The method returns a Pandas `DataFrame`.
 gds.run_cypher(
   """
   CREATE
@@ -174,24 +177,22 @@ gds.run_cypher(
 
 # Create an in-memory graph called `neo4j-offices` and
 # a `G_office` object representing the projected graph.
-G_office, project_result = gds.graph.project.native("neo4j-offices", "City", "FLY_TO")
+G_office, project_result = gds.graph.project.native("neo4j-offices", node_projection="City", relationship_projection="FLY_TO")
 
 # Run the `mutate` mode of the PageRank algorithm.
-mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")
+mutate_result = gds.page_rank.mutate(G_office, tolerance=0.5, mutate_property="rank")
 
-# Inspect the node properties of the projected graph
-# via the graph object to confirm that a new property has been created.
-assert G_office.node_properties("City") == ["rank"]
+# Inspect the node properties of the projected graph to confirm that a new property has been created.
+assert G_office.node_properties()["City"] == ["rank"]
 ----
 =====
 
 [.include-with-Aura-Graph-Analytics]
 =====
 
-[source, python, role=no-test]
+[source, python]
 ----
 # Create a minimal example graph.
-# The method returns a Pandas `DataFrame`.
 gds.run_cypher(
   """
   CREATE
@@ -207,66 +208,17 @@ gds.run_cypher(
 
 # Create an in-memory graph called `neo4j-offices` and
 # a `G_office` object representing the projected graph.
-# The Cypher query must contain the `gds.graph.project.remote()` function
-# to project the graph into the GDS Session.
 G_office, project_result = gds.graph.project.native(
     graph_name="my-graph",
-    query="""
-    CALL () {
-        MATCH (from:City)
-        OPTIONAL MATCH (from)-[r:FLY_TO]->(to:City)
-        RETURN from AS source, r AS rel, to AS target, {} AS sourceNodeProperties, {} AS targetNodeProperties
-    }
-    RETURN gds.graph.project.remote(source, target, {
-      sourceNodeProperties: sourceNodeProperties,
-      targetNodeProperties: targetNodeProperties,
-      sourceNodeLabels: labels(source),
-      targetNodeLabels: labels(target),
-      relationshipType: type(rel),
-      relationshipProperties: properties(rel)
-    })
-    """,
+    node_label_filter="City",
+    relationship_type_filter="FLY_TO"
 )
 
 # Run the `mutate` mode of the PageRank algorithm.
-mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")
+mutate_result = gds.page_rank.mutate(G_office, tolerance=0.5, mutate_property="rank")
 
-# Inspect the node properties of the projected graph
-# via the graph object to confirm that a new property has been created.
-assert G_office.node_properties("City") == ["rank"]
-----
-=====
-
-[.include-with-AuraDS]
-=====
-
-[source, python, role=no-test]
-----
-# Create a minimal example graph.
-# The method returns a Pandas `DataFrame`.
-gds.run_cypher(
-  """
-  CREATE
-    (m: City {name: "Malmö"}),
-    (l: City {name: "London"}),
-    (s: City {name: "San Mateo"}),
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
-  """
-)
-
-# Create an in-memory graph called `neo4j-offices` and
-# a `G_office` object representing the projected graph.
-G_office, project_result = gds.graph.project.native("neo4j-offices", "City", "FLY_TO")
-
-# Run the `mutate` mode of the PageRank algorithm.
-mutate_result = gds.pageRank.mutate(G_office, tolerance=0.5, mutateProperty="rank")
-
-# Inspect the node properties of the projected graph
-# via the graph object to confirm that a new property has been created.
-assert G_office.node_properties("City") == ["rank"]
+# Inspect the node properties of the projected graph to confirm that a new property has been created.
+assert G_office.node_properties()["City"] == ["rank"]
 ----
 =====
 ====
@@ -281,7 +233,7 @@ See the xref:common-datasets.adoc[] chapter for more on this.
 
 [.tabbed-example]
 ====
-[.include-with-Neo4j-server]
+[.include-with-Neo4j-Server-and-AuraDS]
 =====
 
 [source, python, role=no-test]
@@ -298,23 +250,9 @@ The `close` method is also called automatically when the `GraphDataScience` obje
 
 [source, python, role=no-test]
 ----
-# Delete the session to tear down the associated remote instance
-# and close the connection
-sessions.delete(session_name="my-session")
-
-# In alternative, use `gds.delete()`
+# Delete the session to tear down the associated remote Aura Graph Analytics Session
+# alternatively use sessions.delete(session_name="my-session")
+gds.delete()
 ----
-=====
-
-[.include-with-AuraDS]
-=====
-
-[source, python, role=no-test]
-----
-# Close any open connections in the underlying Neo4j driver's connection pool
-gds.close()
-----
-
-The `close` method is also called automatically when the `GraphDataScience` object is deleted.
 =====
 ====
