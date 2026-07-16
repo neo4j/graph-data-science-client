@@ -176,7 +176,7 @@ def test_node_regression_train_runs_query() -> None:
     graph = mock.Mock()
     graph.name.return_value = "g"
 
-    from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModel
+    from graphdatascience.procedure_surface.api.pipeline.node_regression_model import NodeRegressionModel
     from graphdatascience.procedure_surface.cypher.pipeline.node_regression_pipeline_cypher_endpoints import (
         NodeRegressionPipelineCypherEndpoints,
     )

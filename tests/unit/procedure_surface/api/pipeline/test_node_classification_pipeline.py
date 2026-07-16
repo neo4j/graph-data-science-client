@@ -1,6 +1,6 @@
 from unittest import mock
 
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
+from graphdatascience.procedure_surface.api.pipeline.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import NodeClassificationPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,

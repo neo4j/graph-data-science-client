@@ -542,7 +542,7 @@ G = gds.graph.construct(
 
 Native projections allow you to efficiently project graphs directly from your underlying database storage into your GDS session. By bypassing query-based filtering, they offer the highest performance and scalability for bulk graph loading. 
 
-For comprehensive details on how these projections work and when to use them, see the GDS manual on link:https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/cypher/#_native_projections[Native projections in Aura Graph Analytics].
+For comprehensive details on how these projections work and when to use them, see the GDS manual on link:link:{gds-docs-base-uri}/aura-graph-analytics/cypher/#_native_projections[Native projections in Aura Graph Analytics].
 
 .Native projection:
 [source, role=no-test]

@@ -3,13 +3,13 @@ from __future__ import annotations
 from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.model_catalog_protocol import ModelCatalogProtocol
-from graphdatascience.procedure_surface.api.model.pipeline_model import PipelineModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_endpoints import (
     LinkPredictionPipelinePredictEndpoints,
     LinkPredictionPipelinePredictMutateResult,
 )
+from graphdatascience.procedure_surface.api.pipeline.pipeline_model import PipelineModel
 
 
 class LinkPredictionModel(PipelineModel):

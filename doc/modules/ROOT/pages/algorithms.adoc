@@ -78,7 +78,7 @@ We describe how to use them in the Python client in the sections below.
 == Execution modes
 
 Algorithms return results in a format that is controlled by its execution mode.
-These modes are explained in some detail in https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/[Running algorithms].
+These modes are explained in some detail in link:{gds-docs-base-uri}/common-usage/running-algos/[Running algorithms].
 In the Python client, the `stats`, `mutate` and `write` modes return a typed pydantic object such as link:{gds-api-uri}/endpoints/centrality_endpoints/#graphdatascience.procedure_surface.api.centrality.PageRankMutateResult[`PageRankMutateResult`].
 
 
@@ -94,7 +94,7 @@ Some algorithms produce particularly sizeable results, for example node embeddin
 
 === Train
 
-The `train` mode is used for algorithms that produce a machine learning model into the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog].
+The `train` mode is used for algorithms that produce a machine learning model into the link:{gds-docs-base-uri}/model-catalog/[GDS Model Catalog].
 The Python client has special support for working with such models, which we describe in xref:model-object.adoc[The model object].
 
 
@@ -105,7 +105,7 @@ These node ids must be matched directly from the Neo4j database.
 This is straight-forward when working in Cypher.
 In the Python client there is a convenience method link:{gds-api-uri}/endpoints/util_endpoints/#graphdatascience.procedure_surface.api.util_endpoints.UtilEndpoints.find_node_id[`gds.util.find_node_id`] to retrieve a node id based on node labels and property key-value pairs.
 
-For example, to find a source and target node of a graph `G` with cities to run link:https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/[Dijkstra Source-Target Shortest Path] on, we could do the following:
+For example, to find a source and target node of a graph `G` with cities to run link:link:{gds-docs-base-uri}/algorithms/dijkstra-source-target/[Dijkstra Source-Target Shortest Path] on, we could do the following:
 
 [source,python,group=algo]
 ----
@@ -148,7 +148,7 @@ To do more advanced matching beyond the capabilities of `find_node_id()` we reco
 
 == Topological link prediction
 
-The methods for doing https://neo4j.com/docs/graph-data-science/current/algorithms/linkprediction/[Topological link prediction] are a bit different.
+The methods for doing link:{gds-docs-base-uri}/algorithms/linkprediction/[Topological link prediction] are a bit different.
 Just like in the GDS procedure API they do not take a graph as an argument, but rather two node references as positional arguments.
 And they simply return the similarity score of the prediction just made as a float - not any kind of pandas data structure.
 

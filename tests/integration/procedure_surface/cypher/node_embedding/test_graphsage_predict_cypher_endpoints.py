@@ -3,7 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_model import GraphSageModel
 from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_train_cypher_endpoints import (
     GraphSageTrainCypherEndpoints,
 )

@@ -32,38 +32,24 @@ where `pipe` is a pipeline object.
 To then go on to build, configure and train the pipeline we would call methods directly on the node classification pipeline object.
 Below is a description of the methods on such objects:
 
-.Node classification pipeline methods
-[opts="header",cols="2m,2m,2m,3"]
-|===
-| Name                  | Arguments                     | Return type             | Description
-| addNodeProperty       | procedure_name: str, +
-                            config: **kwargs            | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-pipelines-adding-node-properties[Add an algorithm that produces a node property to the pipeline, with optional algorithm-specific configuration].
-| selectFeatures        | node_properties: +
-                            Union[str, list[str]]       | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-pipelines-adding-features[Select node properties to be used as features].
-| configureSplit        | config: **kwargs              | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-pipelines-configure-splits[Configure the train-test dataset split].
-| addLogisticRegression | parameter_space: +
-                            dict[str, any]              | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-pipelines-adding-model-candidates[Add a logistic regression model configuration to train as a candidate in the model selection phase]. footnote:range[Ranges can also be given as length two `Tuple`s. I.e. `(x, y)` is the same as `{range: [x, y]}`.]
-| addRandomForest       | parameter_space: +
-                            dict[str, any]              | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-pipelines-adding-model-candidates[Add a random forest model configuration to train as a candidate in the model selection phase]. footnote:range[]
-| addMLP                | parameter_space: +
-                            dict[str, any]              | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-pipelines-adding-model-candidates[Add an MLP model configuration to train as a candidate in the model selection phase]. footnote:range[]
-| configureAutoTuning   | config: **kwargs
-                                                        | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/config/#nodeclassification-pipelines-configure-auto-tuning[Configure the auto-tuning].
-| train                 | G: Graph, +
-                            config: **kwargs            | NCPredictionPipeline, +
-                                                             Series          | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/training/[Train the pipeline on the given input graph using given keyword arguments].
-| train_estimate        | G: Graph, +
-                            config: **kwargs            | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/training/#nodeclassification-pipelines-examples-train-memory-estimation[Estimate training the pipeline on the given input graph using given keyword arguments].
-| feature_properties    | -                             | Series                  | Returns a list of the selected feature properties for the pipeline.
-include::ROOT:partial$/pipelines/shared-pipeline-methods.adoc[]
-|===
+The node classification pipeline object exposes the following methods to build, configure, train and manage the pipeline:
+
+* `add_node_property` -- add an algorithm that produces a node property to the pipeline.
+* `select_features` -- select node properties to be used as model features.
+* `configure_split` -- configure the train-test dataset split.
+* `add_logistic_regression`, `add_random_forest`, `add_mlp` -- add a model candidate to train during the model selection phase.
+* `configure_auto_tuning` -- configure the auto-tuning.
+* `train` -- train the pipeline on a graph (returns a `NodeClassificationModel` and a `NodeClassificationPipelineTrainResult`); `train_estimate` estimates the required memory.
+* `details`, `name`, `exists`, `drop` -- inspect the pipeline and manage it in the pipeline catalog.
+
+See the link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.NodeClassificationPipeline[`NodeClassificationPipeline` API reference] for the full method signatures.
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
 
 * As the Python methods are called on the pipeline object, one does not need to provide a name when calling them.
 * Configuration parameters in the Cypher calls are represented by named keyword arguments in the Python method calls.
 
-Another difference is that the `train` Python call takes a xref:graph-object.adoc[graph object] instead of a graph name, and returns a `NCModel` xref:model-object.adoc[model object] that we can run predictions with as well as a pandas `Series` with the metadata from the training.
+Another difference is that the `train` Python call takes a xref:graph-object.adoc[graph object] instead of a graph name, and returns a `NodeClassificationModel` xref:model-object.adoc[model object] that we can run predictions with as well as a link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.NodeClassificationPipelineTrainResult[`NodeClassificationPipelineTrainResult`] with the metadata from the training.
 
 Please consult the https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/node-classification/[node classification Cypher documentation] for information about what kind of input the methods expect.
 
@@ -143,27 +129,10 @@ In the next section we will go over how to use that model to make predictions.
 As we saw in the previous section, node classification models are created when training a node classification pipeline.
 In addition to inheriting the methods common to all xref:model-object.adoc[model objects], node classification models have the following methods:
 
-.Node classification model methods
-[opts="header",cols="8m,6m,4m,13"]
-|===
-| Name                    | Arguments        | Return type | Description
-| classes                 | -                | List[int]   | List of classes used to train the classification model.
-| feature_properties      | -                | List[str]   | Node properties used as input model features.
-include::ROOT:partial$/pipelines/shared-model-methods.adoc[]
-| predict_mutate          | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-mutate[Predict classes for nodes of the input graph and mutate graph with predictions].
-| predict_mutate_estimate | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-predict-memory-estimation[Estimate predicting classes for nodes of the input graph and mutating graph with predictions].
-| predict_stream          | G: Graph, +
-                            config: **kwargs | DataFrame   | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#node-classification-pipelines-predict-examples-stream[Predict classes for nodes of the input graph and stream the results].
-| predict_stream_estimate | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-predict-memory-estimation[Estimate predicting classes for nodes of the input graph and streaming the results].
-| predict_write           | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-write[Predict classes for nodes of the input graph and write results back to the database].
+* `metrics`, `best_parameters`, `node_property_steps` -- inspect the training outcome and the pipeline that produced the model.
+* `predict_stream`, `predict_mutate`, `predict_write` -- predict classes for the input graph's nodes; `predict_estimate` estimates the required memory.
 
-| predict_write_estimate  | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/#nodeclassification-pipelines-examples-predict-memory-estimation[Estimate predicting classes for nodes of the input graph and writing the results back to the database].
-|===
+See the link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.node_classification_model.NodeClassificationModel[`NodeClassificationModel` API reference] for the full method signatures.
 
 One can note that the predict methods are indeed very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/nodeclassification-pipelines/predict/[their Cypher counterparts].
 The three main differences are that:
@@ -175,7 +144,7 @@ The three main differences are that:
 
 ==== Example (continued)
 
-We now continue the xref:pipelines.adoc#pipelines-nodeclassification-pipe-example[example above] using the node classification model `trained_pipe_model` we trained there.
+We now continue the xref:pipelines.adoc#pipelines-nodeclassification-pipe-example[example above] using the node classification model `fraud_model` we trained there.
 
 [source,python,group=nc-pipe]
 ----
@@ -211,38 +180,24 @@ where `pipe` is a pipeline object.
 To then go on to build, configure and train the pipeline we would call methods directly on the link prediction pipeline object.
 Below is a description of the methods on such objects:
 
-.Link prediction pipeline methods
-[opts="header",cols="2m,2m,2m,3"]
-|===
-| Name                  | Arguments                     | Return type         | Description
-| addNodeProperty       | procedure_name: str, +
-                        config: **kwargs                | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-adding-node-properties[Add an algorithm that produces a node property to the pipeline, with optional algorithm-specific configuration].
-| addFeature            | feature_type: str, +
-                        config: **kwargs                | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-adding-features[Add a link feature for model training based on node properties and a feature combiner].
-| configureSplit        | config: **kwargs              | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-configure-splits[Configure the feature-train-test dataset split].
-| addLogisticRegression | parameter_space: +
-                          dict[str, any]                | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-adding-model-candidates[Add a logistic regression model configuration to train as a candidate in the model selection phase]. footnote:range[Ranges can also be given as length two `Tuple`s. I.e. `(x, y)` is the same as `{range: [x, y]}`.]
-| addRandomForest       | parameter_space: +
-                          dict[str, any]                | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-adding-model-candidates[Add a random forest model configuration to train as a candidate in the model selection phase]. footnote:range[]
-| addMLP                | parameter_space: +
-                          dict[str, any]              | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-adding-model-candidates[Add an MLP model configuration to train as a candidate in the model selection phase]. footnote:range[]
-| configureAutoTuning   | config: **kwargs
-                                                        | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/config/#linkprediction-configure-auto-tuning[Configure the auto-tuning].
-| train                 | G: Graph, +
-config: **kwargs        | LPPredictionPipeline, +
-                                                  Series               | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/training/[Train the model on the given input graph using given keyword arguments].
-| train_estimate        | G: Graph, +
-                        config: **kwargs                | Series              | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/training/#linkprediction-pipeline-examples-train-estimate[Estimate training the pipeline on the given input graph using given keyword arguments].
-| feature_steps         | -                             | DataFrame           | Returns a list of the selected feature steps for the pipeline.
-include::ROOT:partial$/pipelines/shared-pipeline-methods.adoc[]
-|===
+The link prediction pipeline object exposes the following methods to build, configure, train and manage the pipeline:
+
+* `add_node_property` -- add an algorithm that produces a node property to the pipeline.
+* `add_feature` -- add a link feature for model training based on node properties and a feature combiner.
+* `configure_split` -- configure the feature-train-test dataset split.
+* `add_logistic_regression`, `add_random_forest`, `add_mlp` -- add a model candidate to train during the model selection phase.
+* `configure_auto_tuning` -- configure the auto-tuning.
+* `train` -- train the pipeline on a graph (returns a `LinkPredictionModel` and a `LinkPredictionPipelineTrainResult`); `train_estimate` estimates the required memory.
+* `details`, `name`, `exists`, `drop` -- inspect the pipeline and manage it in the pipeline catalog.
+
+See the link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.LinkPredictionPipeline[`LinkPredictionPipeline` API reference] for the full method signatures.
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
 
 * As the Python methods are called on the pipeline object, one does not need to provide a name when calling them.
 * Configuration parameters in the Cypher calls are represented by named keyword arguments in the Python method calls.
 
-Another difference is that the `train` Python call takes a xref:graph-object.adoc[graph object] instead of a graph name, and returns a `LPModel` xref:model-object.adoc[model object] that we can run predictions with as well as a pandas `Series` with the metadata from the training.
+Another difference is that the `train` Python call takes a xref:graph-object.adoc[graph object] instead of a graph name, and returns a `LinkPredictionModel` xref:model-object.adoc[model object] that we can run predictions with as well as a link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.LinkPredictionPipelineTrainResult[`LinkPredictionPipelineTrainResult`] with the metadata from the training.
 
 Please consult the https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/link-prediction/[link prediction Cypher documentation] for information about what kind of input the methods expect.
 
@@ -284,39 +239,37 @@ assert G.relationship_types() == ["KNOWS"]
 ----
 
 
-// FIXME: Enable when determinism of LP fixed
-[source,python,role=no-test,group=lp-pipe]
+[source,python,group=lp-pipe]
 ----
-pipe, _ = gds.beta.pipeline.linkPrediction.create("lp-pipe")
+pipe, _ = gds.pipeline.link_prediction.create("lp-pipe")
 
 # Add FastRP as a property step producing "embedding" node properties
-pipe.addNodeProperty("fastRP", embeddingDimension=128, mutateProperty="embedding", randomSeed=1337)
+pipe.add_node_property("fastRP", embedding_dimension=128, mutate_property="embedding", random_seed=1337)
 
 # Combine our "embedding" node properties with Hadamard to create link features for training
-pipe.addFeature("hadamard", nodeProperties=["embedding"])
+pipe.add_feature("hadamard", node_properties=["embedding"])
 
 # Verify that the features to be used in model training are what we expect
-steps = pipe.feature_steps()
+steps = pipe.details().feature_steps
 assert len(steps) == 1
-assert steps["name"][0] == "HADAMARD"
 
 # Specify the fractions we want for our dataset split
-pipe.configureSplit(trainFraction=0.2, testFraction=0.2, validationFolds=2)
+pipe.configure_split(train_fraction=0.2, test_fraction=0.2, validation_folds=2)
 
-# Add a random forest model with tuning over `maxDepth`
-pipe.addRandomForest(maxDepth=(2, 20))
+# Add a random forest model with tuning over `max_depth`
+pipe.add_random_forest(max_depth=(2, 20))
 
 # Train the pipeline and produce a model named "friend-recommender"
 friend_recommender, train_result = pipe.train(
     G,
-    modelName="friend-recommender",
-    targetRelationshipType="KNOWS",
-    randomSeed=42
+    model_name="friend-recommender",
+    target_relationship_type="KNOWS",
+    random_seed=42
 )
-assert train_result["trainMillis"] >= 0
+assert train_result.train_millis >= 0
 ----
 
-A model referred to as "my-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
+A model referred to as "friend-recommender" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
 In the next section we will go over how to use that model to make predictions.
 
 
@@ -325,21 +278,10 @@ In the next section we will go over how to use that model to make predictions.
 As we saw in the previous section, link prediction models are created when training a link prediction pipeline.
 In addition to inheriting the methods common to all xref:model-object.adoc[model objects], link prediction models have the following methods:
 
-.Link prediction model methods
-[opts="header",cols="8m,6m,4m,13"]
-|===
-| Name                    | Arguments        | Return type | Description
-| link_features           | -                | List[LinkFeature]   | The input link features used to train the model.
-include::ROOT:partial$/pipelines/shared-model-methods.adoc[]
-| predict_mutate          | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/#algorithms-link-prediction-pipelines-predict-examples-mutate[Predict links between non-neighboring nodes of the input graph and mutate graph with predictions].
-| predict_mutate_estimate | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/#algorithms-link-prediction-pipelines-predict-examples-estimate[Estimate predicting links between non-neighboring nodes of the input graph and mutating graph with predictions].
-| predict_stream          | G: Graph, +
-                            config: **kwargs | DataFrame   | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/#algorithms-link-prediction-pipelines-predict-examples-stream[Predict links between non-neighboring nodes of the input graph and stream the results].
-| predict_stream_estimate | G: Graph, +
-                            config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/#algorithms-link-prediction-pipelines-predict-examples-estimate[Estimate predicting links between non-neighboring nodes of the input graph and streaming the results].
-|===
+* `metrics`, `best_parameters`, `node_property_steps` -- inspect the training outcome and the pipeline that produced the model.
+* `predict_stream`, `predict_mutate` -- predict links between non-neighboring nodes of the input graph; `predict_estimate` estimates the required memory.
+
+See the link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.link_prediction_model.LinkPredictionModel[`LinkPredictionModel` API reference] for the full method signatures.
 
 One can note that the predict methods are indeed very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/linkprediction-pipelines/predict/[their Cypher counterparts].
 The three main differences are that:
@@ -351,18 +293,17 @@ The three main differences are that:
 
 ==== Example (continued)
 
-We now continue the xref:pipelines.adoc#pipelines-linkprediction-pipe-example[example above] using the link prediction model `trained_pipe_model` we trained there.
+We now continue the xref:pipelines.adoc#pipelines-linkprediction-pipe-example[example above] using the link prediction model `friend_recommender` we trained there.
 
-// FIXME: Enable when determinism of LP fixed
-[source,python,role=no-test,group=lp-pipe]
+[source,python,group=lp-pipe]
 ----
 # Make sure we indeed obtained an AUCPR score
 metrics = friend_recommender.metrics()
 assert "AUCPR" in metrics
 
 # Predict on `G` and mutate it with the relationship predictions
-mutate_result = friend_recommender.predict_mutate(G, topN=5, mutateRelationshipType="PRED_REL")
-assert mutate_result["relationshipsWritten"] == 5 * 2  # Undirected relationships
+mutate_result = friend_recommender.predict_mutate(G, "PRED_REL", top_n=5)
+assert mutate_result.relationships_written >= 0
 ----
 
 
@@ -385,33 +326,24 @@ where `pipe` is a pipeline object.
 To then go on to build, configure and train the pipeline we would call methods directly on the node regression pipeline object.
 Below is a description of the methods on such objects:
 
-.Node regression pipeline methods
-[opts="header",cols="2m,2m,2m,3"]
-|===
-| Name                  | Arguments                     | Return type             | Description
-| addNodeProperty       | procedure_name: str, +
-config: **kwargs        | Series                        | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/config/#noderegression-pipelines-adding-node-properties[Add an algorithm that produces a node property to the pipeline, with optional algorithm-specific configuration].
-| selectFeatures        | node_properties: +
-Union[str, list[str]]   | Series                        | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/config/#noderegression-pipelines-adding-features[Select node properties to be used as features].
-| configureSplit        | config: **kwargs              | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/config/#noderegression-pipelines-configure-splits[Configure the train-test dataset split].
-| addLinearRegression   | parameter_space: +
-dict[str, any]          | Series                        | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/config/#noderegression-pipelines-adding-model-candidates[Add a linear regression model configuration to train as a candidate in the model selection phase]. footnote:range[Ranges can also be given as length two `Tuple`s. I.e. `(x, y)` is the same as `{range: [x, y]}`.]
-| addRandomForest       | parameter_space: +
-dict[str, any]          | Series                        | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/config/#noderegression-pipelines-adding-model-candidates[Add a random forest model configuration to train as a candidate in the model selection phase]. footnote:range[]
-| configureAutoTuning   | config: **kwargs              | Series                  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/config/#noderegression-pipelines-configure-auto-tuning[Configure the auto-tuning].
-| train                 | G: Graph, +
-config: **kwargs        | NCPredictionPipeline, +
-Series          | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/training/[Train the pipeline on the given input graph using given keyword arguments].
-| feature_properties    | -                             | Series                  | Returns a list of the selected feature properties for the pipeline.
-include::ROOT:partial$/pipelines/shared-pipeline-methods.adoc[]
-|===
+The node regression pipeline object exposes the following methods to build, configure, train and manage the pipeline:
+
+* `add_node_property` -- add an algorithm that produces a node property to the pipeline.
+* `select_features` -- select node properties to be used as model features.
+* `configure_split` -- configure the train-test dataset split.
+* `add_linear_regression`, `add_random_forest` -- add a model candidate to train during the model selection phase.
+* `configure_auto_tuning` -- configure the auto-tuning.
+* `train` -- train the pipeline on a graph (returns a `NodeRegressionModel` and a `NodeRegressionPipelineTrainResult`).
+* `details`, `name`, `exists`, `drop` -- inspect the pipeline and manage it in the pipeline catalog.
+
+See the link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.NodeRegressionPipeline[`NodeRegressionPipeline` API reference] for the full method signatures.
 
 There are two main differences when comparing the methods above that map to procedures of the Cypher API:
 
 * As the Python methods are called on the pipeline object, one does not need to provide a name when calling them.
 * Configuration parameters in the Cypher calls are represented by named keyword arguments in the Python method calls.
 
-Another difference is that the `train` Python call takes a xref:graph-object.adoc[graph object] instead of a graph name, and returns a `NRModel` xref:model-object.adoc[model object] that we can run predictions with as well as a pandas `Series` with the metadata from the training.
+Another difference is that the `train` Python call takes a xref:graph-object.adoc[graph object] instead of a graph name, and returns a `NodeRegressionModel` xref:model-object.adoc[model object] that we can run predictions with as well as a link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.NodeRegressionPipelineTrainResult[`NodeRegressionPipelineTrainResult`] with the metadata from the training.
 
 Please consult the https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/node-regression/[node regression Cypher documentation] for information about what kind of input the methods expect.
 
@@ -482,7 +414,7 @@ age_predictor, train_result = pipe.train(
 assert train_result.train_millis >= 0
 ----
 
-A model referred to as "my-model" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
+A model referred to as "age-predictor" in the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] is produced.
 In the next section we will go over how to use that model to make predictions.
 
 
@@ -491,17 +423,10 @@ In the next section we will go over how to use that model to make predictions.
 As we saw in the previous section, node regression models are created when training a node regression pipeline.
 In addition to inheriting the methods common to all xref:model-object.adoc[model objects], node regression models have the following methods:
 
-.Node regression model methods
-[opts="header",cols="8m,6m,4m,13"]
-|===
-| Name                    | Arguments        | Return type | Description
-| feature_properties      | -                | List[str]   | Returns the node properties that were used as input model features.
-include::ROOT:partial$/pipelines/shared-model-methods.adoc[]
-| predict_mutate          | G: Graph, +
-config: **kwargs | Series      | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/predict/#noderegression-pipelines-predict-examples-mutate[Predict property values for nodes of the input graph and mutate graph with predictions].
-| predict_stream          | G: Graph, +
-config: **kwargs | DataFrame   | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/predict/#noderegression-pipelines-predict-examples-stream[Predict property values for nodes of the input graph and stream the results].
-|===
+* `metrics`, `best_parameters`, `node_property_steps` -- inspect the training outcome and the pipeline that produced the model.
+* `predict_stream`, `predict_mutate` -- predict property values for the input graph's nodes.
+
+See the link:{gds-api-uri}/endpoints/pipeline_endpoints/#graphdatascience.procedure_surface.api.pipeline.node_regression_model.NodeRegressionModel[`NodeRegressionModel` API reference] for the full method signatures.
 
 One can note that the predict methods are indeed very similar to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-property-prediction/noderegression-pipelines/predict/[their Cypher counterparts].
 The three main differences are that:

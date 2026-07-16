@@ -1,6 +1,6 @@
 = The graph object
 
-In order to utilize most the functionality in GDS, you must first project a graph into the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS Graph Catalog].
+In order to utilize most the functionality in GDS, you must first project a graph into the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog].
 When projecting a graph with the Python client, a client-side reference to the projected graph is returned.
 We call these references link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] objects.
 
@@ -13,7 +13,7 @@ include::ROOT:partial$/gds-object.adoc[]
 == Projecting a graph object
 
 There are several ways of projecting a graph object.
-The simplest way is to do a https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project/[native projection]:
+The simplest way is to do a link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]:
 
 [source,python,group=graph-project]
 ----
@@ -54,7 +54,7 @@ where `G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/ca
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `read_concurrency=4` above.
-Read more about the syntax in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project/#graph-project-native-syntax[GDS manual].
+Read more about the syntax in the link:{gds-docs-base-uri}/management-ops/projections/graph-project/#graph-project-native-syntax[GDS manual].
 
 Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` method that can be called in an analogous way.
 
@@ -65,7 +65,7 @@ To get a graph object that represents a graph that has already been projected in
 G = gds.graph.get("offices")
 ----
 
-For users who are https://neo4j.com/docs/graph-data-science/current/management-ops/administration/[GDS admins], `gds.graph.get` will resolve graph names into `Graph` objects also when the provided name refers to another user's graph projection.
+For users who are link:{gds-docs-base-uri}/management-ops/administration/[GDS admins], `gds.graph.get` will resolve graph names into `Graph` objects also when the provided name refers to another user's graph projection.
 
 In addition to those aforementioned there are more methods that create graph objects:
 
@@ -84,7 +84,7 @@ See <<cypher-projection>> for projecting a graph using a Cypher query.
 The method `gds.graph.project.cypher` allows for projecting a graph using Cypher projection.
 Cypher projection is not a dedicated procedure; rather it requires writing a Cypher query that calls the `gds.graph.project` aggregation function.
 
-Read more about Cypher projection in the https://neo4j.com/docs/graph-data-science/current/management-ops/projections/graph-project-cypher-projection/[GDS manual].
+Read more about Cypher projection in the link:{gds-docs-base-uri}/management-ops/projections/graph-project-cypher-projection/[GDS manual].
 
 The method `gds.graph.project.cypher` bridges the gap between `gds.run_cypher` and having to follow with `gds.graph.get`.
 
@@ -171,7 +171,7 @@ There are convenience methods on the graph object that let us extract informatio
 | size_in_bytes           | -                             | int                      | Number of bytes used in the Java heap to store the graph.
 | memory_usage            | -                             | str                      | Human-readable description of `size_in_bytes`.
 | exists                  | -                             | bool                     | Returns `True` if the graph exists in the GDS Graph Catalog, otherwise `False`.
-| drop                    | fail_if_missing: Optional[bool] | GraphInfo              | https://neo4j.com/docs/graph-data-science/current/graph-drop/[Removes the graph] from the GDS Graph Catalog.
+| drop                    | fail_if_missing: Optional[bool] | GraphInfo              | link:{gds-docs-base-uri}/graph-drop/[Removes the graph] from the GDS Graph Catalog.
 | configuration           | -                             | Series                   | The configuration used to project the graph in memory.
 | creation_time           | -                             | neo4j.time.Datetime      | Time when the graph was projected.
 | modification_time       | -                             | neo4j.time.Datetime      | Time when the graph was last modified.
@@ -209,7 +209,7 @@ assert not gds.graph.exists("tmp_offices")
 
 == Using a graph object
 
-The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS Graph Catalog].
+The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog].
 
 
 === Input to algorithms
@@ -230,7 +230,7 @@ assert result.centrality_distribution is not None
 
 === The graph catalog
 
-All procedures of the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS Graph Catalog] have corresponding Python methods in the client.
+All procedures of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog] have corresponding Python methods in the client.
 Of those catalog procedures that take a graph name string as input, their Python client equivalents instead take a `Graph` object, with the exception of `gds.graph.exists` which still takes a graph name string.
 
 Below are some examples of how the GDS Graph Catalog can be used via the client, assuming we inspect the graph `G` from the <<graph-object-degree-example, example above>>:
@@ -256,12 +256,12 @@ gds.graph.drop(G)
 
 The client methods
 
-* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
-* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
-* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
-* https://neo4j.com/docs/graph-data-science/current/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
 
-are greatly sped up if https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS is enabled.
+are greatly sped up if link:{gds-docs-base-uri}/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS is enabled.
 
 Additionally, the client only optional keyword parameter `separate_property_columns=True` (it defaults to `True`) for `gds.graph.streamNodeProperties` and `gds.graph.streamRelationshipProperties` returns a pandas `DataFrame` in which each property requested has its own column.
 Note that this is different from the default behavior for which there would only be one column called `propertyValue` that contains all properties requested interleaved for each node or relationship.
@@ -308,7 +308,7 @@ gds.graph.node_properties.stream(G, node_properties=["population"], db_node_prop
 
 ==== Streaming topology by relationship type
 
-The type returned from the Python client method corresponding to https://neo4j.com/docs/graph-data-science/current/graph-catalog-relationship-ops/#_stream[`gds.graph.relationships.stream`] is called `RelationshipsDataFrame` and inherits from the standard pandas `DataFrame`.
+The type returned from the Python client method corresponding to link:{gds-docs-base-uri}/graph-catalog-relationship-ops/#_stream[`gds.graph.relationships.stream`] is called `RelationshipsDataFrame` and inherits from the standard pandas `DataFrame`.
 `TopologyDataFrame` comes with an additional convenience method named `by_rel_type` which takes no arguments, and returns a dictionary of the form `Dict[str, List[List[int]]]`.
 This dictionary maps relationship types as strings to `2 x m` matrices where `m` here represents the number of relationhips of the given type.
 The first row of each such matrix are the source node ids of the relationships, and the second row are the corresponding target node ids.

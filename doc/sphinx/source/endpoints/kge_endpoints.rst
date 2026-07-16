@@ -5,6 +5,10 @@ Knowledge Graph Embedding Endpoints
     :members:
     :exclude-members: __init__
 
+.. autoclass:: graphdatascience.procedure_surface.api.kge.simple_rel_embedding_model.SimpleRelEmbeddingModel
+    :members:
+    :exclude-members: __init__
+
 .. autoclass:: graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.KgePredictEndpoints
     :members:
     :exclude-members: __init__

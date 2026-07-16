@@ -1,8 +1,8 @@
 = Cypher API mapping
 
 * The Python client uses Python objects and types as interfaces for GDS methods:
-** The xref:graph-object.adoc[graph object] can be used to inspect graphs from the https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/[GDS graph catalog].
-** The xref:model-object.adoc[model object] can be used to inspect models from the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS model catalog].
+** The xref:graph-object.adoc[graph object] can be used to inspect graphs from the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS graph catalog].
+** The xref:model-object.adoc[model object] can be used to inspect models from the link:{gds-docs-base-uri}/model-catalog/[GDS model catalog].
 
 +
 These objects are used in place of name strings in procedures and functions that take a graph or a model as an input.
@@ -18,4 +18,4 @@ These objects are used in place of name strings in procedures and functions that
 --
 +
 
-* `gds.version()` returns a `ServerVersion` object.
+* `gds.server_version()` returns a `ServerVersion` object.
