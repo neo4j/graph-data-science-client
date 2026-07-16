@@ -1,0 +1,181 @@
+= Migration from the 1.x series
+:page-aliases: v2_endpoints.adoc
+
+Version 2.0 of the GDS Python Client makes the V2 API the default and only API of the client.
+The V2 API was previously available in the 1.x series under the `gds.v2` prefix; as of 2.0 the prefix is gone and all endpoints are called directly on the `gds` object.
+
+Compared to the 1.x API, the client provides a more modern, type-safe, and intuitive way to interact with the Neo4j Graph Data Science library with a few key features:
+
+* **Explicit parameters**: Functions now use named, typed parameters instead of a generic `config` dictionary, making code more readable and self-documenting.
+* **Type-safe results**: Instead of generic Pandas `Series` objects, endpoints return dedicated result types, enabling better static analysis and IDE integration.
+* **Pythonic naming**: Transitioning from camelCase to snake_case for algorithm and parameter names.
+* **Improved autocompletion**: Better IDE support for discovering available endpoints and their sub-commands.
+
+This page describes the changes needed to migrate code written against the 1.x series.
+
+
+== Requirements
+
+* The minimum supported Neo4j Python driver version is now `5.26.0`.
+  The Neo4j `4.4` driver is no longer supported.
+
+
+== Migrating from the `gds.v2` preview prefix
+
+If your code already uses the V2 endpoints via the `gds.v2` prefix, migration only requires dropping the prefix:
+
+[source, python, role=no-test]
+----
+# 1.x preview
+G, result = gds.v2.graph.project.native("g", "*", "*")
+result = gds.v2.page_rank.stream(G, damping_factor=0.5)
+
+# 2.0
+G, result = gds.graph.project.native("g", "*", "*")
+result = gds.page_rank.stream(G, damping_factor=0.5)
+----
+
+All other semantics are unchanged.
+
+
+== Migrating from the 1.x default API
+
+Migrating code that uses the classic 1.x endpoints involves a few straightforward changes:
+
+* **Standardize naming**: Convert algorithm and parameter names from camelCase to snake_case (for example, replace `pageRank` with `page_rank` and `dampingFactor` with `damping_factor`).
+* **Drop tier prefixes**: The `gds.alpha` and `gds.beta` namespaces no longer exist; all endpoints are called at their top-level name (for example, replace `gds.beta.graphSage.train` with `gds.graph_sage.train`).
+* **Use typed results**: The `stats`, `mutate`, `write` and `train` modes return typed result objects instead of a pandas `Series`.
+  Access result fields directly as snake_case attributes on the returned object instead of using string keys (for example, replace `result["writeMillis"]` with `result.write_millis`).
+  The `stream` mode still returns a pandas `DataFrame`.
+
+.Migration examples
+[opts=header,cols="1a,1a"]
+|===
+| 1.x | 2.0
+
+|
+[source, python]
+----
+result: DataFrame = gds.pageRank.stream(G, dampingFactor=0.5)
+----
+|
+[source, python]
+----
+result: DataFrame = gds.page_rank.stream(G, damping_factor=0.5)
+----
+
+|
+[source, python]
+----
+result: Series = gds.wcc.mutate(G, mutateProperty="wcc")
+count = result["componentCount"]
+----
+|
+[source, python]
+----
+result: WccMutateResult = gds.wcc.mutate(G, mutate_property="wcc")
+count = result.component_count
+----
+
+|
+[source, python]
+----
+result: Series = gds.fastRP.write(G, writeProperty="fastRP", embeddingDimension=2)
+millis = result["writeMillis"]
+----
+|
+[source, python]
+----
+result: FastRPWriteResult = gds.fast_rp.write(G, write_property="fastRP", embedding_dimension=2)
+millis = result.write_millis
+----
+|===
+
+
+=== Graph projections
+
+The projection endpoints have been renamed to make the projection type explicit:
+
+* **Native projection**: `gds.graph.project` is now `gds.graph.project.native` for Plugin GDS and AuraDS and `gds.graph.project.cypher` for Aura Graph Analytics.
+* **Cypher projection**: `gds.graph.cypher.project` is now `gds.graph.project.cypher`.
+* The legacy Cypher projection (the 1.x `gds.graph.project.cypher` endpoint) has been removed.
+  Note that the name `gds.graph.project.cypher` now refers to the aggregation-based Cypher projection instead.
+  See xref:graph-object.adoc#cypher-projection[Projecting a graph using Cypher projection] for details.
+
+Both projection endpoints return a tuple of a xref:graph-object.adoc[graph object] and a typed result object, for example `GraphProjectResult`, instead of a pandas `Series`.
+
+.Projection examples
+[opts=header,cols="1a,1a"]
+|===
+| 1.x | 2.0
+
+|
+[source, python]
+----
+# Returns a (Graph, Series) tuple
+G, result = gds.graph.project(
+    "offices",
+    ["City"],
+    "FLY_TO",
+    readConcurrency=4
+)
+----
+|
+[source, python]
+----
+# Returns a (GraphV2, GraphProjectResult) tuple
+G, result = gds.graph.project.native(
+    "offices",
+    ["City"],
+    "FLY_TO",
+    read_concurrency=4
+)
+----
+
+|
+[source, python]
+----
+G, result = gds.graph.cypher.project(
+    """
+    MATCH (n:City)-[r:FLY_TO]->(m:City)
+    RETURN gds.graph.project('offices', n, m)
+    """
+)
+----
+|
+[source, python]
+----
+G, result = gds.graph.project.cypher(
+    """
+    MATCH (n:City)-[r:FLY_TO]->(m:City)
+    RETURN gds.graph.project('offices', n, m)
+    """
+)
+----
+|===
+
+
+=== Machine learning pipelines and models
+
+Pipelines are now created via the `gds.pipeline` namespace, and the pipeline and model objects expose snake_case methods:
+
+* `gds.beta.pipeline.nodeClassification.create` (or the `gds.nc_pipe` shorthand) is now `gds.pipeline.node_classification.create`.
+* `gds.beta.pipeline.linkPrediction.create` (or the `gds.lp_pipe` shorthand) is now `gds.pipeline.link_prediction.create`.
+* Methods on pipeline objects follow snake_case, for example `addNodeProperty` is now `add_node_property` and `selectFeatures` is now `select_features`.
+* GraphSAGE training moved from `gds.beta.graphSage.train` to `gds.graph_sage.train`, and trained models are retrieved with `gds.graph_sage.get` instead of `gds.model.get`.
+* Model catalog operations are available directly on the model object, for example `model.store()`, `model.load()` and `model.drop()` instead of `gds.model.store(model)`, `gds.model.load(model.name())` and `gds.model.drop(model)`.
+
+See xref:pipelines.adoc[] and xref:model-object.adoc[] for the full API.
+
+
+=== Utility functions
+
+* `gds.find_node_id` is now `gds.util.find_node_id`.
+* Topological link prediction functions moved from `gds.alpha.linkprediction` to `gds.topological_link_prediction`, for example `gds.alpha.linkprediction.adamicAdar` is now `gds.topological_link_prediction.adamic_adar`.
+
+
+=== Running Cypher
+
+The `retryable` parameter of `gds.run_cypher` has been removed.
+Cypher queries run via `run_cypher` now always use transactional retries.
+

@@ -29,6 +29,6 @@ include::partial$tutorial-list.adoc[]
 * xref:cypher-mapping.adoc[]
 * xref:visualization.adoc[]
 * xref:known-limitations.adoc[]
-* xref:v2_endpoints.adoc[]
+* xref:migration-from-1x.adoc[]
 
 * link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/[API Reference]
