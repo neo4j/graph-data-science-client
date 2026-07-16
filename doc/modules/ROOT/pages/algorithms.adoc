@@ -42,7 +42,7 @@ gds.run_cypher(
     (e)-[:ROAD {cost: 40}]->(f);
   """
 )
-G, project_result = gds.graph.project.native("road_graph", "City", "ROAD", node_properties=["cost"])
+G, project_result = gds.graph.project.native("road_graph", "City", "ROAD", relationship_properties=["cost"])
 
 assert G.relationship_count() == 9
 ----
