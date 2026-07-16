@@ -71,6 +71,9 @@ The supported format for the node data frames is described in https://neo4j.com/
 == Apache Arrow flight server support
 
 The `construct` method can utilize the https://neo4j.com/docs/graph-data-science/current/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS if it's enabled.
+
+NOTE: For Aura Graph Analytics and AuraDS, Apache Arrow is always enabled.
+
 This in particular means that:
 
 * The construction of the graph is greatly sped up,

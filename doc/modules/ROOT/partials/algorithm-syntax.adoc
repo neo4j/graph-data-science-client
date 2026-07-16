@@ -1,8 +1,11 @@
 .Syntax composition:
-[source, python]
+[source, python, no-test]
 ----
-result = gds[.<tier>].<algorithm>.<execution-mode>[.<estimate>](
-  G: Graph,
-  **configuration: dict[str, any]
-)
+# optional parameters are keyword arguments
+df = gds.<algorithm>.stream(G, concurrency=4)
+# required arguments are positional
+mutate_result = gds.<algorithm>.mutate(G, "<mutateProperty>", concurrency=4)
+
+# `estimate` is available for most algorithms (accepts a `Graph` or a graph-dimensions dict)
+memory = gds.<algorithm>.estimate(G, concurrency=4)
 ----

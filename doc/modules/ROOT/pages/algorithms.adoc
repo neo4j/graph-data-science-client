@@ -11,10 +11,11 @@ include::ROOT:partial$/algorithm-syntax.adoc[]
 
 Here we can note a few key differences:
 
+* Instead of camelCase, we use snake_case, such as `gds.page_rank.stream` instead of `gds.pageRank.stream`.
 * Instead of a graph name string as first argument, we have a xref:graph-object.adoc[graph object] as first positional argument.
-* Instead of a configuration map, we have named keyword arguments.
+* Instead of a configuration map, we have explicit positional and keyword arguments.
 
-The result of running a procedure is returned as either a pandas `DataFrame` or a pandas `Series` depending on the xref:algorithms.adoc#algorithms-execution-mode[execution mode].
+The result of running a procedure is returned as either a pandas `DataFrame` or a typed pydantic object depending on the xref:algorithms.adoc#algorithms-execution-mode[execution mode].
 
 To exemplify this, we introduce a small road-network graph:
 
@@ -41,7 +42,7 @@ gds.run_cypher(
     (e)-[:ROAD {cost: 40}]->(f);
   """
 )
-G, project_result = gds.graph.project.native("road_graph", "City", {"ROAD": {"properties": ["cost"]}})
+G, project_result = gds.graph.project.native("road_graph", "City", "ROAD", node_properties=["cost"])
 
 assert G.relationship_count() == 9
 ----
@@ -78,8 +79,7 @@ We describe how to use them in the Python client in the sections below.
 
 Algorithms return results in a format that is controlled by its execution mode.
 These modes are explained in some detail in https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/[Running algorithms].
-In the Python client, the `stats`, `mutate` and `write` modes return a pandas `Series` containing the summary result of running the algorithm.
-The same applies to `estimate` procedures.
+In the Python client, the `stats`, `mutate` and `write` modes return a typed pydantic object such as link:{gds-api-uri}/endpoints/centrality_endpoints/#graphdatascience.procedure_surface.api.centrality.PageRankMutateResult[`PageRankMutateResult`].
 
 
 === Stream
@@ -105,7 +105,7 @@ These node ids must be matched directly from the Neo4j database.
 This is straight-forward when working in Cypher.
 In the Python client there is a convenience method link:{gds-api-uri}/endpoints/util_endpoints/#graphdatascience.procedure_surface.api.util_endpoints.UtilEndpoints.find_node_id[`gds.util.find_node_id`] to retrieve a node id based on node labels and property key-value pairs.
 
-For example, to find a source and target node of a graph `G` with cities to run https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/[Dijkstra Source-Target Shortest Path] on, we could do the following:
+For example, to find a source and target node of a graph `G` with cities to run link:https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/[Dijkstra Source-Target Shortest Path] on, we could do the following:
 
 [source,python,group=algo]
 ----
@@ -132,7 +132,7 @@ The Python call:
 
 [source,python,group=algo]
 ----
-gds.util.find_node_id(["City", "Capital"], {"settled": 1790, "name": "Washington D.C."})
+gds.util.find_node_id(labels=["City", "Capital"], properties={"settled": 1790, "name": "Washington D.C."})
 ----
 
 is exactly equivalent to the Cypher statement:

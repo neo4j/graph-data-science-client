@@ -156,7 +156,7 @@ These methods both return a `Graph` object, and take four arguments:
 | dataset_name      | str			    | The name of the ODB dataset
 | dataset_root_path | str = "./dataset" | An optional path for where the downloaded OGB dataset will be stored
 | graph_name        | Optional[str]     | An optional name of the created graph. Defaults to `dataset_name`
-| concurrency       | int = 4           | An optional number of threads to use
+| concurrency       | int               | An optional number of threads to use. In Aura Graph Analytics, the default is the number of available processors. Otherwise, the default 4.
 |===
 
 [NOTE]
@@ -324,5 +324,3 @@ assert G.relationship_count() == 5_088_434
 assert len(G.relationship_types()) == 51 * 3
 assert G.relationship_properties()["drug-drug_polycystic_ovary_syndrome_TRAIN"] == ["classLabel"]
 ----
-
-include::ROOT:partial$/graph-construct-limitation.adoc[]
