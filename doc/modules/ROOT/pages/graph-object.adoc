@@ -203,7 +203,7 @@ with gds.graph.project.native(
     assert G_tmp.exists()
 
 # Outside of the with block the Graph does not exist
-assert gds.graph.exists("tmp_offices")
+assert not gds.graph.exists("tmp_offices")
 ----
 
 
