@@ -15,6 +15,13 @@ checkstyle-all:
     bundle install
     bundle exec rubocop
 
+rb-makestyle:
+    #!/usr/bin/env bash
+    # Ruby style
+    cd doc/tests
+    bundle install
+    bundle exec rubocop -A
+
 check-notebooks:
     ./scripts/nb2doc/check.sh
 

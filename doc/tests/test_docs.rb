@@ -191,7 +191,6 @@ class DocTest < Minitest::Test
     assert failures.empty?, "#{failures.size} doc test(s) failed:\n\n#{failures.join("\n\n#{'-' * 80}\n\n")}"
   end
 
-
   def log_fully_skipped_files(all_files)
     all_files.each do |path, scripts, skipped|
       next unless scripts.empty? && skipped.positive?
