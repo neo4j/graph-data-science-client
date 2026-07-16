@@ -470,6 +470,7 @@ class AuraGraphDataScience:
             predict_endpoints=GraphSagePredictArrowEndpoints(
                 self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
             ),
+            catalog_endpoints=self.model,
         )
 
     @property

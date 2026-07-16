@@ -141,6 +141,7 @@ def scripts_of_file(path, scope)
 
   source_blocks = doc.find_by style: 'source'
   testable_source_blocks = filter_source_blocks(source_blocks, scope)
+  skipped = source_blocks.count { |b| b.attr('language') == 'python' && b.has_role?('no-test') }
 
   raw_scripts = []
   raw_scripts_by_group = Hash.new { |h, k| h[k] = "# #{k}" }
@@ -158,35 +159,53 @@ def scripts_of_file(path, scope)
     raw_scripts.push(s)
   end
 
-  complete_raw_scripts(raw_scripts)
+  [complete_raw_scripts(raw_scripts), skipped]
 end
 
 class DocTest < Minitest::Test
   def run_doc_scripts(scope)
     failures = []
 
-    # Only files that actually contain testable snippets, so the progress numbering is contiguous.
-    testable = doc_files.map { |f| [f, scripts_of_file(f, scope)] }.reject { |_f, scripts| scripts.empty? }
-    total = testable.sum { |_f, scripts| scripts.size }
+    all_files = doc_files.map { |f| [f, *scripts_of_file(f, scope)] }
+    total_skipped = all_files.sum { |entry| entry[2] }
 
+    # Only files that actually contain testable snippets, so the progress numbering is contiguous.
+    testable = all_files.reject { |entry| entry[1].empty? }
+    total = testable.sum { |entry| entry[1].size }
+
+    log_fully_skipped_files(all_files)
     LOGGER.info(
-      "Running doc tests (scope=#{scope}): #{total} script(s) across #{testable.size} file(s)"
+      "Running doc tests (scope=#{scope}): #{total} script(s) across #{testable.size} file(s); " \
+      "#{total_skipped} code cell(s) skipped"
     )
 
-    testable.each_with_index do |(f, scripts), idx|
-      run_file(f, idx + 1, testable.size, scripts, failures)
-    end
+    testable.each_with_index { |entry, idx| run_file(entry, idx + 1, testable.size, failures) }
 
-    LOGGER.info("Executed #{total} script(s) across #{testable.size} file(s); #{failures.size} failed")
+    LOGGER.info(
+      "Executed #{total} script(s) across #{testable.size} file(s); " \
+      "#{failures.size} failed; #{total_skipped} code cell(s) skipped"
+    )
 
     # Report every broken snippet at once rather than stopping at the first, so a
     # contributor sees the full list of docs to fix in a single run.
     assert failures.empty?, "#{failures.size} doc test(s) failed:\n\n#{failures.join("\n\n#{'-' * 80}\n\n")}"
   end
 
-  def run_file(path, position, total_files, scripts, failures)
+
+  def log_fully_skipped_files(all_files)
+    all_files.each do |path, scripts, skipped|
+      next unless scripts.empty? && skipped.positive?
+
+      LOGGER.info("#{File.basename(path)}: 0 script(s), #{skipped} code cell(s) skipped")
+    end
+  end
+
+  def run_file(entry, position, total_files, failures)
+    path, scripts, skipped = entry
     name = File.basename(path)
-    LOGGER.info("[#{position}/#{total_files}] #{name}: running #{scripts.size} script(s)")
+    LOGGER.info(
+      "[#{position}/#{total_files}] #{name}: running #{scripts.size} script(s), #{skipped} code cell(s) skipped"
+    )
     before = failures.size
 
     scripts.each_with_index { |s, i| run_script(path, s, i + 1, scripts.size, failures) }

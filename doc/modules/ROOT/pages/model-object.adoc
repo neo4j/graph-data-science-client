@@ -56,7 +56,7 @@ Now we can use the graph `G` to train a GraphSage model.
 
 [source,python,group=gs-model]
 ----
-model, train_result = gds.graph_sage.train(G, model_name="city-representation", feature_properties=["settled"], random_seed=42)
+model, train_result = gds.graph_sage.train(G, model_name="city-representation", feature_properties=["settled"], random_seed=42, concurrency=4)
 
 assert train_result.model_info["metrics"]["ranEpochs"] == 1
 ----
@@ -65,13 +65,13 @@ where `model` is the model object, and `train_result` is a link:{gds-api-uri}/en
 
 Similarly, we can also get model objects from training xref:pipelines.adoc[machine learning pipelines].
 
-To inspect a model that is already present in the model catalog, call the `get` method with its name, which returns a `ModelDetails` object with the model's metadata:
+To inspect a model that is already present in the model catalog, call the `get` method with its name, which returns a `Models` object:
 
 [source,python,group=gs-model]
 ----
-model = gds.model.get("city-representation")
+model = gds.graph_sage.get("city-representation")
 
-assert model.model_name == "city-representation"
+assert model.name() == "city-representation", f"actual name is: {model.name}"
 ----
 
 
@@ -164,7 +164,7 @@ So given the GraphSAGE model `model` we trained above, we could do the following
 ----
 # Make sure our training actually converged
 metrics = model.details().model_info["metrics"]
-assert metrics["didConverge"]
+assert metrics["didConverge"], "did not converge"
 
 # Predict on `G` and write embedding node properties back to the database
 predict_result = model.predict_write(G, write_property="embedding")

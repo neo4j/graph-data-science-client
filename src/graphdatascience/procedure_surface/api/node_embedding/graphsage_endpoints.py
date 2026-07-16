@@ -5,6 +5,8 @@ from pandas import DataFrame
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
+from graphdatascience.procedure_surface.api.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
     GraphSagePredictEndpoints,
@@ -24,9 +26,14 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
         self,
         train_endpoints: GraphSageTrainEndpoints,
         predict_endpoints: GraphSagePredictEndpoints,
+        catalog_endpoints: ModelCatalogProtocol,
     ) -> None:
         self._train_endpoints = train_endpoints
         self._predict_endpoints = predict_endpoints
+        self._catalog = catalog_endpoints
+
+    def get(self, name: str) -> GraphSageModel:
+        return GraphSageModel(name, self._catalog, self._predict_endpoints)
 
     @property
     def train(self) -> GraphSageTrainEndpoints:
