@@ -4,9 +4,9 @@ from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.model.model import Model
-from graphdatascience.model.model_api import ModelApi
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
     GraphSagePredictEndpoints,
@@ -20,8 +20,8 @@ class GraphSageModel(Model):
     Construct this using :func:`gds.v2.graphSage.train()`.
     """
 
-    def __init__(self, name: str, model_api: ModelApi, predict_endpoints: GraphSagePredictEndpoints) -> None:
-        super().__init__(name, model_api)
+    def __init__(self, name: str, catalog: ModelCatalogProtocol, predict_endpoints: GraphSagePredictEndpoints) -> None:
+        super().__init__(name, catalog)
         self._predict_endpoints = predict_endpoints
 
     def predict_write(

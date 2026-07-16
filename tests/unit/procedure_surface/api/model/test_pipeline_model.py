@@ -29,9 +29,9 @@ def _model_details() -> ModelDetails:
 
 
 def _model(model_class: type[PipelineModel]) -> PipelineModel:
-    model_api = mock.Mock()
-    model_api.get.return_value = _model_details()
-    return model_class("model", model_api, mock.Mock())  # type: ignore[call-arg]
+    catalog = mock.Mock()
+    catalog.get.return_value = _model_details()
+    return model_class("model", catalog, mock.Mock())  # type: ignore[call-arg]
 
 
 @pytest.mark.parametrize("model_class", [NodeClassificationModel, NodeRegressionModel, LinkPredictionModel])

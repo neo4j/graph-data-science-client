@@ -8,7 +8,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpo
     GraphSageTrainResult,
 )
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
-from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
+from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_predict_cypher_endpoints import (
     GraphSagePredictCypherEndpoints,
 )
@@ -89,7 +89,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
 
         return GraphSageModel(
             name=model_name,
-            model_api=ModelApiCypher(self._query_runner),
+            catalog=ModelCatalogCypherEndpoints(self._query_runner),
             predict_endpoints=GraphSagePredictCypherEndpoints(self._query_runner),
         ), GraphSageTrainResult(**result)
 

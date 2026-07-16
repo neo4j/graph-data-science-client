@@ -3,8 +3,8 @@ from __future__ import annotations
 from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.model.model_api import ModelApi
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.api.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.procedure_surface.api.model.pipeline_model import PipelineModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_predict_endpoints import (
     NodeClassificationPipelinePredictEndpoints,
@@ -21,9 +21,9 @@ class NodeClassificationModel(PipelineModel):
     """
 
     def __init__(
-        self, name: str, model_api: ModelApi, predict_endpoints: NodeClassificationPipelinePredictEndpoints
+        self, name: str, catalog: ModelCatalogProtocol, predict_endpoints: NodeClassificationPipelinePredictEndpoints
     ) -> None:
-        super().__init__(name, model_api)
+        super().__init__(name, catalog)
         self._predict_endpoints = predict_endpoints
 
     def predict_stream(

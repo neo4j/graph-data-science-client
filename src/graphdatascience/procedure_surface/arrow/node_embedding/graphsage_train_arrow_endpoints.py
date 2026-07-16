@@ -7,7 +7,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpo
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
 )
-from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
+from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
 )
@@ -27,7 +27,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol=write_protocol, show_progress=show_progress
         )
-        self._model_api = ModelApiArrow(arrow_client)
+        self._model_catalog = ModelCatalogArrowEndpoints(arrow_client)
 
     def __call__(
         self,
@@ -94,7 +94,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
 
         model = GraphSageModel(
             model_name,
-            self._model_api,
+            self._model_catalog,
             predict_endpoints=GraphSagePredictArrowEndpoints(self._arrow_client, self._write_protocol),
         )
         train_result = GraphSageTrainResult(**result)

@@ -12,7 +12,6 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
     GraphSagePredictEndpoints,
     GraphSageWriteResult,
 )
-from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
@@ -28,7 +27,6 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
-        self._model_api = ModelApiArrow(arrow_client)
 
     def compute(
         self,

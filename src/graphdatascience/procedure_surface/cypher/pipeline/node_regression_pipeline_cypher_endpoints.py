@@ -20,7 +20,7 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_end
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
-from graphdatascience.procedure_surface.cypher.model_api_cypher import ModelApiCypher
+from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pipeline.node_regression_predict_cypher_endpoints import (
     NodeRegressionPredictCypherEndpoints,
 )
@@ -215,7 +215,7 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         return (
             NodeRegressionModel(
                 name=model_name,
-                model_api=ModelApiCypher(self._query_runner),
+                catalog=ModelCatalogCypherEndpoints(self._query_runner),
                 predict_endpoints=self._predict,
             ),
             NodeRegressionPipelineTrainResult(**result),

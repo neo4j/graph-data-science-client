@@ -22,7 +22,7 @@ from graphdatascience.procedure_surface.api.pipeline.node_regression_predict_end
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
-from graphdatascience.procedure_surface.arrow.model_api_arrow import ModelApiArrow
+from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.pipeline.node_regression_predict_arrow_endpoints import (
     NodeRegressionPredictArrowEndpoints,
 )
@@ -49,7 +49,7 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
             arrow_client,
             show_progress=show_progress,
         )
-        self._model_api = ModelApiArrow(arrow_client)
+        self._model_catalog = ModelCatalogArrowEndpoints(arrow_client)
 
     @property
     def predict(self) -> NodeRegressionPipelinePredictEndpoints:
@@ -219,7 +219,7 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
         return (
             NodeRegressionModel(
                 model_name,
-                self._model_api,
+                self._model_catalog,
                 predict_endpoints=self._predict,
             ),
             NodeRegressionPipelineTrainResult(**result),

@@ -296,12 +296,12 @@ def test_node_classification_predict_estimate_runs_query() -> None:
 
 def test_node_classification_model_predict_estimate_delegates_to_predict_endpoints() -> None:
     graph = mock.Mock()
-    model_api = mock.Mock()
+    catalog = mock.Mock()
     predict_endpoints = mock.Mock()
     expected = mock.Mock()
     predict_endpoints.estimate.return_value = expected
 
-    model = NodeClassificationModel("model", model_api, predict_endpoints)
+    model = NodeClassificationModel("model", catalog, predict_endpoints)
 
     result = model.predict_estimate(graph, concurrency=4)
 
