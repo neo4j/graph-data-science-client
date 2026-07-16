@@ -13,7 +13,7 @@ There are three types of GDS Sessions:
 * *Standalone*: the data source is not based on Neo4j.
 
 
-The process of populating the session with data is called _remote projection_.
+The process of populating the session with data is called _projection_.
 Once populated, a GDS Session can run GDS workloads, such as algorithms and machine learning models.
 Results from these computations can be written back to the original source, using _remote write-back_ in the Attached and Self-managed types.
 
@@ -280,11 +280,10 @@ For a detailed description of the allowed parameters, see the link:{neo4j-docs-b
 == Projecting graphs into a GDS Session
 
 Once you have a GDS Session, you can project a graph into it.
-This operation is called _remote projection_ because the data source is not a co-located database, but rather a remote one.
 
 === Cypher projections
 
-You can create a remote projection using the `gds.graph.project.native()` endpoint with a graph name, a Cypher query, and additional optional parameters.
+You can create a remote projection using the `gds.graph.project.cypher()` endpoint with a graph name, a Cypher query, and additional optional parameters.
 The Cypher query must contain the `gds.graph.project.remote()` function to project the graph into the GDS Session.
 This is only possible to do with Attached and self-managed sessions.
 Standalone sessions must use xref:graph-object.adoc#construct[graph.construct].
@@ -292,7 +291,7 @@ Standalone sessions must use xref:graph-object.adoc#construct[graph.construct].
 .Remote projection:
 [source, role=no-test]
 ----
-gds.graph.project.native(
+gds.graph.project.cypher(
     graph_name: str,
     query: str,
     job_id: Optional[str] = None,
@@ -300,7 +299,7 @@ gds.graph.project.native(
     undirected_relationship_types: Optional[list[str]] = None,
     inverse_indexed_relationship_types: Optional[list[str]] = None,
     batch_size: Optional[int] = None,
-): (Graph, Series[Any])
+): GraphWithProjectResult
 ----
 
 .Parameters:
@@ -308,13 +307,16 @@ gds.graph.project.native(
 |===
 | Name                               | Type           | Optional | Default | Description
 | graph_name                         | str            | no       | -       | Name of the graph.
-| query                              | str            | no       | -       | Projection query.
-| query_parameters                   | dict[str, Any] | yes      | None    | Parameters that will be passed to the Cypher query.
-| job_id                             | str            | yes      | None    | Correlation id for the process on the session. If not provided an automatically generated id will be used.
-| concurrency                        | int            | yes      | 4       | Concurrency to use for building the graph within the session.
-| undirected_relationship_types      | list[str]      | yes      | []      | List of relationship type names that should be treated as undirected.
-| inverse_indexed_relationship_types | list[str]      | yes      | []      | List of relationship type names that should be indexed in reverse.
-| batch_size                         | int            | yes      | 10000   | Size of batches transmitted from the DBMS to the session.
+| node_label_filter                  | list[str]      | no       | -       | List of node labels to include in the graph projection.
+| relationship_type_filter           | list[str]      | no       | -       | List of relationship types to include in the graph projection.
+| node_properties                    | list[str]      | yes      | None    | List of node properties to include in the graph projection.
+| relationship_properties            | list[str]      | yes      | None    | List of relationship properties to include in the graph projection.
+| job_id                             | str            | yes      | None    | Identifier for the computation.
+| concurrency                        | int            | yes      | 4       | Number of concurrent threads to use.
+| undirected_relationship_types      | list[str]      | yes      | []      | List of relationship types to treat as undirected.
+| inverse_indexed_relationship_types | list[str]      | yes      | []      | List of relationship types to index in both directions.
+| batch_size                         | int            | yes      | 10000   | Number of rows to process in each batch when projecting the graph.
+| logging                            | bool           | yes      | True    | Whether to log progress during graph projection.
 |===
 
 .Results:
@@ -322,33 +324,10 @@ gds.graph.project.native(
 |===
 | Name   | Type        | Description
 | graph  | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/graph_object[Graph]       | Graph object representing the projected graph.
-| result | Series[Any] | Statistical data about the projection.
+| result | ProjectionResult | Statistical data about the projection.
 |===
 
 The `concurrency` and `batch_size` configuration parameters can be used to tune the performance of the remote projection.
-
-[NOTE]
-The concurrency of the remote projection query is controlled by the Cypher runtime on the DBMS server.
-Use `CYPHER runtime=parallel` as a query prefix to maximise performance.
-The actual concurrency used depends on the DBMS server's available processors and current operational load.
-
-
-==== Remote projection query syntax
-
-The remote projection query supports the same syntax as a Cypher projection, with two key differences:
-
-. The graph name is not a parameter.
-Instead, the graph name is provided to the `gds.graph.project.native()` endpoint.
-
-Query parameters can be used to inject dynamic data into the projection query via the `query_parameters` parameter.
-
-For full details and examples on how to write Cypher projection queries, see the link:{neo4j-docs-base-uri}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/[Cypher projection documentation in the GDS Manual].
-
-
-==== Relationship type undirectedness and inverse indexing
-
-The optional parameters `undirectedRelationshipTypes` and `inverseIndexedRelationshipTypes` are used to configure undirectedness and inverse indexing of relationships.
-These have the same behavior as documented in the link:{neo4j-docs-base-uri}/graph-data-science/current/management-ops/graph-creation/graph-project-cypher-projection/#graph-project-cypher-projection-syntax[GDS Manual].
 
 
 ==== Example
@@ -408,7 +387,7 @@ gds.run_cypher(
     """
 )
 
-G, result = gds.graph.project.native(
+G, result = gds.graph.project.cypher(
     graph_name="my-graph",
     query="""
     CALL () {
@@ -491,51 +470,6 @@ G, result = gds.graph.project.native(
 )
 ----
 =======
-
-[.include-with-standalone]
-=======
-.Project some data to a Standalone GDS Session:
-[source,python,role=no-test]
-----
-from graphdatascience.session import CloudLocation, SessionMemory
-
-gds = sessions.get_or_create(
-    session_name="my-standalone-session", # Must be unique within the project
-    memory=SessionMemory.m_4GB,
-    cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
-)
-
-nodes = [pandas.DataFrame({
-        "nodeId": [0, 1],
-        "labels":  ["Person", "Person"],
-    }), pandas.DataFrame({
-        "nodeId": [2, 3],
-        "labels":  ["Product", "Product"],
-        "cost": [4.2, 13.37],
-    })
-]
-
-relationships = [pandas.DataFrame({
-        "sourceNodeId": [0],
-        "targetNodeId": [1],
-        "relationshipType": ["KNOWS"],
-        "since": [2020]
-    }), pandas.DataFrame({
-        "sourceNodeId": [0, 1],
-        "targetNodeId": [3, 2],
-        "relationshipType": ["BOUGHT", "BOUGHT"],
-        "price": [1337, 7474]
-    })
-]
-
-G = gds.graph.construct(
-    "my-graph",
-    nodes,
-    relationships
-)
-----
-=======
-
 =====
 
 === Native projections
@@ -547,7 +481,7 @@ For comprehensive details on how these projections work and when to use them, se
 .Native projection:
 [source, role=no-test]
 ----
-gds.v2.graph.project_native(
+gds.v2.graph.project.native(
     graph_name: str,
     node_label_filter: list[str],
     relationship_type_filter: list[str],
@@ -559,7 +493,7 @@ gds.v2.graph.project_native(
     inverse_indexed_relationship_types: Optional[list[str]] = None,
     batch_size: Optional[int] = None,
     logging: bool = True
-): (Graph, Series[Any])
+): GraphWithProjectResult
 ----
 
 .Parameters:
@@ -587,13 +521,13 @@ You can use the wildcard +*+ in the `node_label_filter` or `relationship_type_fi
 |===
 | Name   | Type        | Description
 | graph  | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/graph_object[Graph]       | Graph object representing the projected graph.
-| result | Series[Any] | Statistical data about the projection.
+| result | StoreProjectionResult | Statistical data about the projection.
 |===
 
 .Example:
 [source, python, role=no-test]
 ----
-G, result = gds.v2.graph.project_native(
+G, result = gds.graph.project.native(
     graph_name="my_native_graph",
     node_label_filter=["Person", "Movie"],
     relationship_type_filter=["ACTED_IN", "DIRECTED"],
@@ -609,25 +543,14 @@ For instance, you can run the PageRank and FastRP algorithms on the projected gr
 .Run algorithms and stream back results:
 [source,python,role=no-test]
 ----
-gds.pageRank.mutate(G, mutateProperty="pr")
-gds.fastRP.mutate(G, featureProperties=["pr"], embeddingDimension=2, nodeSelfInfluence=0.1, mutateProperty="embedding")
+gds.pageRank.mutate(G, mutate_property="pr")
+gds.fastRP.mutate(G, feature_properties=["pr"], embedding_dimension=2, node_self_influence=0.1, mutate_property="embedding")
 
 # Stream the results back together with the `name` property fetched from the database
-gds.graph.nodeProperties.stream(G, db_node_properties=["name"], node_properties=["pr", "embedding"])
+gds.graph.nodeProperties.stream(G, node_properties=["pr", "embedding"], db_node_properties=["name"])
 ----
 
 For a full list of the available algorithms, see the link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/plugin/algorithms[API reference].
-
-
-=== Limitations
-
-* Topological Link Prediction algorithms are not supported, including
-** `gds.alpha.linkprediction.adamicAdar`
-** `gds.alpha.linkprediction.commonNeighbors`
-** `gds.alpha.linkprediction.preferentialAttachment`
-** `gds.alpha.linkprediction.resourceAllocation`
-** `gds.alpha.linkprediction.sameCommunity`
-** `gds.alpha.linkprediction.totalNeighbors`
 
 
 == Remote write-back
@@ -660,7 +583,7 @@ gds.graph.<operation>.write(
     graph_name: str,
     # additional parameters,
     **config: Any,
-): Series[Any]
+): <SpecificWriteBackResult>
 ----
 ======
 
@@ -672,29 +595,10 @@ gds.graph.<operation>.write(
 gds.<algo>.write(
     graph_name: str,
     **config: Any,
-): Series[Any]
+): <SpecificWriteBackResult>
 ----
 ======
 ====
-
-
-All write-back endpoints support the following additional configuration:
-
-.Parameters:
-[opts="header",cols="1m,1,1,6", role="no-break"]
-|===
-| Name               | Optional | Default | Description
-| concurrency        | yes      | dynamic footnote:[Twice the number of processors on the DBMS server] | Concurrency to use for writing back to the DBMS.
-| arrowConfiguration | yes      | -       | Dict containing additional configuration for the connection from the DBMS to the GDS Arrow Server.
-|===
-
-.Arrow configuration:
-[opts="header",cols="1m,1,1m,6", role="no-break"]
-|===
-| Name      | Optional | Default | Description
-| batchSize | yes      | 10000   | Size of batches retrieved by the DBMS from the session.
-|===
-
 
 === Examples
 
@@ -714,9 +618,8 @@ In this example we show how to do this with an algorithm `.write` mode:
 ----
 gds.wcc.write(
   G,
-  writeProperty="wcc",
+  write_property="wcc",
   concurrency=12,
-  arrowConfiguration={"batchSize": 25000}
 )
 ----
 
@@ -766,7 +669,7 @@ The following snippet kicks off a remote projection, runs PageRank on the result
 
 [source, python, session=true]
 ----
-projection_handle = gds.v2.graph.project_native_async(
+projection_handle = gds.graph.project_native_async(
     "people",
     "*",
     "*"
@@ -774,7 +677,7 @@ projection_handle = gds.v2.graph.project_native_async(
 projection_handle.wait()  # waits for projection to finish
 G, _ = projection_handle.result()
 
-compute_handle = gds.v2.page_rank.compute(G, damping_factor=0.85)
+compute_handle = gds.page_rank.compute(G, damping_factor=0.85)
 # ... do other work here ...
 
 scores = compute_handle.stream()         # blocks on completion, returns a DataFrame
@@ -784,18 +687,18 @@ write_result = write_handle.result()     # WriteBackResult once the write-back i
 
 === Recovering a handle via the jobs endpoint
 
-If you lose the original handle — for example, after restarting your client — you can look find jobs via `gds.v2.jobs.list()` and get the job handle by its id via `gds.v2.jobs.get(G, job_id)`.
+If you lose the original handle — for example, after restarting your client — you can look find jobs via `gds.jobs.list()` and get the job handle by its id via `gds.jobs.get(G, job_id)`.
 The returned handle has the correct concrete type for the underlying job: a `ProjectionJobHandle` for projection jobs, a `WriteJobHandle` for write-back jobs, and a plain `JobHandle` for everything else.
 
 [source, python, session=true]
 ----
 # List all known jobs
-handles = gds.v2.jobs.list()
+handles = gds.jobs.list()
 # A previous session started a projection and we kept just the id around.
-projection_handle = gds.v2.jobs.get(G, known_projection_job_id)
+projection_handle = gds.jobs.get(G, known_projection_job_id)
 G, summary = projection_handle.result()   # waits if necessary
 
 # Same flow for a write-back job that was started earlier.
-write_handle = gds.v2.jobs.get(G, known_write_job_id)
+write_handle = gds.jobs.get(G, known_write_job_id)
 write_result = write_handle.result()
 ----
