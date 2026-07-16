@@ -128,12 +128,12 @@ For instance, supposing we have our model object `model` created above, we could
 [source,python,group=gs-model,enterprise=true]
 ----
 # Store the model on disk (GDS Enterprise Edition)
-_ = gds.model.store(model.name())
+_ = model.store()
 
 model.drop()
 
 # Load the model again for further use
-gds.model.load(model.name())
+model.load()
 ----
 
 
