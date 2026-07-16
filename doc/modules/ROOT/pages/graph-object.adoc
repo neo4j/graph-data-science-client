@@ -99,7 +99,7 @@ The method `gds.graph.project.cypher` bridges the gap between `gds.run_cypher` a
 |===
 
 
-Unlike `gds.run_cypher` but very much like `gds.graph.project.native`, it returns a tuple of a `Graph` object and a `GraphCypherProjectResult` object containing metadata from the Cypher execution, with fields accessed as attributes (for example `result.node_count`).
+Unlike `gds.run_cypher` but very much like `gds.graph.project.native`, it returns a tuple of a `Graph` object and a `GraphCypherProjectResult` object containing metadata from the Cypher execution.
 
 The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
 It expects the query to end with a single `RETURN gds.graph.project(...)` aggregation, and raises a `ValueError` if the query returns anything else.
@@ -203,7 +203,7 @@ with gds.graph.project.native(
     assert G_tmp.exists()
 
 # Outside of the with block the Graph does not exist
-assert not any(info.graph_name == "tmp_offices" for info in gds.graph.list())
+assert gds.graph.exists("tmp_offices")
 ----
 
 
@@ -241,7 +241,7 @@ Below are some examples of how the GDS Graph Catalog can be used via the client,
 list_result = gds.graph.list()
 
 # Check for existence of a graph in the catalog
-assert any(info.graph_name == "offices" for info in gds.graph.list())
+assert gds.graph.exists("offices")
 
 # Stream the node property 'degree'
 result = gds.graph.node_properties.stream(G, node_properties=["degree"])

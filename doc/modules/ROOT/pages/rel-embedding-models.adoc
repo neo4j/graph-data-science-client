@@ -76,7 +76,7 @@ There are no extra parameters to this method other than the ones outlined xref:r
 
 The `predict_mutate` method adds the predicted relationships to the graph projection under a new type specified via the `mutate_relationship_type` parameter.
 Each such relationship will have a property, specified via the `mutate_property` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
-The method returns a link:{gds-api-uri}/endpoints/kge_endpoints/#graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.KgeMutateResult[`KgeMutateResult`] object with metadata about the computation, whose fields are accessed as attributes:
+The method returns a link:{gds-api-uri}/endpoints/kge_endpoints/#graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.KgeMutateResult[`KgeMutateResult`] object with metadata about the computation:
 
 In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel-emb-predict-shared-params[above], this method takes two more positional parameters, after the `top_k` parameter, in order:
 

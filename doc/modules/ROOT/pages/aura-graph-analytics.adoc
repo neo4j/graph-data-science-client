@@ -339,7 +339,6 @@ The remote projection query supports the same syntax as a Cypher projection, wit
 
 . The graph name is not a parameter.
 Instead, the graph name is provided to the `gds.graph.project.native()` endpoint.
-. The `gds.graph.project.remote()` function must be used, instead of the `gds.graph.project.native()` function.
 
 Query parameters can be used to inject dynamic data into the projection query via the `query_parameters` parameter.
 

@@ -71,7 +71,7 @@ To inspect a model that is already present in the model catalog, call the `get` 
 ----
 model = gds.graph_sage.get("city-representation")
 
-assert model.name() == "city-representation", f"actual name is: {model.name}"
+assert model.name() == "city-representation"
 ----
 
 
