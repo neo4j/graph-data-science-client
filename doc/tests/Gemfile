@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'asciidoctor'
+gem 'logger'
 gem 'minitest'
 # ostruct left the default gems in Ruby 4.0; rubocop -> json still requires it
 gem 'ostruct'

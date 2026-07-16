@@ -15,6 +15,13 @@ checkstyle-all:
     bundle install
     bundle exec rubocop
 
+rb-makestyle:
+    #!/usr/bin/env bash
+    # Ruby style
+    cd doc/tests
+    bundle install
+    bundle exec rubocop -A
+
 check-notebooks:
     ./scripts/nb2doc/check.sh
 
@@ -26,6 +33,34 @@ manual-docs:
 
 api-docs:
    ./scripts/render_api_docs
+
+# Render both the manual and the API reference docs and serve them locally.
+# Manual -> http://localhost:8000 ; API refdocs -> http://localhost:8001
+render-docs:
+    #!/usr/bin/env bash
+    set -e
+    # Build the API reference docs (Sphinx) and the manual (Antora).
+    # Force the manual's API-reference links to the locally-served refdocs (only for this build).
+    (cd doc/sphinx && uv run --group docs-ci make clean html)
+    (cd doc && npm install && npm install @neo4j-antora/antora-page-roles --save && \
+        npx antora preview.yml --attribute gds-api-uri=http://localhost:8001 --stacktrace --log-format=pretty)
+
+    cleanup() {
+        trap - INT TERM EXIT
+        kill "${api_pid:-}" "${manual_pid:-}" 2>/dev/null || true
+    }
+    trap cleanup INT TERM EXIT
+
+    (cd doc/sphinx/build/html && exec python3 -m http.server 8001) &
+    api_pid=$!
+    (cd doc && exec node server.js) &
+    manual_pid=$!
+
+    echo ""
+    echo "Manual:      http://localhost:8000"
+    echo "API refdocs: http://localhost:8001"
+    echo "Press Ctrl-C to stop both."
+    wait
 
 pre-release:
     uv run --group dev-base scripts/release_helper/pre_release.py
@@ -131,23 +166,9 @@ update-test-images:
     just update-neo4j-image
     just update-neo4j-aura-image
 
-doc-tests enterprise="true":
-    #!/usr/bin/env bash
-    set -e
-    if [ "{{enterprise}}" = "true" ]; then
-        ENV_DIR="scripts/test_envs/gds_plugin_enterprise"
-        if [ ! -f "${HOME}/.gds_license" ]; then
-            echo "Error: GDS enterprise license file not found at ${HOME}/.gds_license"
-            exit 1
-        fi
-    else
-        ENV_DIR="scripts/test_envs/gds_plugin_community"
-    fi
-    trap "cd $ENV_DIR && docker compose down" EXIT
-    cd $ENV_DIR && docker compose up -d
-    cd -
-    PYTHON=$(uv run which python)
-    cd doc/tests && bundle install && bundle exec ruby test_docs.rb $PYTHON {{ if enterprise != "true" { "-n test_community" } else { "" } }}
+
+test-docs-plugin:
+    uv run --group dev scripts/ci/run_doc_tests_plugin.py
 
 prs:
     gh pr list --author "@me"

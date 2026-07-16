@@ -294,7 +294,7 @@ gds.run_cypher(
 ----
 # First, let's project our graph into the GDS Graph Catalog
 # We will use a native projection to begin with
-G_animals, projection_result = gds.graph.project(
+G_animals, projection_result = gds.graph.project.native(
     "wiki_animals",
     ["Chameleon", "Squirrel", "Crocodile"],
     {"LINK": {"orientation": "UNDIRECTED"}},

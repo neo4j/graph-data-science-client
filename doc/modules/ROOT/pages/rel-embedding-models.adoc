@@ -16,8 +16,8 @@ The first part of the workflow of using a pre-trained KGE model to predict new r
 
 There are two methods one for doing this, one for each supported KGE scoring function:
 
-* `gds.model.transe.create` for creating a model using the TransE scoring function, and
-* `gds.model.distmult.create` for creating a model using the DistMult scoring function.
+* `gds.kge.transe` for creating a model using the TransE scoring function, and
+* `gds.kge.distmult` for creating a model using the DistMult scoring function.
 
 Both of these methods return a `SimpleRelEmbeddingModel` whose usage we will look into shortly.
 They also take the same parameters:
@@ -58,7 +58,7 @@ Since the prediction parts of the computations in these methods are the same, th
 | general_config     | **dict[str, Any]           | General GDS algorithm configuration as optional keyword parameters
 |===
 
-In particular, the general algorithm configuration parameters supported as keyword parameters for this algorithm are `concurrency`, `jobId` and `logProgress`.
+In particular, the general algorithm configuration parameters supported as keyword parameters for this algorithm are `concurrency`, `job_id` and `log_progress`.
 You can read more about them https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters[here] in the GDS manual.
 
 Let us now outline the differences between these prediction methods.
@@ -75,8 +75,8 @@ There are no extra parameters to this method other than the ones outlined xref:r
 === Mutating graph projection with predicted relationships
 
 The `predict_mutate` method adds the predicted relationships to the graph projection under a new type specified via the `mutate_relationship_type` parameter.
-Each such relationship will have a property, specified via the `mutateProperty` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
-The method returns a `pandas.Series` with metadata about the computation:
+Each such relationship will have a property, specified via the `mutate_property` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
+The method returns a link:{gds-api-uri}/endpoints/kge_endpoints/#graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.KgeMutateResult[`KgeMutateResult`] object with metadata about the computation:
 
 In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel-emb-predict-shared-params[above], this method takes two more positional parameters, after the `top_k` parameter, in order:
 
@@ -88,23 +88,23 @@ In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel
 | mutate_property          | str  | The name of the property on the new relationships which will store the model prediction score
 |===
 
-.Fields of the `pandas.Series` object returned by `.predict_mutate`
+.Fields of the `KgeMutateResult` object returned by `.predict_mutate`
 [opts="header",cols="1m,1m,3", role="no-break"]
 |===
-| Name                 | Type           |
-| relationshipsWritten | int            | The number of relationships created
-| mutateMillis         | int            | Milliseconds for adding properties to the projected graph
-| postProcessingMillis | int            | Milliseconds for computing percentiles
-| preProcessingMillis  | int            | Milliseconds for preprocessing the data
-| computeMillis        | int            | Milliseconds for running the prediction algorithm
-| configuration        | dict[str, Any] | The configuration used for running the algorithm
+| Name                   | Type           |
+| relationships_written  | int            | The number of relationships created
+| mutate_millis          | int            | Milliseconds for adding properties to the projected graph
+| post_processing_millis | int            | Milliseconds for computing percentiles
+| pre_processing_millis  | int            | Milliseconds for preprocessing the data
+| compute_millis         | int            | Milliseconds for running the prediction algorithm
+| configuration          | dict[str, Any] | The configuration used for running the algorithm
 |===
 
 
 === Writing back predicted relationships to database
 
 The `predict_write` method writes back the predicted relationships to the Neo4j database under a new type specified via the `write_relationship_type` parameter.
-Each such relationship will have a property, specified via the `writeProperty` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
+Each such relationship will have a property, specified via the `write_property` parameter, representing the output from running the KGE model scoring function on the node pair and relationship type.
 
 In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel-emb-predict-shared-params[above], this method takes two more positional parameters, after the `top_k` parameter, in order:
 
@@ -116,17 +116,17 @@ In addition to the shared parameters outlined xref:rel-embedding-models.adoc#rel
 | write_property           | str  | The name of the property on the new relationships which will store the model prediction score
 |===
 
-The method returns a `pandas.Series` with metadata about the computation:
+The method returns a link:{gds-api-uri}/endpoints/kge_endpoints/#graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.KgeWriteResult[`KgeWriteResult`] object with metadata about the computation, whose fields are accessed as attributes:
 
-.Fields of the `pandas.Series` object returned by `.predict_write`
+.Fields of the `KgeWriteResult` object returned by `.predict_write`
 [opts="header",cols="1m,1m,3", role="no-break"]
 |===
-| Name                 | Type           |
-| relationshipsWritten | int            | The number of relationships created
-| writeMillis          | int            | Milliseconds for writing result data back the Neo4j database
-| preProcessingMillis  | int            | Milliseconds for preprocessing the data
-| computeMillis        | int            | Milliseconds for running the prediction algorithm
-| configuration        | dict[str, Any] | The configuration used for running the algorithm
+| Name                  | Type           |
+| relationships_written | int            | The number of relationships created
+| write_millis          | int            | Milliseconds for writing result data back the Neo4j database
+| pre_processing_millis | int            | Milliseconds for preprocessing the data
+| compute_millis        | int            | Milliseconds for running the prediction algorithm
+| configuration         | dict[str, Any] | The configuration used for running the algorithm
 |===
 
 
@@ -185,10 +185,10 @@ gds.run_cypher(
     (i)-[:LIVES_IN]->(e);
   """
 )
-G, project_result = gds.graph.project(
+G, project_result = gds.graph.project.native(
     graph_name="road_graph",
-    node_spec={"City": {"properties": ["emb"]}, "Person": {"properties": ["emb"]}},
-    relationship_spec=["ROAD", "LIVES_IN"]
+    node_projection={"City": {"properties": ["emb"]}, "Person": {"properties": ["emb"]}},
+    relationship_projection=["ROAD", "LIVES_IN"]
 )
 
 # Sanity check
@@ -204,7 +204,7 @@ Using our graph `G` and our precomputed relationship type embeddings we can now 
 
 [source,python,group=transe-model,min-server-version=2.5.0]
 ----
-transe_model = gds.model.transe.create(
+transe_model = gds.kge.transe(
     G,
     node_embedding_property="emb",
     relationship_type_embeddings={
@@ -236,7 +236,7 @@ result = transe_model.predict_mutate(
 )
 
 # Let us make sure the number of new relationships makes sense
-assert result["relationshipsWritten"] == 3
+assert result.relationships_written == 3
 assert G.relationship_count() == 12 + 3
 ----
 

@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
@@ -54,3 +55,40 @@ def test_one_hot_encoding_edge_cases(query_runner: CollectingQueryRunner) -> Non
     assert util.one_hot_encoding(None, ["a"]) == []
     assert util.one_hot_encoding(["a", "b"], None) == [0, 0]
     assert util.one_hot_encoding(["a", "b", "a"], ["a"]) == [1, 0, 1]
+
+
+def test_find_node_id_with_labels_and_properties(query_runner: CollectingQueryRunner) -> None:
+    query_runner.add__mock_result("RETURN id(n) AS id", pd.DataFrame({"id": [42]}))
+    util = UtilCypherEndpoints(query_runner)
+
+    assert util.find_node_id(["City"], {"name": "New York City"}) == 42
+    assert query_runner.last_query() == "MATCH (n) WHERE n:`City` AND n.`name` = $value_0 RETURN id(n) AS id"
+    assert query_runner.last_params() == {"value_0": "New York City"}
+
+
+def test_find_node_id_multiple_conditions(query_runner: CollectingQueryRunner) -> None:
+    query_runner.add__mock_result("RETURN id(n) AS id", pd.DataFrame({"id": [7]}))
+    util = UtilCypherEndpoints(query_runner)
+
+    assert util.find_node_id(["City", "Capital"], {"settled": 1790, "name": "Washington D.C."}) == 7
+    assert query_runner.last_query() == (
+        "MATCH (n) WHERE n:`City` AND n:`Capital` AND n.`settled` = $value_0 AND n.`name` = $value_1 RETURN id(n) AS id"
+    )
+    assert query_runner.last_params() == {"value_0": 1790, "value_1": "Washington D.C."}
+
+
+def test_find_node_id_no_filters(query_runner: CollectingQueryRunner) -> None:
+    query_runner.add__mock_result("RETURN id(n) AS id", pd.DataFrame({"id": [0]}))
+    util = UtilCypherEndpoints(query_runner)
+
+    assert util.find_node_id() == 0
+    assert query_runner.last_query() == "MATCH (n) RETURN id(n) AS id"
+    assert query_runner.last_params() == {}
+
+
+def test_find_node_id_raises_when_not_exactly_one_match(query_runner: CollectingQueryRunner) -> None:
+    query_runner.add__mock_result("RETURN id(n) AS id", pd.DataFrame({"id": [1, 2]}))
+    util = UtilCypherEndpoints(query_runner)
+
+    with pytest.raises(ValueError, match="did not match with exactly one node"):
+        util.find_node_id(["City"])

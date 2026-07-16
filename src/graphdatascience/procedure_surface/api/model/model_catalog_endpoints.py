@@ -56,6 +56,7 @@ class ModelCatalogEndpoints(ABC):
     @abstractmethod
     def get(self, model_name: str) -> ModelDetails:
         """Get a model catalog entry by name.
+        To get the typed model object use `gds.<algo>.get`, such as `gds.graph_sage.get`
 
         Parameters
         ----------

@@ -12,16 +12,10 @@ We use AsciiDoc for writing documentation, and we render it to both HTML and PDF
 
 #### The easy way
 
-The manual:
+render both manual and api-ref docs
 
 ```bash
-scripts/render_docs.sh
-```
-
-The refdocs:
-
-```bash
-scripts/render_api_docs.sh
+just render-docs
 ```
 
 #### The hard way
@@ -57,47 +51,48 @@ We seem to use `.svg` so maybe stick to that.
 ## Testing
 
 Selected parts of the source code examples in the documentation are run as tests.
-[Asciidoctor](https://github.com/asciidoctor/asciidoctor) is used to parse the documentation and extract the Python code that should be tested.
+[Asciidoctor](https://github.com/asciidoctor/asciidoctor) is used to parse the documentation and extract the Python code that should be tested (see `tests/test_docs.rb`).
 
 
-### Installation
+### Running (the easy way)
 
-In addition to having followed the setup steps in [the contribution guidelines](../CONTRIBUTING.md#specifically-for-this-project) and having a Neo4j database with GDS installed that can be targeted in the testing, you need to:
-
- * Install Ruby
- * Install `bundler`:
-   ```bash
-   gem install bundler
-   ```
- * Install the project's Ruby dependencies (from the `doc` directory):
-   ```bash
-   bundler install --gemfile tests/Gemfile
-   ```
- * Install the version of the `graphdatascience` library that you want to test the docs against
-
-
-### Configuring
-
-The tests will through the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) connect to a Neo4j database based on the environment variables:
-
-* `NEO4J_URI` (defaulting to "bolt://localhost:7687" if unset),
-* `NEO4J_USERNAME`,
-* `NEO4J_PASSWORD` (defaulting to "neo4j" if unset),
-
-However, if `NEO4J_USERNAME` is not set the tests will try to connect without authentication.
-
-
-### Running
-
-Supposing that the targeted Neo4j database have been set up, running the documentation tests is a simple call (from the `doc` directory):
+The `just doc-tests` target spins up a local Neo4j + GDS plugin via `docker compose` (from `scripts/test_envs/`), runs the snippet tests against it, and tears the container down afterwards:
 
 ```bash
-./tests/test_docs.rb python [-n test_community]
+# Community edition: runs only the community-safe snippets (no license required)
+just doc-tests enterprise=false
+
+# Enterprise edition: runs all scopes; requires a license at ${HOME}/.gds_license
+just doc-tests enterprise=true
 ```
 
-where `python` here refers to the Python interpreter that will be used to run example code.
-Depending on your system, a different reference to an interpreter such as `python3` might be the right choice.
-By adding the `-n test_community` option one can make sure that only tests that don't rely on GDS EE are run.
+
+### Running (manually)
+
+If you already have a Neo4j database with GDS running, you can invoke the Ruby harness directly.
+You need to:
+
+ * Install Ruby and `bundler` (`gem install bundler`)
+ * Install the project's Ruby dependencies (from the `doc/tests` directory): `bundle install`
+ * Install the version of the `graphdatascience` library that you want to test the docs against
+
+The tests connect through the [Neo4j Python driver](https://neo4j.com/docs/python-manual/current/) based on the environment variables `NEO4J_URI` (default `bolt://localhost:7687`), `NEO4J_USERNAME`, and `NEO4J_PASSWORD` (default `neo4j`).
+If `NEO4J_USERNAME` is not set the tests try to connect without authentication.
+
+Then, from the `doc/tests` directory:
+
+```bash
+bundle exec ruby test_docs.rb $(uv run which python) [-n test_community]
+```
+
+where the argument is the Python interpreter used to run the example code.
+Passing `-n test_community` runs only the snippets that don't rely on GDS Enterprise Edition.
+
+
+### Deployment tabs
+
+The manual documents each deployment mode as an Antora tabbed example (`[.include-with-Neo4j-server]` for the self-managed plugin, `[.include-with-Aura-Graph-Analytics]` for GDS Sessions, and `[.include-with-AuraDS]` for AuraDS).
+The doc tests target the plugin/self-managed deployment only: `test_docs.rb` runs untabbed snippets and those in the `[.include-with-Neo4j-server]` tab, and skips snippets nested inside the Aura Graph Analytics and AuraDS tabs.
 
 
 ### Adding new tests
@@ -106,6 +101,8 @@ The example code snippets of the documentation that will be tested are those Asc
 Further, if a block has a group attribute, then it will be concatenated with all other snippets of the same group into one script.
 If a block has the enterprise attribute, it will only be run when the test `test_enterprise` is not filtered out.
 If a block has the min-server-version attribute, it will only be run when the docs are tested against a GDS version >= min-server-version.
+Snippets inside a deployment tab are only run in the matching deployment lane (see [Deployment tabs](#deployment-tabs)); to iterate on a single page, set `DOC_TEST_FILE=<substring>`.
+The harness logs per-file progress to stderr as it runs; set `DOC_TEST_LOGLEVEL=DEBUG` for per-script logging (with timings).
 
 Additionally, before a code snippet from the documentation is run, it is:
 

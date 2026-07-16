@@ -61,6 +61,17 @@ def test_node_property_not_supported() -> None:
         util.node_property(graph, 1, "rank")
 
 
+def test_find_node_id_runs_db_cypher() -> None:
+    query_runner = _runner()
+    query_runner.add__mock_result("RETURN id(n) AS id", pd.DataFrame({"id": [42]}))
+    util = UtilArrowEndpoints(query_runner)
+
+    assert util.find_node_id(["City"], {"name": "New York City"}) == 42
+    assert query_runner.last_query() == "MATCH (n) WHERE n:`City` AND n.`name` = $value_0 RETURN id(n) AS id"
+    assert query_runner.last_params() == {"value_0": "New York City"}
+    assert query_runner.last_run_args()["mode"] == QueryMode.READ
+
+
 def test_standalone_session_raises() -> None:
     util = UtilArrowEndpoints(None)
 
@@ -68,3 +79,5 @@ def test_standalone_session_raises() -> None:
         util.as_node(1)
     with pytest.raises(NotAvailableInStandaloneSessions):
         util.as_nodes([1])
+    with pytest.raises(NotAvailableInStandaloneSessions):
+        util.find_node_id(["City"])

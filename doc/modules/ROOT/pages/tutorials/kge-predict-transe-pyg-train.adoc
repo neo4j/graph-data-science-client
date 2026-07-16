@@ -226,7 +226,7 @@ relationship_projection = {
     "VALID": {"orientation": "NATURAL", "properties": "rel_id"},
 }
 
-ttv_G, result = gds.graph.project(
+ttv_G, result = gds.graph.project.native(
     "fb15k-graph-ttv",
     node_projection,
     relationship_projection,
@@ -382,7 +382,7 @@ selected type.
 
 [source, python, role=no-test]
 ----
-G_test, result = gds.graph.project(
+G_test, result = gds.graph.project.native(
     "graph_to_predict_",
     {"Entity": {"properties": ["id", "emb"]}},
     rel_label_to_predict,

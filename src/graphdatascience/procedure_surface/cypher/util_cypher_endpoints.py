@@ -7,12 +7,16 @@ from neo4j.graph import Node
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.util_endpoints import UtilEndpoints
+from graphdatascience.procedure_surface.utils.node_matching import find_node_id as _find_node_id
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
 class UtilCypherEndpoints(UtilEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
+
+    def find_node_id(self, labels: list[str] | None = None, properties: dict[str, Any] | None = None) -> int:
+        return _find_node_id(self._query_runner, labels, properties)
 
     def as_node(self, node_id: int) -> Node:
         return self._query_runner.call_function(  # type: ignore[no-any-return]

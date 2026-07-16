@@ -69,6 +69,27 @@ class UtilEndpoints(ABC):
         """
         pass
 
+    @abstractmethod
+    def find_node_id(self, labels: list[str] | None = None, properties: dict[str, Any] | None = None) -> int:
+        """
+        Find the node id of a node with the given labels and properties.
+
+        Exactly one node must match the given labels and properties, otherwise an error is raised.
+
+        Parameters
+        ----------
+        labels : list[str] | None, default None
+            The labels the node must have.
+        properties : dict[str, Any] | None, default None
+            The properties the node must match.
+
+        Returns
+        -------
+        int
+            The node id of the matching node.
+        """
+        pass
+
     def one_hot_encoding(self, available_values: list[Any] | None, selected_values: list[Any] | None) -> list[int]:
         """
         One hot encode a list of values.

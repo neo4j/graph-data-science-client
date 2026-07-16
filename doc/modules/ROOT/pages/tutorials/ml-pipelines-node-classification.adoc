@@ -185,7 +185,7 @@ inverse direction).
 [source, python, role=no-test]
 ----
 # Create the projected graph containing both classified and unclassified nodes
-G, _ = gds.graph.project(
+G, _ = gds.graph.project.native(
     "cora-graph",
     {"Paper": {"properties": ["features", "subject"]}, "UnclassifiedPaper": {"properties": ["features"]}},
     {"CITES": {"orientation": "UNDIRECTED", "aggregation": "SINGLE"}},

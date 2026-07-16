@@ -489,6 +489,7 @@ class GraphDataScience:
         return GraphSageEndpoints(
             train_endpoints=GraphSageTrainCypherEndpoints(self._query_runner),
             predict_endpoints=GraphSagePredictCypherEndpoints(self._query_runner),
+            catalog_endpoints=self.model,
         )
 
     @property

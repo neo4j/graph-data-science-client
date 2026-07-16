@@ -131,7 +131,7 @@ gds.run_cypher(
 
 [source, python, role=no-test]
 ----
-G, result = gds.graph.project("reddit", "Subreddit", "HYPERLINKED_TO")
+G, result = gds.graph.project.native("reddit", "Subreddit", "HYPERLINKED_TO")
 
 print(f"The projection took {result.project_millis} ms")
 

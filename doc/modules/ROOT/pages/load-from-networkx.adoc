@@ -8,7 +8,7 @@ In order to use this method, one has to install NetworkX support for the `graphd
 pip install graphdatascience[networkx]
 ----
 
-The method that exposes the NetworkX dataset loading functionality is called `gds.graph.networkx.load`.
+The method that exposes the NetworkX dataset loading functionality is called `gds.graph.datasets.networkx.load`.
 It returns `Graph` object, and takes three arguments:
 
 .NetworkX graph loading method arguments
@@ -39,18 +39,18 @@ nx_G.add_node(42, labels=["Product", "Item"], cost=17.2)
 nx_G.add_edge(1, 42, relationshipType="BUYS", quantity=4)
 
 # Load the graph into GDS
-G = gds.graph.networkx.load(nx_G, "purchases")
+G = gds.graph.datasets.networkx.load(nx_G, "purchases")
 
 # Verify that the projection is what we expect
 assert G.name() == "purchases"
 assert G.node_count() == 2
 assert set(G.node_labels()) == {"Person", "Product", "Item"}
-assert G.node_properties("Person") == ["age"]
-assert G.node_properties("Product") == ["cost"]
+assert G.node_properties()["Person"] == ["age"]
+assert G.node_properties()["Product"] == ["cost"]
 # Count rel not being = 2 indicates the graph is indeed directed
 assert G.relationship_count() == 1
 assert G.relationship_types() == ["BUYS"]
-assert G.relationship_properties("BUYS") == ["quantity"]
+assert G.relationship_properties()["BUYS"] == ["quantity"]
 ----
 
 

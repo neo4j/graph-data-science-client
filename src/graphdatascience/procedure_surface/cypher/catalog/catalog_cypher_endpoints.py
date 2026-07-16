@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import builtins
-from types import TracebackType
-from typing import Any, NamedTuple, Type, cast
+from typing import Any, cast
 
 from pandas import DataFrame
 
@@ -13,7 +11,6 @@ from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.graph_construction.arrow_v1_graph_constructor import ArrowV1GraphConstructor
 from graphdatascience.graph_construction.cypher_graph_constructor import CypherGraphConstructor
 from graphdatascience.graph_construction.graph_constructor import GraphConstructor
-from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog import (
     NodeLabelEndpoints,
     NodePropertiesEndpoints,
@@ -29,7 +26,6 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
-from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.catalog.graph_export_cypher_endpoints import (
     GraphExportCypherEndpoints,
@@ -41,6 +37,7 @@ from graphdatascience.procedure_surface.cypher.catalog.node_label_cypher_endpoin
 from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
     NodePropertiesCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.catalog.projection_cypher_endpoints import ProjectCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
@@ -154,8 +151,8 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             return None
 
     @property
-    def project(self) -> GraphNativeProjectEndpoints:
-        return GraphNativeProjectEndpoints(self._cypher_runner)
+    def project(self) -> ProjectCypherEndpoints:
+        return ProjectCypherEndpoints(self._cypher_runner)
 
     @property
     def export(self) -> GraphExportEndpoints:
@@ -258,126 +255,3 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     @property
     def relationships(self) -> RelationshipsEndpoints:
         return RelationshipCypherEndpoints(self._cypher_runner, self._arrow_client)
-
-
-class GraphProjectResult(BaseResult):
-    graph_name: str
-    node_count: int
-    relationship_count: int
-    project_millis: int
-    node_projection: dict[str, Any]
-    relationship_projection: dict[str, Any]
-
-
-class GraphWithProjectResult(NamedTuple):
-    graph: Graph
-    result: GraphProjectResult
-
-    def __enter__(self) -> Graph:
-        return self.graph
-
-    def __exit__(
-        self,
-        exception_type: Type[BaseException] | None,
-        exception_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None:
-        self.graph.drop()
-
-
-class GraphNativeProjectEndpoints:
-    """Endpoints for projecting a graph into the catalog via Cypher projections.
-
-    Callable to run the projection (``gds.graph.project``), and exposes
-    :meth:`estimate` for ``gds.graph.project.estimate``.
-    """
-
-    def __init__(self, cypher_runner: QueryRunner):
-        self._cypher_runner = cypher_runner
-
-    def __call__(
-        self,
-        graph_name: str,
-        node_projection: str | builtins.list[str] | dict[str, Any] | None = None,
-        relationship_projection: str | builtins.list[str] | dict[str, Any] | None = None,
-        node_properties: str | builtins.list[str] | dict[str, Any] | None = None,
-        relationship_properties: str | builtins.list[str] | dict[str, Any] | None = None,
-        read_concurrency: int | None = None,
-        job_id: str | None = None,
-        sudo: bool = False,
-        username: str | None = None,
-        log_progress: bool = True,
-    ) -> GraphWithProjectResult:
-        config = ConfigConverter.convert_to_gds_config(
-            nodeProperties=node_properties,
-            relationshipProperties=relationship_properties,
-            jobId=job_id,
-            sudo=sudo,
-            username=username,
-            readConcurrency=read_concurrency,
-        )
-
-        params = CallParameters(
-            graphName=graph_name,
-            nodeProjection=node_projection,
-            relationshipProjection=relationship_projection,
-            config=config,
-        )
-        params.ensure_job_id_in_config()
-
-        result = self._cypher_runner.call_procedure(
-            endpoint="gds.graph.project", params=params, logging=log_progress
-        ).iloc[0]
-        project_result = GraphProjectResult(**result)
-        return GraphWithProjectResult(get_graph(project_result.graph_name, self._cypher_runner), project_result)
-
-    def estimate(
-        self,
-        node_projection: str | builtins.list[str] | dict[str, Any] | None = None,
-        relationship_projection: str | builtins.list[str] | dict[str, Any] | None = None,
-        node_properties: str | builtins.list[str] | dict[str, Any] | None = None,
-        relationship_properties: str | builtins.list[str] | dict[str, Any] | None = None,
-        read_concurrency: int | None = None,
-        sudo: bool = False,
-        username: str | None = None,
-    ) -> EstimationResult:
-        """Estimate the memory consumption of a native graph projection.
-
-        Parameters
-        ----------
-        node_projection
-            The node projection used for the projection. A single label, a list of labels, or a projection map.
-        relationship_projection
-            The relationship projection used for the projection. A single type, a list of types, or a projection map.
-        node_properties
-            Node properties to load during the projection.
-        relationship_properties
-            Relationship properties to load during the projection.
-        read_concurrency
-            Number of concurrent threads used during the projection.
-        sudo
-            Disable the memory guard.
-        username
-            As an administrator, impersonate a different user for the estimation.
-
-        Returns
-        -------
-        EstimationResult
-            The result of the estimation, including the required memory and node/relationship counts.
-        """
-        config = ConfigConverter.convert_to_gds_config(
-            nodeProperties=node_properties,
-            relationshipProperties=relationship_properties,
-            sudo=sudo,
-            username=username,
-            readConcurrency=read_concurrency,
-        )
-
-        params = CallParameters(
-            nodeProjection=node_projection,
-            relationshipProjection=relationship_projection,
-            config=config,
-        )
-
-        result = self._cypher_runner.call_procedure(endpoint="gds.graph.project.estimate", params=params).iloc[0]
-        return EstimationResult(**result)
