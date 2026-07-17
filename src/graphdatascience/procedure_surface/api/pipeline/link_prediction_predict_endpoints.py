@@ -115,7 +115,7 @@ class LinkPredictionPipelinePredictEndpoints(ABC):
         random_joins
             Number of random join attempts per node used by the approximate strategy.
         random_seed
-            Seed used to make the prediction deterministic.
+            Seed for random number generation to ensure reproducible results.
         username
             As an administrator, impersonate a different user for accessing their graphs.
         log_progress
@@ -170,9 +170,9 @@ class LinkPredictionPipelinePredictEndpoints(ABC):
         model_name
             Name of the model.
         mutate_relationship_type
-            The relationship type used for the predicted links written to the in-memory graph.
+            Name of the relationship type to store the results in.
         mutate_property
-            The relationship property that stores the predicted probability of each written link.
+            Name of the relationship property to store the predicted probability.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sample_rate
@@ -196,7 +196,7 @@ class LinkPredictionPipelinePredictEndpoints(ABC):
         random_joins
             Number of random join attempts per node used by the approximate strategy.
         random_seed
-            Seed used to make the prediction deterministic.
+            Seed for random number generation to ensure reproducible results.
         username
             As an administrator, impersonate a different user for accessing their graphs.
         log_progress

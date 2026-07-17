@@ -31,7 +31,8 @@
     "Name of the model.",
     "Name of the trained model."
   ],
-  "mutate_property": "Name of the node property to store the results in.",
+  "mutate_property": ["Name of the node property to store the results in.",
+  "Name of the relationship property to store the predicted probability."],
   "mutate_relationship_type": "Name of the relationship type to store the results in.",
   "node_labels": "Filter the graph using the given node labels. Nodes with any of the given labels will be included.",
   "node_properties": [
@@ -42,6 +43,10 @@
   "propagation_probability": "Probability of a node being activated by an active neighbour node.",
   "relationship_types": "Filter the graph using the given relationship types. Relationships with any of the given types will be included.",
   "relationship_weight_property": "Name of the property to be used as weights.",
+  "sample_rate": [
+    "The sampling rate for the algorithm.",
+    "Sample rate used to limit the number of candidate node pairs considered."
+  ],
   "sampling_seed": "Seed value for the random number generator that selects source nodes.",
   "sampling_size": "Number of source nodes to consider for computing centrality scores.",
   "scaler": "Name of the scaler applied on the resulting scores.",
