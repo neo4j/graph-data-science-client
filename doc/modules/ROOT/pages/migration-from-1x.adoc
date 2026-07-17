@@ -27,11 +27,9 @@ If your code already uses the V2 endpoints via the `gds.v2` prefix, migration on
 [source, python, role=no-test]
 ----
 # 1.x preview
-G, result = gds.v2.graph.project.native("g", "*", "*")
 result = gds.v2.page_rank.stream(G, damping_factor=0.5)
 
 # 2.0
-G, result = gds.graph.project.native("g", "*", "*")
 result = gds.page_rank.stream(G, damping_factor=0.5)
 ----
 
@@ -163,6 +161,7 @@ Pipelines are now created via the `gds.pipeline` namespace, and the pipeline and
 * `gds.beta.pipeline.linkPrediction.create` (or the `gds.lp_pipe` shorthand) is now `gds.pipeline.link_prediction.create`.
 * Methods on pipeline objects follow snake_case, for example `addNodeProperty` is now `add_node_property` and `selectFeatures` is now `select_features`.
 * GraphSAGE training moved from `gds.beta.graphSage.train` to `gds.graph_sage.train`, and trained models are retrieved with `gds.graph_sage.get` instead of `gds.model.get`.
+* To access a model use the model specific getters, e.g. `gds.graph_sage.get`, instead of `gds.model.get`
 * Model catalog operations are available directly on the model object, for example `model.store()`, `model.load()` and `model.drop()` instead of `gds.model.store(model)`, `gds.model.load(model.name())` and `gds.model.drop(model)`.
 
 See xref:pipelines.adoc[] and xref:model-object.adoc[] for the full API.
