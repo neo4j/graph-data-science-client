@@ -280,13 +280,53 @@ For a detailed description of the allowed parameters, see the link:{neo4j-docs-b
 == Projecting graphs into a GDS Session
 
 Once you have a GDS Session, you can project a graph into it.
+Aura Graph Analytics offers two projection methods when connected to a Neo4j databases: `Native projections` and `Cypher projections`.
+For more detailed information about projections see xref:graph-object.adoc#projection[Graph Projection].
+
+
+=== Native projections
+
+Native projections allow you to efficiently project graphs directly from your underlying database storage into your GDS session. By bypassing query-based filtering, they offer the highest performance and scalability for bulk graph loading.
+
+.Native projection:
+[source, role=no-test]
+----
+gds.graph.project.native(
+    graph_name: str,
+    node_label_filter: list[str],
+    relationship_type_filter: list[str],
+    node_properties: Optional[list[str]] = None,
+    relationship_properties: Optional[list[str]] = None,
+    job_id: Optional[str] = None,
+    concurrency: Optional[int] = None,
+    undirected_relationship_types: Optional[list[str]] = None,
+    inverse_indexed_relationship_types: Optional[list[str]] = None,
+    batch_size: Optional[int] = None,
+    logging: bool = True
+): GraphWithProjectResult
+----
+
+
+[NOTE]
+You can use the wildcard +*+ in the `node_label_filter` or `relationship_type_filter` arguments to project all available node labels or relationship types, respectively (e.g., +node_label_filter=["*"]+).
+
+
+.Example:
+[source, python, role=no-test]
+----
+G, result = gds.graph.project.native(
+    graph_name="my_native_graph",
+    node_label_filter=["Person", "Movie"],
+    relationship_type_filter=["ACTED_IN", "DIRECTED"],
+    node_properties=["age", "rating"]
+)
+----
 
 === Cypher projections
 
-You can create a remote projection using the `gds.graph.project.cypher()` endpoint with a graph name, a Cypher query, and additional optional parameters.
+You can create a cypher projection using the `gds.graph.project.cypher()` endpoint with a graph name, a Cypher query, and additional optional parameters.
 The Cypher query must contain the `gds.graph.project.remote()` function to project the graph into the GDS Session.
 This is only possible to do with Attached and self-managed sessions.
-Standalone sessions must use xref:graph-object.adoc#construct[graph.construct].
 
 .Remote projection:
 [source, role=no-test]
@@ -302,91 +342,9 @@ gds.graph.project.cypher(
 ): GraphWithProjectResult
 ----
 
-.Parameters:
-[opts="header",cols="3m,1m,1,1m,6", role="no-break"]
-|===
-| Name                               | Type           | Optional | Default | Description
-| graph_name                         | str            | no       | -       | Name of the graph.
-| node_label_filter                  | list[str]      | no       | -       | List of node labels to include in the graph projection.
-| relationship_type_filter           | list[str]      | no       | -       | List of relationship types to include in the graph projection.
-| node_properties                    | list[str]      | yes      | None    | List of node properties to include in the graph projection.
-| relationship_properties            | list[str]      | yes      | None    | List of relationship properties to include in the graph projection.
-| job_id                             | str            | yes      | None    | Identifier for the computation.
-| concurrency                        | int            | yes      | 4       | Number of concurrent threads to use.
-| undirected_relationship_types      | list[str]      | yes      | []      | List of relationship types to treat as undirected.
-| inverse_indexed_relationship_types | list[str]      | yes      | []      | List of relationship types to index in both directions.
-| batch_size                         | int            | yes      | 10000   | Number of rows to process in each batch when projecting the graph.
-| logging                            | bool           | yes      | True    | Whether to log progress during graph projection.
-|===
-
-.Results:
-[opts="header",cols="1m,1m,4", role="no-break"]
-|===
-| Name   | Type        | Description
-| graph  | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/graph_object[Graph]       | Graph object representing the projected graph.
-| result | ProjectionResult | Statistical data about the projection.
-|===
-
-The `concurrency` and `batch_size` configuration parameters can be used to tune the performance of the remote projection.
-
-
-==== Example
-
-This example shows how to project a graph into a GDS Session.
-The example graph is heterogeneous and models users and products.
-Users can know each other, and users can buy products.
-
-The Attached and Self-managed examples use a Cypher query to populate the database with the data.
-The Standalone example uses pandas DataFrames instead.
-
-[NOTE]
-====
-When you create a session, the session name must be unique within the project.
-====
-
-[.tabbed-example, caption = ]
-=====
-
-[.include-with-attached]
-=======
-
-.Create some data in the Neo4j DBMS and project it to an Attached GDS Session:
-[source,python,role=no-test]
+.Example:
+[source, python, role=no-test]
 ----
-import os # for reading environment variables
-from graphdatascience.session import SessionMemory, DbmsConnectionInfo, GdsSessions, AuraAPICredentials
-
-sessions = GdsSessions(api_credentials=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
-
-# you can also use DbmsConnectionInfo.from_env() to load credentials from environment variables
-db_connection = DbmsConnectionInfo(
-    uri=os.environ["NEO4J_URI"],
-    username=os.environ["NEO4J_USERNAME"],
-    password=os.environ["NEO4J_PASSWORD"],
-    aura_instance_id=os.environ["AURA_INSTANCEID"]
-)
-
-gds = sessions.get_or_create(
-    session_name="my-new-session", # Must be unique within the project
-    memory=SessionMemory.m_8GB,
-    db_connection=db_connection,
-)
-
-gds.run_cypher(
-    """
-    CREATE
-     (u1:User {name: 'Mats'}),
-     (u2:User {name: 'Florentin'}),
-     (p1:Product {name: 'ice cream', cost: 4.2}),
-     (p2:Product {name: 'computer', cost: 13.37})
-
-    CREATE
-     (u1)-[:KNOWS {since: 2020}]->(u2),
-     (u2)-[:BOUGHT {price: 7474}]->(p1),
-     (u1)-[:BOUGHT {price: 1337}]->(p2)
-    """
-)
-
 G, result = gds.graph.project.cypher(
     graph_name="my-graph",
     query="""
@@ -410,130 +368,7 @@ G, result = gds.graph.project.cypher(
     """,
 )
 ----
-=======
 
-[.include-with-self-managed]
-=======
-.Create some data in the Neo4j DBMS and project it to a Self-managed GDS Session:
-[source,python,role=no-test]
-----
-import os # for reading environment variables
-from graphdatascience.session import SessionMemory, DbmsConnectionInfo, GdsSessions, AuraAPICredentials, CloudLocation
-
-sessions = GdsSessions(api_credentials=AuraAPICredentials(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]))
-
-db_connection = DbmsConnectionInfo(os.environ["DB_URI"], os.environ["DB_USER"], os.environ["DB_PASSWORD"])
-
-gds = sessions.get_or_create(
-    session_name="my-new-session", # Must be unique within the project
-    memory=SessionMemory.m_8GB,
-    db_connection=db_connection,
-    cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
-)
-
-gds.run_cypher(
-    """
-    CREATE
-     (u1:User {name: 'Mats'}),
-     (u2:User {name: 'Florentin'}),
-     (p1:Product {name: 'ice cream', cost: 4.2}),
-     (p2:Product {name: 'computer', cost: 13.37})
-
-    CREATE
-     (u1)-[:KNOWS {since: 2020}]->(u2),
-     (u2)-[:BOUGHT {price: 7474}]->(p1),
-     (u1)-[:BOUGHT {price: 1337}]->(p2)
-    """
-)
-
-G, result = gds.graph.project.native(
-    graph_name="my-graph",
-    query="""
-    CALL () {
-        MATCH (u1:User)
-        OPTIONAL MATCH (u1)-[r:KNOWS]->(u2:User)
-        RETURN u1 AS source, r AS rel, u2 AS target, {} AS sourceNodeProperties, {} AS targetNodeProperties
-        UNION
-        MATCH (p:Product)
-        OPTIONAL MATCH (p)<-[r:BOUGHT]-(user:User)
-        RETURN user AS source, r AS rel, p AS target, {} AS sourceNodeProperties, {cost: p.cost} AS targetNodeProperties
-    }
-    RETURN gds.graph.project.remote(source, target, {
-      sourceNodeProperties: sourceNodeProperties,
-      targetNodeProperties: targetNodeProperties,
-      sourceNodeLabels: labels(source),
-      targetNodeLabels: labels(target),
-      relationshipType: type(rel),
-      relationshipProperties: properties(rel)
-    })
-    """,
-)
-----
-=======
-=====
-
-=== Native projections
-
-Native projections allow you to efficiently project graphs directly from your underlying database storage into your GDS session. By bypassing query-based filtering, they offer the highest performance and scalability for bulk graph loading. 
-
-For comprehensive details on how these projections work and when to use them, see the GDS manual on link:link:{gds-docs-base-uri}/aura-graph-analytics/cypher/#_native_projections[Native projections in Aura Graph Analytics].
-
-.Native projection:
-[source, role=no-test]
-----
-gds.v2.graph.project.native(
-    graph_name: str,
-    node_label_filter: list[str],
-    relationship_type_filter: list[str],
-    node_properties: Optional[list[str]] = None,
-    relationship_properties: Optional[list[str]] = None,
-    job_id: Optional[str] = None,
-    concurrency: Optional[int] = None,
-    undirected_relationship_types: Optional[list[str]] = None,
-    inverse_indexed_relationship_types: Optional[list[str]] = None,
-    batch_size: Optional[int] = None,
-    logging: bool = True
-): GraphWithProjectResult
-----
-
-.Parameters:
-[opts="header",cols="3m,1m,1,1m,6", role="no-break"]
-|===
-| Name                               | Type      | Optional | Default | Description
-| graph_name                         | str       | no       | -       | Name of the graph.
-| node_label_filter                  | list[str] | no       | -       | List of node labels to include in the graph projection.
-| relationship_type_filter           | list[str] | no       | -       | List of relationship types to include in the graph projection.
-| node_properties                    | list[str] | yes      | None    | List of node properties to include in the graph projection.
-| relationship_properties            | list[str] | yes      | None    | List of relationship properties to include in the graph projection.
-| job_id                             | str       | yes      | None    | Correlation id for the process on the session. If not provided an automatically generated id will be used.
-| concurrency                        | int       | yes      | None    | Concurrency to use for building the graph within the session.
-| undirected_relationship_types      | list[str] | yes      | None    | List of relationship type names that should be treated as undirected.
-| inverse_indexed_relationship_types | list[str] | yes      | None    | List of relationship type names that should be indexed in reverse.
-| batch_size                         | int       | yes      | None    | Size of batches transmitted from the DBMS to the session.
-| logging                            | bool      | yes      | True    | Whether to log progress during graph projection.
-|===
-
-[NOTE]
-You can use the wildcard +*+ in the `node_label_filter` or `relationship_type_filter` arguments to project all available node labels or relationship types, respectively (e.g., +node_label_filter=["*"]+).
-
-.Results:
-[opts="header",cols="1m,1m,4", role="no-break"]
-|===
-| Name   | Type        | Description
-| graph  | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/graph_object[Graph]       | Graph object representing the projected graph.
-| result | StoreProjectionResult | Statistical data about the projection.
-|===
-
-.Example:
-[source, python, role=no-test]
-----
-G, result = gds.graph.project.native(
-    graph_name="my_native_graph",
-    node_label_filter=["Person", "Movie"],
-    relationship_type_filter=["ACTED_IN", "DIRECTED"],
-    node_properties=["age", "rating"]
-)
-----
 
 == Running algorithms
 
@@ -669,7 +504,7 @@ The following snippet kicks off a remote projection, runs PageRank on the result
 
 [source, python, session=true]
 ----
-projection_handle = gds.graph.project_native_async(
+projection_handle = gds.graph.project.native_async(
     "people",
     "*",
     "*"
