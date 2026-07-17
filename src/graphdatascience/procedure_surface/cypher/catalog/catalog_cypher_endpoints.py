@@ -272,7 +272,7 @@ class GraphWithProjectResult(NamedTuple):
 
 
 class GraphNativeProjectEndpoints:
-    """Endpoints for projecting a graph into the catalog via Cypher projections.
+    """Endpoints for projecting a graph into the catalog via native projections.
 
     Callable to run the projection (``gds.graph.project``), and exposes
     :meth:`estimate` for ``gds.graph.project.estimate``.

@@ -1,19 +1,28 @@
 from .job_config import (
-    Algorithm,
+    AlgorithmParams,
+    AlgorithmStep,
+    CypherProjection,
     JobConfig,
     JobConfigValidationError,
-    JobMetadata,
-    JobSchedule,
     NativeProjection,
+    Projection,
+    WriteBackParams,
+    WriteBackStep,
     WriteOrMutateMode,
 )
+from .job_executor import JobExecutionError, JobExecutor
 
 __all__ = [
-    "Algorithm",
+    "AlgorithmParams",
+    "AlgorithmStep",
+    "CypherProjection",
     "JobConfig",
     "JobConfigValidationError",
-    "JobMetadata",
-    "JobSchedule",
+    "JobExecutionError",
+    "JobExecutor",
     "NativeProjection",
+    "Projection",
+    "WriteBackParams",
+    "WriteBackStep",
     "WriteOrMutateMode",
 ]

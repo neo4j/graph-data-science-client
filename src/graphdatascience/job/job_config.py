@@ -1,9 +1,10 @@
 import pathlib
-from typing import Any, Literal
+from abc import ABC
+from typing import Annotated, Any, Literal, Union
 
 import yaml
-from pydantic import BaseModel, Field, ValidationError
-from pydantic.alias_generators import to_camel
+from pydantic import BaseModel, Field, ValidationError, model_validator
+from pydantic.alias_generators import to_snake
 
 
 class JobConfigValidationError(Exception):
@@ -12,31 +13,44 @@ class JobConfigValidationError(Exception):
         super().__init__("Invalid job config:\n" + "\n".join(f"- {error}" for error in errors))
 
 
-class _JobConfigModel(BaseModel, alias_generator=to_camel, populate_by_name=True):
+class _JobConfigModel(BaseModel, alias_generator=to_snake, populate_by_name=True):
     pass
 
 
+class NativeProjection(_JobConfigModel):
+    graph: str
+    node_labels: list[str] | None = None
+    relationship_types: list[str] | None = None
+    node_properties: list[str] | None = None
+    relationship_properties: list[str] | None = None
+    undirected_relationship_types: list[str] | None = None
+    inverse_indexed_relationship_types: list[str] | None = None
+
+
 class CypherProjection(_JobConfigModel):
+    graph: str
     query: str
 
-class NativeProjection(_JobConfigModel):
-    name: str
-    node_labels: list[Any] | None = None
-    relationship_types: list[Any] | None = None
-    node_properties: list[Any] | None = None
-    relationship_properties: list[Any] | None = None
-    undirected_relationship_types: list[Any] | None = None
-    inverse_indexed_relationship_types: list[Any] | None = None
 
+class Projection(_JobConfigModel):
+    """A single projection entry, tagged as either ``native`` or ``cypher``."""
 
-class JobMetadata(_JobConfigModel):
-    name: str
-    aura_instance_id: str
-    version: str
+    native: NativeProjection | None = None
+    cypher: CypherProjection | None = None
 
+    @model_validator(mode="after")
+    def _exactly_one_kind(self) -> "Projection":
+        if (self.native is None) == (self.cypher is None):
+            raise ValueError("a projection must specify exactly one of 'native' or 'cypher'")
+        return self
 
-class JobSchedule(_JobConfigModel):
-    expression: str | None = None
+    @property
+    def spec(self) -> NativeProjection | CypherProjection:
+        return self.native if self.native is not None else self.cypher  # type: ignore[return-value]
+
+    @property
+    def graph(self) -> str:
+        return self.spec.graph
 
 
 class WriteOrMutateMode(_JobConfigModel):
@@ -44,10 +58,37 @@ class WriteOrMutateMode(_JobConfigModel):
     property: str
 
 
-class Algorithm(_JobConfigModel):
-    name: str | None = None
+class GraphParams(ABC):
+    graph: str
+
+
+class AlgorithmParams(_JobConfigModel, GraphParams):
+    algorithm: str
+    graph: str
     mode: Literal["stream"] | WriteOrMutateMode
-    config: dict[str, Any] = Field(default_factory=dict)
+    configuration: dict[str, Any] = Field(default_factory=dict)
+
+
+class AlgorithmStep(_JobConfigModel):
+    name: str
+    type: Literal["algorithm"]
+    params: AlgorithmParams
+
+
+class WriteBackParams(_JobConfigModel, GraphParams):
+    graph: str
+    node_properties: list[str] | None = None
+    relationship_properties: list[str] | None = None
+    relationship_types: list[str] | None = None
+
+
+class WriteBackStep(_JobConfigModel):
+    name: str
+    type: Literal["write-back"]
+    params: WriteBackParams
+
+
+Step = Annotated[Union[AlgorithmStep, WriteBackStep], Field(discriminator="type")]
 
 
 class JobConfig(_JobConfigModel):
@@ -55,10 +96,8 @@ class JobConfig(_JobConfigModel):
     Typed representation of a job config, matching the fields and types of `job-config.schema.json`.
     """
 
-    metadata: JobMetadata
-    schedule: JobSchedule | None = None
-    projections: list[CypherProjection | NativeProjection] = Field(min_length=1)
-    algorithms: list[Algorithm] = Field(min_length=1)
+    projections: list[Projection] = Field(min_length=1)
+    steps: list[Step] = Field(min_length=1)
 
     @classmethod
     def from_yaml_file(cls, path: str | pathlib.Path) -> "JobConfig":

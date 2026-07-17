@@ -1,136 +1,261 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "metadata": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": ""
-        },
-        "auraInstanceId": {
-          "type": "string",
-          "description": ""
-        },
-        "version": {
-          "type": "string",
-          "description": ""
-        }
-      },
-      "required": [
-        "name",
-        "auraInstanceId",
-        "version"
-      ]
-    },
-    "schedule": {
-      "type": "object",
-      "properties": {
-        "expression": {
-          "type": "string",
-          "description": ""
-        }
-      }
-    },
     "projections": {
       "type": "array",
+      "minItems": 1,
+      "description": "Graph projections that steps may reference by name. A projection is only executed when a step first references its graph.",
       "items": {
+        "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "description": "Cypher projection query"
-          },
-          {
-            "type": "object",
             "properties": {
-              "name": {
-                "type": "string",
-                "description": "Graph name"
-              },
-              "nodeLabels": {
-                "type": "array",
-                "description": "Node label filter"
-              },
-              "relationshipTypes": {
-                "type": "array",
-                "description": "Relationship type filter"
-              },
-              "nodeProperties": {
-                "type": "array",
-                "description": ""
-              },
-              "relationshipProperties": {
-                "type": "array",
-                "description": ""
-              },
-              "undirectedRelationshipTypes": {
-                "type": "array",
-                "description": ""
-              },
-              "inverseIndexedRelationshipTypes": {
-                "type": "array",
-                "description": ""
+              "native": {
+                "type": "object",
+                "description": "Native projection parameters",
+                "properties": {
+                  "graph": {
+                    "type": "string",
+                    "description": "Name of the graph to project into the catalog"
+                  },
+                  "node_labels": {
+                    "type": "array",
+                    "description": "Node label filter",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "relationship_types": {
+                    "type": "array",
+                    "description": "Relationship type filter",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "node_properties": {
+                    "type": "array",
+                    "description": "Node properties to project",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "relationship_properties": {
+                    "type": "array",
+                    "description": "Relationship properties to project",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "undirected_relationship_types": {
+                    "type": "array",
+                    "description": "Relationship types to project as undirected",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "inverse_indexed_relationship_types": {
+                    "type": "array",
+                    "description": "Relationship types to index in both directions",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "graph"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
-              "name"
+              "native"
             ],
-            "description": "Native projection parameters"
+            "additionalProperties": false
+          },
+          {
+            "properties": {
+              "cypher": {
+                "type": "object",
+                "description": "Cypher projection parameters",
+                "properties": {
+                  "graph": {
+                    "type": "string",
+                    "description": "Name of the graph to project into the catalog"
+                  },
+                  "query": {
+                    "type": "string",
+                    "description": "Cypher projection query"
+                  }
+                },
+                "required": [
+                  "graph",
+                  "query"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "cypher"
+            ],
+            "additionalProperties": false
           }
         ]
-      },
-      "minItems": 1
+      }
     },
-    "algorithms": {
+    "steps": {
       "type": "array",
       "minItems": 1,
+      "description": "Ordered list of steps to execute as part of the job",
       "items": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "description": ""
+            "description": "Human-readable name of the step"
           },
-          "mode": {
-            "oneOf": [
-              {
-                "pattern": "stream",
-                "type": "string"
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "pattern": "(write)|(mutate)",
-                    "type": "string"
-                  },
-                  "property": {
-                    "type": "string",
-                    "description": ""
-                  }
-                },
-                "required": [
-                  "name",
-                  "property"
-                ]
-              }
+          "type": {
+            "type": "string",
+            "description": "Type of the step, discriminating the shape of params",
+            "enum": [
+              "algorithm",
+              "write-back"
             ]
           },
-          "config": {
-            "type": "object",
-            "properties": {}
+          "params": {
+            "type": "object"
           }
         },
         "required": [
           "name",
-          "mode"
+          "type",
+          "params"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "algorithm"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "description": "Run an algorithm against a graph in the catalog",
+                  "properties": {
+                    "algorithm": {
+                      "type": "string",
+                      "description": "Name of the algorithm to run"
+                    },
+                    "graph": {
+                      "type": "string",
+                      "description": "Name of the graph in the catalog to run the algorithm against"
+                    },
+                    "configuration": {
+                      "type": "object",
+                      "description": "Algorithm-specific configuration"
+                    },
+                    "mode": {
+                      "description": "Execution mode of the algorithm",
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "stream"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "enum": [
+                                "write",
+                                "mutate"
+                              ]
+                            },
+                            "property": {
+                              "type": "string",
+                              "description": "Property to write or mutate the algorithm result into"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "property"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "algorithm",
+                    "graph",
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "write-back"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "description": "Write mutated properties from a graph back to the database",
+                  "properties": {
+                    "graph": {
+                      "type": "string",
+                      "description": "Name of the graph to write results back from"
+                    },
+                    "node_properties": {
+                      "type": "array",
+                      "description": "Node properties to write back",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "relationship_properties": {
+                      "type": "array",
+                      "description": "Relationship properties to write back",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "relationship_types": {
+                      "type": "array",
+                      "description": "Relationship types to write back",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "graph"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
         ]
       }
     }
   },
   "required": [
-    "metadata",
     "projections",
-    "algorithms"
+    "steps"
   ]
 }

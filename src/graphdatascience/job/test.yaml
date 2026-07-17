@@ -1,0 +1,49 @@
+projections:
+  - native:
+      graph: "g1"
+#     explicit parameters omitted for now
+  - native:
+      graph: "g2"
+  - cypher:
+      graph: "g3"
+      query: "MATCH (n) RETURN n"
+#     + some more parameters like undirected relationship types
+steps:
+  - name: "Run WCC"
+    type: algorithm
+    params:
+      algorithm: "wcc"
+      graph: "g1"
+      configuration:
+        concurrency: 4
+      mode: "stream"
+
+  - name: "Run Dijkstra"
+    type: algorithm
+    params:
+      algorithm: "dijkstra"
+      graph: "g1"
+      configuration:
+        source_node: 42
+      mode:
+        name: "write"
+        property: "prop"
+
+  - name: "Run PageRank"
+    type: algorithm
+    params:
+      algorithm: "pagerank"
+      graph: "g1"
+      configuration:
+        max_iterations: 20
+      mode:
+        name: "mutate"
+        property: "prop"
+
+  - name: "Write mutated things"
+    type: write-back
+    params:
+      graph: "g1"
+      node_properties: ["prop1", "prop2"]
+      relationship_properties: ["relProp"]
+      relationship_types: ["REL"]

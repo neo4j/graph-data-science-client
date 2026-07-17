@@ -1,16 +1,44 @@
 import pytest
 
-from graphdatascience.job import JobConfig, JobConfigValidationError, NativeProjection, WriteOrMutateMode
+from graphdatascience.job import (
+    AlgorithmStep,
+    CypherProjection,
+    JobConfig,
+    JobConfigValidationError,
+    NativeProjection,
+    WriteBackStep,
+    WriteOrMutateMode,
+)
 
 VALID_YAML = """
-metadata:
-  name: my-job
-  auraInstanceId: abc123
 projections:
-  - "MATCH (n) RETURN n"
-algorithms:
-  - name: pageRank
-    mode: stream
+  - native:
+      graph: "g1"
+  - cypher:
+      graph: "g2"
+      query: "MATCH (n) RETURN n"
+steps:
+  - name: "Run WCC"
+    type: algorithm
+    params:
+      algorithm: "wcc"
+      graph: "g1"
+      configuration:
+        concurrency: 4
+      mode: "stream"
+  - name: "Run PageRank"
+    type: algorithm
+    params:
+      algorithm: "pagerank"
+      graph: "g2"
+      mode:
+        name: "write"
+        property: "rank"
+  - name: "Write back"
+    type: write-back
+    params:
+      graph: "g2"
+      node_properties: ["rank"]
 """
 
 
@@ -20,78 +48,107 @@ def test_from_yaml_file_parses_into_typed_object(tmp_path) -> None:  # type: ign
 
     job_config = JobConfig.from_yaml_file(config_file)
 
-    assert job_config.metadata.name == "my-job"
-    assert job_config.metadata.aura_instance_id == "abc123"
-    assert job_config.metadata.version is None
-    assert job_config.projections == ["MATCH (n) RETURN n"]
-    assert job_config.algorithms[0].name == "pageRank"
-    assert job_config.algorithms[0].mode == "stream"
-    assert job_config.algorithms[0].config == {}
+    assert isinstance(job_config.projections[0].spec, NativeProjection)
+    assert job_config.projections[0].graph == "g1"
+
+    cypher_projection = job_config.projections[1].spec
+    assert isinstance(cypher_projection, CypherProjection)
+    assert cypher_projection.graph == "g2"
+    assert cypher_projection.query == "MATCH (n) RETURN n"
+
+    wcc_step = job_config.steps[0]
+    assert isinstance(wcc_step, AlgorithmStep)
+    assert wcc_step.name == "Run WCC"
+    assert wcc_step.params.algorithm == "wcc"
+    assert wcc_step.params.graph == "g1"
+    assert wcc_step.params.mode == "stream"
+    assert wcc_step.params.configuration == {"concurrency": 4}
+
+    page_rank_step = job_config.steps[1]
+    assert isinstance(page_rank_step, AlgorithmStep)
+    mode = page_rank_step.params.mode
+    assert isinstance(mode, WriteOrMutateMode)
+    assert mode.name == "write"
+    assert mode.property == "rank"
+    assert page_rank_step.params.configuration == {}
+
+    write_back_step = job_config.steps[2]
+    assert isinstance(write_back_step, WriteBackStep)
+    assert write_back_step.params.graph == "g2"
+    assert write_back_step.params.node_properties == ["rank"]
 
 
-def test_from_yaml_file_parses_native_projection_and_write_mode(tmp_path) -> None:  # type: ignore[no-untyped-def]
+def test_from_yaml_file_rejects_projection_with_both_kinds(tmp_path) -> None:  # type: ignore[no-untyped-def]
     yaml_content = """
-metadata:
-  name: my-job
-  auraInstanceId: abc123
 projections:
-  - name: my-graph
-    nodeLabels:
-      - Person
-    relationshipTypes:
-      - KNOWS
-algorithms:
-  - name: pageRank
-    mode:
-      name: write
-      property: rank
-    config:
-      dampingFactor: 0.85
+  - native:
+      graph: "g1"
+    cypher:
+      graph: "g1"
+      query: "MATCH (n) RETURN n"
+steps:
+  - name: "Run WCC"
+    type: algorithm
+    params:
+      algorithm: "wcc"
+      graph: "g1"
+      mode: "stream"
 """
     config_file = tmp_path / "job-config.yaml"
     config_file.write_text(yaml_content)
 
-    job_config = JobConfig.from_yaml_file(config_file)
+    with pytest.raises(JobConfigValidationError, match="exactly one"):
+        JobConfig.from_yaml_file(config_file)
 
-    projection = job_config.projections[0]
-    assert isinstance(projection, NativeProjection)
-    assert projection.name == "my-graph"
-    assert projection.node_labels == ["Person"]
-    assert projection.relationship_types == ["KNOWS"]
 
-    mode = job_config.algorithms[0].mode
-    assert isinstance(mode, WriteOrMutateMode)
-    assert mode.name == "write"
-    assert mode.property == "rank"
-    assert job_config.algorithms[0].config == {"dampingFactor": 0.85}
+def test_from_yaml_file_rejects_unknown_step_type(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    yaml_content = """
+projections:
+  - native:
+      graph: "g1"
+steps:
+  - name: "Mystery"
+    type: teleport
+    params:
+      graph: "g1"
+"""
+    config_file = tmp_path / "job-config.yaml"
+    config_file.write_text(yaml_content)
+
+    with pytest.raises(JobConfigValidationError):
+        JobConfig.from_yaml_file(config_file)
 
 
 def test_from_yaml_file_rejects_missing_required_field(tmp_path) -> None:  # type: ignore[no-untyped-def]
     yaml_content = """
-metadata:
-  name: my-job
 projections:
-  - "MATCH (n) RETURN n"
-algorithms:
-  - name: pageRank
-    mode: stream
+  - cypher:
+      graph: "g1"
+steps:
+  - name: "Run WCC"
+    type: algorithm
+    params:
+      algorithm: "wcc"
+      graph: "g1"
+      mode: "stream"
 """
     config_file = tmp_path / "job-config.yaml"
     config_file.write_text(yaml_content)
 
-    with pytest.raises(JobConfigValidationError, match="auraInstanceId"):
+    with pytest.raises(JobConfigValidationError, match="query"):
         JobConfig.from_yaml_file(config_file)
 
 
 def test_from_yaml_file_rejects_empty_projections(tmp_path) -> None:  # type: ignore[no-untyped-def]
     yaml_content = """
-metadata:
-  name: my-job
-  auraInstanceId: abc123
 projections: []
-algorithms:
-  - name: pageRank
-    mode: stream
+steps:
+  - name: "Run WCC"
+    type: algorithm
+    params:
+      algorithm: "wcc"
+      graph: "g1"
+      mode: "stream"
 """
     config_file = tmp_path / "job-config.yaml"
     config_file.write_text(yaml_content)
