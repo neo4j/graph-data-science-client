@@ -3,10 +3,10 @@ from typing import Any
 from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
-from graphdatascience.procedure_surface.api.model.model_catalog_protocol import ModelCatalogProtocol
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_model import GraphSageModel
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
     GraphSagePredictEndpoints,

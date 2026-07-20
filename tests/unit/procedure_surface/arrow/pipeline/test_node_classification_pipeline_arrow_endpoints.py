@@ -4,8 +4,8 @@ from unittest import mock
 import pandas as pd
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline import PipelineCatalogEntry
+from graphdatascience.procedure_surface.api.pipeline.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
 from graphdatascience.procedure_surface.arrow.pipeline.node_classification_pipeline_arrow_endpoints import (
     NodeClassificationPipelineArrowEndpoints,

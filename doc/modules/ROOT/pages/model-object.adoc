@@ -1,9 +1,9 @@
 = Model objects from the model catalog
 
-Models of the https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog] are represented as `Model` objects in the Python client, similar to how there are xref:graph-object.adoc[graph objects].
+Models of the link:{gds-docs-base-uri}/model-catalog/[GDS Model Catalog] are represented as `Model` objects in the Python client, similar to how there are xref:graph-object.adoc[graph objects].
 `Model` objects are typically constructed from training a xref:pipelines.adoc[pipeline] or a xref:model-object.adoc#model-object-graphsage[GraphSAGE model], in which case a reference to the trained model in the form of a `Model` object is returned.
 
-Once created, the `Model` objects can be passed as arguments to methods in the Python client, such as the https://neo4j.com/docs/graph-data-science/current/model-catalog/[model catalog operations].
+Once created, the `Model` objects can be passed as arguments to methods in the Python client, such as the link:{gds-docs-base-uri}/model-catalog/[model catalog operations].
 Additionally, the `Model` objects have convenience methods allowing for inspection of the models represented without explicitly involving the model catalog.
 
 include::ROOT:partial$/gds-object.adoc[]
@@ -13,7 +13,7 @@ include::ROOT:partial$/gds-object.adoc[]
 == Constructing a model object
 
 The primary way to construct a model object is through training a model.
-There are two types of models: pipeline models and https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/[GraphSAGE] models.
+There are two types of models: pipeline models and link:{gds-docs-base-uri}/machine-learning/node-embeddings/graph-sage/[GraphSAGE] models.
 In order to train a pipeline model, a pipeline must first be created and configured
 Read more about how to operate pipelines in xref:pipelines.adoc[], including examples of using pipeline models.
 In this section, we will exemplify creating and using a GraphSAGE model object.
@@ -45,8 +45,10 @@ gds.run_cypher(
 )
 G, project_result = gds.graph.project.native(
     "road_graph",
-    {"City": {"properties": ["settled"]}},
-    {"ROAD": {"properties": ["cost"]}}
+    "City",
+    "ROAD",
+    node_properties=["settled"],
+    relationship_properties=["cost"]
 )
 
 assert G.relationship_count() == 9
@@ -78,34 +80,10 @@ assert model.name() == "city-representation"
 [[model-object-inspecting]]
 == Inspecting a model object
 
-There are convenience methods on all model objects that let us extract information about the represented model.
+All model objects expose convenience methods to inspect the represented model (`name`, `exists`, `details`) and to operate on it in the model catalog (`drop`, and, on GDS Enterprise Edition, `store`, `load`, `publish`, `delete`).
+See the link:{gds-api-uri}/endpoints/model_endpoints/#graphdatascience.model.model.Model[`Model` API reference] for the full list of methods and their signatures.
 
-.Model object methods
-[opts="header",cols="5m,6m,7m,14"]
-|===
-| Name    | Arguments                       | Return type  | Description
-| name    | -                               | str          | The name of the model as it appears in the model catalog.
-| exists  | -                               | bool         | `True` if the model exists in the GDS Model Catalog, `False` otherwise.
-| drop    | fail_if_missing: Optional[bool] | ModelDetails | https://neo4j.com/docs/graph-data-science/current/model-catalog/drop/[Removes the model] from the GDS Model Catalog.
-| details | -                               | ModelDetails | Metadata about the model.
-|===
-
-The `details()` method returns a link:{gds-api-uri}/endpoints/model_endpoints/#graphdatascience.model.model_details.ModelDetails[`ModelDetails`] object whose fields are accessed as attributes:
-
-.`ModelDetails` fields
-[opts="header",cols="6m,7m,14"]
-|===
-| Name          | Type                | Description
-| model_name    | str                 | The name of the model as it appears in the model catalog.
-| model_type    | str                 | The type of model it is, eg. "graphSage".
-| train_config  | dict[str, Any]      | The configuration used for training the model.
-| graph_schema  | dict[str, Any]      | The schema of the graph on which the model was trained.
-| loaded        | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/store/#catalog-model-load[loaded] in the in-memory model catalog, `False` otherwise.
-| stored        | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/store/#catalog-model-store[stored] on disk, `False` otherwise.
-| published     | bool                | `True` if the model is https://neo4j.com/docs/graph-data-science/current/model-catalog/publish/[published] between users, `False` otherwise.
-| model_info    | dict[str, Any]      | Additional model-specific information, such as training metrics.
-| creation_time | neo4j.time.Datetime | Time when the model was created.
-|===
+The `details()` method returns a link:{gds-api-uri}/endpoints/model_endpoints/#graphdatascience.model.model_details.ModelDetails[`ModelDetails`] object.
 
 For example, to get the train configuration of our model object `model` created above, we would do the following:
 
@@ -122,7 +100,7 @@ assert train_config["concurrency"] == 4
 The primary way to use model objects is for prediction.
 How to do so for GraphSAGE is xref:model-object.adoc#model-object-graphsage[described below], and on the xref:pipelines.adoc[Machine learning pipelines] page for pipelines.
 
-Additionally, model objects can be used as input to https://neo4j.com/docs/graph-data-science/current/model-catalog/[GDS Model Catalog operations].
+Additionally, model objects can be used as input to link:{gds-docs-base-uri}/model-catalog/[GDS Model Catalog operations].
 For instance, supposing we have our model object `model` created above, we could:
 
 [source,python,group=gs-model,enterprise=true]
@@ -140,21 +118,16 @@ model.load()
 [[model-object-graphsage]]
 === GraphSAGE
 
-As exemplified above in xref:model-object.adoc#model-object-constructing[Constructing a model object], training a GraphSAGE model with the Python client is analogous to https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/[its Cypher counterpart].
+As exemplified above in xref:model-object.adoc#model-object-constructing[Constructing a model object], training a GraphSAGE model with the Python client is analogous to link:{gds-docs-base-uri}/machine-learning/node-embeddings/graph-sage/[its Cypher counterpart].
 
 Once trained, in addition to the xref:model-object.adoc#model-object-inspecting[methods above], the GraphSAGE model object will have the following methods.
 
-.GraphSAGE model methods
-[opts="header",cols="5m,5m,6m,11"]
-|===
-| Name           | Arguments        | Return type            | Description
-| predict_mutate | G: Graph, +
-                   config: **kwargs | GraphSageMutateResult  | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#graph-sage-trained-model-example-mutate[Predict embeddings for nodes of the input graph and mutate graph with predictions].
-| predict_stream | G: Graph, +
-                   config: **kwargs | DataFrame              | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#_stream[Predict embeddings for nodes of the input graph and stream the results].
-| predict_write  | G: Graph, +
-                   config: **kwargs | GraphSageWriteResult   | https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/graph-sage/#graph-sage-trained-model-example-write[Predict embeddings for nodes of the input graph and write the results back to the database].
-|===
+* `predict_stream` -- predict embeddings for nodes of the input graph and stream the results.
+* `predict_mutate` -- predict embeddings for nodes of the input graph and mutate the graph with the results.
+* `predict_write` -- predict embeddings for nodes of the input graph and write the results back to the database.
+* `predict_estimate` -- estimate the memory needed to predict embeddings for the input graph.
+
+See the link:{gds-api-uri}/endpoints/node_embedding_endpoints/#graphdatascience.procedure_surface.api.node_embedding.graphsage_model.GraphSageModel[`GraphSageModel` API reference] for the full method signatures.
 
 The training metrics are available via `model.details().model_info["metrics"]`.
 

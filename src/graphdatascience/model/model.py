@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from abc import ABC
 
+from graphdatascience.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.model.model_details import ModelDetails
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import (
     ModelDeleteResult,
     ModelLoadResult,
     ModelStoreResult,
 )
-from graphdatascience.procedure_surface.api.model.model_catalog_protocol import ModelCatalogProtocol
 
 
 class Model(ABC):
@@ -27,6 +27,13 @@ class Model(ABC):
         return self._name
 
     def details(self) -> ModelDetails:
+        """
+        Get metadata about the model from the model catalog.
+
+        Returns:
+            The details of the model.
+
+        """
         return self._catalog.get(self._name)
 
     def exists(self) -> bool:

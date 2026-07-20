@@ -34,7 +34,7 @@ They also take the same parameters:
 
 == Making predictions with the relationship embedding model
 
-The `SimpleRelEmbeddingModel` represents a relationship embedding model based on a KGE model.
+The link:{gds-api-uri}/endpoints/kge_endpoints/#graphdatascience.procedure_surface.api.kge.simple_rel_embedding_model.SimpleRelEmbeddingModel[`SimpleRelEmbeddingModel`] represents a relationship embedding model based on a KGE model.
 It has three methods for predicting new relationships.
 The computation of inferring new embeddings is the same, but how the new relationships are handled after that differs.
 
@@ -59,7 +59,7 @@ Since the prediction parts of the computations in these methods are the same, th
 |===
 
 In particular, the general algorithm configuration parameters supported as keyword parameters for this algorithm are `concurrency`, `job_id` and `log_progress`.
-You can read more about them https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#algorithms-syntax-configuration-parameters[here] in the GDS manual.
+You can read more about them link:{gds-docs-base-uri}/common-usage/running-algos/#algorithms-syntax-configuration-parameters[here] in the GDS manual.
 
 Let us now outline the differences between these prediction methods.
 

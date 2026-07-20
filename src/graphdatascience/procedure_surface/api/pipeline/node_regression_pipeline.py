@@ -4,8 +4,8 @@ from typing import Any
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModel
 from graphdatascience.procedure_surface.api.pipeline.node_regression_metric import NodeRegressionMetric
+from graphdatascience.procedure_surface.api.pipeline.node_regression_model import NodeRegressionModel
 from graphdatascience.procedure_surface.api.pipeline.node_regression_pipeline_protocol import (
     NodeRegressionPipelineOps,
     NodeRegressionPipelineTrainer,

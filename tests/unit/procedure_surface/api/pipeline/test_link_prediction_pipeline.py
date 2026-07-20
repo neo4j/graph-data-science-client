@@ -3,10 +3,10 @@ from unittest import mock
 
 import pytest
 
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline import (
     LinkPredictionPipeline,
 )
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
     LinkPredictionPipelineInfoResult,
 )

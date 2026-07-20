@@ -4,10 +4,10 @@ from unittest import mock
 import pytest
 
 from graphdatascience.model.model_details import ModelDetails
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
-from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
-from graphdatascience.procedure_surface.api.model.node_regression_model import NodeRegressionModel
-from graphdatascience.procedure_surface.api.model.pipeline_model import PipelineModel
+from graphdatascience.procedure_surface.api.pipeline.link_prediction_model import LinkPredictionModel
+from graphdatascience.procedure_surface.api.pipeline.node_classification_model import NodeClassificationModel
+from graphdatascience.procedure_surface.api.pipeline.node_regression_model import NodeRegressionModel
+from graphdatascience.procedure_surface.api.pipeline.pipeline_model import PipelineModel
 
 
 def _model_details() -> ModelDetails:

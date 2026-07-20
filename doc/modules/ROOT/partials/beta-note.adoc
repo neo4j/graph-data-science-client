@@ -1,4 +1,0 @@
-[.beta-symbol]
-[.tier-note]
-This feature is in the beta tier.
-For more information on feature tiers, see the https://neo4j.com/docs/graph-data-science/current/introduction/#introduction-tiers/[GDS manual].

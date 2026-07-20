@@ -8,3 +8,7 @@ Model Catalog Endpoints
 .. autoclass:: graphdatascience.model.model_details.ModelDetails
     :members:
     :exclude-members: __init__
+
+.. autoclass:: graphdatascience.model.model.Model
+    :members:
+    :exclude-members: __init__

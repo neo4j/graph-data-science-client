@@ -7,7 +7,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
-from graphdatascience.procedure_surface.api.model.graphsage_model import GraphSageModel
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_model import GraphSageModel
 
 
 class GraphSageTrainEndpoints(ABC):
