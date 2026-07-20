@@ -48,6 +48,7 @@ class FastPathEndpoints(ABC):
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
         time_node_property: str | None = None,
+        job_id: str | None = None,
     ) -> FastPathMutateResult:
         """
         Executes the FastPath algorithm and writes the results back to the graph as a node property.
@@ -96,6 +97,8 @@ class FastPathEndpoints(ABC):
             Window size for aggregating embeddings across nearby grid times.
         time_node_property
             Numeric event node property holding the event timestamp.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -127,6 +130,7 @@ class FastPathEndpoints(ABC):
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
         time_node_property: str | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         """
         Executes the FastPath algorithm and returns the results as a stream.
@@ -173,6 +177,8 @@ class FastPathEndpoints(ABC):
             Window size for aggregating embeddings across nearby grid times.
         time_node_property
             Numeric event node property holding the event timestamp.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------
@@ -206,6 +212,7 @@ class FastPathEndpoints(ABC):
         smoothing_window: int = 0,
         time_node_property: str | None = None,
         write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> FastPathWriteResult:
         """
         Executes the FastPath algorithm and writes the results to Neo4j.
@@ -256,6 +263,8 @@ class FastPathEndpoints(ABC):
             Numeric event node property holding the event timestamp.
         write_concurrency
             Number of concurrent threads to use for writing.
+        job_id
+            Identifier for the computation.
 
         Returns
         -------

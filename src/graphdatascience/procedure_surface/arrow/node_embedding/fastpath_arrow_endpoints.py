@@ -80,6 +80,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
         time_node_property: str | None = None,
+        job_id: str | None = None,
     ) -> FastPathMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -102,6 +103,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             smoothing_rate=smoothing_rate,
             smoothing_window=smoothing_window,
             time_node_property=time_node_property,
+            job_id=job_id,
         )
 
         with _translate_feature_not_enabled():
@@ -132,6 +134,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
         time_node_property: str | None = None,
+        job_id: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -154,6 +157,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             smoothing_rate=smoothing_rate,
             smoothing_window=smoothing_window,
             time_node_property=time_node_property,
+            job_id=job_id,
         )
 
         with _translate_feature_not_enabled():
@@ -184,6 +188,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         smoothing_window: int = 0,
         time_node_property: str | None = None,
         write_concurrency: int | None = None,
+        job_id: str | None = None,
     ) -> FastPathWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -206,6 +211,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             smoothing_rate=smoothing_rate,
             smoothing_window=smoothing_window,
             time_node_property=time_node_property,
+            job_id=job_id,
         )
 
         with _translate_feature_not_enabled():

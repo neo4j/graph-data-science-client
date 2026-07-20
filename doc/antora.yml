@@ -1,11 +1,11 @@
 name: graph-data-science-client
 title: Neo4j Graph Data Science Client
-version: '1.23'
+version: '2.0'
 start_page: ROOT:index.adoc
 nav:
 - modules/ROOT/content-nav.adoc
 asciidoc:
   attributes:
-    docs-version: '1.23'
+    docs-version: '2.0'
     # locally-served refdocs. Production/publish inherits this value.
     gds-api-uri: '{neo4j-docs-base-uri}/graph-data-science-client/{docs-version}/api@'
