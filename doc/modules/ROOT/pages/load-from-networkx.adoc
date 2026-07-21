@@ -20,7 +20,7 @@ It returns `Graph` object, and takes three arguments:
 | concurrency | int = 4        | An optional number of threads to use
 |===
 
-Exactly how the `networkx.Graph` `nx_G` maps to a GDS `Graph` projection is outlined in detail xref:graph-object.adoc#nx-schema[below].
+Exactly how the `networkx.Graph` `nx_G` maps to a GDS `Graph` projection is outlined in detail xref:load-from-networkx.adoc#nx-schema[below].
 
 
 == Example
