@@ -1,0 +1,101 @@
+name: "Generate HTML"
+
+permissions:
+  contents: read
+
+# The list of branches should contain all the branches in the Antora publish
+# playbook (doc/publish.yml). For graph-data-science-client those are the
+# published versions 1.19–1.22 (main / 2.0 is not published yet).
+on:
+  push:
+    branches:
+      - '1.19'
+      - '1.20'
+      - '1.21'
+      - '1.22'
+    paths:
+      - "doc/**"
+  workflow_dispatch:
+
+# NOTE (needs maintainer confirmation): this single dev/prod model comes from the
+# standard template. gds-client publishes multiple versions via doc/publish.yml,
+# so DEV_BRANCH (build+publish to staging) and PROD_BRANCH (build+publish to
+# neo4j.com/docs) should be set to match the team's staging/prod branch scheme.
+env:
+  DEV_BRANCH: '1.22'
+  PROD_BRANCH: '1.22'
+
+jobs:
+
+  prepare-ref-env:
+    name: Set build branch and environments
+    runs-on: ubuntu-latest
+    outputs:
+      build-ref: ${{ steps.set-ref-env.outputs.build-ref }}
+      environments: ${{ steps.set-ref-env.outputs.environments }}
+    steps:
+      - name: Set Build Ref
+        id: set-ref-env
+        run: |
+          dev_branch="${{ env.DEV_BRANCH }}"
+          prod_branch="${{ env.PROD_BRANCH }}"
+
+          if [[ -z "${prod_branch}" ]]; then
+            build_from="${dev_branch}"
+            environments='["dev"]'
+          elif [[ "${GITHUB_REF}" == "refs/heads/${dev_branch}" ]]; then
+            build_from="${dev_branch}"
+            environments='["dev"]'
+          else
+            build_from="${prod_branch}"
+            environments='["prod"]'
+          fi
+
+          if [[ -n "${prod_branch}" && "${dev_branch}" == "${prod_branch}" ]]; then
+            environments='["dev","prod"]'
+          fi
+
+          echo "build-ref=${build_from}" >> $GITHUB_OUTPUT
+          echo "environments=${environments}" >> $GITHUB_OUTPUT
+
+  docs-build:
+    name: Generate HTML
+    needs: prepare-ref-env
+    uses: neo4j/docs-tools/.github/workflows/reusable-docs-build.yml@v2
+    with:
+      build-ref: ${{needs.prepare-ref-env.outputs.build-ref}}
+      docs-dir: 'doc'
+      fetch-depth: 0
+      package-script: 'verify:publish'
+
+
+  docs-verify:
+    name: Verify HTML
+    needs: docs-build
+    uses: neo4j/docs-tools/.github/workflows/reusable-docs-verify.yml@v2
+    with:
+      failOnWarnings: true
+
+  publish-html:
+    name: Publish HTML
+    needs: [docs-verify, prepare-ref-env]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        environments: ${{ fromJson(needs.prepare-ref-env.outputs.environments) }}
+
+    steps:
+      - name: Publish to ${{ matrix.environments }}
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 #v4
+        with:
+          token: ${{ secrets.DOCS_DISPATCH_TOKEN }}
+          repository: neo4j/docs-publish
+          event-type: publish-html
+          client-payload: |-
+            {
+              "org": "${{ github.repository_owner }}",
+              "repo": "${{ github.event.repository.name }}",
+              "run_id": "${{ github.run_id }}",
+              "publish_env": "${{ matrix.environments }}"
+            }
