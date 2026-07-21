@@ -17,13 +17,13 @@ on:
       - "doc/**"
   workflow_dispatch:
 
-# NOTE (needs maintainer confirmation): this single dev/prod model comes from the
-# standard template. gds-client publishes multiple versions via doc/publish.yml,
-# so DEV_BRANCH (build+publish to staging) and PROD_BRANCH (build+publish to
-# neo4j.com/docs) should be set to match the team's staging/prod branch scheme.
+# DEV_BRANCH / PROD_BRANCH is the branch whose doc/publish.yml playbook drives the
+# build. For gds-client that is main: its publish.yml sources the published versions
+# (1.19–1.22), so a push to any of those version branches triggers a republish built
+# from main, publishing to both staging (dev) and neo4j.com/docs (prod).
 env:
-  DEV_BRANCH: '1.22'
-  PROD_BRANCH: '1.22'
+  DEV_BRANCH: 'main'
+  PROD_BRANCH: 'main'
 
 jobs:
 
