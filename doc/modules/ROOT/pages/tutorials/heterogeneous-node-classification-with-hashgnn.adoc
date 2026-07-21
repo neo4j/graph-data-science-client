@@ -327,6 +327,7 @@ _ = pipe.drop()
 _ = model.drop()
 ----
 
+[[Conclusion]]
 == Conclusion
 
 By using only the GDS library and its client, we were able to train a
