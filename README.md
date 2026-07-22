@@ -87,6 +87,17 @@ Full end-to-end examples in Jupyter ready-to-run notebooks can be found in the [
 * [Perform inference using pre-trained KGE models](examples/kge-predict-transe-pyg-train.ipynb)
 
 
+## Command-line interface (`gds`)
+
+This repository also contains `gds`, an **experimental, development-only**
+command-line tool (packaged separately as `gds-cli` under [`src/cli`](src/cli))
+for seeding test data into a Neo4j database and running GDS session jobs. It is
+not part of the supported `graphdatascience` API and may change or break without
+notice.
+
+See [`src/cli/README.md`](src/cli/README.md) for installation and usage.
+
+
 ## Documentation
 
 The primary source for learning everything about the GDS Python Client is the manual, hosted at https://neo4j.com/docs/graph-data-science-client/current/.

@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    [
+      {"nodeId": 1, "labels": "Person", "name": "alice"},
+      {"nodeId": 2, "labels": "Person", "name": "bob"},
+      {"nodeId": 3, "labels": "Person", "name": "carol"}
+    ],
+    [
+      {"nodeId": 101, "labels": "Item", "name": "apple"},
+      {"nodeId": 102, "labels": "Item", "name": "banana"},
+      {"nodeId": 103, "labels": "Item", "name": "cherry"}
+    ]
+  ],
+  "relationships": [
+    [
+      {"sourceNodeId": 1, "targetNodeId": 101, "relationshipType": "LIKES"},
+      {"sourceNodeId": 1, "targetNodeId": 102, "relationshipType": "LIKES"},
+      {"sourceNodeId": 2, "targetNodeId": 101, "relationshipType": "LIKES"},
+      {"sourceNodeId": 2, "targetNodeId": 102, "relationshipType": "LIKES"},
+      {"sourceNodeId": 3, "targetNodeId": 103, "relationshipType": "LIKES"}
+    ]
+  ]
+}

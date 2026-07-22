@@ -2,6 +2,12 @@ style skip_notebooks="false":
      uv sync --frozen
      SKIP_NOTEBOOKS={{skip_notebooks}} ./scripts/makestyle && ./scripts/checkstyle
 
+# Install the `gds` CLI (the `gds-cli` package under src/cli) as an editable uv
+# tool. The workspace source pins its `graphdatascience` dependency to this same
+# checkout, so the CLI runs against the local library.
+install-cli:
+    uv tool install --editable ./src/cli --force
+
 # Comprehensive CI-style check: Python style, notebook docs, and Ruby style
 checkstyle-all:
     #!/usr/bin/env bash
@@ -69,11 +75,11 @@ post-release-main version="":
     uv run scripts/release_helper/post_release_main.py {{version}}
 
 unit-tests extra_options="":
-    uv run --group test pytest tests/unit {{extra_options}}
+    uv run --group test --group cli pytest tests/unit {{extra_options}}
 
 # such as `just it wcc`
 it filter="" extra_options="":
-    uv run --group test pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run --group test --group cli pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 # Same as `it`, but against the latest (master) session, plugin, and remote-ops images instead of
 # the released ones. Use for endpoints that are on master but not yet released
@@ -81,7 +87,7 @@ it-master filter="" extra_options="":
     GDS_SESSION_IMAGE="europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest" \
     NEO4J_DATABASE_IMAGE="europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/neo4j-with-gds-plugin:latest" \
     NEO4J_AURA_DATABASE_IMAGE="europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/neo4j-with-gds-remote-ops:latest" \
-    uv run --group test pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run --group test --group cli pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 test-session-notebooks:
     #!/usr/bin/env bash

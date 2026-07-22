@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    [
+      {"nodeId": 1, "labels": "Entity", "outputTime": 120},
+      {"nodeId": 2, "labels": "Entity", "outputTime": 240},
+      {"nodeId": 3, "labels": "Entity", "outputTime": 300}
+    ],
+    [
+      {"nodeId": 101, "labels": "Event", "eventTime": 10, "eventFeatures": [0.1, 0.0, 0.3, 0.2]},
+      {"nodeId": 102, "labels": "Event", "eventTime": 30, "eventFeatures": [0.0, 0.2, 0.1, 0.4]},
+      {"nodeId": 103, "labels": "Event", "eventTime": 60, "eventFeatures": [0.3, 0.1, 0.0, 0.2]},
+      {"nodeId": 104, "labels": "Event", "eventTime": 90, "eventFeatures": [0.2, 0.3, 0.2, 0.1]},
+      {"nodeId": 105, "labels": "Event", "eventTime": 150, "eventFeatures": [0.4, 0.1, 0.2, 0.0]},
+      {"nodeId": 106, "labels": "Event", "eventTime": 210, "eventFeatures": [0.1, 0.4, 0.2, 0.3]}
+    ]
+  ],
+  "relationships": [
+    [
+      {"sourceNodeId": 1, "targetNodeId": 101, "relationshipType": "HAS_EVENT"},
+      {"sourceNodeId": 1, "targetNodeId": 102, "relationshipType": "HAS_EVENT"},
+      {"sourceNodeId": 2, "targetNodeId": 103, "relationshipType": "HAS_EVENT"},
+      {"sourceNodeId": 2, "targetNodeId": 104, "relationshipType": "HAS_EVENT"},
+      {"sourceNodeId": 3, "targetNodeId": 105, "relationshipType": "HAS_EVENT"},
+      {"sourceNodeId": 3, "targetNodeId": 106, "relationshipType": "HAS_EVENT"}
+    ]
+  ]
+}

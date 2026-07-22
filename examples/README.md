@@ -2,6 +2,9 @@
 
 This folder contains example notebooks on how to use the `graphdatascience` python client.
 
+> There is also `gds`, an experimental, development-only command-line tool for
+> seeding test data and running GDS session jobs. See [`../src/cli/README.md`](../src/cli/README.md).
+
 
 ## Custom cell tags for notebooks
 

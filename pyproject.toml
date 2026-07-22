@@ -52,6 +52,12 @@ networkx = ["networkx >= 2.0, < 4.0"]
 ogb = ["ogb >= 1.0, < 2.0"]
 rust-ext = ["neo4j-rust-ext >= 5.26.0, < 7.0"]
 
+# The `gds` CLI is a separate package that lives in this repo under `src/cli`
+# (distribution `gds-cli`, import package `gds_cli`). It is intentionally NOT
+# shipped with `graphdatascience`: the `packages.find` rule below only includes
+# `graphdatascience*`, so `src/cli` is excluded from this wheel. Install the CLI
+# separately (see `just install-cli`) or from git with
+# `#subdirectory=src/cli`.
 
 [dependency-groups]
 dev = [
@@ -62,6 +68,11 @@ dev = [
 ]
 
 dev-base = [
+    # The CLI lives in this repo as the `gds-cli` workspace member (src/cli). It
+    # is a dev dependency here — NOT a runtime dependency of `graphdatascience` —
+    # so `uv sync` installs it into the dev venv for tests/mypy without shipping
+    # it in the library wheel. See `[tool.uv.sources]` for the workspace pin.
+    "gds-cli",
     "ruff == 0.15.20",
     "mypy == 2.2.0",
     "pandas-stubs == 2.3.3.260113 ; python_version < '3.11'",
@@ -75,6 +86,12 @@ dev-base = [
     "types-python-dateutil",
     "python-dotenv<2",
     "types-colorama",
+    "typer >= 0.12, < 1.0",
+    "rich >= 13, < 15",
+    "pyyaml >= 6.0, < 7.0",
+    "jsonschema >= 4.18, < 5.0",
+    "types-pyyaml",
+    "types-jsonschema",
 ]
 test = [
     "pytest == 9.1.1",
@@ -84,6 +101,10 @@ test = [
     "testcontainers == 4.14.2",
     "python-dateutil >= 2.9",
 ]
+# `gds-cli` is a workspace member, resolvable only by `uv run`/`uv sync` (which
+# apply [tool.uv.sources]), not by tox-uv's `uv pip install`. Keep it out of the
+# `test` group so tox can install that group; the CLI test recipes add `cli`.
+cli = ["gds-cli"]
 
 docs-ci = [
     "sphinx == 7.3.7",
@@ -114,11 +135,19 @@ notebook-ci = [
 
 publish = ["build", "twine"]
 
+# The repo is a uv workspace: the root package is `graphdatascience` (library),
+# and `src/cli` is a member (`gds-cli`, the `gds` CLI). The CLI resolves its
+# `graphdatascience` dependency from this workspace, so a git/tool install of
+# `src/cli` uses the library at the SAME commit.
+[tool.uv.workspace]
+members = ["src/cli"]
+
 # torch-scatter/torch-sparse have no sdist-friendly install: building from source
 # requires a working C++/torch toolchain and fails on many local machines (notably
 # macOS arm64). Instead we pull prebuilt wheels from the PyG wheel index, which ships
 # wheels for both Linux (torch-2.12.1+cpu) and macOS (universal2).
 [tool.uv.sources]
+gds-cli = { workspace = true }
 torch-scatter = [{ index = "pytorch-geometric-cpu" }]
 torch-sparse = [{ index = "pytorch-geometric-cpu" }]
 

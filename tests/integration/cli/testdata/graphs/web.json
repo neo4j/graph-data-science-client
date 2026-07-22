@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    [
+      {"nodeId": 201, "labels": "Page", "title": "home"},
+      {"nodeId": 202, "labels": "Page", "title": "about"},
+      {"nodeId": 203, "labels": "Page", "title": "products"},
+      {"nodeId": 204, "labels": "Page", "title": "blog"},
+      {"nodeId": 205, "labels": "Page", "title": "contact"}
+    ]
+  ],
+  "relationships": [
+    [
+      {"sourceNodeId": 202, "targetNodeId": 201, "relationshipType": "LINKS"},
+      {"sourceNodeId": 203, "targetNodeId": 201, "relationshipType": "LINKS"},
+      {"sourceNodeId": 204, "targetNodeId": 201, "relationshipType": "LINKS"},
+      {"sourceNodeId": 205, "targetNodeId": 201, "relationshipType": "LINKS"},
+      {"sourceNodeId": 204, "targetNodeId": 203, "relationshipType": "LINKS"},
+      {"sourceNodeId": 205, "targetNodeId": 203, "relationshipType": "LINKS"}
+    ]
+  ]
+}

@@ -1,0 +1,30 @@
+# Weakly Connected Components on the social graph, run twice with different
+# parameter sets. Also a runnable config.
+session:
+  name: it-cli-wcc
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: social
+    query: |
+      MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeLabels: ['Person'],
+        targetNodeLabels: ['Person'],
+        relationshipType: type(rel)
+      })
+algorithms:
+  - name: wcc
+    graph_name: social
+    mode: mutate
+    mutate_property: componentId
+  - name: wcc
+    graph_name: social
+    mode: mutate
+    mutate_property: componentIdC2
+    parameters:
+      concurrency: 2
+      threshold: 0.0
+writebacks:
+  - graph_name: social
+    node_properties: [componentId, componentIdC2]

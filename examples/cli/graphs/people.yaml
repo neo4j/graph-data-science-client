@@ -1,0 +1,15 @@
+# 'Person -KNOWS-> Person' social graph; good for PageRank / community detection.
+kind: random
+nodes:
+  Person:
+    count: 100
+    properties:
+      name: {type: category, values: [Alice, Bob, Carol, Dave, Erin, Frank, Grace, Heidi, Ivan, Judy]}
+      age: {type: uniform_int, low: 18, high: 80}
+relationships:
+  - source: Person
+    type: KNOWS
+    target: Person
+    count: 400
+    properties:
+      since: {type: uniform_int, low: 2000, high: 2024}

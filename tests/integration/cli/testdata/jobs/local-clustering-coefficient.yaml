@@ -1,0 +1,31 @@
+# Local Clustering Coefficient on the social graph, run twice with different
+# parameter sets. localClusteringCoefficient requires an UNDIRECTED projection,
+# so KNOWS is projected undirected. Also a runnable config.
+session:
+  name: it-cli-local-clustering-coefficient
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: social
+    query: |
+      MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeLabels: ['Person'],
+        targetNodeLabels: ['Person'],
+        relationshipType: type(rel)
+      })
+    undirected_relationship_types: [KNOWS]
+algorithms:
+  - name: localClusteringCoefficient
+    graph_name: social
+    mode: mutate
+    mutate_property: localClusteringCoefficient
+  - name: localClusteringCoefficient
+    graph_name: social
+    mode: mutate
+    mutate_property: localClusteringCoefficientC2
+    parameters:
+      concurrency: 2
+writebacks:
+  - graph_name: social
+    node_properties: [localClusteringCoefficient, localClusteringCoefficientC2]

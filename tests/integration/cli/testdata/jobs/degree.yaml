@@ -1,0 +1,29 @@
+# Degree centrality on the social graph, run twice with different parameter sets
+# (natural vs reverse orientation). Also a runnable config.
+session:
+  name: it-cli-degree
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: social
+    query: |
+      MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeLabels: ['Person'],
+        targetNodeLabels: ['Person'],
+        relationshipType: type(rel)
+      })
+algorithms:
+  - name: degree
+    graph_name: social
+    mode: mutate
+    mutate_property: degree
+  - name: degree
+    graph_name: social
+    mode: mutate
+    mutate_property: degreeReverse
+    parameters:
+      orientation: REVERSE
+writebacks:
+  - graph_name: social
+    node_properties: [degree, degreeReverse]

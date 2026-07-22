@@ -1,0 +1,31 @@
+# Triangle Count on the social graph (two triangles), run twice with different
+# parameter sets. triangleCount requires an UNDIRECTED projection, so KNOWS is
+# projected undirected. Also a runnable config.
+session:
+  name: it-cli-triangle-count
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: social
+    query: |
+      MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeLabels: ['Person'],
+        targetNodeLabels: ['Person'],
+        relationshipType: type(rel)
+      })
+    undirected_relationship_types: [KNOWS]
+algorithms:
+  - name: triangleCount
+    graph_name: social
+    mode: mutate
+    mutate_property: triangleCount
+  - name: triangleCount
+    graph_name: social
+    mode: mutate
+    mutate_property: triangleCountCapped
+    parameters:
+      max_degree: 3
+writebacks:
+  - graph_name: social
+    node_properties: [triangleCount, triangleCountCapped]

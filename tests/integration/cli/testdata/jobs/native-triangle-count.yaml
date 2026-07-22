@@ -1,0 +1,20 @@
+# Triangle Count on a NATIVE projection with KNOWS treated as UNDIRECTED
+# (triangleCount rejects directed graphs). Exercises native projection +
+# undirected_relationship_types together. Also a runnable config.
+session:
+  name: it-cli-native-triangle-count
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: social
+    node_labels: [Person]
+    relationship_types: [KNOWS]
+    undirected_relationship_types: [KNOWS]
+algorithms:
+  - name: triangleCount
+    graph_name: social
+    mode: mutate
+    mutate_property: triangleCount
+writebacks:
+  - graph_name: social
+    node_properties: [triangleCount]

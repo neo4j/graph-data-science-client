@@ -1,0 +1,21 @@
+# PageRank on a heterogeneous graph (A -LINKS_TO-> B): two node labels, one
+# relationship type between them. Uses a native projection (select by node
+# labels + relationship types) instead of a remote Cypher query.
+#   gds database upload -f graphs/heterogeneous.yaml --overwrite
+#   gds session  run    --file jobs/heterogeneous.yaml --overwrite-graph
+session:
+  name: gds-examples
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: heterogeneous
+    node_labels: [A, B]
+    relationship_types: [LINKS_TO]
+algorithms:
+  - name: pageRank
+    graph_name: heterogeneous
+    mode: mutate
+    mutate_property: pagerank
+writebacks:
+  - graph_name: heterogeneous
+    node_properties: [pagerank]

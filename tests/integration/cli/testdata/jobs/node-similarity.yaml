@@ -1,0 +1,32 @@
+# Node Similarity on the bipartite graph (Person -LIKES-> Item), run twice with
+# different parameter sets. It emits SIMILAR *relationships* between Persons, not a
+# node property, so there is no writeback (each run uses a distinct relationship
+# type). Also a runnable `gds session run` config.
+session:
+  name: it-cli-node-similarity
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: bipartite
+    query: |
+      MATCH (source:Person)-[rel:LIKES]->(target:Item)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeLabels: ['Person'],
+        targetNodeLabels: ['Item'],
+        relationshipType: type(rel)
+      })
+algorithms:
+  - name: nodeSimilarity
+    graph_name: bipartite
+    mode: mutate
+    mutate_property: similarity
+    parameters:
+      mutate_relationship_type: SIMILAR
+  - name: nodeSimilarity
+    graph_name: bipartite
+    mode: mutate
+    mutate_property: similarityTopK
+    parameters:
+      mutate_relationship_type: SIMILAR_TOPK
+      top_k: 1
+      similarity_cutoff: 0.1

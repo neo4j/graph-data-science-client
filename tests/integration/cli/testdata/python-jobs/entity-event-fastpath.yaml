@@ -1,0 +1,41 @@
+# FastPath temporal embeddings over Entity -HAS_EVENT-> Event (runtime-backed).
+# Mirrors examples/cli/jobs/entity-event-fastpath.yaml. Labels are projected
+# explicitly (['Entity'] / ['Event']) - the uploader tags every node with a `Dev`
+# label and FastPath's python-runtime maps each relationship endpoint to a single
+# node label, so a stray `Dev` makes it fail.
+session:
+  name: it-cli-fastpath
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: events
+    query: |
+      MATCH (source:Entity)-[rel:HAS_EVENT]->(target:Event)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeProperties: source { .outputTime },
+        targetNodeProperties: target { .eventTime, .eventFeatures },
+        sourceNodeLabels: ['Entity'],
+        targetNodeLabels: ['Event'],
+        relationshipType: type(rel)
+      })
+algorithms:
+  - name: fastpath
+    graph_name: events
+    mode: mutate
+    mutate_property: fp_embeddings
+    parameters:
+      base_node_label: Entity
+      event_node_label: Event
+      event_features: eventFeatures
+      time_node_property: eventTime
+      output_time_property: outputTime
+      dimension: 8
+      num_elapsed_times: 30
+      max_elapsed_time: 730
+      smoothing_rate: 0.9
+      smoothing_window: 2
+      decay_factor: 0.0
+      random_seed: 42
+writebacks:
+  - graph_name: events
+    node_properties: [fp_embeddings]

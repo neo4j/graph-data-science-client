@@ -1,0 +1,14 @@
+# Random social network: Person -KNOWS-> Person with a power-law degree
+# distribution (a few well-connected people).
+kind: random
+nodes:
+  Person:
+    count: 60
+    properties:
+      age: {type: uniform_int, low: 18, high: 80}
+relationships:
+  - source: Person
+    type: KNOWS
+    target: Person
+    count: 240
+    generator: {type: powerlaw, alpha: 0.7}

@@ -1,0 +1,20 @@
+# PageRank on a NATIVE projection of the social graph (selected by node labels +
+# relationship types instead of a remote Cypher query). Also a runnable config.
+session:
+  name: it-cli-native-pagerank
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: social
+    node_labels: [Person]
+    relationship_types: [KNOWS]
+algorithms:
+  - name: pageRank
+    graph_name: social
+    mode: mutate
+    mutate_property: pagerank
+    parameters:
+      max_iterations: 20
+writebacks:
+  - graph_name: social
+    node_properties: [pagerank]

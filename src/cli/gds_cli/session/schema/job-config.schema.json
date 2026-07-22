@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://neo4j.io/gds-jobs/job-config.schema.json",
+  "title": "GDS Job Config",
+  "description": "Standardized config for a GDS job: describe graph projections, an ordered list of algorithms (each naming its graph), and optional writebacks. Projection and drop are implicit - algorithms are grouped by graph (by each graph's first appearance in the list), and every graph is projected, run, written back, and dropped as one isolated unit of work before the next graph starts. Credentials are never part of this config; they come from environment variables.",
+  "type": "object",
+  "required": ["session", "projections", "algorithms"],
+  "additionalProperties": false,
+  "properties": {
+    "session": {
+      "type": "object",
+      "required": ["name", "memory", "ttl_minutes"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "get_or_create key; idempotent per name. Reuse one name across jobs to reuse the session."
+        },
+        "memory": {
+          "type": "string",
+          "description": "Session memory, e.g. '2GB', '4GB'. Required (be explicit about session size)."
+        },
+        "ttl_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Session time-to-live in minutes. Required (be explicit)."
+        }
+      }
+    },
+    "projections": {
+      "type": "array",
+      "description": "Named graph projections available to this job.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["graph_name"],
+        "additionalProperties": false,
+        "description": "A projection is either remote (a Cypher `query`) or native (`node_labels` + `relationship_types`); exactly one kind must be given.",
+        "oneOf": [
+          { "required": ["query"] },
+          { "required": ["node_labels", "relationship_types"] }
+        ],
+        "properties": {
+          "graph_name": {
+            "type": "string",
+            "description": "Name of the in-session projected graph."
+          },
+          "query": {
+            "type": "string",
+            "description": "Remote projection: a Cypher query returning gds.graph.project.remote(...). Mutually exclusive with node_labels/relationship_types."
+          },
+          "node_labels": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Native projection: node labels to include. Mutually exclusive with query."
+          },
+          "relationship_types": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Native projection: relationship types to include. Required alongside node_labels."
+          },
+          "node_properties": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Native projection: node properties to load. Not valid with a remote query (declare properties in the Cypher instead)."
+          },
+          "relationship_properties": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Native projection: relationship properties to load. Not valid with a remote query."
+          },
+          "undirected_relationship_types": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Relationship types to treat as UNDIRECTED in the projection (required by algorithms like triangleCount and localClusteringCoefficient). Applies to both projection kinds. Omit or leave empty to project as-is (directed)."
+          }
+        }
+      }
+    },
+    "algorithms": {
+      "type": "array",
+      "description": "Ordered list of algorithms; each names the graph (from `projections`) it runs on. Entries are grouped by graph_name (by each graph's first appearance in this list) - a graph is projected once, has every one of its algorithm entries run in order (so a later entry can consume an earlier one's mutated property), is written back if configured, and is dropped, before the next graph starts.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "graph_name", "mode"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Algorithm name, mapped to a gds client method (e.g. pageRank -> gds.page_rank)."
+          },
+          "graph_name": {
+            "type": "string",
+            "description": "Name of the projection (from `projections`) this algorithm runs on."
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["mutate", "write"],
+            "description": "mutate keeps results in the session graph; write persists them to the DB directly."
+          },
+          "mutate_property": {
+            "type": "string",
+            "description": "Property name for mutate mode (required when mode=mutate)."
+          },
+          "write_property": {
+            "type": "string",
+            "description": "Property name for write mode (required when mode=write)."
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Algorithm parameters passed as keyword args to the gds client method, so use snake_case (e.g. max_iterations, damping_factor, embedding_dimension).",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "writebacks": {
+      "type": "array",
+      "description": "Optional writebacks of mutated node properties to the DB, one entry per graph. A graph named here must also be referenced by `algorithms`, since that is what determines when its writeback runs (right after its last algorithm reference, before it is dropped).",
+      "items": {
+        "type": "object",
+        "required": ["graph_name", "node_properties"],
+        "additionalProperties": false,
+        "properties": {
+          "graph_name": {
+            "type": "string",
+            "description": "Which graph's mutated properties to write back."
+          },
+          "node_properties": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "description": "Mutated node properties to write back via gds.graph.node_properties.write."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+# One job that projects TWO independent graphs and runs a different algorithm on
+# each. `run_all` handles each graph as its own isolated unit of work (project ->
+# run -> write back -> drop) before moving to the next. The two graphs use disjoint
+# labels/relationship types (Person/KNOWS vs Page/LINKS) so they never interfere.
+# Also a runnable `gds session run` config.
+session:
+  name: it-cli-multi-graph
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: social
+    query: |
+      MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeLabels: ['Person'],
+        targetNodeLabels: ['Person'],
+        relationshipType: type(rel)
+      })
+  - graph_name: web
+    query: |
+      MATCH (source:Page)-[rel:LINKS]->(target:Page)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeLabels: ['Page'],
+        targetNodeLabels: ['Page'],
+        relationshipType: type(rel)
+      })
+algorithms:
+  - name: louvain
+    graph_name: social
+    mode: mutate
+    mutate_property: community
+  - name: pageRank
+    graph_name: web
+    mode: mutate
+    mutate_property: rank
+    parameters:
+      max_iterations: 20
+writebacks:
+  - graph_name: social
+    node_properties: [community]
+  - graph_name: web
+    node_properties: [rank]

@@ -1,0 +1,13 @@
+# Power-law citation graph with hubs; showcases PageRank & FastRP.
+kind: random
+nodes:
+  Paper:
+    count: 200
+    properties:
+      year: {type: uniform_int, low: 1990, high: 2024}
+relationships:
+  - source: Paper
+    type: CITES
+    target: Paper
+    count: 800
+    generator: {type: powerlaw, alpha: 0.7}

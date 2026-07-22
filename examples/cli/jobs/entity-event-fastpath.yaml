@@ -1,0 +1,45 @@
+# FastPath temporal embeddings over Entity -HAS_EVENT-> Event.
+# Uses the fixed graph graphs/entity-event.json (it carries the eventFeatures
+# vectors + eventTime/outputTime FastPath reads). The projection forwards those
+# node properties into the session.
+#
+# NOTE: labels are projected explicitly (['Entity'] / ['Event']) rather than
+# labels(source). gds-testdata tags every node with an extra `Dev` label, and
+# FastPath's python-runtime maps each relationship endpoint to a single node
+# label — a stray `Dev` makes it fail with KeyError: 'Dev'.
+session:
+  name: gds-examples
+  memory: 2GB
+  ttl_minutes: 30
+projections:
+  - graph_name: events
+    query: |
+      MATCH (source:Entity)-[rel:HAS_EVENT]->(target:Event)
+      RETURN gds.graph.project.remote(source, target, {
+        sourceNodeProperties: source { .outputTime },
+        targetNodeProperties: target { .eventTime, .eventFeatures },
+        sourceNodeLabels: ['Entity'],
+        targetNodeLabels: ['Event'],
+        relationshipType: type(rel)
+      })
+algorithms:
+  - name: fastpath
+    graph_name: events
+    mode: mutate
+    mutate_property: fp_embeddings
+    parameters:
+      base_node_label: Entity
+      event_node_label: Event
+      event_features: eventFeatures
+      time_node_property: eventTime
+      output_time_property: outputTime
+      dimension: 8
+      num_elapsed_times: 30
+      max_elapsed_time: 730
+      smoothing_rate: 0.9
+      smoothing_window: 2
+      decay_factor: 0.0
+      random_seed: 42
+writebacks:
+  - graph_name: events
+    node_properties: [fp_embeddings]

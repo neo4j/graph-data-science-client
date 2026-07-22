@@ -1,0 +1,18 @@
+# Two node labels (A, B) with A-LINKS_TO->B edges.
+kind: random
+nodes:
+  A:
+    count: 28
+    properties:
+      score: {type: gaussian}
+  B:
+    count: 42
+    properties:
+      value: {type: uniform_int, low: 0, high: 100}
+relationships:
+  - source: A
+    type: LINKS_TO
+    target: B
+    count: 100
+    generator: {type: powerlaw, alpha: 0.01}
+node_id_mapping: globally_unique

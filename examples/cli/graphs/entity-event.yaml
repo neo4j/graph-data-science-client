@@ -1,0 +1,21 @@
+# Random Entity/Event graph (Entity -HAS_EVENT-> Event), the generated counterpart
+# of entity-event.json. Events carry an `eventFeatures` vector (via a dim-4 gaussian
+# property) plus times, matching what jobs/entity-event-fastpath.yaml consumes.
+kind: random
+nodes:
+  Entity:
+    count: 20
+    properties:
+      outputTime: {type: uniform_int, low: 100, high: 400}
+  Event:
+    count: 60
+    properties:
+      eventTime: {type: uniform_int, low: 0, high: 300}
+      eventFeatures: {type: gaussian, mean: 0.2, std: 0.1, dim: 4}
+relationships:
+  - source: Entity
+    type: HAS_EVENT
+    target: Event
+    count: 60
+    generator: {type: powerlaw, alpha: 0.7}
+node_id_mapping: globally_unique

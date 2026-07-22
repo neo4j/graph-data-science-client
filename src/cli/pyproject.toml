@@ -1,0 +1,31 @@
+[project]
+name = "gds-cli"
+version = "0.1.0"
+description = "The `gds` command-line interface for the Neo4j Graph Data Science Python client"
+authors = [{ name = "Neo4j", email = "team-gds@neo4j.org" }]
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+    "graphdatascience",
+    "typer >= 0.12, < 1.0",
+    "rich >= 13, < 15",
+    "pyyaml >= 6.0, < 7.0",
+    "jsonschema >= 4.18, < 5.0",
+    "python-dotenv >= 1.0, < 2.0",
+]
+
+[project.scripts]
+gds = "gds_cli.app:app"
+
+# Pull `graphdatascience` from the surrounding uv workspace
+[tool.uv.sources]
+graphdatascience = { workspace = true }
+
+# Flat layout: `gds_cli` sits at the project root (src/cli/gds_cli).
+[tool.uv.build-backend]
+module-root = ""
+
+[build-system]
+requires = ["uv_build>=0.5,<0.12"]
+build-backend = "uv_build"

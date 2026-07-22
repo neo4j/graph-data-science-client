@@ -1,0 +1,14 @@
+# Random web graph (Page -LINKS-> Page) with a power-law link distribution: the
+# generated counterpart of web-graph.json.
+kind: random
+nodes:
+  Page:
+    count: 80
+    properties:
+      rank_seed: {type: uniform_int, low: 0, high: 100}
+relationships:
+  - source: Page
+    type: LINKS
+    target: Page
+    count: 300
+    generator: {type: powerlaw, alpha: 0.9}

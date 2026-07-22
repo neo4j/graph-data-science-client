@@ -1,0 +1,30 @@
+{
+  "nodes": [
+    [
+      {"nodeId": 1, "labels": "Person", "age": 34},
+      {"nodeId": 2, "labels": "Person", "age": 28},
+      {"nodeId": 3, "labels": "Person", "age": 45},
+      {"nodeId": 4, "labels": "Person", "age": 52}
+    ],
+    [
+      {"nodeId": 101, "labels": "Page", "rank_seed": 10},
+      {"nodeId": 102, "labels": "Page", "rank_seed": 60},
+      {"nodeId": 103, "labels": "Page", "rank_seed": 25},
+      {"nodeId": 104, "labels": "Page", "rank_seed": 80}
+    ]
+  ],
+  "relationships": [
+    [
+      {"sourceNodeId": 1, "targetNodeId": 2, "relationshipType": "KNOWS"},
+      {"sourceNodeId": 2, "targetNodeId": 3, "relationshipType": "KNOWS"},
+      {"sourceNodeId": 3, "targetNodeId": 1, "relationshipType": "KNOWS"},
+      {"sourceNodeId": 3, "targetNodeId": 4, "relationshipType": "KNOWS"}
+    ],
+    [
+      {"sourceNodeId": 102, "targetNodeId": 101, "relationshipType": "LINKS"},
+      {"sourceNodeId": 103, "targetNodeId": 101, "relationshipType": "LINKS"},
+      {"sourceNodeId": 104, "targetNodeId": 101, "relationshipType": "LINKS"},
+      {"sourceNodeId": 104, "targetNodeId": 103, "relationshipType": "LINKS"}
+    ]
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    [
+      {"nodeId": 1, "labels": "Node", "score": 0.5},
+      {"nodeId": 2, "labels": "Node", "score": -0.2},
+      {"nodeId": 3, "labels": "Node", "score": 1.1},
+      {"nodeId": 4, "labels": "Node", "score": 0.0},
+      {"nodeId": 5, "labels": "Node", "score": -0.7},
+      {"nodeId": 6, "labels": "Node", "score": 0.9}
+    ]
+  ],
+  "relationships": [
+    [
+      {"sourceNodeId": 1, "targetNodeId": 2, "relationshipType": "REL", "weight": 1.0},
+      {"sourceNodeId": 2, "targetNodeId": 3, "relationshipType": "REL", "weight": 0.5},
+      {"sourceNodeId": 3, "targetNodeId": 4, "relationshipType": "REL", "weight": 2.0},
+      {"sourceNodeId": 4, "targetNodeId": 5, "relationshipType": "REL", "weight": 1.5},
+      {"sourceNodeId": 5, "targetNodeId": 6, "relationshipType": "REL", "weight": 0.8},
+      {"sourceNodeId": 6, "targetNodeId": 1, "relationshipType": "REL", "weight": 1.2},
+      {"sourceNodeId": 1, "targetNodeId": 4, "relationshipType": "REL", "weight": 0.3}
+    ]
+  ]
+}
