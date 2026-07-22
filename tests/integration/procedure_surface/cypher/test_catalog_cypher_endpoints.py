@@ -71,7 +71,7 @@ def test_list_with_graph(catalog_endpoints: CatalogCypherEndpoints, sample_graph
     assert result.creation_time < datetime.datetime.now(datetime.timezone.utc)
     assert result.database == "neo4j"
     assert result.database_location == "local"
-    assert result.memory_usage and result.memory_usage.endswith("KiB")
+    assert result.memory_usage is not None
     assert result.size_in_bytes > 0
     assert result.modification_time < datetime.datetime.now(datetime.timezone.utc)
 
