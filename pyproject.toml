@@ -106,7 +106,7 @@ notebook-aura-ci = [
 notebook-ci = [
     { include-group = "notebook-base" },
     "scipy < 2",
-    "torch==2.12.1",
+    "torch==2.13.0",
     "torch-scatter==2.1.2",
     "torch-sparse==0.6.18",
     "torch-geometric>=2.8.0",
