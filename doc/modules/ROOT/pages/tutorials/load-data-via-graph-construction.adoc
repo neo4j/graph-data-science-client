@@ -57,14 +57,14 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
 When using AuraDS, the connection URI is slightly different as it uses
-the `neo4j{plus}s` protocol. The client should also include the
-`aura++_++ds=True` flag to enable AuraDS-recommended settings.
+the `neo4j{plus}s` protocol. The client automatically detects an AuraDS
+instance and applies the AuraDS-recommended settings.
 
 [source, python, role=no-test]
 ----
 # On AuraDS:
 #
-# gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB, aura_ds=True)
+# gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
 ----
 
 [source, python, role=no-test]

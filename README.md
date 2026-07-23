@@ -38,8 +38,8 @@ Then, we can project graphs, create pipelines, train models, and run algorithms.
 ```python
 from graphdatascience import GraphDataScience
 
-# Configure the driver with AuraDS-recommended settings
-gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("neo4j", "my-password"), aura_ds=True)
+# When connecting to an AuraDS instance, the client automatically applies the AuraDS-recommended driver settings
+gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("neo4j", "my-password"))
 
 # Import the Cora common dataset to GDS
 G = gds.graph.load_cora()
