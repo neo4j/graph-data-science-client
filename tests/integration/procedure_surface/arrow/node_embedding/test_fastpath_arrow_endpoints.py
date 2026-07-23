@@ -83,7 +83,7 @@ def test_fastpath_stream(fastpath_endpoints: FastPathArrowEndpoints, sample_grap
     )
 
     assert "nodeId" in result_df.columns
-    assert "embeddings" in result_df.columns
+    assert "embedding" in result_df.columns
 
 
 @ignore_preview_warning
