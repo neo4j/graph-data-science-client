@@ -15,6 +15,7 @@
 
 ## Improvements
 
+* `GraphDataScience` no longer requires the `aura_ds` parameter to be set. If left unset, the client automatically derives whether the database is hosted in Aura.
 * `gds.project.cypher` will automatically rewrite queries that contain `gds.graph.project` instead of `gds.graph.project.remote`
 * `gds.project.cypher` will check if `undirectedRelationshipTypes` and `inverseIndexedRelationshipTypes` are defined in the projection query instead of the method parameters.
 

@@ -187,6 +187,7 @@ from .arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_client.arrow_info import ArrowInfo
 from .arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from .arrow_client.v1.gds_arrow_client import GdsArrowClient
+from .query_runner.db_environment_resolver import DbEnvironmentResolver
 from .query_runner.neo4j_query_runner import Neo4jQueryRunner
 from .query_runner.query_runner import QueryRunner
 from .query_runner.query_type import QueryType
@@ -203,7 +204,7 @@ class GraphDataScience:
         self,
         endpoint: str | Driver | QueryRunner,
         auth: tuple[str, str] | None = None,
-        aura_ds: bool = False,
+        aura_ds: bool | None = None,
         database: str | None = None,
         arrow: str | bool = True,
         bookmarks: Any | None = None,
@@ -219,9 +220,10 @@ class GraphDataScience:
             The Neo4j endpoint to connect to. Most commonly, this is a Bolt connection URI.
         auth : tuple[str, str] | None, default None
             A username, password pair for database authentication.
-        aura_ds : bool, default False
-            A flag that indicates that that the client is used to connect
-            to a Neo4j AuraDS instance.
+        aura_ds : bool | None, default None
+            A flag that indicates that the client is used to connect
+            to a Neo4j AuraDS instance. If not set, the client will
+            automatically derive whether the database is hosted in Aura.
         database: str | None, default None
             The Neo4j database to query against.
         arrow : str | bool, default True
@@ -238,15 +240,20 @@ class GraphDataScience:
         arrow_client_options : dict[str, Any] | None, default None
             Additional options to be passed to the Arrow Flight client.
         """
-        if aura_ds:
-            GraphDataScience._validate_endpoint(endpoint)
-
         if isinstance(endpoint, QueryRunner):
             self._query_runner = endpoint
         else:
             db_auth: neo4j.Auth | None = None
             if auth:
                 db_auth = neo4j.basic_auth(*auth)
+
+            if aura_ds is None:
+                # aura_ds only affects the driver config for string endpoints, so we only
+                # need to derive it in that case (a provided Driver is used as-is).
+                aura_ds = isinstance(endpoint, str) and GraphDataScience._derive_aura_ds(endpoint, db_auth, database)
+
+            if aura_ds:
+                GraphDataScience._validate_endpoint(endpoint)
 
             self._query_runner = Neo4jQueryRunner.create_for_db(
                 endpoint, db_auth, aura_ds, database, bookmarks, show_progress
@@ -830,6 +837,18 @@ class GraphDataScience:
             The configuration as a dictionary.
         """
         return self._query_runner.driver_config()
+
+    @staticmethod
+    def _derive_aura_ds(endpoint: str, auth: neo4j.Auth | None, database: str | None) -> bool:
+        # Whether a database is hosted in Aura can only be determined by connecting to it,
+        # so we use a temporary query runner to derive the flag from the server.
+        detection_runner = Neo4jQueryRunner.create_for_db(
+            endpoint, auth, aura_ds=False, database=database, show_progress=False
+        )
+        try:
+            return DbEnvironmentResolver.hosted_in_aura(detection_runner)
+        finally:
+            detection_runner.close()
 
     @staticmethod
     def _validate_endpoint(endpoint: str | Driver | QueryRunner) -> None:

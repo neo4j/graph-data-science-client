@@ -62,7 +62,7 @@ NON_PLUGIN_TAB_ROLES = %w[
 ].freeze
 
 # A block is eligible when it is not nested inside a non-plugin deployment tab
-# (i.e. it is an untabbed snippet or lives in the `include-with-Neo4j-server` tab).
+# (i.e. it is an untabbed snippet or lives in the `include-with-Neo4j-Server-and-AuraDS` tab).
 def plugin_eligible?(block)
   node = block
   while node

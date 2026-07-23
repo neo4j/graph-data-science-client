@@ -43,9 +43,9 @@ from graphdatascience import GraphDataScience
 
 When using a local Neo4j setup, the default connection URI is
 `bolt://localhost:7687`; when using AuraDS, instead, the connection URI
-is slightly different as it uses the `neo4j{plus}s` protocol. In this
-case, the client should also include the `aura++_++ds=True` flag to
-enable AuraDS-recommended settings. Check the
+is slightly different as it uses the `neo4j{plus}s` protocol. The client
+automatically detects an AuraDS instance and applies the
+AuraDS-recommended settings. Check the
 https://neo4j.com/docs/graph-data-science-client/current/getting-started/[Neo4j
 GDS Client docs] for more details.
 
@@ -59,10 +59,6 @@ NEO4J_AUTH = (
     os.environ.get("NEO4J_PASSWORD", ""),
 )
 gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB)
-
-# On AuraDS:
-#
-# gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH, database=NEO4J_DB, aura_ds=True)
 ----
 
 We also need to check that the version of the GDS library is 2.5.0 or

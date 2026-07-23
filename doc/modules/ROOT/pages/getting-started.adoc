@@ -9,17 +9,42 @@ Use the Neo4j URI and credentials according to your setup.
 
 [.tabbed-example]
 ====
-[.include-with-Neo4j-server]
+[.include-with-Aura-Graph-Analytics]
 =====
-If you are connecting to a Neo4j database with the link:{gds-docs-base-uri}/installation/neo4j-server/[GDS Plugin] installed.
+The Python client has dedicated support for link:{aura-docs-base-uri}/graph-analytics[Aura Graph Analytics].
+
+This example shows how to instantiate the `GraphDataScience` object using an Aura API key pair and AuraDB connection information.
+
+[source, python, role=no-test]
+----
+from graphdatascience.session import DbmsConnectionInfo, GdsSessions, AuraAPICredentials, SessionMemory
+
+sessions = GdsSessions(api_credentials=AuraAPICredentials(AURA_API_CLIENT_ID, AURA_API_CLIENT_SECRET))
+
+# `NEO4J_URI` has the format "neo4j+s://xxxxxxxx.databases.neo4j.io".
+# The credentials are for the AuraDB instance.
+gds = sessions.get_or_create(
+    session_name="my-session",
+    memory=SessionMemory.m_4GB,
+    db_connection=DbmsConnectionInfo(NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD),
+)
+----
+=====
+
+[.include-with-Neo4j-Server-and-AuraDS]
+=====
+If you are connecting to a Neo4j database with the link:{gds-docs-base-uri}/installation/neo4j-server/[GDS Plugin] installed, or to an link:https://neo4j.com/cloud/graph-data-science/[AuraDS instance].
 
 [source, python, role=no-test]
 ----
 from graphdatascience import GraphDataScience
 
 # For example, in a local setup `NEO4J_URI` would be "neo4j://127.0.0.1:7687".
+# For an AuraDS instance `NEO4J_URI` would be "neo4j+s://xxxxxxxx.databases.neo4j.io".
 gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 ----
+
+The client automatically detects whether it is connected to an AuraDS instance and, if so, applies the recommended non-default Python driver settings.
 
 The `GraphDataScience` object needs the Neo4j database to be available upon construction, and uses the default `neo4j` database by default.
 If the `neo4j` database does not exist or you want to use a different database, use the `database` keyword parameter:
@@ -36,46 +61,6 @@ You can also change the database after creating the `GraphDataScience` object:
 gds.set_database("my-db")
 ----
 =====
-
-[.include-with-Aura-Graph-Analytics]
-=====
-The Python client has dedicated support for link:{aura-docs-base-uri}/graph-analytics[Aura Graph Analytics].
-
-This example shows how to instantiate the `GraphDataScience` object using an Aura API key pair and AuraDB connection information.
-
-[source, python, role=no-test]
-----
-from graphdatascience.session import DbmsConnectionInfo, GdsSessions, AuraAPICredentials, SessionMemory
-
-sessions = GdsSessions(api_credentials=AuraAPICredentials(AURA_API_CLIENT_ID, AURA_API_CLIENT_SECRET))
-
-# `NEO4J_URI` has the format "neo4j+s://xxxxxxxx.databases.neo4j.io".
-# The credentials are for the AuraDB instance.
-gds = sessions.get_or_create(
-    session_name="my-session",
-    memory=SessionMemory.m_4GB,
-    db_connection=DbmsConnectionInfo(NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD),
-)
-----
-=====
-
-[.include-with-AuraDS]
-=====
-If you are connecting the client to an link:https://neo4j.com/cloud/graph-data-science/[AuraDS instance], you can get recommended non-default configuration settings of the Python driver applied automatically with `aura_ds=True`:
-
-[source, python, role=no-test]
-----
-from graphdatascience import GraphDataScience
-
-# Configures the driver with AuraDS-recommended settings.
-# `NEO4J_URI` has the format "neo4j+s://xxxxxxxx.databases.neo4j.io:7687".
-gds = GraphDataScience(
-    NEO4J_URI,
-    auth=(NEO4J_USERNAME, NEO4J_PASSWORD),
-    aura_ds=True
-)
-----
-=====
 ====
 
 === Additional checks
@@ -84,15 +69,6 @@ Check the version of GDS library running on the server:
 
 [.tabbed-example]
 ====
-[.include-with-Neo4j-server]
-=====
-
-[source, python, role=no-test]
-----
-print(gds.server_version())
-----
-=====
-
 [.include-with-Aura-Graph-Analytics]
 =====
 
@@ -105,7 +81,7 @@ gds.verify_connectivity()
 ----
 =====
 
-[.include-with-AuraDS]
+[.include-with-Neo4j-Server-and-AuraDS]
 =====
 
 [source, python, role=no-test]
@@ -113,7 +89,7 @@ gds.verify_connectivity()
 print(gds.server_version())
 ----
 
-AuraDS instances always use the lastest version of GDS.
+AuraDS instances always use the latest version of GDS.
 =====
 ====
 
@@ -121,23 +97,19 @@ Check if the GDS library running on the server has an enterprise license:
 
 [.tabbed-example]
 ====
-[.include-with-Neo4j-server]
-=====
-
-[source, python, role=no-test]
-----
-print(gds.is_licensed())
-----
-=====
-
 [.include-with-Aura-Graph-Analytics]
 =====
 
 Aura Graph Analytics sessions always use an enterprise license.
 =====
 
-[.include-with-AuraDS]
+[.include-with-Neo4j-Server-and-AuraDS]
 =====
+
+[source, python, role=no-test]
+----
+print(gds.is_licensed())
+----
 
 AuraDS instances always use an enterprise license.
 =====
@@ -156,37 +128,6 @@ The following example shows how to use the `GraphDataScience` object to:
 
 [.tabbed-example]
 ====
-[.include-with-Neo4j-Server-and-AuraDS]
-=====
-
-[source, python]
-----
-# Create a minimal example graph.
-gds.run_cypher(
-  """
-  CREATE
-    (m: City {name: "Malmö"}),
-    (l: City {name: "London"}),
-    (s: City {name: "San Mateo"}),
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
-  """
-)
-
-# Create an in-memory graph called `neo4j-offices` and
-# a `G_office` object representing the projected graph.
-G_office, project_result = gds.graph.project.native("neo4j-offices", node_projection="City", relationship_projection="FLY_TO")
-
-# Run the `mutate` mode of the PageRank algorithm.
-mutate_result = gds.page_rank.mutate(G_office, tolerance=0.5, mutate_property="rank")
-
-# Inspect the node properties of the projected graph to confirm that a new property has been created.
-assert G_office.node_properties()["City"] == ["rank"]
-----
-=====
-
 [.include-with-Aura-Graph-Analytics]
 =====
 
@@ -221,6 +162,37 @@ mutate_result = gds.page_rank.mutate(G_office, tolerance=0.5, mutate_property="r
 assert G_office.node_properties()["City"] == ["rank"]
 ----
 =====
+
+[.include-with-Neo4j-Server-and-AuraDS]
+=====
+
+[source, python]
+----
+# Create a minimal example graph.
+gds.run_cypher(
+  """
+  CREATE
+    (m: City {name: "Malmö"}),
+    (l: City {name: "London"}),
+    (s: City {name: "San Mateo"}),
+    (m)-[:FLY_TO]->(l),
+    (l)-[:FLY_TO]->(m),
+    (l)-[:FLY_TO]->(s),
+    (s)-[:FLY_TO]->(l)
+  """
+)
+
+# Create an in-memory graph called `neo4j-offices` and
+# a `G_office` object representing the projected graph.
+G_office, project_result = gds.graph.project.native("neo4j-offices", node_projection="City", relationship_projection="FLY_TO")
+
+# Run the `mutate` mode of the PageRank algorithm.
+mutate_result = gds.page_rank.mutate(G_office, tolerance=0.5, mutate_property="rank")
+
+# Inspect the node properties of the projected graph to confirm that a new property has been created.
+assert G_office.node_properties()["City"] == ["rank"]
+----
+=====
 ====
 
 [NOTE]
@@ -233,6 +205,17 @@ See the xref:common-datasets.adoc[] chapter for more on this.
 
 [.tabbed-example]
 ====
+[.include-with-Aura-Graph-Analytics]
+=====
+
+[source, python, role=no-test]
+----
+# Delete the session to tear down the associated remote Aura Graph Analytics Session
+# alternatively use sessions.delete(session_name="my-session")
+gds.delete()
+----
+=====
+
 [.include-with-Neo4j-Server-and-AuraDS]
 =====
 
@@ -243,16 +226,5 @@ gds.close()
 ----
 
 The `close` method is also called automatically when the `GraphDataScience` object is deleted.
-=====
-
-[.include-with-Aura-Graph-Analytics]
-=====
-
-[source, python, role=no-test]
-----
-# Delete the session to tear down the associated remote Aura Graph Analytics Session
-# alternatively use sessions.delete(session_name="my-session")
-gds.delete()
-----
 =====
 ====
