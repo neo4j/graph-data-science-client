@@ -9,6 +9,7 @@ variables always take precedence over dotenv files.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
 import typer
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     from gds_cli.database.graph import Graph
 
 app = typer.Typer(
-    help="Generate test graphs, upload them to Aura Neo4j, and read them back.",
+    help="Generate test graphs, upload them to Aura Neo4j, and read them back. Alias: `gds db`.",
     no_args_is_help=True,
 )
 
@@ -60,8 +61,39 @@ FILE_OPT = typer.Option(
     ...,
     "--file",
     "-f",
-    help="Graph file: JSON construct format, or a random-graph spec (kind: random, JSON/YAML).",
+    help=(
+        "Graph file(s) or a directory. Repeat -f for several, or pass a folder to upload every "
+        "*.json/*.yaml graph in it. Each file is JSON construct format or a random-graph spec "
+        "(kind: random, JSON/YAML)."
+    ),
 )
+
+_GRAPH_SUFFIXES = (".json", ".yaml", ".yml")
+
+
+def _resolve_files(paths: list[str]) -> list[Path]:
+    """Expand the given file/directory arguments into a de-duplicated, ordered list
+    of graph files. A directory contributes its *.json/*.yaml members (sorted)."""
+    resolved: list[Path] = []
+    seen: set[Path] = set()
+    for raw in paths:
+        path = Path(raw).expanduser()
+        if path.is_dir():
+            members = sorted(f for f in path.iterdir() if f.suffix.lower() in _GRAPH_SUFFIXES)
+            if not members:
+                typer.secho(
+                    f"Error: no graph files (*.json/*.yaml) in directory '{path}'.", fg=typer.colors.RED, err=True
+                )
+                raise typer.Exit(1)
+            candidates = members
+        else:
+            candidates = [path]
+        for candidate in candidates:
+            key = candidate.resolve()
+            if key not in seen:
+                seen.add(key)
+                resolved.append(candidate)
+    return resolved
 
 
 def _build(file: str) -> Graph:
@@ -74,9 +106,16 @@ def _build(file: str) -> Graph:
         raise typer.Exit(1) from exc
 
 
+def _counts(graph: Graph) -> tuple[int, int]:
+    """Total (nodes, relationships) across all labels/types in the graph."""
+    nodes = sum(len(df) for df in graph.node_dfs.values())
+    rels = sum(len(df) for df in graph.rel_dfs.values())
+    return nodes, rels
+
+
 @app.command()
 def upload(
-    file: str = FILE_OPT,
+    files: list[str] = FILE_OPT,
     overwrite: bool = typer.Option(False, "--overwrite", help="Replace existing test data with the same labels."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Build and summarize only; do not write to the database."),
     progress_bar: bool = typer.Option(
@@ -84,22 +123,39 @@ def upload(
     ),
     env_file: Optional[str] = ENV_FILE_OPT,
 ) -> None:
-    """Upload a graph from a file (--file/-f): JSON construct format, or a random-graph spec."""
+    """Upload one or more graphs (--file/-f, repeatable, or a directory): JSON construct format or a random-graph spec.
+
+    Multiple files (or a folder) are handled one at a time, reported file-by-file
+    like ``gds run`` reports its jobs.
+    """
+    from gds_cli.common.report import StepReporter
     from gds_cli.database.output import print_summary
 
-    graph = _build(file)
-    print_summary(graph)
+    report = StepReporter()
+    # Build every graph first, so a bad file fails before we touch the database.
+    graphs = [(path, _build(str(path))) for path in _resolve_files(files)]
+
     if dry_run:
+        for path, graph in graphs:
+            report.section(f"Graph: {path.name}")
+            print_summary(graph)
         typer.echo("Dry run: nothing written.")
         return
+
     client = _client(env_file)
-    if not overwrite and client.exists(graph):
-        # Existing same-labelled test data would otherwise cause upload to fail;
-        # ask instead of forcing the user to re-run with --overwrite.
-        typer.confirm("Test data with these labels already exists. Overwrite it?", abort=True)
-        overwrite = True
-    client.upload(graph, overwrite=overwrite, show_progress=progress_bar)
-    typer.echo(f"Uploaded file '{file}'.")
+    for path, graph in graphs:
+        report.section(f"Graph: {path.name}")
+        file_overwrite = overwrite
+        if not file_overwrite and client.exists(graph):
+            # Existing same-labelled test data would otherwise cause upload to fail;
+            # ask instead of forcing the user to re-run with --overwrite.
+            typer.confirm(f"Test data with '{path.name}' labels already exists. Overwrite it?", abort=True)
+            file_overwrite = True
+        nodes, rels = _counts(graph)
+        with report.step(f"Uploading '{path}'"):
+            report.note(f"{nodes:,} nodes, {rels:,} relationships")
+            client.upload(graph, overwrite=file_overwrite, show_progress=progress_bar)
+    report.done(f"Uploaded {len(graphs)} graph(s)")
 
 
 LABEL_OPT = typer.Option(None, "--label", help="Only include nodes with this label.")
@@ -159,13 +215,26 @@ def delete(
     label: Optional[str] = typer.Option(None, "--label", help="Delete only nodes with this label."),
     all: bool = typer.Option(False, "--all", help="Delete all test (Dev-labelled) data."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Report what would be deleted without deleting."),
+    yes: bool = typer.Option(False, "--yes", "-y", help="Skip the confirmation prompt (for scripts)."),
     env_file: Optional[str] = ENV_FILE_OPT,
 ) -> None:
-    """Delete uploaded test data from the database."""
+    """Delete uploaded test data from the database. Prompts for confirmation first."""
     if not all and not label:
         raise typer.BadParameter("Pass --all or --label <LABEL>.")
     client = _client(env_file)
     target = "all Dev-labelled test data" if all else f"test data with label '{label}'"
-    stats = client.delete(all=True, dry_run=dry_run) if all else client.delete(label, dry_run=dry_run)
-    verb = "Would delete" if dry_run else "Deleted"
-    typer.echo(f"{verb} {stats.nodes} nodes and {stats.relationships} relationships ({target}).")
+    # Count first (never deletes) so we can report the scope and confirm before touching data.
+    preview = client.delete(all=True, dry_run=True) if all else client.delete(label, dry_run=True)
+    if dry_run:
+        typer.echo(f"Would delete {preview.nodes} nodes and {preview.relationships} relationships ({target}).")
+        return
+    if preview.nodes == 0:
+        typer.echo(f"Nothing to delete ({target}).")
+        return
+    if not yes:
+        typer.confirm(
+            f"Delete {preview.nodes} nodes and {preview.relationships} relationships ({target})?",
+            abort=True,
+        )
+    stats = client.delete(all=True) if all else client.delete(label)
+    typer.echo(f"Deleted {stats.nodes} nodes and {stats.relationships} relationships ({target}).")

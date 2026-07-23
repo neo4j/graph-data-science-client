@@ -1,0 +1,24 @@
+# Standalone session (NOT attached to a database):
+session:
+  memory: 8GB
+  ttl: 30m
+  cloud: gcp
+  region: europe-west1
+jobs:
+  - project:
+      type: construct
+      file: graph.json
+    compute:
+      - compute: pageRank
+        config:
+          resultProperty: pagerank
+          maxIterations: 20
+          relationshipWeightProperty: weight
+      - compute: louvain
+        config:
+          resultProperty: community
+    write:
+      - nodeProperty: pagerank
+        outputFile: result.json
+      - nodeProperty: community
+        outputFile: result.json

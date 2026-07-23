@@ -1,11 +1,12 @@
 # PageRank on the social graph, run twice with different parameter sets to check
 # parametrization works. Also a runnable `gds session run` config.
+# graphs: social
 session:
-  name: it-cli-pagerank
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,21 +14,20 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: pageRank
-    graph_name: social
-    mode: mutate
-    mutate_property: pagerank
-    parameters:
-      max_iterations: 20
-  - name: pageRank
-    graph_name: social
-    mode: mutate
-    mutate_property: pagerankDamped
-    parameters:
-      damping_factor: 0.5
-      max_iterations: 10
+  compute:
+  - compute: pageRank
+    config:
+      resultProperty: pagerank
+      maxIterations: 20
+  - compute: pageRank
+    config:
+      resultProperty: pagerankDamped
+      dampingFactor: 0.5
+      maxIterations: 10
       tolerance: 0.001
-writebacks:
-  - graph_name: social
-    node_properties: [pagerank, pagerankDamped]
+  mutate:
+  - nodeProperty: pagerank
+  - nodeProperty: pagerankDamped
+  write:
+  - nodeProperty: pagerank
+  - nodeProperty: pagerankDamped

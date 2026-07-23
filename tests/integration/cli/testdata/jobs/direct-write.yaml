@@ -1,0 +1,36 @@
+# Exercises BOTH write paths in one job on the social graph:
+#  - `pagerank` is a feature for FastRP, so it is mutated into the graph and then
+#    written back from the graph (gds.graph.node_properties.write);
+#  - `fastRP` is terminal (in `write` but not `mutate`), so it is written DIRECTLY
+#    from the compute handle, skipping the mutate step (the memory-saving path).
+# Also a runnable `gds session run` config.
+# graphs: social
+session:
+  memory: 2GB
+  ttl: 30m
+jobs:
+  - project:
+      type: cypher
+      query: |
+        MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+        RETURN gds.graph.project.remote(source, target, {
+          sourceNodeLabels: ['Person'],
+          targetNodeLabels: ['Person'],
+          relationshipType: type(rel)
+        })
+    compute:
+      - compute: pageRank
+        config:
+          resultProperty: pagerank
+          maxIterations: 20
+      - compute: fastRP
+        config:
+          resultProperty: fastRP
+          embeddingDimension: 8
+          featureProperties: [pagerank]
+          propertyRatio: 0.2
+    mutate:
+      - nodeProperty: pagerank
+    write:
+      - nodeProperty: pagerank
+      - nodeProperty: fastRP

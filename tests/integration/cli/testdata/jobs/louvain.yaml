@@ -1,11 +1,12 @@
 # Louvain community detection on the social graph, run twice with different
 # parameter sets. Also a runnable config.
+# graphs: social
 session:
-  name: it-cli-louvain
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,19 +14,19 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: louvain
-    graph_name: social
-    mode: mutate
-    mutate_property: community
-  - name: louvain
-    graph_name: social
-    mode: mutate
-    mutate_property: communityShallow
-    parameters:
-      max_levels: 5
-      max_iterations: 5
+  compute:
+  - compute: louvain
+    config:
+      resultProperty: community
+  - compute: louvain
+    config:
+      resultProperty: communityShallow
+      maxLevels: 5
+      maxIterations: 5
       tolerance: 0.001
-writebacks:
-  - graph_name: social
-    node_properties: [community, communityShallow]
+  mutate:
+  - nodeProperty: community
+  - nodeProperty: communityShallow
+  write:
+  - nodeProperty: community
+  - nodeProperty: communityShallow

@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from gds_cli.database.construct import graph_from_construct_format
+from gds_cli.database.construct import graph_from_construct_format, graph_to_construct_frames
 
 
 def test_graph_from_construct_format_basic() -> None:
@@ -54,3 +54,39 @@ def test_graph_from_construct_format_rejects_unresolved_endpoint() -> None:
 
     with pytest.raises(ValueError, match="unknown nodeIds"):
         graph_from_construct_format(nodes, relationships)
+
+
+def test_graph_to_construct_frames_reattaches_and_drops_string_props() -> None:
+    graph = graph_from_construct_format(
+        nodes=[
+            pd.DataFrame(
+                [
+                    {"nodeId": 1, "labels": "Person", "name": "alice", "age": 34},
+                    {"nodeId": 2, "labels": "Person", "name": "bob", "age": 28},
+                ]
+            )
+        ],
+        relationships=[
+            pd.DataFrame([{"sourceNodeId": 1, "targetNodeId": 2, "relationshipType": "KNOWS", "weight": 5}])
+        ],
+    )
+
+    nodes, relationships, dropped = graph_to_construct_frames(graph)
+
+    assert dropped == ["name"]  # scalar string prop dropped (construct rejects it)
+    assert set(nodes[0].columns) == {"nodeId", "age", "labels"}
+    assert list(nodes[0]["labels"].unique()) == ["Person"]
+    assert set(relationships[0].columns) == {"sourceNodeId", "targetNodeId", "weight", "relationshipType"}
+    assert list(relationships[0]["relationshipType"].unique()) == ["KNOWS"]
+
+
+def test_graph_to_construct_frames_keeps_vector_properties() -> None:
+    graph = graph_from_construct_format(
+        nodes=[pd.DataFrame([{"nodeId": 1, "labels": "Event", "embedding": [0.1, 0.2, 0.3]}])],
+        relationships=[],
+    )
+
+    nodes, _relationships, dropped = graph_to_construct_frames(graph)
+
+    assert dropped == []  # list/vector property is kept
+    assert "embedding" in nodes[0].columns

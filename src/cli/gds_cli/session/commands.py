@@ -1,21 +1,15 @@
-"""``gds session`` — create/list/delete a managed Aura GDS session, and run a
-standardized GDS job (projections -> algorithms -> writebacks) against it.
+"""``gds sessions`` — create, list, and delete managed Aura GDS sessions, plus the
+shared helpers behind ``gds run``.
 
-Feed a standardized job config and run the whole pipeline (`run`) - projection
-and drop of each graph happen implicitly, right before its first algorithm
-reference and right after its last. Or run one step at a time (`project` /
-`algorithms` / `writeback`) so each can be a separate k8s step; since that
-splits execution across process boundaries, those steps are coarse-grained
-instead: `project` projects every graph upfront, `writeback` writes back every
-configured graph, and `drop` removes every projected graph so the session can
-be reused for another experiment. Credentials come from the unified env set (see
-:mod:`gds_cli.common.env`). A ``.env`` in the working directory is
-loaded automatically; pass --env-file for another dotenv file. Real environment
-variables always take precedence over dotenv files.
+``create`` and ``delete`` read the session definition from a job config
+(``--file``/``-f``) and/or from CLI flags (``--name``/``--memory``/``--ttl``/
+``--cloud``/``--region``); CLI flags override the config. ``list`` needs no config.
+Aura credentials come from the unified env set (see :mod:`gds_cli.common.env`): a
+``.env`` in the working directory is loaded automatically, ``--env-file`` reads
+another dotenv file, and real environment variables always take precedence.
 
-The job config itself is either a file (`--file`/`-f`) or, if omitted, a YAML
-document in the $GDS_JOB_CONFIG env var — lets a single k8s Job resource carry
-its config inline instead of needing a paired ConfigMap + volume mount.
+Running a job against a session is a separate top-level command, ``gds run`` (see
+:mod:`gds_cli.run`), which manages the session lifecycle itself.
 """
 
 from __future__ import annotations
@@ -25,12 +19,12 @@ from typing import TYPE_CHECKING, Optional
 import typer
 
 if TYPE_CHECKING:
-    from gds_cli.session.config import JobConfig
+    from gds_cli.session.config import JobsConfig, SessionConfig
     from gds_cli.session.report import JobReport
     from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 
 app = typer.Typer(
-    help="Manage a GDS session and run a standardized GDS job (projections -> algorithms -> writebacks) against it.",
+    help="Create, list, and delete managed Aura GDS sessions.",
     no_args_is_help=True,
 )
 
@@ -45,64 +39,140 @@ ENV_FILE_OPT = typer.Option(
 PROGRESS_BAR_OPT = typer.Option(
     True,
     "--progress-bar/--no-progress-bar",
-    help="Show the underlying job progress bar (projection, algorithms, writeback). On by default.",
+    help="Show the underlying client progress bars (projection, compute, write-back). On by default.",
 )
+NAME_OPT = typer.Option(None, "--name", "-n", help="Session name. Overrides `session.name` from --file.")
+MEMORY_OPT = typer.Option(None, "--memory", help="Session memory, e.g. 2GB. Overrides the config.")
+TTL_OPT = typer.Option(
+    None, "--ttl", help="Session time-to-live: minutes (30) or a duration (30m/2h/1d). Overrides the config."
+)
+CLOUD_OPT = typer.Option(None, "--cloud", help="Cloud provider (gcp/aws/azure) for a STANDALONE session (+ --region).")
+REGION_OPT = typer.Option(None, "--region", help="Cloud region for a standalone session (+ --cloud).")
 
 
-def _load(file: Optional[str], env_file: Optional[str]) -> JobConfig:
+def _load(file: Optional[str], env_file: Optional[str]) -> JobsConfig:
     from gds_cli.common.env import load_env
-    from gds_cli.session.config import JobConfig
+    from gds_cli.session.config import JobsConfig
 
     load_env(env_file)
     if file is not None:
-        return JobConfig.from_file(file)
-    return JobConfig.from_env()
+        return JobsConfig.from_file(file)
+    return JobsConfig.from_env()
 
 
-def _connect(cfg: JobConfig, report: JobReport, progress_bar: bool = False) -> AuraGraphDataScience:
+def _connect(
+    session: SessionConfig, session_name: str, report: JobReport, progress_bar: bool = False
+) -> AuraGraphDataScience:
+    """Create (or reconnect to) ``session_name`` for ``session``; reports as it goes.
+
+    A session found in a "deleting" state is deleted and recreated, so a stale name
+    never blocks the connect.
+    """
     from gds_cli.session.session_ops import connect, delete, find_session
 
     report.section("Connecting")
-    with report.step(f"Connecting to session '{cfg.session.name}' ({cfg.session.memory})"):
-        existing = find_session(cfg.session)
+    with report.step(f"Connecting to session '{session_name}' ({session.memory})"):
+        existing = find_session(session_name)
         if existing is not None and "delet" in existing.status.lower():
-            report.note(f"Session '{cfg.session.name}' existed but is {existing.status.lower()} - it will be recreated")
+            report.note(f"Session '{session_name}' existed but is {existing.status.lower()} - it will be recreated")
             try:
-                delete(cfg.session)
+                delete(session_name)
             except Exception:
                 pass
             existing = None
         verb = "Reconnecting to existing" if existing else "Creating new"
-        report.note(f"{verb} session '{cfg.session.name}' ({cfg.session.memory})")
-        gds = connect(cfg.session, show_progress=progress_bar)
-        session = existing or find_session(cfg.session)
-        if session is not None:
-            report.note(f"Session id: {session.id}")
+        report.note(f"{verb} session '{session_name}' ({session.memory})")
+        gds = connect(session, session_name, show_progress=progress_bar)
+        session_info = existing or find_session(session_name)
+        if session_info is not None:
+            report.note(f"Session id: {session_info.id}")
     return gds
+
+
+def _resolve_session(
+    file: Optional[str],
+    env_file: Optional[str],
+    *,
+    name: Optional[str],
+    memory: Optional[str],
+    ttl: Optional[str],
+    cloud: Optional[str],
+    region: Optional[str],
+) -> tuple[str, SessionConfig]:
+    """Build ``(name, SessionConfig)`` from a config file and/or CLI flags.
+
+    A ``--file`` supplies the defaults (its ``session:`` block); each CLI flag
+    overrides the matching field. Requires a resolvable name plus memory and ttl.
+    """
+    from gds_cli.common.env import load_env
+    from gds_cli.session.config import JobsConfig, SessionConfig
+
+    load_env(env_file)
+    fields: dict[str, object] = {}
+    config_name: Optional[str] = None
+    if file is not None:
+        block = JobsConfig.from_file(file).session
+        config_name = block.name
+        fields = {
+            "memory": block.memory,
+            "ttl": block.ttl,
+            "cloud": block.cloud,
+            "region": block.region,
+        }
+    if memory is not None:
+        fields["memory"] = memory
+    if ttl is not None:
+        fields["ttl"] = ttl
+    if cloud is not None:
+        fields["cloud"] = cloud
+    if region is not None:
+        fields["region"] = region
+
+    resolved_name = name or config_name
+    if not resolved_name:
+        raise typer.BadParameter(
+            "session name required: pass --name, or --file pointing at a config with session.name."
+        )
+    if "memory" not in fields or "ttl" not in fields:
+        raise typer.BadParameter("session memory and ttl required: pass --memory and --ttl, or --file with a session.")
+    return resolved_name, SessionConfig(**fields)  # validates cloud/region are both-or-neither
+
+
+def _resolve_session_name(file: Optional[str], env_file: Optional[str], name: Optional[str]) -> str:
+    """Resolve just a session name from ``--name`` or a config's ``session.name``."""
+    from gds_cli.common.env import load_env
+    from gds_cli.session.config import JobsConfig
+
+    load_env(env_file)
+    resolved = name
+    if resolved is None and file is not None:
+        resolved = JobsConfig.from_file(file).session.name
+    if not resolved:
+        raise typer.BadParameter(
+            "session name required: pass --name, or --file pointing at a config with session.name."
+        )
+    return resolved
 
 
 @app.command()
 def create(
-    file: Optional[str] = FILE_OPT, progress_bar: bool = PROGRESS_BAR_OPT, env_file: Optional[str] = ENV_FILE_OPT
+    file: Optional[str] = FILE_OPT,
+    name: Optional[str] = NAME_OPT,
+    memory: Optional[str] = MEMORY_OPT,
+    ttl: Optional[str] = TTL_OPT,
+    cloud: Optional[str] = CLOUD_OPT,
+    region: Optional[str] = REGION_OPT,
+    progress_bar: bool = PROGRESS_BAR_OPT,
+    env_file: Optional[str] = ENV_FILE_OPT,
 ) -> None:
-    """Create (or reconnect to) the session defined in the config."""
+    """Create (or reconnect to) a session, from a config file and/or CLI flags."""
     from gds_cli.session.report import JobReport
 
-    cfg = _load(file, env_file)
-    _connect(cfg, JobReport(), progress_bar=progress_bar)
-
-
-@app.command()
-def delete(file: Optional[str] = FILE_OPT, env_file: Optional[str] = ENV_FILE_OPT) -> None:
-    """Delete the session defined in the config."""
-    from gds_cli.session.session_ops import delete as delete_session
-
-    cfg = _load(file, env_file)
-    deleted = delete_session(cfg.session)
-    if deleted:
-        typer.secho(f"Deleted session '{cfg.session.name}'.", fg=typer.colors.GREEN)
-    else:
-        typer.echo(f"No session named '{cfg.session.name}' found.")
+    resolved_name, session = _resolve_session(
+        file, env_file, name=name, memory=memory, ttl=ttl, cloud=cloud, region=region
+    )
+    _connect(session, resolved_name, JobReport(), progress_bar=progress_bar)
+    typer.secho(f"Session '{resolved_name}' ready.", fg=typer.colors.GREEN)
 
 
 @app.command(name="list")
@@ -121,101 +191,19 @@ def list_(env_file: Optional[str] = ENV_FILE_OPT) -> None:
 
 
 @app.command()
-def run(
+def delete(
     file: Optional[str] = FILE_OPT,
-    overwrite_graph: bool = typer.Option(
-        False, "--overwrite-graph", help="Drop an existing same-named graph before projecting."
-    ),
-    delete_session: bool = typer.Option(
-        False,
-        "--delete-session",
-        envvar="GDS_RUNNER_DELETE_SESSION",
-        help="Delete the session once the job completes (e.g. for a one-off k8s Job).",
-    ),
-    progress_bar: bool = PROGRESS_BAR_OPT,
+    name: Optional[str] = NAME_OPT,
+    yes: bool = typer.Option(False, "--yes", "-y", help="Skip the confirmation prompt."),
     env_file: Optional[str] = ENV_FILE_OPT,
 ) -> None:
-    """Run the whole job: algorithms in order, each graph implicitly projected/written-back/dropped."""
-    from gds_cli.session.report import JobReport
-    from gds_cli.session.session_ops import delete as delete_session_op
-    from gds_cli.session.steps import run_all
+    """Delete a session by name (from --name or a config's session.name)."""
+    from gds_cli.session.session_ops import delete as delete_session
 
-    cfg = _load(file, env_file)
-    report = JobReport()
-    gds = _connect(cfg, report, progress_bar=progress_bar)
-    run_all(gds, cfg, overwrite_graph=overwrite_graph, report=report)
-    if delete_session:
-        delete_session_op(cfg.session)
-        typer.echo(f"Deleted session '{cfg.session.name}'.")
-    typer.secho("Job complete.", fg=typer.colors.GREEN)
-
-
-@app.command()
-def project(
-    file: Optional[str] = FILE_OPT,
-    overwrite_graph: bool = typer.Option(
-        False, "--overwrite-graph", help="Drop an existing same-named graph before projecting."
-    ),
-    progress_bar: bool = PROGRESS_BAR_OPT,
-    env_file: Optional[str] = ENV_FILE_OPT,
-) -> None:
-    """Step 1: project every graph declared in the config into the session."""
-    from gds_cli.session.report import JobReport
-    from gds_cli.session.steps import project_all
-
-    cfg = _load(file, env_file)
-    report = JobReport()
-    gds = _connect(cfg, report, progress_bar=progress_bar)
-    project_all(gds, cfg, overwrite=overwrite_graph, report=report)
-    typer.secho("Projection complete.", fg=typer.colors.GREEN)
-
-
-@app.command()
-def algorithms(
-    file: Optional[str] = FILE_OPT,
-    only: Optional[str] = typer.Option(None, "--only", help="Run only the named algorithm from the list."),
-    progress_bar: bool = PROGRESS_BAR_OPT,
-    env_file: Optional[str] = ENV_FILE_OPT,
-) -> None:
-    """Step 2: run the ordered list of algorithms on their already-projected graphs."""
-    from gds_cli.session.report import JobReport
-    from gds_cli.session.steps import run_algorithms
-
-    cfg = _load(file, env_file)
-    report = JobReport()
-    gds = _connect(cfg, report, progress_bar=progress_bar)
-    run_algorithms(gds, cfg, only=only, report=report)
-    typer.secho("Algorithms complete.", fg=typer.colors.GREEN)
-
-
-@app.command()
-def writeback(
-    file: Optional[str] = FILE_OPT, progress_bar: bool = PROGRESS_BAR_OPT, env_file: Optional[str] = ENV_FILE_OPT
-) -> None:
-    """Step 3: write every configured graph's mutated node properties back to the database."""
-    from gds_cli.session.report import JobReport
-    from gds_cli.session.steps import run_writebacks
-
-    cfg = _load(file, env_file)
-    if not cfg.writebacks:
-        typer.echo("No writebacks configured; nothing to do.")
-        return
-    report = JobReport()
-    gds = _connect(cfg, report, progress_bar=progress_bar)
-    run_writebacks(gds, cfg, report=report)
-    typer.secho("Writeback complete.", fg=typer.colors.GREEN)
-
-
-@app.command()
-def drop(
-    file: Optional[str] = FILE_OPT, progress_bar: bool = PROGRESS_BAR_OPT, env_file: Optional[str] = ENV_FILE_OPT
-) -> None:
-    """Drop every projected graph from the session, keeping the session for reuse."""
-    from gds_cli.session.report import JobReport
-    from gds_cli.session.steps import drop_all
-
-    cfg = _load(file, env_file)
-    report = JobReport()
-    gds = _connect(cfg, report, progress_bar=progress_bar)
-    drop_all(gds, cfg, report=report)
-    typer.secho("Drop complete.", fg=typer.colors.GREEN)
+    resolved_name = _resolve_session_name(file, env_file, name)
+    if not yes:
+        typer.confirm(f"Delete session '{resolved_name}'?", abort=True)
+    if delete_session(resolved_name):
+        typer.secho(f"Deleted session '{resolved_name}'.", fg=typer.colors.GREEN)
+    else:
+        typer.echo(f"No session named '{resolved_name}' found.")

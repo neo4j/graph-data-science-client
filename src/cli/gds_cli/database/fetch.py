@@ -11,10 +11,9 @@ from dataclasses import dataclass
 from typing import Any
 
 import pandas as pd
-from neo4j import GraphDatabase
 
 from gds_cli.common.env import DatabaseConfig
-from gds_cli.database.db import DEFAULT_EXTRA_LABEL
+from gds_cli.database.db import DEFAULT_EXTRA_LABEL, open_driver
 from gds_cli.database.graph import Graph
 
 
@@ -25,13 +24,14 @@ def download_graph(
     """Download Dev-labelled nodes and their relationships as a :class:`Graph`."""
     extra = DEFAULT_EXTRA_LABEL
 
+    # Labels come from user input (`--label`), so filter on them as a query
+    # parameter rather than interpolating into the Cypher string (no injection,
+    # consistent with db.py). `extra` is the hardcoded `Dev` constant, safe inline.
+    params: dict[str, Any] = {}
     if node_labels is not None:
-        labels_cypher = "[" + ", ".join(f'"{lbl}"' for lbl in node_labels) + "]"
-        label_filter = f"WHERE any(l IN {labels_cypher} WHERE l IN labels(n))"
-        rel_filter = (
-            f"WHERE any(l IN {labels_cypher} WHERE l IN labels(a))\n"
-            f"  AND any(l IN {labels_cypher} WHERE l IN labels(b))"
-        )
+        params["labels"] = node_labels
+        label_filter = "WHERE any(l IN $labels WHERE l IN labels(n))"
+        rel_filter = "WHERE any(l IN $labels WHERE l IN labels(a))\n  AND any(l IN $labels WHERE l IN labels(b))"
     else:
         label_filter = ""
         rel_filter = ""
@@ -40,14 +40,15 @@ def download_graph(
     non_extra_src = f"[l IN labels(a) WHERE l <> '{extra}'][0]"
     non_extra_tgt = f"[l IN labels(b) WHERE l <> '{extra}'][0]"
 
-    with GraphDatabase.driver(db_config.uri, auth=db_config.auth) as driver:
+    with open_driver(db_config) as driver:
         with driver.session(database=db_config.database) as session:
             node_records = session.run(
                 f"""
                 MATCH (n:{extra})
                 {label_filter}
                 RETURN {non_extra_label} AS label, properties(n) AS props
-                """
+                """,
+                **params,
             ).data()
 
             rel_records = session.run(
@@ -60,7 +61,8 @@ def download_graph(
                        a.nodeId AS sourceNodeId,
                        b.nodeId AS targetNodeId,
                        properties(r) AS props
-                """
+                """,
+                **params,
             ).data()
 
     node_rows: dict[str, list[dict[str, Any]]] = {}
@@ -110,7 +112,7 @@ class GraphStats:
 def stats(db_config: DatabaseConfig) -> GraphStats:
     """Count Dev-labelled nodes per label and relationships per type."""
     extra = DEFAULT_EXTRA_LABEL
-    with GraphDatabase.driver(db_config.uri, auth=db_config.auth) as driver:
+    with open_driver(db_config) as driver:
         with driver.session(database=db_config.database) as session:
             node_rows = session.run(
                 f"""
@@ -148,7 +150,7 @@ def verify_property(db_config: DatabaseConfig, property_name: str) -> PropertySt
     non-numeric (e.g. list-valued embeddings) min/max come back as None.
     """
     extra = DEFAULT_EXTRA_LABEL
-    with GraphDatabase.driver(db_config.uri, auth=db_config.auth) as driver:
+    with open_driver(db_config) as driver:
         with driver.session(database=db_config.database) as session:
             total_record = session.run(f"MATCH (n:{extra}) RETURN count(n) AS c").single()
             assert total_record is not None

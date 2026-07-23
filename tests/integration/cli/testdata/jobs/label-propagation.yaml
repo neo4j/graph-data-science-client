@@ -1,11 +1,12 @@
 # Label Propagation on the social graph, run twice with different parameter sets.
 # Also a runnable config.
+# graphs: social
 session:
-  name: it-cli-label-propagation
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,18 +14,18 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: labelPropagation
-    graph_name: social
-    mode: mutate
-    mutate_property: labelPropagationId
-  - name: labelPropagation
-    graph_name: social
-    mode: mutate
-    mutate_property: labelPropagationIdFast
-    parameters:
-      max_iterations: 3
-      consecutive_ids: true
-writebacks:
-  - graph_name: social
-    node_properties: [labelPropagationId, labelPropagationIdFast]
+  compute:
+  - compute: labelPropagation
+    config:
+      resultProperty: labelPropagationId
+  - compute: labelPropagation
+    config:
+      resultProperty: labelPropagationIdFast
+      maxIterations: 3
+      consecutiveIds: true
+  mutate:
+  - nodeProperty: labelPropagationId
+  - nodeProperty: labelPropagationIdFast
+  write:
+  - nodeProperty: labelPropagationId
+  - nodeProperty: labelPropagationIdFast

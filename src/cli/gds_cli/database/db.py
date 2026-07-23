@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from neo4j import GraphDatabase
+from neo4j import Driver, GraphDatabase
 
 from gds_cli.common.env import DatabaseConfig, database_config_from_env
 from gds_cli.database.graph import Graph
@@ -25,9 +25,22 @@ __all__ = [
     "DatabaseClient",
     "DeleteStats",
     "DEFAULT_EXTRA_LABEL",
+    "open_driver",
     "graph_exists",
     "delete_graph",
 ]
+
+
+def open_driver(db_config: DatabaseConfig) -> Driver:
+    """Open a Neo4j driver with server notifications turned off.
+
+    The test-data queries deliberately probe for things that may not exist yet on
+    a fresh database (e.g. ``MATCH (n:Dev) ...`` before any test data is uploaded),
+    which the server reports as ``WARNING`` notifications the driver would surface
+    as noisy Python warnings (``label does not exist``, ...). We never consume those
+    notifications, so disable them at the source rather than let them leak to the user.
+    """
+    return GraphDatabase.driver(db_config.uri, auth=db_config.auth, notifications_min_severity="OFF")
 
 
 @dataclass
@@ -40,7 +53,7 @@ class DeleteStats:
 
 def graph_exists(db_config: DatabaseConfig, labels: list[str]) -> bool:
     """Return True if any node with the extra label AND one of the given labels exists."""
-    with GraphDatabase.driver(db_config.uri, auth=db_config.auth) as driver:
+    with open_driver(db_config) as driver:
         with driver.session(database=db_config.database) as session:
             result = session.run(
                 f"MATCH (n:{DEFAULT_EXTRA_LABEL}) WHERE any(lbl IN $labels WHERE lbl IN labels(n))"
@@ -73,7 +86,7 @@ def delete_graph(
     deleted and the returned counts reflect what *would* be removed.
     """
     match, params = _dev_match(labels)
-    with GraphDatabase.driver(db_config.uri, auth=db_config.auth) as driver:
+    with open_driver(db_config) as driver:
         with driver.session(database=db_config.database) as session:
             counts = session.run(
                 f"{match} "
@@ -103,7 +116,7 @@ class DatabaseClient:
         return cls(database_config_from_env())
 
     def verify_connection(self) -> None:
-        with GraphDatabase.driver(self.db_config.uri, auth=self.db_config.auth) as driver:
+        with open_driver(self.db_config) as driver:
             driver.verify_connectivity()
 
     def upload(

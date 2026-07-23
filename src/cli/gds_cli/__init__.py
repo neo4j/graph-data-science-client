@@ -1,4 +1,4 @@
-"""The ``gds`` command-line interface: ``gds database ...`` and ``gds session ...``.
+"""The ``gds`` command-line interface: ``gds run ...`` and ``gds database ...``.
 
 This subpackage is only imported when the ``gds`` console script runs (see
 ``[project.scripts]`` in ``pyproject.toml``); ``import graphdatascience`` never

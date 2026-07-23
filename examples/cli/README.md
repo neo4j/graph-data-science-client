@@ -2,9 +2,8 @@
 
 Sample graphs and ready-to-run job configs for the `gds` command-line tool (see
 the [Command-line interface](../../README.md#command-line-interface-gds)
-section of the main README). A small selection ported from the
-[neo4j-cloud-job-scheduler-prototype](https://github.com/neo4j/neo4j-cloud-job-scheduler-prototype)'s
-`gds-testdata`/`gds-runner` examples.
+section of the main README, and [architecture.md](../../src/cli/architecture.md)
+for how a job config is executed).
 
 Prereq: `pip install "graphdatascience[cli]"` (or `just install-cli` from the repo
 root), and Aura credentials. Copy `env.template` to `.env` in this directory and
@@ -18,66 +17,127 @@ cp env.template .env
 
 ## What's here
 
-Graphs (`graphs/`) and jobs (`jobs/`) share theme names, so they read as a story —
-pick a graph, run the matching job:
+Three graphs; the **social graph is reused across many algorithms**.
 
-Every graph under `graphs/` has a matching job under `jobs/`:
+**Shared social graph** (`graphs/social-network.yaml`) — a generated
+`Person -KNOWS-> Person` graph (`kind: random`, power-law) carrying an `age` node
+property (a FastRP feature) and a positive `weight` relationship property (for
+weighted PageRank), so every social job runs against the same upload.
 
-| Theme | Graph — fixed / random | Job |
+Upload it once, then run any of these jobs against it:
+
+| Job | Algorithm(s) | Writes |
 | --- | --- | --- |
-| social network | `graphs/social-network.json` | `jobs/social-network-louvain.yaml` → `community`; `jobs/social-network-native.yaml` (native) |
-| random social | `graphs/random-social-network.yaml` | `jobs/random-social-network.yaml` → `pagerank` |
-| people | `graphs/people.yaml` | `jobs/people.yaml` → `community` |
-| web graph | `graphs/web-graph.json` | `jobs/web-graph-pagerank.yaml` → `pagerank`, `fastRP` |
-| citation | `graphs/citation.yaml` | `jobs/citation.yaml` → `pagerank`, `fastRP` |
-| homogeneous | `graphs/homogeneous.yaml` | `jobs/homogeneous.yaml` → `pagerank` |
-| heterogeneous | `graphs/heterogeneous.yaml` | `jobs/heterogeneous.yaml` → `pagerank` |
-| entity / event | `graphs/entity-event.json` | `jobs/entity-event-fastpath.yaml` → `fastpath` |
-| multi-graph | `graphs/multi-graph.yaml` | `jobs/multi-graph.yaml` (two graphs in one run) |
+| `jobs/wcc.yaml` | Weakly Connected Components (simplest: one native projection, one algorithm) | `componentId` |
+| `jobs/social-network.yaml` | weighted PageRank → FastRP → Louvain, **one projection reused** | `pagerank`, `embedding`, `community` |
 
-Explicit graphs are `.json` (construct format); random graphs are `.yaml`
-(`kind: random` specs). The `social-network.json` (fixed) and
-`random-social-network.yaml` (generated) graphs share the `Person -KNOWS-> Person`
-shape, so the social jobs run against either.
+**Citation graph** (`graphs/citation.yaml`) — a generated `Paper -CITES-> Paper`
+graph, used alongside the social graph by `jobs/multi-graph.yaml` (one job per graph).
 
-All jobs share one session (`gds-examples`), so runs reuse it; `--overwrite-graph`
-replaces the projected graph each time.
+**Temporal graph (FastPath)** — `Entity -HAS_EVENT-> Event`, a distinct shape
+needed by the FastPath algorithm:
+
+- `graphs/entity-event.json` with `jobs/fastpath.yaml` → `fp_embeddings`.
+
+Fixed graphs are `.json` (construct format); generated graphs are `.yaml`
+(`kind: random` specs). By default each `gds run` spins up a fresh, uniquely-named
+session and deletes it when the run finishes; pass `--session-name <name>` to
+reuse (and keep) one warm session across runs. `--overwrite-graph` replaces the
+projected graph each time.
+
+### Reuse across algorithms
+
+- **Upload once, run many:** every social job projects the same `Person/KNOWS`
+  data, so a single `gds database upload` feeds PageRank, Louvain, WCC, FastRP, …
+- **One projection, many algorithms in a run:** `jobs/social-network.yaml` runs
+  three algorithms on a *single* projection — PageRank is mutated into the graph so
+  FastRP can consume it as a feature, then Louvain runs on the same graph.
+- **Many jobs in a run:** `jobs/multi-graph.yaml` has two jobs projecting
+  *different graphs* — Louvain on the social graph, PageRank on the citation graph
+  — each an isolated project→compute→write→drop unit.
 
 ### Projection kinds
 
-A projection is either **remote** (a Cypher `query` returning
-`gds.graph.project.remote(...)`) or **native** (selected by `node_labels` +
-`relationship_types`, read straight from the DB). Give exactly one per projection.
-`jobs/social-network-native.yaml` is the native counterpart of
-`jobs/social-network-louvain.yaml`. Native projections also accept
-`node_properties` / `relationship_properties` to load; both kinds accept
-`undirected_relationship_types`.
+These examples use **native** projections (`nodeLabels` + `relationshipTypes`, read
+straight from the DB, with optional `nodeProperties` / `relationshipProperties`).
+`jobs/fastpath.yaml` is the exception — it uses a **cypher** projection (a `query`
+returning `gds.graph.project.remote(...)`) to forward the temporal node properties
+FastPath needs.
 
-## Run a job (social network)
+## Run a job
 
-Three steps — upload a graph, run the job, inspect:
+Upload the shared graph once, then run any social job and inspect:
 
 ```bash
-# fixed graph
-gds database upload -f graphs/social-network.json --overwrite
-gds session  run --file jobs/social-network-louvain.yaml --overwrite-graph
-gds database fetch --label Person        # community column populated
+gds database upload -f graphs/social-network.yaml --overwrite
+gds run -f jobs/wcc.yaml --overwrite-graph
+gds database fetch --label Person        # componentId column populated
 
-# same job, generated graph
-gds database upload -f graphs/random-social-network.yaml --overwrite
-gds session  run --file jobs/social-network-louvain.yaml --overwrite-graph
-gds database fetch --label Person
+# reuse the SAME uploaded graph for more algorithms — no re-upload
+gds run -f jobs/social-network.yaml --overwrite-graph
+gds database fetch --label Person        # pagerank / community / embedding populated too
 ```
 
-The web-graph theme follows the same pattern (`--label Page`, `jobs/web-graph-pagerank.yaml`).
+## Multiple graphs in one run
 
-## Homogeneous graph
+`jobs/multi-graph.yaml` runs a job per graph. Upload both first — they use disjoint
+labels, so they coexist in the DB. `upload -f` is repeatable (and also accepts a
+directory, e.g. `-f graphs/` for every graph in it):
 
 ```bash
-gds database upload -f graphs/homogeneous.yaml --overwrite
-gds session  run --file jobs/homogeneous.yaml --overwrite-graph
-gds database fetch
+gds database upload -f graphs/social-network.yaml -f graphs/citation.yaml --overwrite
+gds run -f jobs/multi-graph.yaml --overwrite-graph
+gds database fetch --label Person        # community
+gds database fetch --label Paper         # pagerank
 ```
 
-Clean up: `gds database delete --all`. Delete the session when done:
-`gds session delete --file jobs/social-network-louvain.yaml`.
+`gds run -f` also accepts a **directory** of configs: `gds run -f jobs/ --overwrite-graph`
+runs every `jobs/*.yaml` (sorted), each handled independently — like invoking
+`gds run` once per file, each in its own session. Upload all the graphs they need
+first (`gds database upload -f graphs/`).
+
+Each `gds run` (and each config in a directory run) uses a throwaway session by
+default, created then deleted. To keep one warm session and reuse it across runs,
+pass `--session-name <name>` (it is reused and left running until its TTL).
+
+## FastPath (temporal) graph
+
+```bash
+gds database upload -f graphs/entity-event.json --overwrite
+gds run -f jobs/fastpath.yaml --overwrite-graph
+gds database fetch --label Entity
+```
+
+## Standalone sessions (no database)
+
+A **standalone** session isn't attached to any database — it's created against a
+cloud location (set `cloud` + `region` in the `session:` block), the graph is built
+directly from a file (`project.type: construct`), and since there's no DB to write
+back to, each `write` property is **streamed to an `outputFile`** (a sibling of
+`nodeProperty`), resolved relative to the job config. Properties sharing the same
+`outputFile` are written together (one file with all their columns); the format is
+chosen by extension (`.csv`, or `.json` mirroring the construct input file with the
+rows under a `computedNodeProperties` section). Only the Aura API credentials are needed
+(`CLIENT_ID`/`CLIENT_SECRET`/`PROJECT_ID`) — no `NEO4J_*`.
+
+Standalone examples live in their own folder, [`standalone/`](standalone/), where
+the graph and output files sit next to the job (`construct` `file:` and each
+`outputFile:` are resolved relative to the job config).
+[`standalone/job.yaml`](standalone/job.yaml) runs PageRank and Louvain on
+[`standalone/graph.json`](standalone/graph.json), both into one file:
+
+```bash
+gds run -f standalone/job.yaml
+# -> standalone/result.json    (nodeId, pagerank, community)
+```
+
+No `gds database upload` step — the graph is constructed straight into the session.
+(GDS `construct` ignores scalar string properties, so numeric-only node properties
+load cleanly.)
+
+## Cleanup
+
+Clean up the database: `gds database delete --all`. Sessions clean up themselves —
+each `gds run` deletes its throwaway session on completion. A session kept by name
+(`--session-name` or `session.name`) lives until its `ttl` expires; delete it early
+with `gds sessions delete --name <name>`.

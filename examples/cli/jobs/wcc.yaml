@@ -1,0 +1,15 @@
+# Weakly Connected Components on the shared social graph.
+session:
+  memory: 2GB
+  ttl: 30m
+jobs:
+  - project:
+      type: native
+      nodeLabels: [Person]
+      relationshipTypes: [KNOWS]
+    compute:
+      - compute: wcc
+        config:
+          resultProperty: componentId
+    write:
+      - nodeProperty: componentId

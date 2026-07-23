@@ -1,11 +1,12 @@
 # ArticleRank on the social graph, run twice with different parameter sets.
 # Also a runnable `gds session run` config.
+# graphs: social
 session:
-  name: it-cli-articlerank
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,18 +14,18 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: articleRank
-    graph_name: social
-    mode: mutate
-    mutate_property: articleRank
-  - name: articleRank
-    graph_name: social
-    mode: mutate
-    mutate_property: articleRankTuned
-    parameters:
-      damping_factor: 0.75
-      max_iterations: 15
-writebacks:
-  - graph_name: social
-    node_properties: [articleRank, articleRankTuned]
+  compute:
+  - compute: articleRank
+    config:
+      resultProperty: articleRank
+  - compute: articleRank
+    config:
+      resultProperty: articleRankTuned
+      dampingFactor: 0.75
+      maxIterations: 15
+  mutate:
+  - nodeProperty: articleRank
+  - nodeProperty: articleRankTuned
+  write:
+  - nodeProperty: articleRank
+  - nodeProperty: articleRankTuned

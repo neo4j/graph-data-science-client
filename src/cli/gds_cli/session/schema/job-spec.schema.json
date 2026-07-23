@@ -1,75 +1,31 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://neo4j.io/gds-jobs/job-config.schema.json",
-  "title": "GDS Job Config",
-  "description": "The CLI input for `gds run`: a `session` plus a list of `jobs`. Each job (see job-spec.schema.json) owns one graph projection and describes the algorithms to compute, which results to materialize into the in-session graph (mutate), and which to persist to the database (write). Projection and drop are implicit and per-job. The session name is optional: `gds run` uses --session-name, else session.name, else a generated throwaway session. Credentials are never part of this config.",
+  "$id": "https://neo4j.io/gds-jobs/job-spec.schema.json",
+  "title": "GDS Job Spec",
+  "description": "A single GDS job: one graph projection plus the algorithms to compute, which results to materialize into the in-session graph (mutate), and which to persist to the database (write). This is the same document the gds-jobs-api Go server validates a single job against.",
   "type": "object",
-  "required": ["session", "jobs"],
+  "required": ["project", "compute"],
   "additionalProperties": false,
   "properties": {
-    "session": {
-      "type": "object",
-      "required": ["memory", "ttl"],
-      "additionalProperties": false,
-      "dependentRequired": { "cloud": ["region"], "region": ["cloud"] },
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Optional session name. `gds run` prefers --session-name, then this, then a generated throwaway name; a named session is kept after the run. `gds sessions create/delete` read/override it."
-        },
-        "memory": {
-          "type": "string",
-          "description": "Session memory, e.g. '2GB', '4GB'. Required (be explicit about session size)."
-        },
-        "ttl": {
-          "anyOf": [
-            { "type": "integer", "minimum": 1 },
-            { "type": "string", "pattern": "^\\s*[0-9]+\\s*[mhdMHD]?\\s*$" }
-          ],
-          "description": "Session time-to-live: minutes as an integer (30) or a unit-suffixed duration ('30m' / '2h' / '1d'). Required (be explicit)."
-        },
-        "cloud": {
-          "type": "string",
-          "description": "Cloud provider (gcp/aws/azure) for a STANDALONE session (not attached to any database). Set together with `region`; graphs must then use `construct` projections and results are streamed to files."
-        },
-        "region": {
-          "type": "string",
-          "description": "Cloud region (e.g. europe-west1) for a standalone session. Set together with `cloud`."
-        }
-      }
-    },
-    "jobs": {
+    "project": { "$ref": "#/$defs/project" },
+    "compute": {
       "type": "array",
       "minItems": 1,
-      "description": "Jobs to run in order. Each is projected, computed, written, and dropped as one isolated unit before the next starts.",
-      "items": { "$ref": "#/$defs/jobSpec" }
+      "description": "Ordered list of algorithms to run against the job's graph. Each produces a resultProperty; a later compute can consume an earlier one's result once it has been mutated into the graph.",
+      "items": { "$ref": "#/$defs/compute" }
+    },
+    "mutate": {
+      "type": "array",
+      "description": "Optional override: produced properties to force-materialize into the in-session graph. Materialization is normally auto-derived - a produced property is materialized when a later compute names it as an input (e.g. featureProperties). A written property that is never materialized is written directly from the compute result (saving session memory).",
+      "items": { "$ref": "#/$defs/mutate" }
+    },
+    "write": {
+      "type": "array",
+      "description": "Produced properties to persist to the database.",
+      "items": { "$ref": "#/$defs/write" }
     }
   },
   "$defs": {
-    "jobSpec": {
-      "type": "object",
-      "required": ["project", "compute"],
-      "additionalProperties": false,
-      "properties": {
-        "project": { "$ref": "#/$defs/project" },
-        "compute": {
-          "type": "array",
-          "minItems": 1,
-          "description": "Ordered list of algorithms to run against the job's graph. Each produces a resultProperty; a later compute can consume an earlier one's result once it has been mutated into the graph.",
-          "items": { "$ref": "#/$defs/compute" }
-        },
-        "mutate": {
-          "type": "array",
-          "description": "Optional override: produced properties to force-materialize into the in-session graph. Materialization is normally auto-derived - a produced property is materialized when a later compute names it as an input (e.g. featureProperties). A written property that is never materialized is written directly from the compute result (saving session memory).",
-          "items": { "$ref": "#/$defs/mutate" }
-        },
-        "write": {
-          "type": "array",
-          "description": "Produced properties to persist to the database.",
-          "items": { "$ref": "#/$defs/write" }
-        }
-      }
-    },
     "project": {
       "type": "object",
       "required": ["type"],
@@ -90,7 +46,11 @@
         }
       ],
       "properties": {
-        "type": { "type": "string", "enum": ["cypher", "native", "construct"], "description": "Projection kind." },
+        "type": {
+          "type": "string",
+          "enum": ["cypher", "native", "construct"],
+          "description": "Projection kind."
+        },
         "query": {
           "type": "string",
           "description": "cypher projection: a Cypher query returning gds.graph.project(...). Mutually exclusive with the native/file fields."

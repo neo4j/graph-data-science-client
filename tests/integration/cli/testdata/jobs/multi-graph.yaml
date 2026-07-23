@@ -3,12 +3,13 @@
 # run -> write back -> drop) before moving to the next. The two graphs use disjoint
 # labels/relationship types (Person/KNOWS vs Page/LINKS) so they never interfere.
 # Also a runnable `gds session run` config.
+# graphs: social, web
 session:
-  name: it-cli-multi-graph
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -16,7 +17,16 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-  - graph_name: web
+  compute:
+  - compute: louvain
+    config:
+      resultProperty: community
+  mutate:
+  - nodeProperty: community
+  write:
+  - nodeProperty: community
+- project:
+    type: cypher
     query: |
       MATCH (source:Page)-[rel:LINKS]->(target:Page)
       RETURN gds.graph.project.remote(source, target, {
@@ -24,19 +34,12 @@ projections:
         targetNodeLabels: ['Page'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: louvain
-    graph_name: social
-    mode: mutate
-    mutate_property: community
-  - name: pageRank
-    graph_name: web
-    mode: mutate
-    mutate_property: rank
-    parameters:
-      max_iterations: 20
-writebacks:
-  - graph_name: social
-    node_properties: [community]
-  - graph_name: web
-    node_properties: [rank]
+  compute:
+  - compute: pageRank
+    config:
+      resultProperty: rank
+      maxIterations: 20
+  mutate:
+  - nodeProperty: rank
+  write:
+  - nodeProperty: rank

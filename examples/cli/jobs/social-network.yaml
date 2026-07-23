@@ -1,0 +1,32 @@
+# Several algorithms reusing ONE projection of the shared social graph. PageRank is
+# auto mutated so FastRP can consume it as a feature (with `age`), then Louvain runs
+# on the same graph; all three results are written back.
+session:
+  memory: 2GB
+  ttl: 30m
+jobs:
+  - project:
+      type: native
+      nodeLabels: [Person]
+      relationshipTypes: [KNOWS]
+      nodeProperties: [age]
+      relationshipProperties: [weight]
+    compute:
+      - compute: pageRank
+        config:
+          resultProperty: pagerank
+          maxIterations: 20
+          relationshipWeightProperty: weight
+      - compute: fastRP
+        config:
+          resultProperty: embedding
+          embeddingDimension: 8
+          featureProperties: [pagerank, age]
+          propertyRatio: 0.5
+      - compute: louvain
+        config:
+          resultProperty: community
+    write:
+      - nodeProperty: pagerank
+      - nodeProperty: embedding
+      - nodeProperty: community

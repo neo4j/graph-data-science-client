@@ -1,5 +1,7 @@
 # Random social network: Person -KNOWS-> Person with a power-law degree
-# distribution (a few well-connected people).
+# distribution (a few well-connected people). Carries an `age` node property (a
+# FastRP feature) and a positive `weight` relationship property (for weighted
+# PageRank) so the same generated graph can drive many algorithms.
 kind: random
 nodes:
   Person:
@@ -12,3 +14,5 @@ relationships:
     target: Person
     count: 240
     generator: {type: powerlaw, alpha: 0.7}
+    properties:
+      weight: {type: uniform_int, low: 1, high: 10}

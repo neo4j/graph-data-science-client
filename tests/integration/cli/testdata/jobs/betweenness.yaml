@@ -1,11 +1,12 @@
 # Betweenness centrality on the social graph, run twice with different parameter
 # sets (exact vs sampled). Also a runnable config.
+# graphs: social
 session:
-  name: it-cli-betweenness
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,18 +14,18 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: betweenness
-    graph_name: social
-    mode: mutate
-    mutate_property: betweenness
-  - name: betweenness
-    graph_name: social
-    mode: mutate
-    mutate_property: betweennessSampled
-    parameters:
-      sampling_size: 3
-      sampling_seed: 42
-writebacks:
-  - graph_name: social
-    node_properties: [betweenness, betweennessSampled]
+  compute:
+  - compute: betweenness
+    config:
+      resultProperty: betweenness
+  - compute: betweenness
+    config:
+      resultProperty: betweennessSampled
+      samplingSize: 3
+      samplingSeed: 42
+  mutate:
+  - nodeProperty: betweenness
+  - nodeProperty: betweennessSampled
+  write:
+  - nodeProperty: betweenness
+  - nodeProperty: betweennessSampled

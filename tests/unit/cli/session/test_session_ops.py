@@ -47,13 +47,13 @@ def test_build_sessions_uses_env_credentials() -> None:
 
 
 def test_connect_gets_or_creates_and_verifies() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
+    cfg = SessionConfig(memory="2GB", ttl="30m")
     fake_gds = MagicMock()
     fake_sessions = MagicMock()
     fake_sessions.get_or_create.return_value = fake_gds
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
-        gds = connect(cfg)
+        gds = connect(cfg, "my-session")
 
     fake_sessions.get_or_create.assert_called_once()
     _, kwargs = fake_sessions.get_or_create.call_args
@@ -66,19 +66,46 @@ def test_connect_gets_or_creates_and_verifies() -> None:
 
 
 def test_connect_forwards_show_progress_false() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
+    cfg = SessionConfig(memory="2GB", ttl="30m")
     fake_sessions = MagicMock()
     fake_sessions.get_or_create.return_value = MagicMock()
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
-        connect(cfg, show_progress=False)
+        connect(cfg, "my-session", show_progress=False)
 
     _, kwargs = fake_sessions.get_or_create.call_args
     assert kwargs["show_progress"] is False
 
 
+def test_connect_standalone_passes_cloud_location_and_no_db() -> None:
+    cfg = SessionConfig(memory="2GB", ttl="30m", cloud="gcp", region="europe-west1")
+    fake_sessions = MagicMock()
+    fake_sessions.get_or_create.return_value = MagicMock()
+
+    with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
+        connect(cfg, "my-session")
+
+    _, kwargs = fake_sessions.get_or_create.call_args
+    assert kwargs["db_connection"] is None  # standalone: no database
+    cloud_location = kwargs["cloud_location"]
+    assert (cloud_location.provider, cloud_location.region) == ("gcp", "europe-west1")
+
+
+def test_connect_attached_passes_db_connection_and_no_cloud_location() -> None:
+    cfg = SessionConfig(memory="2GB", ttl="30m")
+    fake_sessions = MagicMock()
+    fake_sessions.get_or_create.return_value = MagicMock()
+
+    with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
+        connect(cfg, "my-session")
+
+    _, kwargs = fake_sessions.get_or_create.call_args
+    assert kwargs["cloud_location"] is None
+    assert kwargs["db_connection"] is not None
+
+
 def test_connect_retries_on_session_not_found_error() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
+    cfg = SessionConfig(memory="2GB", ttl="30m")
     fake_gds = MagicMock()
     fake_sessions = MagicMock()
     transient_error = RuntimeError(
@@ -87,47 +114,45 @@ def test_connect_retries_on_session_not_found_error() -> None:
     fake_sessions.get_or_create.side_effect = [transient_error, transient_error, fake_gds]
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
-        gds = connect(cfg)
+        gds = connect(cfg, "my-session")
 
     assert fake_sessions.get_or_create.call_count == 3
     assert gds is fake_gds
 
 
 def test_connect_gives_up_after_max_retries() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
+    cfg = SessionConfig(memory="2GB", ttl="30m")
     fake_sessions = MagicMock()
     fake_sessions.get_or_create.side_effect = RuntimeError("Session `s-abc` not found -- please retry")
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
         with pytest.raises(RuntimeError, match="please retry"):
-            connect(cfg)
+            connect(cfg, "my-session")
 
     assert fake_sessions.get_or_create.call_count == _CONNECT_RETRY_ATTEMPTS
 
 
 def test_connect_does_not_retry_non_transient_errors() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
+    cfg = SessionConfig(memory="2GB", ttl="30m")
     fake_sessions = MagicMock()
     fake_sessions.get_or_create.side_effect = ValueError("cloud_location must be provided for sessions not attached")
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
         with pytest.raises(ValueError):
-            connect(cfg)
+            connect(cfg, "my-session")
 
     fake_sessions.get_or_create.assert_called_once()
 
 
 def test_find_session_none_when_no_match() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
     fake_sessions = MagicMock()
     fake_sessions.list.return_value = []
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
-        assert find_session(cfg) is None
+        assert find_session("my-session") is None
 
 
 def test_find_session_returns_matching_session() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
     fake_sessions = MagicMock()
     matching_session = MagicMock()
     matching_session.name = "my-session"
@@ -135,28 +160,26 @@ def test_find_session_returns_matching_session() -> None:
     fake_sessions.list.return_value = [matching_session]
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
-        found = find_session(cfg)
+        found = find_session("my-session")
 
     assert found is matching_session
     assert found.id == "session-123"
 
 
 def test_find_session_none_when_check_fails() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
     fake_sessions = MagicMock()
     fake_sessions.list.side_effect = RuntimeError("API unavailable")
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
-        assert find_session(cfg) is None
+        assert find_session("my-session") is None
 
 
 def test_delete_calls_sessions_delete() -> None:
-    cfg = SessionConfig(name="my-session", memory="2GB", ttl_minutes=30)
     fake_sessions = MagicMock()
     fake_sessions.delete.return_value = True
 
     with patch("gds_cli.session.session_ops.GdsSessions", return_value=fake_sessions):
-        result = delete(cfg)
+        result = delete("my-session")
 
     fake_sessions.delete.assert_called_once_with(session_name="my-session")
     assert result is True

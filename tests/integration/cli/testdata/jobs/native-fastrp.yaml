@@ -1,24 +1,28 @@
 # FastRP on a NATIVE projection that also loads a node property (`age`), which
 # FastRP then consumes as a feature. Exercises native `node_properties`. Also a
 # runnable config.
+# graphs: social
 session:
-  name: it-cli-native-fastrp
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
-    node_labels: [Person]
-    relationship_types: [KNOWS]
-    node_properties: [age]
-algorithms:
-  - name: fastRP
-    graph_name: social
-    mode: mutate
-    mutate_property: fastRP
-    parameters:
-      embedding_dimension: 8
-      feature_properties: [age]
-      property_ratio: 0.5
-writebacks:
-  - graph_name: social
-    node_properties: [fastRP]
+  ttl: 30m
+jobs:
+- project:
+    type: native
+    nodeLabels:
+    - Person
+    relationshipTypes:
+    - KNOWS
+    nodeProperties:
+    - age
+  compute:
+  - compute: fastRP
+    config:
+      resultProperty: fastRP
+      embeddingDimension: 8
+      featureProperties:
+      - age
+      propertyRatio: 0.5
+  mutate:
+  - nodeProperty: fastRP
+  write:
+  - nodeProperty: fastRP

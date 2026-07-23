@@ -8,21 +8,14 @@ time once the job finishes.
 
 from __future__ import annotations
 
-import time
-from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Iterator, Optional
+from typing import Optional
 
-from rich.console import Console
 from rich.table import Table
 
-from gds_cli.common import CONSOLE_WIDTH
+from gds_cli.common.report import Elapsed, StepReporter
 
-
-class Elapsed:
-    """Mutable holder for a step's duration, filled in when its `with` block exits."""
-
-    seconds: float = 0.0
+__all__ = ["Elapsed", "GraphStats", "JobReport"]
 
 
 @dataclass
@@ -33,72 +26,39 @@ class GraphStats:
     node_count: Optional[int] = None
     relationship_count: Optional[int] = None
     project_seconds: float = 0.0
-    # One (name, seconds) entry per algorithm *run*, in execution order - a list,
-    # not a name-keyed dict, so the same algorithm run more than once on a graph
-    # (e.g. pageRank with two parameter sets) keeps every run's timing.
+    # One (name, seconds) entry per algorithm *run* / writeback, in execution order -
+    # lists, not name-keyed dicts, so the same algorithm/property handled more than
+    # once on a graph keeps every run's timing.
     algorithm_timings: list[tuple[str, float]] = field(default_factory=list)
-    writeback_seconds: float = 0.0
+    writeback_timings: list[tuple[str, float]] = field(default_factory=list)
     drop_seconds: float = 0.0
 
     @property
     def total_seconds(self) -> float:
         algorithm_seconds = sum(seconds for _, seconds in self.algorithm_timings)
-        return self.project_seconds + algorithm_seconds + self.writeback_seconds + self.drop_seconds
+        writeback_seconds = sum(seconds for _, seconds in self.writeback_timings)
+        return self.project_seconds + algorithm_seconds + writeback_seconds + self.drop_seconds
 
 
-class JobReport:
-    """Live progress printer + timing/size accumulator for one CLI invocation.
+class JobReport(StepReporter):
+    """``StepReporter`` plus per-graph timing/size accumulation for one job run.
 
-    ``quiet=True`` suppresses all printed output (sections, steps, summary)
-    while still accumulating timing/size stats internally - use it to honor a
-    ``--no-progress-bar`` CLI flag without threading conditionals through every
-    call site.
+    Adds a ``job_section`` header and a final size/timing summary table on top
+    of the shared section/step/note rendering. ``quiet=True`` (inherited)
+    suppresses output while still accumulating stats - used to honor
+    ``--no-progress-bar``.
     """
 
     def __init__(self, quiet: bool = False) -> None:
-        self._console = Console(width=CONSOLE_WIDTH, quiet=quiet)
+        super().__init__(quiet=quiet)
         self._graphs: dict[str, GraphStats] = {}
-        self._start = time.monotonic()
 
     def _stats(self, graph_name: str) -> GraphStats:
         return self._graphs.setdefault(graph_name, GraphStats(graph_name=graph_name))
 
-    def section(self, title: str) -> None:
-        """Print a section header for a whole phase (e.g. "Projecting graphs")."""
-        self._console.print()
-        self._console.rule(f"[bold cyan]{title}[/bold cyan]")
-
-    def graph_section(self, graph_name: str) -> None:
-        """Print a section header for one graph's isolated block of work."""
-        self._console.print()
-        self._console.rule(f"[bold cyan]Graph: {graph_name}[/bold cyan]")
-
-    @contextmanager
-    def step(self, message: str) -> Iterator[Elapsed]:
-        """Print ``message ...``, then a done/failed line with elapsed time.
-
-        Usage::
-
-            with report.step("Projecting graph 'social'") as elapsed:
-                ...
-            report.record_projection("social", elapsed.seconds, ...)
-        """
-        self._console.print()
-        self._console.print(f"[cyan]->[/cyan] {message} ...")
-        start = time.monotonic()
-        elapsed = Elapsed()
-        try:
-            yield elapsed
-        except Exception:
-            elapsed.seconds = time.monotonic() - start
-            self._console.print(f"  [red]x[/red] failed after {elapsed.seconds:.2f}s")
-            raise
-        else:
-            elapsed.seconds = time.monotonic() - start
-            self._console.print(f"  [green]✓[/green] done in {elapsed.seconds:.2f}s")
-
-    def note(self, message: str) -> None:
-        self._console.print(f"  [blue]i[/blue] [dim]{message}[/dim]")
+    def job_section(self, graph_name: str) -> None:
+        """Print a section header for one job's isolated block of work."""
+        self.section(f"Job: {graph_name}")
 
     def record_projection(self, graph_name: str, seconds: float, node_count: int, relationship_count: int) -> None:
         """Record size/timing stats for the summary table.
@@ -115,36 +75,37 @@ class JobReport:
     def record_algorithm(self, graph_name: str, algorithm_name: str, seconds: float) -> None:
         self._stats(graph_name).algorithm_timings.append((algorithm_name, seconds))
 
-    def record_writeback(self, graph_name: str, seconds: float) -> None:
-        self._stats(graph_name).writeback_seconds += seconds
+    def record_writeback(self, graph_name: str, node_property: str, seconds: float) -> None:
+        self._stats(graph_name).writeback_timings.append((node_property, seconds))
 
     def record_drop(self, graph_name: str, seconds: float) -> None:
         self._stats(graph_name).drop_seconds += seconds
 
     def summary(self) -> None:
-        """Print the final size/timing table plus total wall-clock time."""
-        total = time.monotonic() - self._start
+        """Print the final per-job size/timing table plus total wall-clock time.
 
-        table = Table(show_header=True, header_style="bold")
+        One row per job: node/rel counts first, then projection time, then a
+        per-algorithm and per-writeback-property breakdown, and the job total.
+        """
+        total = self.total_seconds()
+
+        # show_lines draws a rule between rows, i.e. a separator between each job.
+        table = Table(show_header=True, header_style="bold", show_lines=True)
+        table.add_column("Job")
         table.add_column("Graph")
-        table.add_column("Algorithms")
-        table.add_column("Nodes", justify="right")
-        table.add_column("Rels", justify="right")
         table.add_column("Projection", justify="right")
+        table.add_column("Algorithms", justify="right")
         table.add_column("Writebacks", justify="right")
         table.add_column("Total", justify="right")
 
         for stats in self._graphs.values():
-            algos = (
-                "\n".join(f"{name} ({secs:.2f}s)" for name, secs in stats.algorithm_timings)
-                if stats.algorithm_timings
-                else "-"
-            )
             nodes = f"{stats.node_count:,}" if stats.node_count is not None else "-"
             rels = f"{stats.relationship_count:,}" if stats.relationship_count is not None else "-"
+            graph = f"Nodes: {nodes}\nRels: {rels}"
             projection = f"{stats.project_seconds:.2f}s" if stats.project_seconds else "-"
-            writebacks = f"{stats.writeback_seconds:.2f}s" if stats.writeback_seconds else "-"
-            table.add_row(stats.graph_name, algos, nodes, rels, projection, writebacks, f"{stats.total_seconds:.2f}s")
+            algorithms = "\n".join(f"{name}: {secs:.2f}s" for name, secs in stats.algorithm_timings) or "-"
+            writebacks = "\n".join(f"{prop}: {secs:.2f}s" for prop, secs in stats.writeback_timings) or "-"
+            table.add_row(stats.graph_name, graph, projection, algorithms, writebacks, f"{stats.total_seconds:.2f}s")
 
         self._console.print()
         self._console.rule("[bold]Summary[/bold]")

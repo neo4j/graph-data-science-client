@@ -44,6 +44,7 @@ DEFAULT_RELATIONSHIP_TYPE = "REL"
 
 __all__ = [
     "graph_from_construct_format",
+    "graph_to_construct_frames",
     "load_construct_format",
     "graph_from_json",
     "graph_from_file",
@@ -111,6 +112,49 @@ def graph_from_construct_format(
             rel_dfs[key] = pd.concat([rel_dfs[key], group], ignore_index=True) if key in rel_dfs else group
 
     return Graph(node_dfs, rel_dfs)
+
+
+def _is_string_scalar_column(series: pd.Series) -> bool:
+    """True if a property column holds scalar strings (which GDS construct rejects).
+
+    List/vector properties (e.g. embeddings) and numeric columns are kept.
+    """
+    non_null = series.dropna()
+    if non_null.empty:
+        return False
+    return all(isinstance(value, str) for value in non_null)
+
+
+def graph_to_construct_frames(graph: Graph) -> tuple[list[pd.DataFrame], list[pd.DataFrame], list[str]]:
+    """Adapt a :class:`Graph` into the ``(nodes, relationships)`` lists that
+    ``gds.graph.construct(...)`` expects, plus the names of any dropped columns.
+
+    Re-attaches the ``labels`` column (from each ``node_dfs`` key) and
+    ``relationshipType`` (the middle of each ``rel_dfs`` triple key). GDS
+    ``construct`` rejects scalar *string* node properties, so those columns are
+    dropped (numeric and list/vector properties are kept); the dropped names are
+    returned so the caller can report them. The original ``nodeId``s are preserved
+    (do not remap before constructing).
+    """
+    dropped: set[str] = set()
+
+    def clean(df: pd.DataFrame, id_columns: list[str]) -> pd.DataFrame:
+        keep = list(id_columns)
+        for column in df.columns:
+            if column in id_columns:
+                continue
+            if _is_string_scalar_column(df[column]):
+                dropped.add(column)
+            else:
+                keep.append(column)
+        return df[keep]
+
+    nodes = [clean(df, ["nodeId"]).assign(labels=label) for label, df in graph.node_dfs.items()]
+    relationships = [
+        clean(df, ["sourceNodeId", "targetNodeId"]).assign(relationshipType=rel_type)
+        for (_src, rel_type, _tgt), df in graph.rel_dfs.items()
+    ]
+    return nodes, relationships, sorted(dropped)
 
 
 def load_construct_format(path: str | Path) -> tuple[list[pd.DataFrame], list[pd.DataFrame]]:

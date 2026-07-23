@@ -1,9 +1,6 @@
-# FastPath temporal embeddings over Entity -HAS_EVENT-> Event (runtime-backed).
-# Mirrors examples/cli/jobs/entity-event-fastpath.yaml. Labels are projected
-# explicitly (['Entity'] / ['Event']) - the uploader tags every node with a `Dev`
-# label and FastPath's python-runtime maps each relationship endpoint to a single
-# node label, so a stray `Dev` makes it fail.
-# graphs: events
+# FastPath temporal embeddings over Entity -HAS_EVENT-> Event (graphs/entity-event.json).
+# Labels are projected explicitly (['Entity']/['Event']): the uploader's extra `Dev`
+# label would break FastPath's single-label-per-endpoint mapping.
 session:
   memory: 2GB
   ttl: 30m
@@ -35,7 +32,7 @@ jobs:
           smoothingWindow: 2
           decayFactor: 0.0
           randomSeed: 42
-    mutate:
-      - nodeProperty: fp_embeddings
+    # The embedding is only persisted, so it is written directly from the
+    # compute result (no mutate step).
     write:
       - nodeProperty: fp_embeddings

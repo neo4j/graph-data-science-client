@@ -1,39 +1,31 @@
-# Two independent graphs from one uploaded database (graphs/multi-graph.yaml):
-# Louvain on the social graph, PageRank on the page graph.
+# Two jobs projecting DIFFERENT graphs, each an isolated project → compute → write
+# → drop unit: Louvain on the social graph, then PageRank on the citation graph.
+# Upload both graphs first (disjoint labels, so they coexist in the DB).
 session:
-  name: gds-examples
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
-    query: |
-      MATCH (source:Person)-[rel:KNOWS]->(target:Person)
-      RETURN gds.graph.project.remote(source, target, {
-        sourceNodeLabels: labels(source),
-        targetNodeLabels: labels(target),
-        relationshipType: type(rel)
-      })
-  - graph_name: pages
-    query: |
-      MATCH (source:Page)-[rel:LINKS]->(target:Page)
-      RETURN gds.graph.project.remote(source, target, {
-        sourceNodeLabels: labels(source),
-        targetNodeLabels: labels(target),
-        relationshipType: type(rel)
-      })
-algorithms:
-  - name: louvain
-    graph_name: social
-    mode: mutate
-    mutate_property: community
-  - name: pageRank
-    graph_name: pages
-    mode: mutate
-    mutate_property: pagerank
-    parameters:
-      max_iterations: 20
-writebacks:
-  - graph_name: social
-    node_properties: [community]
-  - graph_name: pages
-    node_properties: [pagerank]
+  ttl: 30m
+jobs:
+  # Job 1 — social graph.
+  - project:
+      type: native
+      nodeLabels: [Person]
+      relationshipTypes: [KNOWS]
+    compute:
+      - compute: louvain
+        config:
+          resultProperty: community
+    write:
+      - nodeProperty: community
+
+  # Job 2 — citation graph.
+  - project:
+      type: native
+      nodeLabels: [Paper]
+      relationshipTypes: [CITES]
+    compute:
+      - compute: pageRank
+        config:
+          resultProperty: pagerank
+          maxIterations: 20
+    write:
+      - nodeProperty: pagerank

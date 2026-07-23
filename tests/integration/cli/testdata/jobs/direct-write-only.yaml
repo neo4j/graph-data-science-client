@@ -1,0 +1,40 @@
+# Two jobs, each with ONLY a `write` (no `mutate`), so every result is written
+# directly from the compute handle, skipping mutate entirely. Exercises the
+# direct-write path with no mutate at all in the job (unlike direct-write.yaml,
+# which mutates one property).
+# graphs: social, web
+session:
+  memory: 2GB
+  ttl: 30m
+jobs:
+  - project:
+      type: cypher
+      query: |
+        MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+        RETURN gds.graph.project.remote(source, target, {
+          sourceNodeLabels: ['Person'],
+          targetNodeLabels: ['Person'],
+          relationshipType: type(rel)
+        })
+    compute:
+      - compute: louvain
+        config:
+          resultProperty: community
+    write:
+      - nodeProperty: community
+  - project:
+      type: cypher
+      query: |
+        MATCH (source:Page)-[rel:LINKS]->(target:Page)
+        RETURN gds.graph.project.remote(source, target, {
+          sourceNodeLabels: ['Page'],
+          targetNodeLabels: ['Page'],
+          relationshipType: type(rel)
+        })
+    compute:
+      - compute: pageRank
+        config:
+          resultProperty: pagerank
+          maxIterations: 20
+    write:
+      - nodeProperty: pagerank

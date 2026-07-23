@@ -1,11 +1,12 @@
 # Closeness centrality on the social graph, run twice with different parameter
 # sets (standard vs Wasserman-Faust). Also a runnable config.
+# graphs: social
 session:
-  name: it-cli-closeness
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,17 +14,17 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: closeness
-    graph_name: social
-    mode: mutate
-    mutate_property: closeness
-  - name: closeness
-    graph_name: social
-    mode: mutate
-    mutate_property: closenessWf
-    parameters:
-      use_wasserman_faust: true
-writebacks:
-  - graph_name: social
-    node_properties: [closeness, closenessWf]
+  compute:
+  - compute: closeness
+    config:
+      resultProperty: closeness
+  - compute: closeness
+    config:
+      resultProperty: closenessWf
+      useWassermanFaust: true
+  mutate:
+  - nodeProperty: closeness
+  - nodeProperty: closenessWf
+  write:
+  - nodeProperty: closeness
+  - nodeProperty: closenessWf

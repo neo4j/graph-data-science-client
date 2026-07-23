@@ -1,11 +1,12 @@
 # Eigenvector centrality on the social graph, run twice with different parameter
 # sets. Also a runnable config.
+# graphs: social
 session:
-  name: it-cli-eigenvector
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,18 +14,18 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: eigenvector
-    graph_name: social
-    mode: mutate
-    mutate_property: eigenvector
-  - name: eigenvector
-    graph_name: social
-    mode: mutate
-    mutate_property: eigenvectorTuned
-    parameters:
-      max_iterations: 10
+  compute:
+  - compute: eigenvector
+    config:
+      resultProperty: eigenvector
+  - compute: eigenvector
+    config:
+      resultProperty: eigenvectorTuned
+      maxIterations: 10
       tolerance: 0.001
-writebacks:
-  - graph_name: social
-    node_properties: [eigenvector, eigenvectorTuned]
+  mutate:
+  - nodeProperty: eigenvector
+  - nodeProperty: eigenvectorTuned
+  write:
+  - nodeProperty: eigenvector
+  - nodeProperty: eigenvectorTuned

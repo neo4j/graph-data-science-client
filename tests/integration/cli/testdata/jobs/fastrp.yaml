@@ -1,11 +1,12 @@
 # FastRP node embeddings on the social graph, run twice with different parameter
 # sets (dimension + normalization). Writes array properties back. Also a runnable config.
+# graphs: social
 session:
-  name: it-cli-fastrp
   memory: 2GB
-  ttl_minutes: 30
-projections:
-  - graph_name: social
+  ttl: 30m
+jobs:
+- project:
+    type: cypher
     query: |
       MATCH (source:Person)-[rel:KNOWS]->(target:Person)
       RETURN gds.graph.project.remote(source, target, {
@@ -13,21 +14,24 @@ projections:
         targetNodeLabels: ['Person'],
         relationshipType: type(rel)
       })
-algorithms:
-  - name: fastRP
-    graph_name: social
-    mode: mutate
-    mutate_property: fastRP
-    parameters:
-      embedding_dimension: 8
-  - name: fastRP
-    graph_name: social
-    mode: mutate
-    mutate_property: fastRP16
-    parameters:
-      embedding_dimension: 16
-      normalization_strength: 0.5
-      iteration_weights: [0.0, 1.0, 1.0, 1.0]
-writebacks:
-  - graph_name: social
-    node_properties: [fastRP, fastRP16]
+  compute:
+  - compute: fastRP
+    config:
+      resultProperty: fastRP
+      embeddingDimension: 8
+  - compute: fastRP
+    config:
+      resultProperty: fastRP16
+      embeddingDimension: 16
+      normalizationStrength: 0.5
+      iterationWeights:
+      - 0.0
+      - 1.0
+      - 1.0
+      - 1.0
+  mutate:
+  - nodeProperty: fastRP
+  - nodeProperty: fastRP16
+  write:
+  - nodeProperty: fastRP
+  - nodeProperty: fastRP16

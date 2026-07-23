@@ -9,11 +9,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from neo4j import GraphDatabase, ManagedTransaction
+from neo4j import ManagedTransaction
 from tqdm.auto import tqdm
 
 from gds_cli.common.env import DatabaseConfig
-from gds_cli.database.db import DEFAULT_EXTRA_LABEL, delete_graph, graph_exists
+from gds_cli.database.db import DEFAULT_EXTRA_LABEL, delete_graph, graph_exists, open_driver
 from gds_cli.database.graph import Graph
 
 
@@ -71,7 +71,7 @@ def upload_graph(
 
     node_id_map: dict[Any, Any] = {}
 
-    with GraphDatabase.driver(db_config.uri, auth=db_config.auth) as driver:
+    with open_driver(db_config) as driver:
         with driver.session(database=db_config.database) as session:
             # Load nodes
             for label, df in graph.node_dfs.items():

@@ -15,7 +15,7 @@ from tenacity import retry, retry_if_exception, stop_after_attempt, wait_fixed
 
 from gds_cli.common.env import aura_api_credentials_from_env, dbms_connection_info_from_env
 from gds_cli.session.config import SessionConfig
-from graphdatascience.session import AuraGraphDataScience, DbmsConnectionInfo, GdsSessions, SessionInfo
+from graphdatascience.session import AuraGraphDataScience, CloudLocation, DbmsConnectionInfo, GdsSessions, SessionInfo
 
 # A session can be deleted (e.g. TTL expiry) in the gap between us listing it
 # and reconnecting to it; the Aura API surfaces that as a RuntimeError whose
@@ -50,20 +50,23 @@ def _get_or_create_with_retry(
     *,
     session_name: str,
     memory: str,
-    db_connection: DbmsConnectionInfo,
+    db_connection: DbmsConnectionInfo | None,
+    cloud_location: CloudLocation | None,
     ttl: timedelta,
     show_progress: bool,
 ) -> AuraGraphDataScience:
+    # Exactly one of db_connection / cloud_location is set: attached vs standalone.
     return sessions.get_or_create(
         session_name=session_name,
         memory=memory,
         db_connection=db_connection,
+        cloud_location=cloud_location,
         ttl=ttl,
         show_progress=show_progress,
     )
 
 
-def find_session(cfg: SessionConfig) -> SessionInfo | None:
+def find_session(name: str) -> SessionInfo | None:
     """Best-effort lookup of an existing session by name.
 
     Returns None both when no session with this name exists and when the
@@ -72,12 +75,12 @@ def find_session(cfg: SessionConfig) -> SessionInfo | None:
     reconnecting to the session.
     """
     try:
-        return next((info for info in build_sessions().list() if info.name == cfg.name), None)
+        return next((info for info in build_sessions().list() if info.name == name), None)
     except Exception:
         return None
 
 
-def connect(cfg: SessionConfig, show_progress: bool = True) -> AuraGraphDataScience:
+def connect(cfg: SessionConfig, name: str, show_progress: bool = True) -> AuraGraphDataScience:
     """Create the session if needed, otherwise reconnect to it; returns the gds handle.
 
     ``show_progress`` controls the returned client's own job-progress bars
@@ -93,21 +96,30 @@ def connect(cfg: SessionConfig, show_progress: bool = True) -> AuraGraphDataScie
     TqdmProgressBar.set_default_options({"leave": False})
 
     sessions = build_sessions()
+    # Standalone (cloud/region in the config) -> no database; attached -> connect to
+    # the DB from the env (requires NEO4J_*). Only one of the two is passed.
+    if cfg.is_standalone:
+        db_connection: DbmsConnectionInfo | None = None
+        cloud_location: CloudLocation | None = CloudLocation(cfg.cloud, cfg.region)  # type: ignore[arg-type]
+    else:
+        db_connection = dbms_connection_info_from_env()
+        cloud_location = None
     gds = _get_or_create_with_retry(
         sessions,
-        session_name=cfg.name,
+        session_name=name,
         memory=cfg.memory,
-        db_connection=dbms_connection_info_from_env(),
-        ttl=timedelta(minutes=cfg.ttl_minutes),
+        db_connection=db_connection,
+        cloud_location=cloud_location,
+        ttl=cfg.ttl,
         show_progress=show_progress,
     )
     gds.verify_connectivity()
     return gds
 
 
-def delete(cfg: SessionConfig) -> bool:
+def delete(name: str) -> bool:
     """Delete the session by name. Returns True if a session was deleted."""
-    return build_sessions().delete(session_name=cfg.name)
+    return build_sessions().delete(session_name=name)
 
 
 def list_sessions() -> list[SessionInfo]:
