@@ -303,7 +303,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def node_properties(self) -> NodePropertiesEndpoints:
-        return NodePropertiesArrowEndpoints(self._arrow_client, self._query_runner)
+        return NodePropertiesArrowEndpoints(self._arrow_client, self._query_runner, show_progress=self._show_progress)
 
     @property
     def relationships(self) -> RelationshipsEndpoints:

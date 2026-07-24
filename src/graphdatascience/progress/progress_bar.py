@@ -38,15 +38,26 @@ class ProgressBar(ABC):
 
 
 class TqdmProgressBar(ProgressBar):
+    # Process-wide tqdm options merged into every bar's own ``bar_options``
+    # (per-call options win on conflict). Lets a caller like the CLI set e.g.
+    # ``{"leave": False}`` once so all session progress bars clear themselves
+    # when done instead of piling up in the output.
+    _default_options: dict[str, Any] = {}
+
+    @classmethod
+    def set_default_options(cls, options: dict[str, Any]) -> None:
+        cls._default_options = dict(options)
+
     def __init__(self, task_name: str, relative_progress: float | None, bar_options: dict[str, Any] | None = None):
         root_task_name = task_name
+        options = {**self._default_options, **(bar_options or {})}
         if relative_progress is None:  # Qualitative progress report
             self._tqdm_bar = tqdm(
                 total=None,
                 unit="",
                 desc=root_task_name,
                 bar_format="{desc} [elapsed: {elapsed} {postfix}]",
-                **bar_options or {},
+                **options,
             )
         else:
             self._tqdm_bar = tqdm(
@@ -54,7 +65,7 @@ class TqdmProgressBar(ProgressBar):
                 unit="%",
                 desc=root_task_name,
                 initial=relative_progress,
-                **bar_options or {},
+                **options,
             )
 
     def __enter__(self: TqdmProgressBar) -> TqdmProgressBar:

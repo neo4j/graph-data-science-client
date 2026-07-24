@@ -151,6 +151,7 @@ class GdsSessions:
         timeout: int | None = None,
         neo4j_driver_config: dict[str, Any] | None = None,
         arrow_client_options: dict[str, Any] | None = None,
+        show_progress: bool = True,
     ) -> AuraGraphDataScience:
         """
         Retrieves an existing session with the given session name and database connection,
@@ -168,6 +169,7 @@ class GdsSessions:
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client.
+            show_progress (bool): Whether the returned client should print its own job-progress bars (projection, algorithm execution, ...). Defaults to True.
         Returns:
             AuraGraphDataScience: The session.
         """
@@ -237,6 +239,7 @@ class GdsSessions:
             arrow_authentication,
             db_runner,
             arrow_client_options,
+            show_progress,
         )
 
     def delete(self, *, session_name: str | None = None, session_id: str | None = None) -> bool:
@@ -390,6 +393,7 @@ class GdsSessions:
         arrow_authentication: ArrowAuthentication,
         db_runner: Neo4jQueryRunner | None,
         arrow_client_options: dict[str, Any] | None = None,
+        show_progress: bool = True,
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             (session_host, session_port),
@@ -397,4 +401,5 @@ class GdsSessions:
             db_endpoint=db_runner,
             session_lifecycle_manager=SessionLifecycleManager(session_id, self._aura_api),
             arrow_client_options=arrow_client_options,
+            show_progress=show_progress,
         )

@@ -5,7 +5,9 @@ import pytest
 from pyarrow import ArrowInvalid
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import (
+    FAST_PATH_ENDPOINT,
     FastPathArrowEndpoints,
     FeatureNotEnabledError,
 )
@@ -72,3 +74,43 @@ def test_unrelated_invalid_argument_error_is_not_translated() -> None:
     ):
         with pytest.raises(ArrowInvalid, match="Must specify either outputTime"):
             _call(endpoints)
+
+
+def test_compute_returns_job_handle_for_fastpath_endpoint() -> None:
+    endpoints = _fastpath_endpoints()
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.endpoints_helper_base.JobClient.run_job",
+        return_value="job-123",
+    ) as run_job:
+        handle = endpoints.compute(
+            G=mock.Mock(),
+            base_node_label="Base",
+            event_node_label="Event",
+            dimension=16,
+            max_elapsed_time=10,
+            num_elapsed_times=4,
+        )
+
+    assert isinstance(handle, JobHandle)
+    assert handle.job_id() == "job-123"
+    # The job was started against the FastPath endpoint.
+    assert run_job.call_args.args[1] == FAST_PATH_ENDPOINT
+
+
+def test_compute_translates_unsupported_action_to_feature_not_enabled() -> None:
+    endpoints = _fastpath_endpoints()
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.endpoints_helper_base.JobClient.run_job",
+        side_effect=_UNSUPPORTED_ACTION_ERROR,
+    ):
+        with pytest.raises(FeatureNotEnabledError, match="not enabled for this session"):
+            endpoints.compute(
+                G=mock.Mock(),
+                base_node_label="Base",
+                event_node_label="Event",
+                dimension=16,
+                max_elapsed_time=10,
+                num_elapsed_times=4,
+            )

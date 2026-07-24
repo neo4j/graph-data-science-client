@@ -48,7 +48,7 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
-        logging: bool = True,
+        logging: bool | None = None,
     ) -> GraphWithProjectResult:
         """
         Projects a graph from the Neo4j database into the GDS graph catalog using Cypher projection.
@@ -72,8 +72,9 @@ class ProjectArrowEndpoints:
             List of relationship types to index in both directions.
         batch_size : int | None, default=None
             Number of rows to process in each batch when projecting the graph.
-        logging : bool, default=True
-            Whether to log progress during graph projection.
+        logging : bool | None, default=None
+            Whether to log progress during graph projection. Defaults to the
+            client's `show_progress` setting.
         Returns
         -------
         ProjectionResult:
@@ -83,6 +84,8 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         job_id = job_id or str(uuid.uuid4())
+        if logging is None:
+            logging = self._show_progress
 
         ProjectionRunner(self._project_protocol, self._arrow_client, TerminationFlag.create()).run_cypher_projection(
             graph_name,
@@ -152,7 +155,7 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
-        logging: bool = True,
+        logging: bool | None = None,
     ) -> GraphWithProjectResult:
         """
         Projects a graph from the Neo4j database into the GDS graph catalog.
@@ -179,8 +182,9 @@ class ProjectArrowEndpoints:
             List of relationship types to index in both directions.
         batch_size : int | None, default=None
             Number of rows to process in each batch when projecting the graph.
-        logging : bool, default=True
-            Whether to log progress during graph projection.
+        logging : bool | None, default=None
+            Whether to log progress during graph projection. Defaults to the
+            client's `show_progress` setting.
         Returns
         -------
         ProjectionResult:
@@ -193,6 +197,8 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         job_id = job_id or str(uuid.uuid4())
+        if logging is None:
+            logging = self._show_progress
 
         ProjectionRunner(self._project_protocol, self._arrow_client, TerminationFlag.create()).run_store_projection(
             graph_name,

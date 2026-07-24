@@ -1,0 +1,64 @@
+from unittest import mock
+
+from pytest_mock import MockerFixture
+
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.procedure_surface.arrow.catalog.projection_arrow_endpoints import ProjectArrowEndpoints
+from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+
+PROJECTION_MODULE = "graphdatascience.procedure_surface.arrow.catalog.projection_arrow_endpoints"
+
+
+def _endpoints_with_mocked_projection(
+    mocker: MockerFixture, show_progress: bool
+) -> tuple[ProjectArrowEndpoints, mock.Mock]:
+    """A ProjectArrowEndpoints wired up to run cypher() without any real network/protocol calls,
+    with `ProjectionRunner` mocked so the test can inspect what `logging` value it was given."""
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    query_runner = mocker.Mock()
+
+    mocker.patch(f"{PROJECTION_MODULE}.ProtocolVersionResolver").return_value.resolve.return_value = ProtocolVersion.V4
+    mocker.patch(f"{PROJECTION_MODULE}.ProjectProtocol")
+    runner_cls = mocker.patch(f"{PROJECTION_MODULE}.ProjectionRunner")
+    mocker.patch(
+        f"{PROJECTION_MODULE}.JobClient.get_summary",
+        return_value={
+            "graph_name": "g",
+            "node_count": 1,
+            "relationship_count": 1,
+            "project_millis": 1,
+            "configuration": {},
+            "query": "MATCH (n) RETURN gds.graph.project.remote(n, n)",
+        },
+    )
+    mocker.patch(f"{PROJECTION_MODULE}.get_graph", return_value=mocker.Mock())
+
+    endpoints = ProjectArrowEndpoints(arrow_client=arrow_client, query_runner=query_runner, show_progress=show_progress)
+    return endpoints, runner_cls.return_value
+
+
+def test_cypher_defaults_logging_to_show_progress_true(mocker: MockerFixture) -> None:
+    endpoints, runner = _endpoints_with_mocked_projection(mocker, show_progress=True)
+
+    endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)")
+
+    logging_arg = runner.run_cypher_projection.call_args.args[-1]
+    assert logging_arg is True
+
+
+def test_cypher_defaults_logging_to_show_progress_false(mocker: MockerFixture) -> None:
+    endpoints, runner = _endpoints_with_mocked_projection(mocker, show_progress=False)
+
+    endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)")
+
+    logging_arg = runner.run_cypher_projection.call_args.args[-1]
+    assert logging_arg is False
+
+
+def test_cypher_explicit_logging_overrides_show_progress(mocker: MockerFixture) -> None:
+    endpoints, runner = _endpoints_with_mocked_projection(mocker, show_progress=True)
+
+    endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)", logging=False)
+
+    logging_arg = runner.run_cypher_projection.call_args.args[-1]
+    assert logging_arg is False
