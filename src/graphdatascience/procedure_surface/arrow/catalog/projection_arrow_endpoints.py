@@ -83,6 +83,7 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         job_id = job_id or str(uuid.uuid4())
+        logging = self._show_progress and logging
 
         ProjectionRunner(self._project_protocol, self._arrow_client, TerminationFlag.create()).run_cypher_projection(
             graph_name,
@@ -193,6 +194,7 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         job_id = job_id or str(uuid.uuid4())
+        logging = self._show_progress and logging
 
         ProjectionRunner(self._project_protocol, self._arrow_client, TerminationFlag.create()).run_store_projection(
             graph_name,

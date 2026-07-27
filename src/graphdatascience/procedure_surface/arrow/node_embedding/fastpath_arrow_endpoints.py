@@ -7,6 +7,7 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import (
     FastPathEndpoints,
     FastPathMutateResult,
@@ -55,6 +56,65 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    def compute(
+        self,
+        G: Graph,
+        base_node_label: str,
+        event_node_label: str,
+        dimension: int,
+        max_elapsed_time: int,
+        num_elapsed_times: int,
+        *,
+        categorical_event_properties: list[str] = [],
+        relationship_types: list[str] = ALL_TYPES,
+        context_node_label: str | None = None,
+        decay_factor: float = 1.0,
+        event_features: str | None = None,
+        first_relationship_type: str | None = None,
+        ignored_event_category: int = -1,
+        next_relationship_type: str | None = None,
+        output_time: float | None = None,
+        output_time_property: str | None = None,
+        random_seed: Any | None = None,
+        smoothing_rate: float = 0.0,
+        smoothing_window: int = 0,
+        time_node_property: str | None = None,
+        job_id: str | None = None,
+    ) -> JobHandle:
+        """Start the FastPath algorithm and return a :class:`JobHandle`.
+
+        The handle exposes ``mutate`` / ``write`` / ``stream`` so the caller can
+        decide how to materialize the result after the computation is started.
+        Mirrors :meth:`mutate` but omits the property name, which is supplied to
+        the handle instead.
+        """
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            base_node_label=base_node_label,
+            categorical_event_properties=categorical_event_properties,
+            context_node_label=context_node_label,
+            decay_factor=decay_factor,
+            dimension=dimension,
+            event_features=event_features,
+            event_node_label=event_node_label,
+            first_relationship_type=first_relationship_type,
+            ignored_event_category=ignored_event_category,
+            max_elapsed_time=max_elapsed_time,
+            next_relationship_type=next_relationship_type,
+            num_elapsed_times=num_elapsed_times,
+            output_time=output_time,
+            output_time_property=output_time_property,
+            random_seed=random_seed,
+            relationship_types=relationship_types,
+            smoothing_rate=smoothing_rate,
+            smoothing_window=smoothing_window,
+            time_node_property=time_node_property,
+            job_id=job_id,
+        )
+
+        with _translate_feature_not_enabled():
+            return self._node_property_endpoints.run_job(G, FAST_PATH_ENDPOINT, config)
 
     def mutate(
         self,

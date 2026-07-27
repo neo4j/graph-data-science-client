@@ -89,6 +89,17 @@ def test_construct_with_df_lists(mocker: MockerFixture) -> None:
         assert G.name() == "g"
 
 
+def test_node_properties_endpoint_inherits_show_progress(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+
+    quiet_endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, show_progress=False)
+    loud_endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, show_progress=True)
+
+    # `.node_properties` is typed as the abstract endpoint; the concrete arrow impl carries _show_progress.
+    assert getattr(quiet_endpoints.node_properties, "_show_progress") is False
+    assert getattr(loud_endpoints.node_properties, "_show_progress") is True
+
+
 def patch_gds_arrow_client(create_graph_job_id: str) -> ExitStack:
     exit_stack = ExitStack()
     patches = [

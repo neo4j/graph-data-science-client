@@ -39,6 +39,7 @@ class WriteJobHandle:
             job_id,
             time.time(),
             termination_flag,
+            log_progress=log_progress,
         )
 
     def __init__(
@@ -48,6 +49,7 @@ class WriteJobHandle:
         job_id: str,
         started_at: float,
         termination_flag: TerminationFlag,
+        log_progress: bool = True,
     ):
         self._write_protocol = write_protocol
         self._graph_name = graph_name
@@ -55,6 +57,7 @@ class WriteJobHandle:
         self._started_at = started_at
         self._terminal_status: JobStatus | None = None
         self._termination_flag = termination_flag
+        self._log_progress = log_progress
 
     def job_id(self) -> str:
         return self._job_id
@@ -70,10 +73,12 @@ class WriteJobHandle:
     def done(self) -> bool:
         return self.status().done
 
-    def wait(self, log_progress: bool = True) -> None:
+    def wait(self, log_progress: bool | None = None) -> None:
         if self._terminal_status is not None:
             return
 
+        if log_progress is None:
+            log_progress = self._log_progress
         self._terminal_status = self._poll_until_done(log_progress)
 
     def result(self, *, wait: bool = True) -> WriteBackResult:

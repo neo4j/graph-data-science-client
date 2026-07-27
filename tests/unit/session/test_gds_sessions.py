@@ -288,6 +288,7 @@ class FakeGdsSessions(GdsSessions):
         arrow_authentication: ArrowAuthentication,
         db_runner: Neo4jQueryRunner | None,
         arrow_client_options: dict[str, Any] | None = None,
+        show_progress: bool = True,
     ) -> AuraGraphDataScience:
         self.construct_client_calls.append(
             {
@@ -297,6 +298,7 @@ class FakeGdsSessions(GdsSessions):
                 "arrow_authentication": arrow_authentication,
                 "db_runner": db_runner,
                 "arrow_client_options": arrow_client_options,
+                "show_progress": show_progress,
             }
         )
         return mock.MagicMock(spec=AuraGraphDataScience)
