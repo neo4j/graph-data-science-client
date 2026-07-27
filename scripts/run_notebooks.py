@@ -7,11 +7,12 @@ import signal
 import sys
 from pathlib import Path
 from types import FrameType
-from typing import Any, Callable, NamedTuple
+from typing import Callable, NamedTuple
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
 from nbconvert.preprocessors.execute import ExecutePreprocessor
+from nbformat import NotebookNode
 
 logging.basicConfig(
     level=os.environ.get("LOGLEVEL", "INFO").upper(),
@@ -26,9 +27,57 @@ ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]")
 VERSION_CELL_TAG = "verify-version"
 TEARDOWN_CELL_TAG = "teardown"
 
+SESSION_NOTEBOOKS = ["graph-analytics-serverless.ipynb"]
+SESSION_SELF_MANAGED_NOTEBOOKS = [
+    "graph-analytics-serverless-self-managed.ipynb",
+    "graph-analytics-serverless-standalone.ipynb",
+    "graph-analytics-serverless-spark.ipynb",
+    "graph-analytics-serverless-standalone-fastpath.ipynb",
+]
+ALL_SESSION_NOTEBOOKS = SESSION_NOTEBOOKS + SESSION_SELF_MANAGED_NOTEBOOKS
+
+# The `resources` dict nbconvert threads through the preprocessor chain. We only pass it along.
+Resources = dict[str, object]
+
+# Matches `session_name="..."` (also the `session_name = '...'` assignment form) in a code cell.
+SESSION_NAME_RE = re.compile(r"""(session_name\s*=\s*)(["'])(.+?)\2""")
+
+
+def _session_name_suffix() -> str | None:
+    """Unique per-build suffix so concurrent CI builds don't share a session name."""
+    suffix = os.environ.get("NOTEBOOK_SESSION_SUFFIX")
+    if not suffix:
+        build_id = os.environ.get("BUILD_ID")
+        suffix = f"ci{build_id}" if build_id else None
+    return re.sub(r"[^A-Za-z0-9-]", "-", suffix) if suffix else None
+
+
+def _apply_session_name_suffix(nb: NotebookNode, suffix: str, notebook_name: str) -> None:
+    """Rename the sessions of an in-memory notebook. The notebook file itself is never written back."""
+
+    renamed: dict[str, str] = {}
+
+    def rename(match: re.Match[str]) -> str:
+        assignment, quote, name = match.group(1), match.group(2), match.group(3)
+        # keep the total length bounded in case the build id is long
+        new_name = f"{name}-{suffix}"
+        renamed[name] = new_name
+        return f"{assignment}{quote}{new_name}{quote}"
+
+    cells: list[NotebookNode] = nb["cells"]
+    for cell in cells:
+        if cell["cell_type"] == "code":
+            cell["source"] = SESSION_NAME_RE.sub(rename, cell["source"])
+
+    # a session name usually shows up twice: once when creating and once in the teardown cell
+    for name, new_name in renamed.items():
+        logger.info(
+            "[%s] renaming session %s -> %s to avoid clashes between concurrent runs", notebook_name, name, new_name
+        )
+
 
 class IndexedCell(NamedTuple):
-    cell: Any
+    cell: NotebookNode
     index: int  # type: ignore
 
 
@@ -37,7 +86,7 @@ def _indent(text: str, prefix: str = "    | ") -> str:
 
 
 class GdsExecutePreprocessor(ExecutePreprocessor):
-    def __init__(self, **kw: Any):
+    def __init__(self, **kw: object):
         super().__init__(**kw)  # type: ignore
 
     def init_notebook(
@@ -57,7 +106,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
         self.failed_cell_source: str = ""
 
     # run the cell of a notebook
-    def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
+    def preprocess_cell(self, cell: NotebookNode, resources: Resources, index: int) -> None:
         if index == 0:
 
             def handle_signal(sig: int, frame: FrameType | None) -> None:
@@ -94,7 +143,7 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
                 self.teardown(resources)
             raise e
 
-    def teardown(self, resources: Any) -> None:
+    def teardown(self, resources: Resources) -> None:
         for td_cell, td_idx in self.tear_down_cells:
             try:
                 super().preprocess_cell(td_cell, resources, td_idx)  # type: ignore
@@ -103,13 +152,13 @@ class GdsExecutePreprocessor(ExecutePreprocessor):
 
 
 class GdsTearDownCollector(ExecutePreprocessor):
-    def __init__(self, **kw: Any):
+    def __init__(self, **kw: object):
         super().__init__(**kw)  # type: ignore
 
     def init_notebook(self) -> None:
         self._tear_down_cells: list[IndexedCell] = []
 
-    def preprocess_cell(self, cell: Any, resources: Any, index: int) -> None:
+    def preprocess_cell(self, cell: NotebookNode, resources: Resources, index: int) -> None:
         if TEARDOWN_CELL_TAG in cell["metadata"].get("tags", []):
             self._tear_down_cells.append(IndexedCell(cell, index))
 
@@ -130,11 +179,16 @@ def main(filter_func: Callable[[str], bool]) -> None:
 
     logger.info("Found notebooks to execute: %s", [f.name for f in notebook_files])
 
+    session_name_suffix = _session_name_suffix()
+
     for notebook_filename in notebook_files:
         logger.info("Executing notebook %s", notebook_filename)
 
         with open(notebook_filename) as f:
             nb = nbformat.read(f, as_version=4)  # type: ignore
+
+            if session_name_suffix and notebook_filename.name in ALL_SESSION_NOTEBOOKS:
+                _apply_session_name_suffix(nb, session_name_suffix, notebook_filename.name)
 
             # Collect tear down cells
             td_collector.init_notebook()
@@ -182,25 +236,17 @@ def main(filter_func: Callable[[str], bool]) -> None:
 if __name__ == "__main__":
     notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
 
-    session_notebooks = ["graph-analytics-serverless.ipynb"]
-    session_self_managed_notebooks = [
-        "graph-analytics-serverless-self-managed.ipynb",
-        "graph-analytics-serverless-standalone.ipynb",
-        "graph-analytics-serverless-spark.ipynb",
-        "graph-analytics-serverless-standalone-fastpath.ipynb",
-    ]
-
     logger.info("Notebook filter: %s", notebook_filter)
 
     notebooks: list[str] | None = None
     if notebook_filter == "sessions-attached":
 
         def filter_func(notebook: str) -> bool:
-            return notebook in session_notebooks
+            return notebook in SESSION_NOTEBOOKS
     elif notebook_filter == "sessions-self-managed-db":
 
         def filter_func(notebook: str) -> bool:
-            return notebook in session_self_managed_notebooks
+            return notebook in SESSION_SELF_MANAGED_NOTEBOOKS
     elif notebook_filter:
 
         def filter_func(notebook: str) -> bool:
@@ -208,6 +254,6 @@ if __name__ == "__main__":
     else:
 
         def filter_func(notebook: str) -> bool:
-            return notebook not in session_notebooks + session_self_managed_notebooks
+            return notebook not in ALL_SESSION_NOTEBOOKS
 
     main(filter_func)

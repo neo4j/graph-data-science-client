@@ -140,3 +140,12 @@ As the name suggests, the tag was introduced to only run for given GDS server ve
 _Teardown_
 
 To make sure certain cells are always run even in case of failure, tag the cell with `teardown`.
+
+### Session names
+
+The session notebooks create their session under a fixed name, which would make concurrent CI builds clash on the same session.
+To avoid this, `scripts/run_notebooks.py` appends a suffix to every `session_name="..."` occurrence of the notebook it executes.
+The notebook files on disk are never modified, so the generated docs are unaffected.
+
+The suffix is taken from `NOTEBOOK_SESSION_SUFFIX` if set, otherwise from `BUILD_ID` (which CI provides).
+If neither is set — the usual local case — the names are left as they are, so re-running a notebook reuses the existing session.
