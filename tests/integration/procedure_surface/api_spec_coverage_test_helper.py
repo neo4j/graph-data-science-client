@@ -82,6 +82,9 @@ BASE_ENDPOINT_MAPPINGS = OrderedDict(
 IGNORED_PARAMETERS = {
     # ignore internal parameter
     r".*\.write": ["write_to_result_store"],
+    # `writeAsVector` only lands with GDS 2026.08 and is not supported by the session write-back protocol yet.
+    # GDSA-1391 will expose it on these endpoints.
+    r".*(fast_rp|node2vec|hash_gnn|graph_sage)\.write": ["write_as_vector"],
     r".*shortest_path\.dijkstra.*": ["target_node"],
     # ignoring write params exposed due to shared config in pregel-based algos
     r".*sllpa\.mutate.*": [
