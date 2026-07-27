@@ -37,7 +37,7 @@ def _endpoints_with_mocked_projection(
     return endpoints, runner_cls.return_value
 
 
-def test_cypher_defaults_logging_to_show_progress_true(mocker: MockerFixture) -> None:
+def test_cypher_logs_when_show_progress_enabled(mocker: MockerFixture) -> None:
     endpoints, runner = _endpoints_with_mocked_projection(mocker, show_progress=True)
 
     endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)")
@@ -46,7 +46,7 @@ def test_cypher_defaults_logging_to_show_progress_true(mocker: MockerFixture) ->
     assert logging_arg is True
 
 
-def test_cypher_defaults_logging_to_show_progress_false(mocker: MockerFixture) -> None:
+def test_cypher_does_not_log_when_show_progress_disabled(mocker: MockerFixture) -> None:
     endpoints, runner = _endpoints_with_mocked_projection(mocker, show_progress=False)
 
     endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)")
@@ -55,7 +55,7 @@ def test_cypher_defaults_logging_to_show_progress_false(mocker: MockerFixture) -
     assert logging_arg is False
 
 
-def test_cypher_explicit_logging_overrides_show_progress(mocker: MockerFixture) -> None:
+def test_cypher_logging_false_disables_logging(mocker: MockerFixture) -> None:
     endpoints, runner = _endpoints_with_mocked_projection(mocker, show_progress=True)
 
     endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)", logging=False)
