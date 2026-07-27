@@ -39,7 +39,11 @@ from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_en
 )
 from graphdatascience.procedure_surface.cypher.catalog.projection_cypher_endpoints import ProjectCypherEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import RelationshipCypherEndpoints
-from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
+from graphdatascience.procedure_surface.cypher.catalog.utils import (
+    GRAPH_INFO_WITH_DEGREES_YIELDS,
+    GRAPH_INFO_YIELDS,
+    require_database,
+)
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner import QueryRunner
 
@@ -106,7 +110,9 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         graph_name = G if isinstance(G, str) else G.name() if G is not None else None
         params = CallParameters(graphName=graph_name) if graph_name else CallParameters()
 
-        result = self._cypher_runner.call_procedure(endpoint="gds.graph.list", params=params)
+        result = self._cypher_runner.call_procedure(
+            endpoint="gds.graph.list", params=params, yields=GRAPH_INFO_WITH_DEGREES_YIELDS
+        )
         return [GraphInfoWithDegrees(**row) for _, row in result.iterrows()]
 
     def drop(
@@ -144,7 +150,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             params["dbName"] = db_name if db_name is not None else ""
             params["username"] = username if username is not None else ""
 
-        result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params)
+        result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params, yields=GRAPH_INFO_YIELDS)
         if len(result) > 0:
             return GraphInfo(**result.iloc[0])
         else:

@@ -4,6 +4,10 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph import Graph
 from graphdatascience.graph.graph_backend import GraphBackend
 from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
+from graphdatascience.procedure_surface.cypher.catalog.utils import (
+    GRAPH_INFO_WITH_DEGREES_YIELDS,
+    GRAPH_INFO_YIELDS,
+)
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -23,6 +27,7 @@ class CypherGraphBackend(GraphBackend):
         info = self._query_runner.call_procedure(
             endpoint="gds.graph.list",
             params=CallParameters(graph_name=self._name),
+            yields=GRAPH_INFO_WITH_DEGREES_YIELDS,
             custom_error=False,
         )
 
@@ -46,6 +51,7 @@ class CypherGraphBackend(GraphBackend):
         info = self._query_runner.call_procedure(
             endpoint="gds.graph.drop",
             params=CallParameters(graph_name=self._name, failIfMissing=fail_if_missing),
+            yields=GRAPH_INFO_YIELDS,
             custom_error=False,
         )
 
