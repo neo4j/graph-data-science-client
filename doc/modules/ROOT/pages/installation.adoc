@@ -10,7 +10,7 @@ pip install graphdatascience
 [[python-client-system-requirements]]
 == Requirements
 
-* The supported versions of the Python environments are:
+* Check that client supports your Python environments.
 +
 [opts="header,autowidth", cols="m,m"]
 |===
@@ -35,7 +35,7 @@ pip install graphdatascience
 | >= 2.6, < 2.28, < 2026.6
 |===
 
-* If the link:https://neo4j.com/docs/python-manual/current/[Neo4j Python driver] is already installed on your system, make sure its version is compatible with the GDS Python client:
+* If the link:https://neo4j.com/docs/python-manual/current/[Neo4j Python driver] is already installed on your system, make sure its version is compatible with the GDS Python client.
 +
 [opts="header,autowidth", cols="m,m"]
 |===
