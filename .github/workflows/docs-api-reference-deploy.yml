@@ -1,0 +1,179 @@
+name: "Deploy API reference preview"
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+# Deploys the artifact built by docs-api-reference.yml to
+# <org>-<repo>-<pr-number>-api.surge.sh
+#
+# NOTE: workflow_run workflows only ever run from the version of this file on the
+# default branch. Changes here have no effect on PR runs until they are merged to main.
+on:
+  workflow_run:
+    workflows: ["Build API reference"]
+    types:
+      - completed
+
+jobs:
+  deploy-api-reference:
+    name: Deploy API reference preview
+    # A failed build has no artifact to deploy, and a workflow_dispatch run has no PR to
+    # deploy for.
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Download built API reference"
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: process.env.RUN_ID,
+            });
+            const match = artifacts.data.artifacts.find((a) => a.name === "api-reference");
+            if (!match) {
+              core.setFailed(`No "api-reference" artifact on run ${process.env.RUN_ID}`);
+              return;
+            }
+            const download = await github.rest.actions.downloadArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: match.id,
+              archive_format: 'zip',
+            });
+            const fs = require('fs');
+            fs.mkdirSync(process.env.ARTIFACT_DIR, { recursive: true });
+            fs.writeFileSync(
+              `${process.env.ARTIFACT_DIR}/api-reference.zip`,
+              Buffer.from(download.data),
+            );
+
+      # Check the entry names before unzipping, so a hostile archive cannot write
+      # outside the extraction directory in the first place.
+      - id: suspicious-path-check
+        name: Suspicious paths check
+        shell: bash
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+        run: |
+          set -euo pipefail
+          cd "$ARTIFACT_DIR"
+
+          mapfile -t ZIP_ENTRIES < <(zipinfo -1 api-reference.zip)
+          if [ "${#ZIP_ENTRIES[@]}" -eq 0 ]; then
+            echo "api-reference.zip is empty"
+            exit 1
+          fi
+          for entry in "${ZIP_ENTRIES[@]}"; do
+            if [[ "$entry" =~ ^/ ]]; then
+              echo "Blocked absolute path in artifact: $entry"
+              exit 1
+            fi
+            if [[ "$entry" =~ (^|/)\.\.(/|$) ]]; then
+              echo "Blocked path traversal in artifact: $entry"
+              exit 1
+            fi
+            if [[ "$entry" == *\\* ]]; then
+              echo "Blocked Windows-style path separator in artifact: $entry"
+              exit 1
+            fi
+          done
+
+      - id: unzip
+        name: Unzip API reference artifact
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+        run: |
+          cd "$ARTIFACT_DIR"
+          unzip -q api-reference.zip
+          if [ ! -d site ]; then
+            echo "Artifact has no site/ directory"
+            exit 1
+          fi
+
+      # surge uploads the content a symlink resolves to, so a symlink in the published
+      # tree is an exfiltration primitive - it would publish whatever the runner can
+      # read. Sphinx emits neither symlinks nor (after .buildinfo is dropped in the
+      # build job) dotfiles, so both are treated as tampering.
+      - id: content-check
+        name: Suspicious content check
+        env:
+          SITE_DIR: ${{ runner.temp }}/artifacts/site
+        run: |
+          set -euo pipefail
+          cd "$SITE_DIR"
+          if [ -n "$(find . -type l)" ]; then
+            echo "Security Alert: symlinks in the publish tree - refusing!"
+            find . -type l
+            exit 1
+          fi
+          if [ -n "$(find . -name '.*' ! -name .)" ]; then
+            echo "Security Alert: unexpected hidden files detected!"
+            find . -name '.*' ! -name .
+            exit 1
+          fi
+
+      # The PR number cannot be read from github.event.workflow_run.pull_requests -
+      # that array is empty for fork PRs - so it is carried in the artifact instead.
+      # It comes from untrusted content and ends up in a hostname, so validate it.
+      - id: get-deploy-id
+        name: Get deploy ID
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+        run: |
+          deployid=$(<"$ARTIFACT_DIR/deployid")
+          case "$deployid" in ''|*[!0-9]*) echo "Provided PR number is not an integer"; exit 1 ;; esac
+          echo "deploy-id=$deployid" >> "$GITHUB_OUTPUT"
+
+      # Same formula as docs-api-reference-teardown.yml and the gds-api-uri override in
+      # docs-pr-checks.yml - keep the three in sync.
+      - id: get-deploy-url
+        name: Get deploy URL
+        env:
+          ORG: ${{ github.event.repository.owner.login }}
+          REPO: ${{ github.event.repository.name }}
+          DEPLOYID: ${{ steps.get-deploy-id.outputs.deploy-id }}
+        run: |
+          deployurl=$ORG-$REPO-$DEPLOYID-api.surge.sh
+          echo "deploy-url=$deployurl" >> $GITHUB_OUTPUT
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: lts/*
+
+      - name: Deploy API reference to surge
+        shell: bash
+        env:
+          DEPLOY_URL: ${{ steps.get-deploy-url.outputs.deploy-url }}
+          SURGE_TOKEN: "${{ secrets.DOCS_SURGE_TOKEN }}"
+          SITE_DIR: ${{ runner.temp }}/artifacts/site
+        run: |
+          npm install -g surge
+          cd "$SITE_DIR"
+          surge . "$DEPLOY_URL" --token "$SURGE_TOKEN"
+
+      # Own comment/header, separate from docs-deploy-surge.yml's "docs-pr-changes"
+      # comment, so the two previews don't overwrite each other on the PR
+      - name: Comment on PR
+        env:
+          DEPLOY_URL: ${{ steps.get-deploy-url.outputs.deploy-url }}
+        uses: marocchino/sticky-pull-request-comment@70d2764d1a7d5d9560b100cbea0077fc8f633987 #v3
+        with:
+          number: ${{ steps.get-deploy-id.outputs.deploy-id }}
+          header: docs-api-reference-changes
+          message: |
+            Looks like you've updated the API reference!
+
+            Check out your changes at https://${{ env.DEPLOY_URL }}
+
+            If this PR also previews the manual, its API reference links point here.
+          GITHUB_TOKEN: ${{ secrets.DOCS_PR_COMMENT_TOKEN }}

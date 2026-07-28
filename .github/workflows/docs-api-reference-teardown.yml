@@ -1,0 +1,69 @@
+name: "API reference Teardown"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+# Companion to docs-api-reference.yml. Kept separate from docs-teardown.yml because the
+# two previews have different trigger paths
+on:
+  pull_request_target:
+    branches:
+      - main
+      - '1.19'
+      - '1.20'
+      - '1.21'
+      - '1.22'
+    paths:
+      - "doc/**"
+      - "graphdatascience/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/docs-*.yml"
+    types:
+      - closed
+
+jobs:
+  teardown-api-reference:
+    name: Teardown API reference preview
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
+        with:
+          node-version: lts/*
+
+      # Same formula as docs-api-reference.yml and the gds-api-uri override in
+      # docs-pr-checks.yml - keep the three in sync.
+      - id: get-deploy-url
+        env:
+          ORG: ${{ github.event.repository.owner.login }}
+          REPO: ${{ github.event.repository.name }}
+          DEPLOYID: ${{ github.event.pull_request.number }}
+        run: |
+          deployurl=$ORG-$REPO-$DEPLOYID-api.surge.sh
+          echo "deploy-url=$deployurl" >> $GITHUB_OUTPUT
+
+      - name: Teardown API reference
+        shell: bash
+        env:
+          SURGE_TOKEN: "${{ secrets.DOCS_SURGE_TOKEN }}"
+          DEPLOY_URL: ${{ steps.get-deploy-url.outputs.deploy-url }}
+        run: |
+          npm install -g surge
+          # Tolerate a missing domain: a PR whose Sphinx build failed, or one closed
+          # before the deploy ran, never published anything. Nothing to clean up is not
+          # a reason to fail a closed PR.
+          surge teardown "$DEPLOY_URL" --token "$SURGE_TOKEN" \
+            || echo "No API reference preview at $DEPLOY_URL - nothing to tear down."
+
+      - name: Comment on PR
+        uses: marocchino/sticky-pull-request-comment@70d2764d1a7d5d9560b100cbea0077fc8f633987 #v3
+        with:
+          number: ${{ github.event.pull_request.number }}
+          header: docs-api-reference-changes
+          message: |
+            Thanks for the API reference updates.
+
+            The preview API reference has now been torn down - reopening this PR will republish it.
+          GITHUB_TOKEN: ${{ secrets.DOCS_PR_COMMENT_TOKEN }}
