@@ -18,13 +18,39 @@ on:
 
 jobs:
 
+  # Point the manual's API reference links at this PR's API reference preview instead of
+  # the published one, so reviewers follow links into the refdocs built from this PR.
+  api-reference-uri:
+    name: Resolve API reference preview URI
+    runs-on: ubuntu-latest
+    outputs:
+      gds-api-uri: ${{ steps.get-uri.outputs.gds-api-uri }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - id: get-uri
+        env:
+          ORG: ${{ github.event.repository.owner.login }}
+          REPO: ${{ github.event.repository.name }}
+          DEPLOYID: ${{ github.event.number }}
+        run: |
+          version=$(grep -E '^[[:space:]]+docs-version:' doc/antora.yml | head -1 \
+            | sed -E 's/.*docs-version:[[:space:]]*//' | tr -d "\"' ")
+          if [[ -z "$version" ]]; then
+            echo "::error file=doc/antora.yml::could not read docs-version from doc/antora.yml"
+            exit 1
+          fi
+          echo "gds-api-uri=https://$ORG-$REPO-$DEPLOYID-api.surge.sh/$version/api" >> "$GITHUB_OUTPUT"
+
   #  Generate HTML
   docs-build-pr:
+    needs: api-reference-uri
     uses: neo4j/docs-tools/.github/workflows/reusable-docs-build.yml@v2
     with:
       deploy-id: ${{ github.event.number }}
       docs-dir: 'doc'
       retain-artifacts: 14
+      antora-attributes: '--attribute gds-api-uri=${{ needs.api-reference-uri.outputs.gds-api-uri }}'
 
   # Parse the json log output from the HTML build, and output warnings and errors as annotations
   # Optionally, fail the build if there are warnings or errors

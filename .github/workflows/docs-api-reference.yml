@@ -1,0 +1,117 @@
+name: "Build API reference"
+
+permissions:
+  contents: read
+
+# The Sphinx-based API reference (doc/sphinx) is built from the docstrings in the
+# graphdatascience package, so it breaks on source changes as well as on doc changes.
+# The Makefile passes -W, so any Sphinx warning (broken autodoc reference, bad
+# cross-reference, unreachable intersphinx inventory) fails this job.
+#
+# This workflow only builds - docs-api-reference-deploy.yml publishes the result to its
+# own separate surge.sh URL (<org>-<repo>-<pr-number>-api.surge.sh) and comments on the
+# PR. The split exists so fork PRs get a preview too: this half runs with no secrets and
+# no write permissions, so it is safe to run against untrusted code, and the deploy half
+# runs in the base repo's context where SURGE_TOKEN is available. Never add secrets or
+# write permissions to this workflow.
+#
+# The path filter is a superset of docs-pr-checks.yml's ("doc/**"), so whenever the
+# manual gets a preview the API reference is built and deployed alongside it - which is
+# what lets docs-pr-checks.yml point {gds-api-uri} at this deployment. Source-only PRs
+# build just the API reference, and that is the common case since it is generated from
+# the graphdatascience docstrings.
+on:
+  pull_request:
+    branches:
+      - main
+      - '1.19'
+      - '1.20'
+      - '1.21'
+      - '1.22'
+    paths:
+      - "doc/**"
+      - "graphdatascience/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/docs-*.yml"
+  workflow_dispatch:
+
+jobs:
+
+  # This job is repo-specific - change its steps to match how your repo actually
+  # builds its API reference. What it must always do is upload an "api-reference"
+  # artifact laid out as:
+  #   site/       the HTML to publish, staged under <version>/api
+  #   deployid    the PR number, which is how the deploy workflow recovers it
+  # since docs-api-reference-deploy.yml depends on that artifact name and layout.
+  build-api-reference:
+    name: Build API reference
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      - name: Build HTML
+        working-directory: doc/sphinx
+        run: uv run --frozen --group docs-ci make clean html
+
+      # Read docs-version from antora.yml so the API reference is published under the
+      # same version segment the manual's {gds-api-uri} resolves to. This is the
+      # docs-version asciidoc attribute, not the top-level Antora component version,
+      # because gds-api-uri is built from {docs-version}.
+      - name: Get docs version
+        id: get-version
+        run: |
+          version=$(grep -E '^[[:space:]]+docs-version:' doc/antora.yml | head -1 \
+            | sed -E 's/.*docs-version:[[:space:]]*//' | tr -d "\"' ")
+          if [[ -z "$version" ]]; then
+            echo "::error file=doc/antora.yml::could not read docs-version from doc/antora.yml"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Stage the built HTML under site/<version>/api. The build output dir is found
+      # dynamically rather than hardcoded as build/html, since SPHINXOPTS in the
+      # Makefile can change the builder used. objects.inv is the marker to look for:
+      # Sphinx writes exactly one, at the root of the HTML output. (index.html is not
+      # usable as a marker - the Makefile builds with -b dirhtml, so every page is an
+      # index.html.)
+      - name: Stage HTML under versioned api path
+        env:
+          VERSION: ${{ steps.get-version.outputs.version }}
+          DEPLOY_ID: ${{ github.event.number }}
+        run: |
+          inventory=$(find doc/sphinx/build -name objects.inv | head -1)
+          if [[ -z "$inventory" ]]; then
+            echo "::error::no objects.inv under doc/sphinx/build - did the Sphinx build produce HTML?"
+            exit 1
+          fi
+          build_dir=$(dirname "$inventory")
+          mkdir -p "artifact/site/$VERSION/api"
+          cp -R "$build_dir"/. "artifact/site/$VERSION/api"/
+          # .buildinfo is a Sphinx incremental-build stamp, of no use in a preview, and
+          # the only dotfile Sphinx emits. Dropping it lets the deploy workflow treat
+          # any hidden file in the artifact as suspicious.
+          rm -f "artifact/site/$VERSION/api/.buildinfo"
+          # The site root holds nothing but the versioned tree, so send it to the docs
+          # rather than serving a 404 to anyone who trims the URL.
+          cat > artifact/site/index.html <<HTML
+          <!DOCTYPE html>
+          <meta charset="utf-8">
+          <meta http-equiv="refresh" content="0; url=/$VERSION/api/">
+          <title>Redirecting to the API reference</title>
+          <a href="/$VERSION/api/">API reference</a>
+          HTML
+          # The deploy workflow runs on workflow_run, where the PR number is not
+          # available in the event payload for fork PRs, so carry it in the artifact.
+          echo "$DEPLOY_ID" > artifact/deployid
+
+      - name: Upload API reference artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: api-reference
+          path: artifact
+          retention-days: 14
