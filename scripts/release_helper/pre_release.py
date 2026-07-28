@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import colorama
+import installation_adoc
 import requests
 
 from graphdatascience.versions import ServerVersion
@@ -45,28 +46,21 @@ def verify_installation_docs(repo_dir: Path, client_version: str, min_server_ver
     print("Verifying installation.adoc...")
     print(f"Latest released GDS Plugin version: `{latest_server_version}`")
 
-    installation_doc_path = repo_dir / "doc" / "modules" / "ROOT" / "pages" / "installation.adoc"
-    installation_doc = installation_doc_path.read_text()
-
-    version_table_regex = r"(?s)(\| Python Client \| GDS version[^\n]*)(.*)(\|===)"
-    match = re.search(version_table_regex, installation_doc, re.MULTILINE)
-    if not match:
-        raise ValueError("Could not find installation table in installation.adoc")
-    version_table = match.group(2)
-
-    latest_compat_entry = version_table.split("\n\n")[0]
-    latest_compat_entries = [i for i in latest_compat_entry.splitlines() if len(i.strip()) > 0]
-    latest_documented_client_version = latest_compat_entries[0]
-    latest_documented_server_compat = latest_compat_entries[1]
-
+    installation_doc = installation_adoc.read_installation_doc(repo_dir)
     stable_library_version = client_version.split("a")[0]
 
-    # Verify that the latest library version is mentioned
-    if stable_library_version not in latest_documented_client_version:
-        raise ValueError(
-            f"Installation docs do not mention the latest python library version {stable_library_version}.\n"
-            f"Found entry:\n{latest_documented_client_version}"
-        )
+    # Verify that the latest library version is mentioned in every compatibility table
+    for column in installation_adoc.COMPATIBILITY_COLUMNS:
+        table = installation_adoc.find_table(installation_doc, column)
+        if table.latest_client_version() != stable_library_version:
+            raise ValueError(
+                f"The '{column}' table in the installation docs does not list "
+                f"the latest python library version {stable_library_version}.\n"
+                f"Found entry:\n{table.latest_row()[0]}"
+            )
+
+    gds_table = installation_adoc.find_table(installation_doc, installation_adoc.GDS_VERSION_COLUMN)
+    latest_documented_server_compat = gds_table.latest_compatibility()
 
     # Verify that the minimum server version is mentioned
     min_server_version_minor = ".".join(min_server_version.split(".")[:2])

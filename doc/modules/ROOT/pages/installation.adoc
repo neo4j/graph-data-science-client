@@ -14,7 +14,7 @@ pip install graphdatascience
 +
 [opts="header,autowidth", cols="m,m"]
 |===
-| GDS Python client | Python environment
+| GDS Python Client | Python environment
 | 2.0
 | >= 3.10, < 3.15
 
@@ -27,7 +27,7 @@ pip install graphdatascience
 +
 [opts="header,autowidth", cols="m,m"]
 |===
-| Python Client | GDS version
+| GDS Python Client | GDS version
 | 2.0
 | >= 2.13, < 2.28, < 2026.7
 
@@ -39,7 +39,7 @@ pip install graphdatascience
 +
 [opts="header,autowidth", cols="m,m"]
 |===
-| Python Client | Neo4j Python Driver version
+| GDS Python Client | Neo4j Python Driver version
 | 2.0
 | >= 5.26.0, < 7.0.0
 
