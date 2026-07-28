@@ -5,6 +5,8 @@ import re
 import sys
 from pathlib import Path
 
+import installation_adoc
+
 from graphdatascience.versions import SemanticVersion
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -186,35 +188,30 @@ def update_package_json(new_version: PythonLibraryVersion) -> None:
 
 
 def update_installation_adoc(next_version: PythonLibraryVersion) -> None:
-    installation_file = REPO_ROOT / "doc" / "modules" / "ROOT" / "pages" / "installation.adoc"
-    content = installation_file.read_text()
+    content = installation_adoc.read_installation_doc(REPO_ROOT)
+    updated = content
 
-    version_table_regex = r"(?s)(\| Python Client \| GDS version[^\n]*)(.*)(\|===)"
-    match = re.search(version_table_regex, content, re.MULTILINE)
-    if not match:
-        raise ValueError("Could not find installation table in installation.adoc")
-    version_table = match.group(2)
+    for column in installation_adoc.COMPATIBILITY_COLUMNS:
+        # Re-parse for every table, as the spans shift with each insertion
+        table = installation_adoc.find_table(updated, column)
 
-    latest_compat_entry = version_table.split("\n\n")[0]
-    latest_compat_entries = [entry for entry in latest_compat_entry.splitlines() if entry.strip()]
-    if not latest_compat_entries:
-        raise ValueError("Could not find latest compatibility entry in installation.adoc")
+        if table.latest_client_version() == next_version.major_minor():
+            print(f"☑️ No changes needed for the '{column}' table")
+            continue
 
-    latest_compat_entries[0] = re.sub(
-        r"(^\.1\+<\.\^\|\s*)\S+",
-        rf"\g<1>{next_version.major_minor()}",
-        latest_compat_entries[0],
-    )
-    new_compat_table_entry = "\n".join(latest_compat_entries)
+        new_entry = table.latest_row().copy()
+        new_entry[0] = f"| {next_version.major_minor()}"
+        new_body = "\n".join(new_entry) + "\n\n" + table.body
 
-    if new_compat_table_entry in version_table:
-        print(f"☑️ No changes needed for {installation_file.relative_to(REPO_ROOT)}")
+        updated = installation_adoc.replace_table_body(updated, table, new_body)
+        print(f"✅ Added version {next_version.major_minor()} to the '{column}' table")
+
+    if updated == content:
+        print(f"☑️ No changes needed for {installation_adoc.INSTALLATION_ADOC_PATH}")
         return
 
-    updated_version_table = f"\n{new_compat_table_entry}\n" + version_table
-    updated = content.replace(version_table, updated_version_table)
-    installation_file.write_text(updated)
-    print(f"✅ Updated {installation_file.relative_to(REPO_ROOT)} with new version {next_version}")
+    installation_adoc.write_installation_doc(REPO_ROOT, updated)
+    print(f"✅ Updated {installation_adoc.INSTALLATION_ADOC_PATH} with new version {next_version}")
 
 
 def main() -> None:
