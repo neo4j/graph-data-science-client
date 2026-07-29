@@ -317,7 +317,7 @@ in-memory state and the database.
 [source, python, role=no-test]
 ----
 # Remove our projection from the GDS graph catalog
-G.drop()
+G.drop(fail_if_missing=False)
 
 # Remove all the example data from the database
 _ = gds.run_cypher("MATCH (n) DETACH DELETE n")

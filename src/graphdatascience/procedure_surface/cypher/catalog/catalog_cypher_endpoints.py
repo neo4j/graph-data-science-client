@@ -46,6 +46,7 @@ from graphdatascience.procedure_surface.cypher.catalog.utils import (
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner import QueryRunner
+from graphdatascience.query_runner.query_mode import QueryMode
 
 
 class CatalogCypherEndpoints(CatalogEndpoints):
@@ -150,7 +151,14 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             params["dbName"] = db_name if db_name is not None else ""
             params["username"] = username if username is not None else ""
 
-        result = self._cypher_runner.call_procedure(endpoint="gds.graph.drop", params=params, yields=GRAPH_INFO_YIELDS)
+        result = self._cypher_runner.call_procedure(
+            endpoint="gds.graph.drop",
+            params=params,
+            yields=GRAPH_INFO_YIELDS,
+            # dropping is idempotent as long as a missing graph is not an error
+            retryable=not fail_if_missing,
+            mode=QueryMode.WRITE,
+        )
         if len(result) > 0:
             return GraphInfo(**result.iloc[0])
         else:

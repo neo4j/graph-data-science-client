@@ -202,5 +202,5 @@ memory:
 
 [source, python, role=no-test]
 ----
-G.drop()
+G.drop(fail_if_missing=False)
 ----

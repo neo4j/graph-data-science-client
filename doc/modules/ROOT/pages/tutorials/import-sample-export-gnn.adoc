@@ -350,6 +350,6 @@ We remove the CORA graphs from the GDS graph catalog.
 
 [source, python, role=no-test]
 ----
-_ = G_sample.drop()
-_ = G.drop()
+_ = G_sample.drop(fail_if_missing=False)
+_ = G.drop(fail_if_missing=False)
 ----

@@ -355,8 +355,8 @@ print({k: v.name() for k, v in graph_components_by_labels.items()})
 ----
 # Now, we are only interested in the Chameleon graph,
 # so we will drop the other graphs and define a better variable for the one we keep
-graph_components_by_labels[str(["Crocodile"])].drop()
-graph_components_by_labels[str(["Squirrel"])].drop()
+graph_components_by_labels[str(["Crocodile"])].drop(fail_if_missing=False)
+graph_components_by_labels[str(["Squirrel"])].drop(fail_if_missing=False)
 G_chameleon = graph_components_by_labels[str(["Chameleon"])]
 ----
 
@@ -507,9 +507,9 @@ in-memory state and the database.
 ----
 # Cleanup GDS
 # Drop the in-memory graphs that are still in the Graph Catalog
-G_animals.drop()
-G_chameleon.drop()
-G_chameleon_sample.drop()
+G_animals.drop(fail_if_missing=False)
+G_chameleon.drop(fail_if_missing=False)
+G_chameleon_sample.drop(fail_if_missing=False)
 ----
 
 [source, python, role=no-test]

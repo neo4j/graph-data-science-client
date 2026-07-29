@@ -15,6 +15,7 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -161,7 +162,13 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
             relationship_type=relationship_type,
         )
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.relationships.drop", params=params).iloc[0]
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.relationships.drop",
+            params=params,
+            # dropping is idempotent as long as a missing relationship type is not an error
+            retryable=not fail_if_missing,
+            mode=QueryMode.WRITE,
+        ).iloc[0]
 
         return RelationshipsDropResult(**result)
 
