@@ -32,6 +32,7 @@ PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS = OrderedDict(
     ]
 )
 
+
 def procedure_name_from_python_endpoint(requested_endpoint: str) -> str:
     """Given a python client endpoint name returns the corresponding lowercase procedure name."""
     for procedure, endpoint in PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS.items():
@@ -39,4 +40,3 @@ def procedure_name_from_python_endpoint(requested_endpoint: str) -> str:
             requested_endpoint = requested_endpoint.replace(endpoint, procedure)
 
     return "".join(part for part in requested_endpoint.split("_"))
-

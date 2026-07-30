@@ -150,7 +150,10 @@ class GdsSessions:
     @staticmethod
     def _normalize_algorithms(algorithms: list[str] | dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
         if isinstance(algorithms, dict):
-            return {procedure_name_from_python_endpoint(name): ConfigConverter.convert_to_gds_config(**config) for name, config in algorithms.items()}
+            return {
+                procedure_name_from_python_endpoint(name): ConfigConverter.convert_to_gds_config(**config)
+                for name, config in algorithms.items()
+            }
         return {procedure_name_from_python_endpoint(name): {} for name in algorithms}
 
     def available_cloud_locations(self) -> list[CloudLocation]:
