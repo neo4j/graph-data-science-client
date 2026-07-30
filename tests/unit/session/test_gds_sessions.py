@@ -56,6 +56,8 @@ class FakeAuraApi(AuraApi):
         self._size_estimation = size_estimation or EstimationDetails("1GB", "8GB")
         self._console_user = console_user
         self._admin_user = admin_user
+        self.received_algorithms: dict[str, dict[str, Any]] | None = None
+        self.received_algorithm_categories: list[AlgorithmCategory] | None = None
 
     def get_or_create_session(
         self,
@@ -252,7 +254,10 @@ class FakeAuraApi(AuraApi):
         relationship_count: int,
         relationship_property_count: int,
         algorithm_categories: list[AlgorithmCategory],
+        algorithms: dict[str, dict[str, Any]] | None = None,
     ) -> EstimationDetails:
+        self.received_algorithm_categories = algorithm_categories
+        self.received_algorithms = algorithms
         return self._size_estimation
 
 
@@ -927,6 +932,41 @@ def test_estimate_str_categories_size() -> None:
     sessions = FakeGdsSessions(aura_api)
 
     assert sessions.estimate(1, 1, ["centrality"]) == SessionMemory.m_8GB
+
+
+def test_estimate_size_with_algorithm_names() -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
+    sessions = FakeGdsSessions(aura_api)
+
+    assert sessions.estimate(1, 1, algorithms=["wcc", "degree"]) == SessionMemory.m_8GB
+    assert aura_api.received_algorithms == {"wcc": {}, "degree": {}}
+    assert aura_api.received_algorithm_categories == []
+
+
+def test_estimate_size_with_algorithm_configs() -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
+    sessions = FakeGdsSessions(aura_api)
+
+    estimate = sessions.estimate(1, 1, algorithms={"wcc": {}, "fast_rp": {"embedding_dimension": 1024}})
+
+    assert estimate == SessionMemory.m_8GB
+    assert aura_api.received_algorithms == {"wcc": {}, "fastrp": {"embeddingDimension": 1024}}
+
+
+def test_estimate_size_without_algorithms() -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
+    sessions = FakeGdsSessions(aura_api)
+
+    assert sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY]) == SessionMemory.m_8GB
+    assert aura_api.received_algorithms is None
+
+
+def test_estimate_size_rejects_categories_and_algorithms() -> None:
+    aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
+    sessions = FakeGdsSessions(aura_api)
+
+    with pytest.raises(ValueError, match=re.escape("Cannot specify both `algorithm_categories` and `algorithms`.")):
+        sessions.estimate(1, 1, [AlgorithmCategory.CENTRALITY], algorithms=["wcc"])
 
 
 def test_estimate_size_exceeds() -> None:

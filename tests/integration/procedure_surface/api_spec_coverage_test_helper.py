@@ -19,6 +19,7 @@ from graphdatascience.procedure_surface.api.catalog import (
     GraphWithSamplingResult,
 )
 from graphdatascience.procedure_surface.api.debug_endpoints import DebugSysInfoResult
+from graphdatascience.session.endpoint_mappings import PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS
 from graphdatascience.versions import ServerVersion
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointSpec,
@@ -45,39 +46,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "util.is_infinite",  # built-in in python
     "util.na_n",  # built-in in python
 }
-
-BASE_ENDPOINT_MAPPINGS = OrderedDict(
-    [
-        ("closeness.harmonic", "harmonic_centrality"),
-        ("closeness", "closeness_centrality"),
-        ("betweenness", "betweenness_centrality"),
-        ("degree", "degree_centrality"),
-        ("eigenvector", "eigenvector_centrality"),
-        ("linkprediction", "topological_link_prediction"),
-        ("influenceMaximization.celf", "influence_maximization_celf"),
-        ("cliquecounting", "clique_counting"),
-        ("k1coloring", "k1_coloring"),
-        ("kcore", "k_core_decomposition"),
-        ("maxkcut", "max_k_cut"),
-        ("fastrp", "fast_rp"),
-        ("beta.graphSage", "graph_sage"),
-        ("ml.kge.predict", "kge.predict"),
-        ("hashgnn", "hash_gnn"),
-        ("astar", "a_star"),
-        ("kspanning_tree", "k_spanning_tree"),
-        ("prizesteiner_tree", "prize_steiner_tree"),
-        ("spanning_tree", "spanning_tree"),
-        ("steiner_tree", "steiner_tree"),
-        ("version", "server_version"),
-        ("beta.pipeline.nodeClassification", "pipeline.node_classification"),
-        ("alpha.pipeline.nodeClassification", "pipeline.node_classification"),
-        ("beta.pipeline.linkPrediction", "pipeline.link_prediction"),
-        ("alpha.pipeline.linkPrediction", "pipeline.link_prediction"),
-        ("alpha.pipeline.nodeRegression", "pipeline.node_regression"),
-        ("nodeLabel", "node_labels"),
-    ]
-)
-
 
 IGNORED_PARAMETERS = {
     # ignore internal parameter
@@ -257,7 +225,7 @@ def pythonic_endpoint_name(
 ) -> str:
     endpoint = endpoint.removeprefix("gds.")
 
-    for old, new in (endpoint_mappings or BASE_ENDPOINT_MAPPINGS).items():
+    for old, new in (endpoint_mappings or PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS).items():
         if old in endpoint:
             endpoint = endpoint.replace(old, new)
 

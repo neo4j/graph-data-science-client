@@ -9,6 +9,8 @@
 
 ## New features
 
+* Added an `algorithms` parameter to `GdsSessions.estimate` to estimate the memory for individual algorithms and their configuration, instead of whole algorithm categories.
+
 
 ## Bug fixes
 

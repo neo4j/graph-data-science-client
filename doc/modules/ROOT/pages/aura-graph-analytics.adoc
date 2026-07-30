@@ -274,6 +274,35 @@ memory = sessions.estimate(
 )
 ----
 
+Since  specifying an algorithm category will returns the estimated memory of the most memory consuming algorithms of that category, suggested session sized can be much larger than your workload actually needs.
+If you know which algorithms you intend to run, pass them via the `algorithms` parameter instead to get a finer-grained estimate.
+Algorithm names are matched case-insensitively and the `gds.` prefix is optional.
+
+.Estimating the size of a GDS Session for individual algorithms:
+[source, python, role=no-test]
+----
+memory = sessions.estimate(
+    node_count=20,
+    relationship_count=50,
+    algorithms=["wcc", "degree"]
+)
+----
+
+Algorithm configuration affects the estimate as well, so you can also pass a numeric configuration per algorithm.
+Algorithms without configuration map will use default values.
+
+.Estimating the size of a GDS Session for individual algorithms and their configuration:
+[source, python, role=no-test]
+----
+memory = sessions.estimate(
+    node_count=20,
+    relationship_count=50,
+    algorithms={"wcc": {}, "fast_rp": {"embedding_dimension": 1024}}
+)
+----
+
+The `algorithms` and `algorithm_categories` parameters are exclusive cannot be combined.
+
 For a detailed description of the allowed parameters, see the link:{neo4j-docs-base-uri}/graph-data-science-client/{docs-version}/api/sessions/gds_sessions/#graphdatascience.session.gds_sessions.GdsSessions.estimate[API reference].
 
 
