@@ -1211,6 +1211,58 @@ def test_estimate_size(requests_mock: Mocker) -> None:
         estimated_memory="3070GB", recommended_size="512GB"
     )
 
+    assert requests_mock.request_history[-1].json() == {
+        "node_count": 100,
+        "node_label_count": 1,
+        "node_property_count": 1,
+        "relationship_count": 10,
+        "relationship_property_count": 1,
+        "algorithm_categories": ["node-embedding"],
+    }
+
+
+def test_estimate_size_with_algorithms(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.post(
+        "https://api.neo4j.io/v1/graph-analytics/sessions/sizing",
+        json={"data": {"estimated_memory": "3070GB", "recommended_size": "512GB"}},
+    )
+
+    api = AuraApi("", "", project_id="some-tenant")
+    assert api.estimate_size(
+        100, 1, 1, 10, 1, [], algorithms={"wcc": {}, "fastRP": {"embeddingDimension": 1024}}
+    ) == EstimationDetails(estimated_memory="3070GB", recommended_size="512GB")
+
+    assert requests_mock.request_history[-1].json() == {
+        "node_count": 100,
+        "node_label_count": 1,
+        "node_property_count": 1,
+        "relationship_count": 10,
+        "relationship_property_count": 1,
+        "algorithms": [{"name": "wcc"}, {"name": "fastRP", "config": {"embeddingDimension": 1024}}],
+    }
+
+
+def test_estimate_size_omits_empty_fields(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+    requests_mock.post(
+        "https://api.neo4j.io/v1/graph-analytics/sessions/sizing",
+        json={"data": {"estimated_memory": "1GB", "recommended_size": "2GB"}},
+    )
+
+    api = AuraApi("", "", project_id="some-tenant")
+    assert api.estimate_size(100, 1, 1, 10, 1, []) == EstimationDetails(estimated_memory="1GB", recommended_size="2GB")
+
+    # The API rejects `algorithm_categories` and `algorithms` being present at the same time,
+    # so neither is sent unless it has content.
+    assert requests_mock.request_history[-1].json() == {
+        "node_count": 100,
+        "node_label_count": 1,
+        "node_property_count": 1,
+        "relationship_count": 10,
+        "relationship_property_count": 1,
+    }
+
 
 def test_extract_id() -> None:
     assert AuraApi.extract_id("neo4j+ssc://000fc8c8-envgdssync.databases.neo4j-dev.io") == "000fc8c8"

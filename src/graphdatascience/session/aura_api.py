@@ -204,7 +204,7 @@ class AuraApi:
         for error in raw_json.get("errors", []):
             errors_per_session[error["id"]].append(error)
 
-        return [SessionDetailsWithErrors.from_json_with_error(s, errors_per_session[s["id"]]) for s in data]  # noqa: F821
+        return [SessionDetailsWithErrors.from_json_with_error(s, errors_per_session[s["id"]]) for s in data]
 
     def wait_for_session_running(
         self,
@@ -333,15 +333,24 @@ class AuraApi:
         relationship_count: int,
         relationship_property_count: int,
         algorithm_categories: list[AlgorithmCategory],
+        algorithms: dict[str, dict[str, Any]] | None = None,
     ) -> EstimationDetails:
-        data = {
+        data: dict[str, Any] = {
             "node_count": node_count,
             "node_label_count": node_label_count,
             "node_property_count": node_property_count,
             "relationship_count": relationship_count,
             "relationship_property_count": relationship_property_count,
-            "algorithm_categories": [i.value for i in algorithm_categories],
         }
+
+        # The API rejects `algorithm_categories` being present at all if `algorithms` is given, and vice versa.
+        if algorithm_categories:
+            data["algorithm_categories"] = [i.value for i in algorithm_categories]
+
+        if algorithms:
+            data["algorithms"] = [
+                {"name": name, **({"config": config} if config else {})} for name, config in algorithms.items()
+            ]
 
         response = self._request_session.post(
             f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions/sizing", json=data
