@@ -1,5 +1,7 @@
-from graphdatascience.session.endpoint_mappings import procedure_name_from_python_endpoint
-from graphdatascience.session.endpoint_mappings import PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS
+from graphdatascience.session.endpoint_mappings import (
+    PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS,
+    procedure_name_from_python_endpoint,
+)
 from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSpec
 
 
@@ -24,7 +26,6 @@ def test_procedure_name_from_python_endpoint() -> None:
     assert procedure_name_from_python_endpoint("prize_steiner_tree") == "prizesteinertree"
     assert procedure_name_from_python_endpoint("spanning_tree") == "spanningtree"
     assert procedure_name_from_python_endpoint("steiner_tree") == "steinertree"
-
 
 
 def test_all_base_endpoint_mappings_are_used(gds_api_spec: list[EndpointWithModesSpec]) -> None:
