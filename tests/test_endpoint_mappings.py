@@ -1,7 +1,7 @@
 from graphdatascience.session.endpoint_mappings import procedure_name_from_python_endpoint
 
 
-def test_procedure_name_from_python_endpoint():
+def test_procedure_name_from_python_endpoint() -> None:
     assert procedure_name_from_python_endpoint("harmonic_centrality") == "closeness.harmonic"
     assert procedure_name_from_python_endpoint("closeness_centrality") == "closeness"
     assert procedure_name_from_python_endpoint("betweenness_centrality") == "betweenness"
