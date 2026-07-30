@@ -297,7 +297,7 @@ Algorithms without configuration map will use default values.
 memory = sessions.estimate(
     node_count=20,
     relationship_count=50,
-    algorithms={"wcc": {}, "fastRP": {"embedding_dimension": 1024}}
+    algorithms={"wcc": {}, "fast_rp": {"embedding_dimension": 1024}}
 )
 ----
 
