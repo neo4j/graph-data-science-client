@@ -947,10 +947,10 @@ def test_estimate_size_with_algorithm_configs() -> None:
     aura_api = FakeAuraApi(size_estimation=EstimationDetails("1GB", "8GB"))
     sessions = FakeGdsSessions(aura_api)
 
-    estimate = sessions.estimate(1, 1, algorithms={"wcc": {}, "fastRP": {"embedding_dimension": 1024}})
+    estimate = sessions.estimate(1, 1, algorithms={"wcc": {}, "fast_rp": {"embedding_dimension": 1024}})
 
     assert estimate == SessionMemory.m_8GB
-    assert aura_api.received_algorithms == {"wcc": {}, "fastRP": {"embeddingDimension": 1024}}
+    assert aura_api.received_algorithms == {"wcc": {}, "fastrp": {"embeddingDimension": 1024}}
 
 
 def test_estimate_size_without_algorithms() -> None:

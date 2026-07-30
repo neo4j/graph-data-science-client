@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
+from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
@@ -17,6 +18,7 @@ from graphdatascience.session.aura_api_token_authentication import AuraApiTokenA
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.endpoint_mappings import procedure_name_from_python_endpoint
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
@@ -148,8 +150,8 @@ class GdsSessions:
     @staticmethod
     def _normalize_algorithms(algorithms: list[str] | dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
         if isinstance(algorithms, dict):
-            return {name: ConfigConverter.convert_to_gds_config(**config) for name, config in algorithms.items()}
-        return {name: {} for name in algorithms}
+            return {procedure_name_from_python_endpoint(name): ConfigConverter.convert_to_gds_config(**config) for name, config in algorithms.items()}
+        return {procedure_name_from_python_endpoint(name): {} for name in algorithms}
 
     def available_cloud_locations(self) -> list[CloudLocation]:
         """
