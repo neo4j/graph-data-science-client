@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import installation_adoc
+import pypi
 
 from graphdatascience.versions import SemanticVersion
 
@@ -221,6 +222,8 @@ def main() -> None:
     # read new version from args
 
     print(f"Released version: {released_version}")
+
+    pypi.verify_released(str(released_version))
 
     # Calculate next version if not provided
     next_version = (

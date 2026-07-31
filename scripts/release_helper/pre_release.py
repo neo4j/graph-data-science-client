@@ -5,6 +5,7 @@ from pathlib import Path
 
 import colorama
 import installation_adoc
+import pypi
 import requests
 
 from graphdatascience.versions import ServerVersion
@@ -93,6 +94,8 @@ def main() -> None:
     repo_dir = Path(__file__).parent.parent.parent
     version = read_library_version(repo_dir)
     print(f"Version to be released: `{colorama.Fore.GREEN}{version}{colorama.Style.RESET_ALL}`")
+
+    pypi.verify_not_released(version)
 
     min_server_version = read_min_server_version(repo_dir)
     print(f"Minimum GDS Plugin version required: `{min_server_version}`")
