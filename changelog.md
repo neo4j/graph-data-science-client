@@ -14,6 +14,8 @@
 
 ## Bug fixes
 
+* Requests to the Aura API that are rejected as unauthorized are now retried once with a newly minted OAuth token, instead of failing permanently while the expired token stays cached. This affected operations such as `GdsSessions.delete`, which could leave a session running.
+
 
 ## Improvements
 

@@ -75,7 +75,7 @@ class AuraApi:
         self._project_details: ProjectDetails | None = None
 
     def _init_request_session(self) -> requests.Session:
-        request_session = requests.Session()
+        request_session = AuraApi.TokenRefreshSession(self._auth)
         request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
         request_session.auth = self._auth
         # dont retry on POST as its not idempotent
@@ -416,6 +416,32 @@ class AuraApi:
                 DeprecationWarning,
             )
 
+    class TokenRefreshSession(requests.Session):
+        """Retries a request once with a fresh token if it was rejected as unauthorized.
+
+        The gateway can reject a token that the client still considers valid.
+        Without this, such a rejection is permanent for as long as the token stays cached, since
+        `Auth` keeps replaying it until it is due for refresh.
+        """
+
+        def __init__(self, auth: AuraApi.Auth) -> None:
+            super().__init__()
+            self._auth = auth
+            self._logger = logging.getLogger()
+
+        def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> requests.Response:
+            response = super().request(method, url, *args, **kwargs)
+
+            if response.status_code != HTTPStatus.UNAUTHORIZED.value:
+                return response
+
+            self._logger.debug("Request was unauthorized, retrying it with a new oauth token")
+            # A 401 means the request was rejected before being acted on, so resending it is
+            # safe even for the methods we otherwise refuse to retry.
+            self._auth.invalidate_token()
+            response.close()
+            return super().request(method, url, *args, **kwargs)
+
     class Auth(requests.auth.AuthBase):
         class Token:
             access_token: str
@@ -466,6 +492,9 @@ class AuraApi:
         def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
             r.headers["Authorization"] = f"Bearer {self._auth_token()}"
             return r
+
+        def invalidate_token(self) -> None:
+            self._token = None
 
         def _auth_token(self) -> str:
             if self._token is None or self._token.should_refresh():
