@@ -877,6 +877,14 @@ def test_delete_nonexisting_session(aura_api: AuraApi) -> None:
     assert [i.name for i in sessions.list()] == ["one"]
 
 
+def test_delete_nonexisting_session_by_id(aura_api: AuraApi) -> None:
+    aura_api.get_or_create_session("one", memory=SessionMemory.m_8GB.value, instance_id="12345")
+    sessions = FakeGdsSessions(aura_api)
+
+    assert sessions.delete(session_id="does-not-exist") is False
+    assert [i.name for i in sessions.list()] == ["one"]
+
+
 def test_delete_session_paused_instance(aura_api: AuraApi) -> None:
     fake_aura_api = cast(FakeAuraApi, aura_api)
 

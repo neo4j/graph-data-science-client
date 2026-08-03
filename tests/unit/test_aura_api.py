@@ -33,6 +33,33 @@ def mock_auth_token(requests_mock: Mocker) -> None:
     )
 
 
+def test_error_message_is_not_wrapped() -> None:
+    error = AuraApiError("Request for https://api.neo4j.io/ failed with status code 401", 401)
+
+    assert str(error) == "Request for https://api.neo4j.io/ failed with status code 401"
+    assert error.args == ("Request for https://api.neo4j.io/ failed with status code 401",)
+
+
+def test_session_status_error_message_is_not_wrapped() -> None:
+    error = SessionStatusError([SessionErrorData(message="it broke", reason="Unknown")])
+
+    assert str(error).startswith("Session is in an unhealthy state.")
+
+
+def test_requests_use_a_timeout(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+    mock_auth_token(requests_mock)
+    requests_mock.delete("https://api.neo4j.io/v1/graph-analytics/sessions/id0", status_code=202)
+
+    api.delete_session("id0")
+
+    # Every request needs a bound, so that a stalled connection cannot block indefinitely.
+    # This covers the oauth token request as well as the api call itself.
+    timeouts: list[Any] = [r.timeout for r in requests_mock.request_history]
+    assert len(timeouts) == 2
+    assert all(timeout == AuraApi.DEFAULT_TIMEOUT for timeout in timeouts)
+
+
 def test_base_uri_from_env() -> None:
     assert AuraApi.base_uri("dev") == "https://api-dev.neo4j-dev.io"
     assert AuraApi.base_uri(None) == "https://api.neo4j.io"
@@ -1173,7 +1200,9 @@ def test_list_instance_unknown_error(requests_mock: Mocker) -> None:
 
     with pytest.raises(
         AuraApiError,
-        match="Request for https://api.neo4j.io/v1/instances/id0 failed with status code 500 - Not Found: `my text`'",
+        match=re.escape(
+            "Request for https://api.neo4j.io/v1/instances/id0 failed with status code 500 - Not Found: `my text`"
+        ),
     ):
         api.list_instance("id0")
 
