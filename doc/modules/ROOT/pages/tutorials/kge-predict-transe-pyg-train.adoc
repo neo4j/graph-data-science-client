@@ -268,7 +268,7 @@ Drop the projected graph to save memory.
 
 [source, python, role=no-test]
 ----
-gds.graph.drop(ttv_G)
+gds.graph.drop(ttv_G, fail_if_missing=False)
 ----
 
 The training process of the TransE model follows the corresponding PyG
@@ -488,7 +488,7 @@ gds.run_cypher(
 
 [source, python, role=no-test]
 ----
-gds.graph.drop(G_test)
+gds.graph.drop(G_test, fail_if_missing=False)
 ----
 
 == Cleanup

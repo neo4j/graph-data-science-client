@@ -109,6 +109,17 @@ def test_drop_passes_fail_if_missing_flag() -> None:
     assert runner.last_params()["failIfMissing"] is False
 
 
+def test_drop_is_retryable_only_when_missing_graphs_are_tolerated() -> None:
+    runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.drop": pd.DataFrame([_list_row()])})
+    backend = CypherGraphBackend("g", runner)
+
+    backend.drop(fail_if_missing=False)
+    assert runner.last_run_args()["retryable"] is True
+
+    backend.drop(fail_if_missing=True)
+    assert runner.last_run_args()["retryable"] is False
+
+
 def test_drop_returns_none_when_result_empty() -> None:
     runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.drop": pd.DataFrame()})
     backend = CypherGraphBackend("g", runner)

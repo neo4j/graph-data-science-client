@@ -312,7 +312,7 @@ other tasks.
 [source, python, role=no-test]
 ----
 # Drop the GDS graph represented by `G` from the GDS graph catalog
-_ = G.drop()
+_ = G.drop(fail_if_missing=False)
 ----
 
 [source, python, role=no-test]

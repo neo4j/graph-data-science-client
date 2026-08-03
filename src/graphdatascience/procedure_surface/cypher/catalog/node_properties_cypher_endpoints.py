@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -120,6 +121,12 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
 
         params = CallParameters(graph_name=G.name(), node_properties=node_properties, config=config)
 
-        result = self._query_runner.call_procedure(endpoint="gds.graph.nodeProperties.drop", params=params).iloc[0]
+        result = self._query_runner.call_procedure(
+            endpoint="gds.graph.nodeProperties.drop",
+            params=params,
+            # dropping is idempotent as long as missing properties are not an error
+            retryable=fail_if_missing is False,
+            mode=QueryMode.WRITE,
+        ).iloc[0]
 
         return NodePropertiesDropResult(**result)

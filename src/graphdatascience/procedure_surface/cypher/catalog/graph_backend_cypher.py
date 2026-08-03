@@ -8,6 +8,7 @@ from graphdatascience.procedure_surface.cypher.catalog.utils import (
     GRAPH_INFO_WITH_DEGREES_YIELDS,
     GRAPH_INFO_YIELDS,
 )
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -53,6 +54,9 @@ class CypherGraphBackend(GraphBackend):
             params=CallParameters(graph_name=self._name, failIfMissing=fail_if_missing),
             yields=GRAPH_INFO_YIELDS,
             custom_error=False,
+            # dropping is idempotent as long as a missing graph is not an error
+            retryable=not fail_if_missing,
+            mode=QueryMode.WRITE,
         )
 
         if info.empty:

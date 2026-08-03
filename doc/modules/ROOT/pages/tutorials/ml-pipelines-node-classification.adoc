@@ -494,7 +494,7 @@ model_fastrp.drop()
 node_pipeline.drop()
 node_pipeline_fastrp.drop()
 
-G.drop()
+G.drop(fail_if_missing=False)
 ----
 
 The Neo4j database instead needs to be cleaned up explicitly if no

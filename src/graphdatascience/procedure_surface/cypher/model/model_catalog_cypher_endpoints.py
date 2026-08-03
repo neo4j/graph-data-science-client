@@ -14,6 +14,7 @@ from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import
     ModelLoadResult,
     ModelStoreResult,
 )
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -47,7 +48,14 @@ class ModelCatalogCypherEndpoints(ModelCatalogEndpoints):
 
     def drop(self, model_name: str, *, fail_if_missing: bool = True) -> ModelDetails | None:
         params = CallParameters(model_name=model_name, fail_if_missing=fail_if_missing)
-        df = self._query_runner.call_procedure("gds.model.drop", params=params, custom_error=False)
+        df = self._query_runner.call_procedure(
+            "gds.model.drop",
+            params=params,
+            custom_error=False,
+            # dropping is idempotent as long as a missing model is not an error
+            retryable=not fail_if_missing,
+            mode=QueryMode.WRITE,
+        )
         if df.empty and fail_if_missing:
             raise ValueError(f"Model with name `{model_name}` does not exist")
         if df.empty:
@@ -58,7 +66,14 @@ class ModelCatalogCypherEndpoints(ModelCatalogEndpoints):
         params = CallParameters(model_name=model_name)
 
         try:
-            df = self._query_runner.call_procedure("gds.model.delete", params=params, custom_error=False)
+            df = self._query_runner.call_procedure(
+                "gds.model.delete",
+                params=params,
+                custom_error=False,
+                # deleting is idempotent as long as a missing model is not an error
+                retryable=not fail_if_missing,
+                mode=QueryMode.WRITE,
+            )
         except neo4j.exceptions.ClientError as e:
             if "Model with name" not in str(e) or fail_if_missing:
                 raise e
