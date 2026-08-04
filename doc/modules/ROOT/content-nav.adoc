@@ -14,9 +14,10 @@ include::partial$tutorial-list.adoc[]
 
 * *Graph operations*
 * xref:graph-object.adoc[]
-* Non-Neo4j data sources
+* Use non-Neo4j data sources
 ** xref:load-from-pandas.adoc[]
 ** xref:load-from-networkx.adoc[]
+* xref:read-graph.adoc[]
 * xref:algorithms.adoc[]
 * xref:bookmarks.adoc[]
 

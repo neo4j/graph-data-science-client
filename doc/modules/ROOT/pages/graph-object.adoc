@@ -1,13 +1,23 @@
-= The graph object
+= Create a graph
 
-In order to utilize most the functionality in GDS, you must first project a graph into the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog].
-When projecting a graph with the Python client, a client-side reference to the projected graph is returned.
-We call these references link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] objects.
+The main entry point to every graph operation in the Python client is the _in-memory graph_.
 
-Once created, the `Graph` objects can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
+There are several ways to create an in-memory graph:
+
+* From a Neo4j database with a <<projection, projection>>
+* [[construct]] From xref:load-from-pandas.adoc[Pandas DataFrames]
+* [[networkx]] From a xref:load-from-networkx.adoc[NetworkX graph]
+
+Once created, the link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] object can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
+
 Additionally, the `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
 
+[NOTE]
+====
+TODO: embed note
+
 include::ROOT:partial$/gds-object.adoc[]
+====
 
 [[projection]]
 == Projecting a graph object
@@ -140,16 +150,6 @@ G, result = gds.graph.project.cypher(
 assert G.node_count() == result.node_count
 ----
 
-[[construct]]
-== Constructing a graph from DataFrames [PLACEHOLDER]
-
-xref:load-from-pandas.adoc[]
-
-[[networkx]]
-== Loading a NetworkX graph [PLACEHOLDER]
-
-xref:load-from-networkx.adoc[]
-
 == Inspecting a graph object
 
 There are convenience methods on the graph object that let us extract information about our projected graph.
@@ -251,90 +251,7 @@ gds.graph.drop(G)
 ----
 
 
-[[graph-object-streaming-properties]]
-==== Streaming properties
+TODO: Remove Placeholders
 
-The client methods
-
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
-
-are greatly sped up if link:{gds-docs-base-uri}/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS is enabled.
-
-Additionally, the client only optional keyword parameter `separate_property_columns=True` (it defaults to `True`) for `gds.graph.streamNodeProperties` and `gds.graph.streamRelationshipProperties` returns a pandas `DataFrame` in which each property requested has its own column.
-Note that this is different from the default behavior for which there would only be one column called `propertyValue` that contains all properties requested interleaved for each node or relationship.
-
-
-[[graph-object-streaming-db-properties]]
-==== Including node properties from Neo4j
-
-Node properties such as names and descriptions are useful to understand the output of an algorithm, even if not needed to run the algorithm itself.
-To fetch additional node properties directly from the Neo4j database, you can use the `db_node_properties` client-only parameter of the `gds.graph.nodeProperty.stream` and `gds.graph.nodeProperties.stream` methods.
-
-In the following example, the `City` nodes have both a numeric and a `String` property.
-The `stream` method retrieves the values of the database-only `name` property alongside the values of the projected `population` property.
-
-[source,python,group=graph-project]
-----
-gds.run_cypher(
-  """
-  CREATE
-    (m: City {name: "Malmö", population: 360000}),
-    (l: City {name: "London", population: 8800000}),
-    (s: City {name: "San Mateo", population: 105000}),
-
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
-  """
-)
-
-G, result = gds.graph.project.native(
-    "offices",
-    {
-        "City": {
-            "properties": ["population"]
-        }
-    },
-    "FLY_TO"
-)
-
-gds.graph.node_properties.stream(G, node_properties=["population"], db_node_properties=["name"])
-----
-
-
-==== Streaming topology by relationship type
-
-The type returned from the Python client method corresponding to link:{gds-docs-base-uri}/graph-catalog-relationship-ops/#_stream[`gds.graph.relationships.stream`] is called `RelationshipsDataFrame` and inherits from the standard pandas `DataFrame`.
-`TopologyDataFrame` comes with an additional convenience method named `by_rel_type` which takes no arguments, and returns a dictionary of the form `Dict[str, List[List[int]]]`.
-This dictionary maps relationship types as strings to `2 x m` matrices where `m` here represents the number of relationhips of the given type.
-The first row of each such matrix are the source node ids of the relationships, and the second row are the corresponding target node ids.
-
-We can illustrate this transformation with an example graph that is a simple four-node cycle:
-
-[source,python, group=graph-roundtrip, min-server-version=2.2.0]
-----
-gds.run_cypher(
-  """
-  CREATE
-    (a:N)-[:REL]->(b:N),
-    (b)-[:REL]->(c:N),
-    (c)-[:REL]->(d:N),
-    (d)-[:REL]->(a)
-  """
-)
-G, _ = gds.graph.project.native("cycle", "N", "REL")
-
-topology_by_rel_type = gds.graph.relationships.stream(G).by_rel_type()
-
-assert list(topology_by_rel_type.keys()) == ["REL"]
-sources, targets = topology_by_rel_type["REL"]
-# In a cycle every node appears once as a source and once as a target
-assert len(sources) == 4
-assert set(sources) == set(targets)
-----
-
-Like the <<graph-object-streaming-properties>> methods, the `gds.graph.relationships.stream` is also accelerated if the GDS Apache Arrow Flight Server is enabled.
+* [[graph-object-streaming-properties]] Streaming properties
+* [[graph-object-streaming-db-properties]] Including node properties from Neo4j
