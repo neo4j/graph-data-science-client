@@ -38,7 +38,7 @@ class AuraApiError(Exception):
     """
 
     def __init__(self, message: str, status_code: int):
-        super().__init__(self, message)
+        super().__init__(message)
         self.status_code = status_code
         self.message = message
 
@@ -51,11 +51,15 @@ class SessionStatusError(Exception):
     def __init__(self, errors: list[SessionErrorData]):
         message = f"Session is in an unhealthy state. Details: {[str(e) for e in errors]}"
 
-        super().__init__(self, message)
+        super().__init__(message)
 
 
 class AuraApi:
     API_VERSION = "v1"
+
+    # (connect, read) timeouts in seconds, applied per attempt. These are a guard against a
+    # connection stalling indefinitely.
+    DEFAULT_TIMEOUT = (10.0, 120.0)
 
     def __init__(
         self, client_id: str, client_secret: str, project_id: str | None = None, aura_env: str | None = None
@@ -75,7 +79,7 @@ class AuraApi:
         self._project_details: ProjectDetails | None = None
 
     def _init_request_session(self) -> requests.Session:
-        request_session = requests.Session()
+        request_session = AuraApi.TokenRefreshSession(self._auth)
         request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
         request_session.auth = self._auth
         # dont retry on POST as its not idempotent
@@ -84,7 +88,8 @@ class AuraApi:
             HTTPAdapter(
                 max_retries=Retry(
                     allowed_methods=["GET", "DELETE"],
-                    total=10,
+                    # These retries reuse the token that was signed in before the first attempt
+                    total=4,
                     status_forcelist=[
                         HTTPStatus.TOO_MANY_REQUESTS.value,
                         HTTPStatus.INTERNAL_SERVER_ERROR.value,
@@ -416,6 +421,39 @@ class AuraApi:
                 DeprecationWarning,
             )
 
+    class TokenRefreshSession(requests.Session):
+        """Retries a request once with a fresh token if it was rejected as unauthorized.
+
+        `Auth` signs a request once, when it is prepared, so any retry below this layer replays
+        that same token. A request that is retried or stalls for longer than the token had left
+        therefore arrives with a token the server rightfully rejects. The gateway may also reject
+        a token the client still considers valid, if its own notion of the lifetime is shorter
+        than the one advertised by `expires_in`.
+
+        Without this, such a rejection is permanent for as long as the token stays cached, since
+        `Auth` keeps replaying it until it is due for refresh.
+        """
+
+        def __init__(self, auth: AuraApi.Auth) -> None:
+            super().__init__()
+            self._auth = auth
+            self._logger = logging.getLogger()
+
+        def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> requests.Response:
+            kwargs.setdefault("timeout", AuraApi.DEFAULT_TIMEOUT)
+            response = super().request(method, url, *args, **kwargs)
+
+            if response.status_code != HTTPStatus.UNAUTHORIZED.value:
+                return response
+
+            self._logger.debug("Request was unauthorized, retrying it with a new oauth token")
+            # A 401 means the request was rejected before being acted on, so resending it is
+            # safe even for the methods we otherwise refuse to retry.
+            response.close()
+            self._auth.invalidate_token()
+
+            return super().request(method, url, *args, **kwargs)
+
     class Auth(requests.auth.AuthBase):
         class Token:
             access_token: str
@@ -467,6 +505,9 @@ class AuraApi:
             r.headers["Authorization"] = f"Bearer {self._auth_token()}"
             return r
 
+        def invalidate_token(self) -> None:
+            self._token = None
+
         def _auth_token(self) -> str:
             if self._token is None or self._token.should_refresh():
                 self._token = self._update_token()
@@ -480,7 +521,10 @@ class AuraApi:
             self._logger.debug("Updating oauth token")
 
             resp = self._request_session.post(
-                self._oauth_url, data=data, auth=(self._credentials[0], self._credentials[1])
+                self._oauth_url,
+                data=data,
+                auth=(self._credentials[0], self._credentials[1]),
+                timeout=AuraApi.DEFAULT_TIMEOUT,
             )
 
             if resp.status_code >= 400:

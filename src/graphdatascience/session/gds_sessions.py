@@ -280,12 +280,12 @@ class GdsSessions:
             raise ValueError("Either session_name or session_id must be provided.")
 
         if session_id:
-            return self._aura_api.delete_session(session_id) is not None
+            return self._aura_api.delete_session(session_id)
 
         if session_name:
             candidate = self._find_existing_session(session_name)
             if candidate:
-                return self._aura_api.delete_session(candidate.id) is not None
+                return self._aura_api.delete_session(candidate.id)
 
         return False
 
