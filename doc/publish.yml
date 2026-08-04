@@ -38,6 +38,8 @@ asciidoc:
   - "@neo4j-documentation/macros"
   - "@neo4j-antora/mark-terms"
   attributes:
+    page-tabs: tools@
+    page-tabs-index: 80
     page-theme: docs
     page-type: Docs
     page-search-type: Docs

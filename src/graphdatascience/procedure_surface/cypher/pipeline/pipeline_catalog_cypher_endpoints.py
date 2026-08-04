@@ -8,6 +8,7 @@ from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result imp
     PipelineCatalogEntry,
     PipelineExistsResult,
 )
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 
@@ -42,7 +43,14 @@ class PipelineCatalogCypherEndpoints:
 
     def drop(self, pipeline_name: str, *, fail_if_missing: bool = False) -> PipelineCatalogEntry | None:
         params = CallParameters(pipeline_name=pipeline_name, fail_if_missing=fail_if_missing)
-        result = self._query_runner.call_procedure("gds.pipeline.drop", params=params, custom_error=False)
+        result = self._query_runner.call_procedure(
+            "gds.pipeline.drop",
+            params=params,
+            custom_error=False,
+            # dropping is idempotent as long as a missing pipeline is not an error
+            retryable=not fail_if_missing,
+            mode=QueryMode.WRITE,
+        )
 
         if result.empty and fail_if_missing:
             raise ValueError(f"Pipeline with name `{pipeline_name}` does not exist")

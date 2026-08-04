@@ -282,8 +282,8 @@ in-memory state and the database.
 [source, python, role=no-test]
 ----
 # Cleanup GDS
-largest_component_graph.drop()
-G.drop()
+largest_component_graph.drop(fail_if_missing=False)
+G.drop(fail_if_missing=False)
 ----
 
 [source, python, role=no-test]

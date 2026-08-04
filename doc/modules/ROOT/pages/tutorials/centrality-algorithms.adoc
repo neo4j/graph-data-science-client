@@ -314,7 +314,7 @@ in-memory state and the database.
 [source, python, role=no-test]
 ----
 # Cleanup GDS
-G.drop()
+G.drop(fail_if_missing=False)
 ----
 
 [source, python, role=no-test]

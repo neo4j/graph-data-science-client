@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from graphdatascience.procedure_surface.cypher.pipeline.pipeline_cypher_endpoints import PipelineCypherEndpoints
+from graphdatascience.query_runner.query_mode import QueryMode
 
 
 def test_pipeline_cypher_list_runs_query() -> None:
@@ -93,6 +94,8 @@ def test_pipeline_cypher_drop_returns_catalog_entry_when_pipeline_exists() -> No
         "gds.pipeline.drop",
         params=mock.ANY,
         custom_error=False,
+        retryable=True,
+        mode=QueryMode.WRITE,
     )
     assert query_runner.call_procedure.call_args.kwargs["params"] == {
         "pipeline_name": "pipe",

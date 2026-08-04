@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 from graphdatascience.procedure_surface.cypher.catalog.catalog_cypher_endpoints import CatalogCypherEndpoints
+from graphdatascience.query_runner.query_mode import QueryMode
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
@@ -73,3 +74,14 @@ def test_drop_defaults_username_when_only_db_name_given() -> None:
     params = runner.last_params()
     assert params["dbName"] == "neo4j"
     assert params["username"] == ""
+
+
+def test_drop_is_retryable_only_when_missing_graphs_are_tolerated() -> None:
+    endpoints, runner = _endpoints()
+
+    endpoints.drop("g", fail_if_missing=False)
+    assert runner.last_run_args()["retryable"] is True
+    assert runner.last_run_args()["mode"] == QueryMode.WRITE
+
+    endpoints.drop("g", fail_if_missing=True)
+    assert runner.last_run_args()["retryable"] is False
