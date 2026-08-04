@@ -71,6 +71,15 @@ class SessionDetails:
     def is_ready(self) -> bool:
         return self.status.lower() == "ready"
 
+    def is_failed(self) -> bool:
+        return self.status.lower() == "failed"
+
+    def is_expired(self) -> bool:
+        return self.status.lower() == "expired"
+
+    def is_deleted(self) -> bool:
+        return self.status.lower() == "deleted"
+
 
 @dataclass(repr=True, frozen=True)
 class SessionDetailsWithErrors(SessionDetails):
@@ -128,6 +137,9 @@ class SessionErrorData:
 
     def __str__(self) -> str:
         return f"Reason: {self.reason}, Message: {self.message}"
+
+    def is_out_of_memory(self) -> bool:
+        return self.reason.lower() == "outofmemory"
 
 
 @dataclass(repr=True, frozen=True)

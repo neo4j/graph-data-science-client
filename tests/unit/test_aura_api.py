@@ -1,4 +1,5 @@
 import logging
+import pickle
 import re
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
@@ -373,6 +374,54 @@ def test_get_session_state_error_forwards(requests_mock: Mocker) -> None:
         api.get_session("id0")
 
 
+def test_get_session_with_errors_returns_errors(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Failed",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "project_id": "tenant-0",
+                "user_id": "user-0",
+            },
+            "errors": [
+                {
+                    "id": "id0",
+                    "message": "details here",
+                    "reason": "OutOfMemory",
+                }
+            ],
+        },
+    )
+
+    result = api.get_session_with_errors("id0")
+
+    assert result is not None
+    assert result.status == "Failed"
+    assert result.memory == SessionMemory.m_4GB.value
+    assert result.errors == [SessionErrorData(message="details here", reason="OutOfMemory")]
+
+
+def test_get_session_with_errors_of_missing_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get("https://api.neo4j.io/v1/graph-analytics/sessions/id0", status_code=HTTPStatus.NOT_FOUND.value)
+
+    assert api.get_session_with_errors("id0") is None
+
+
 def test_list_sessions(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
     mock_auth_token(requests_mock)
@@ -737,6 +786,20 @@ def test_unauthorized_is_only_retried_once(requests_mock: Mocker) -> None:
 
     delete_requests = [r for r in requests_mock.request_history if r.method == "DELETE"]
     assert len(delete_requests) == 2
+
+
+def test_pickle_roundtrip() -> None:
+    api = AuraApi(client_id="client_id", client_secret="client_secret", project_id="some-tenant")
+
+    unpickled_api = pickle.loads(pickle.dumps(api))
+
+    assert unpickled_api._project_id == "some-tenant"
+    assert unpickled_api._credentials == ("client_id", "client_secret")
+    # `requests.Session` drops the attributes added by its subclasses, so the sessions are rebuilt
+    assert isinstance(unpickled_api._request_session, AuraApi.TokenRefreshSession)
+    assert unpickled_api._request_session._auth is unpickled_api._auth
+    assert unpickled_api._health_check_session._auth is unpickled_api._auth
+    assert unpickled_api._auth._request_session is not None
 
 
 def test_delete_missing_session(requests_mock: Mocker) -> None:

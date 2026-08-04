@@ -5,7 +5,7 @@ import logging
 import platform
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, Iterator, Type
+from typing import Any, Callable, Iterator, Type, TypeVar
 
 import certifi
 from pyarrow import Schema, flight
@@ -22,12 +22,15 @@ from pyarrow.flight import (
 )
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
+from graphdatascience.arrow_client.server_health_check import ServerHealthCheck
 from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2, StopConfig
 
 from ..version import __version__
 from .arrow_client_options_util import TLS_ROOT_CERTS_OPTION, set_tls_root_certs
 from .middleware.auth_middleware import AuthFactory, AuthMiddleware
 from .middleware.user_agent_middleware import UserAgentFactory
+
+T = TypeVar("T")
 
 
 class AuthenticatedArrowClient:
@@ -40,6 +43,7 @@ class AuthenticatedArrowClient:
         user_agent: str | None = None,
         advertised_listen_address: tuple[str, int] | None = None,
         retry_config: RetryConfigV2 | None = None,
+        health_check: ServerHealthCheck | None = None,
     ):
         """Creates a new AuthenticatedArrowClient instance.
 
@@ -59,6 +63,9 @@ class AuthenticatedArrowClient:
             The retry configuration to use for the Arrow requests send by the client.
         advertised_listen_address
             The advertised listen address of the GDS Arrow server. This will be used by remote projection and writeback operations.
+        health_check
+            Optional health check consulted when the server could not be reached, after all retries were
+            exhausted. It is expected to raise a more descriptive error if it can explain the failure (such as out-of-memory error) and to return without raising otherwise.
         """
 
         if isinstance(connection_info, str):
@@ -86,6 +93,7 @@ class AuthenticatedArrowClient:
         self._user_agent = user_agent
         self._logger = logging.getLogger("gds_arrow_client")
         self._retry_config = retry_config
+        self._health_check = health_check
         if auth:
             self._auth_middleware = AuthMiddleware(auth)
         self.advertised_listen_address = advertised_listen_address
@@ -139,7 +147,7 @@ class AuthenticatedArrowClient:
                 raise
 
         if self._auth:
-            auth_with_retry()
+            self._diagnose_connection_failure(auth_with_retry)
             return self._auth_middleware.token()
         else:
             return "IGNORED"
@@ -163,7 +171,7 @@ class AuthenticatedArrowClient:
                 self._reconnect()
                 raise
 
-        return run_with_retry()
+        return self._diagnose_connection_failure(run_with_retry)
 
     def list_actions(self) -> set[ActionType]:
         return self._flight_client.list_actions()  # type: ignore
@@ -179,7 +187,19 @@ class AuthenticatedArrowClient:
                 self._reconnect()
                 raise
 
-        return run_with_retry()
+        return self._diagnose_connection_failure(run_with_retry)
+
+    def _diagnose_connection_failure(self, operation: Callable[[], T]) -> T:
+        """
+        Runs the given operation and, if the server could not be reached, gives the health check
+        the chance to raise a more descriptive error.
+        """
+        try:
+            return operation()
+        except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+            if self._health_check:
+                self._health_check.raise_if_unhealthy()
+            raise
 
     def __enter__(self) -> AuthenticatedArrowClient:
         return self
@@ -230,6 +250,7 @@ class AuthenticatedArrowClient:
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         self.__dict__.update(state)
+        self.__dict__.setdefault("_health_check", None)
         self._flight_client = self._instantiate_flight_client()
 
     def _reconnect(self) -> None:

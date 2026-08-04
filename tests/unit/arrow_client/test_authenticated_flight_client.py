@@ -6,7 +6,10 @@ from pytest_mock import MockerFixture
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
+from graphdatascience.arrow_client.server_health_check import ServerHealthCheck
 from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2
+from graphdatascience.session.aura_api import AuraApi
+from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 
 
 @pytest.fixture
@@ -84,3 +87,59 @@ def test_do_action_with_retry_reconnects_on_retryable_error(
     assert result == [expected_result]
     assert instantiate.call_count == 2
     first_client.close.assert_called_once()
+
+
+def test_do_action_with_retry_reports_unhealthy_server(retry_config_v2: RetryConfigV2, mocker: MockerFixture) -> None:
+    flight_client = mocker.Mock()
+    flight_client.do_action.side_effect = FlightUnavailableError("Flight server is unavailable")
+    mocker.patch.object(AuthenticatedArrowClient, "_instantiate_flight_client", return_value=flight_client)
+
+    class SessionIsDead(Exception):
+        pass
+
+    class FailedSessionHealthCheck(ServerHealthCheck):
+        def raise_if_unhealthy(self) -> None:
+            raise SessionIsDead("The session ran out of memory")
+
+    client = AuthenticatedArrowClient(
+        ("localhost", 8491), retry_config=retry_config_v2, health_check=FailedSessionHealthCheck()
+    )
+
+    with pytest.raises(SessionIsDead, match="The session ran out of memory") as e:
+        client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
+
+    # the underlying error is kept as the context of the more descriptive one
+    assert isinstance(e.value.__context__, FlightUnavailableError)
+
+
+def test_do_action_with_retry_keeps_error_if_health_check_explains_nothing(
+    retry_config_v2: RetryConfigV2, mocker: MockerFixture
+) -> None:
+    flight_client = mocker.Mock()
+    flight_client.do_action.side_effect = FlightUnavailableError("Flight server is unavailable")
+    mocker.patch.object(AuthenticatedArrowClient, "_instantiate_flight_client", return_value=flight_client)
+
+    health_check = mocker.Mock(spec=ServerHealthCheck)
+
+    client = AuthenticatedArrowClient(("localhost", 8491), retry_config=retry_config_v2, health_check=health_check)
+
+    with pytest.raises(FlightUnavailableError, match="Flight server is unavailable"):
+        client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
+
+    health_check.raise_if_unhealthy.assert_called_once()
+
+
+def test_pickle_roundtrip_keeps_health_check(retry_config_v2: RetryConfigV2) -> None:
+    aura_api = AuraApi(client_id="client_id", client_secret="client_secret", project_id="project_id")
+    client = AuthenticatedArrowClient(
+        ("localhost", 8491),
+        retry_config=retry_config_v2,
+        health_check=SessionLifecycleManager("session-0", aura_api),
+    )
+    import pickle
+
+    unpickled_client = pickle.loads(pickle.dumps(client))
+
+    health_check = unpickled_client._health_check
+    assert isinstance(health_check, SessionLifecycleManager)
+    assert health_check.session_id == "session-0"
