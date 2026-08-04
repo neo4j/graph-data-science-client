@@ -14,7 +14,7 @@ Additionally, the `Graph` objects have convenience methods allowing for inspecti
 
 [NOTE]
 ====
-TODO: embed note
+// TODO: embed note
 
 include::ROOT:partial$/gds-object.adoc[]
 ====
@@ -214,6 +214,8 @@ The primary use case for a graph object is to pass it to algorithms, but it's al
 
 === Input to algorithms
 
+// TODO: remove section
+
 The Python client syntax for using a `Graph` as input to an algorithm follows the GDS Cypher procedure API, where the graph is the first parameter passed to the algorithm.
 
 include::ROOT:partial$/algorithm-syntax.adoc[]
@@ -251,7 +253,7 @@ gds.graph.drop(G)
 ----
 
 
-TODO: Remove Placeholders
+// TODO: Remove Placeholders
 
 * [[graph-object-streaming-properties]] Streaming properties
 * [[graph-object-streaming-db-properties]] Including node properties from Neo4j

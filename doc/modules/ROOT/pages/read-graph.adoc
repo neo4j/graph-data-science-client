@@ -20,7 +20,7 @@ The client includes an additional `separate_property_columns` keyword parameter 
 
 When not used, the default behavior for such methods is to return a single column called `propertyValue` with all the requested properties for each node or relationship.
 
-TODO: Examples
+// TODO: Examples
 
 === Include node properties from Neo4j
 
@@ -64,7 +64,7 @@ gds.graph.node_properties.stream(G, node_properties=["population"], db_node_prop
 
 When reading the graph topology via the client equivalent to link:{gds-docs-base-uri}/graph-catalog-relationship-ops/#_stream[`gds.graph.relationships.stream`], the return type is `TopologyDataFrame` (a subtype of `DataFrame`).
 
-TODO: clarify definition
+// TODO: clarify definition
 
 This type comes includes the `by_rel_type` method to return a map from relationship types to `2 x m` matrices, where `m` represents the number of relationhips of the given type.
 The first row of each such matrix are the source node ids of the relationships, and the second row are the corresponding target node ids.
