@@ -7,7 +7,6 @@
 * The minimum supported Neo4j Python driver version is now `5.26.0`. The Neo4j `4.4` driver is no longer supported.
 * Pandas `1.x` is no longer supported. The supported range is now `pandas >= 2.0, < 4.0`, which includes Pandas `3.0`.
 * The supported `pyarrow` range is now `>= 18.0, < 26.0`, and the supported `numpy` range is now `< 3.0`.
-* `GdsSessions.create` has been removed.
 * The `failIfMissing` parameter of `Graph.drop` and `Model.drop` was renamed to `fail_if_missing`.
 * `ServerVersion` and `SemanticVersion` have moved to the `graphdatascience.versions` package.
 * The `write_concurrency` and `job_id` parameters have been removed from `gds.graph.node_labels.mutate`.
