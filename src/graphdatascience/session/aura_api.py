@@ -449,8 +449,9 @@ class AuraApi:
             self._logger.debug("Request was unauthorized, retrying it with a new oauth token")
             # A 401 means the request was rejected before being acted on, so resending it is
             # safe even for the methods we otherwise refuse to retry.
-            self._auth.invalidate_token()
             response.close()
+            self._auth.invalidate_token()
+
             return super().request(method, url, *args, **kwargs)
 
     class Auth(requests.auth.AuthBase):
