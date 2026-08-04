@@ -14,8 +14,8 @@
 
 ## Bug fixes
 
-* Requests to the Aura API that are rejected as unauthorized are now retried once with a newly minted OAuth token, instead of failing permanently while the expired token stays cached. This affected operations such as `GdsSessions.delete`, which could leave a session running.
-* Requests to the Aura API now use a connect and read timeout, so that a stalled connection can no longer block a call indefinitely. The number of retries was also reduced, so that a request is less likely to be retried for longer than its OAuth token stays valid.
+* Requests to the Aura API that are rejected as unauthorized are now retried once with a new OAuth token, instead of failing permanently while the expired token stays cached
+* Requests to the Aura API now use a connect and read timeout, so that a stalled connection can no longer block a call indefinitely.
 * `GdsSessions.delete` now returns `False` if no session was deleted when called with a `session_id`. It previously always returned `True`.
 * `AuraApiError` and `SessionStatusError` no longer include a repetition of the exception object in their message.
 
