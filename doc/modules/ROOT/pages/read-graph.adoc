@@ -7,32 +7,24 @@ The data in a graph can be read in several ways.
 
 The methods to read node and relationship properties from a graph are the same as in the Cypher API.
 
-Assuming the `Graph` object is called `gds`:
+Assuming the `GraphDataScience` object is called `gds`:
 
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.streamNodeProperty`) returns a single node property
 * link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_properties.stream`] (previously `gds.graph.streamNodeProperties`) returns multiple node properties
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.streamRelationshipProperty`) returns a single relationship property
 * link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.streamRelationshipProperties`) returns multiple relationship properties
 
 [NOTE]
 ====
-Removed in v2:
+Before version 2.0, the `node_properties.stream` and `relationship_properties.stream` methods included an additional `separate_property_columns` keyword parameter (default `True`) to return a Pandas `DataFrame` in which each property had its own column.
 
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.streamNodeProperty`) returns a single node property
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.streamRelationshipProperty`) returns a single relationship property
-
+Starting with version 2.0, this behaviour is the default and the parameter has been removed.
 ====
-
-=== Split property values into columns
-
-The client includes an additional `separate_property_columns` keyword parameter (default `True`) for the `node_properties.stream` and `relationship_properties.stream` methods to return a Pandas `DataFrame` in which each property has its own column.
-
-When not used, the default behavior for such methods is to return a single column called `propertyValue` with all the requested properties for each node or relationship.
-
-// TODO: Examples
 
 === Include node properties from Neo4j
 
 Node properties such as names and descriptions are useful to understand the output of an algorithm, even if not needed to run the algorithm itself.
-When a graph is projected from a Neo4j database, the `db_node_properties` client-only parameter for the node property streaming methods adds this information to the result.
+When a graph is projected from a Neo4j database, the `db_node_properties` client-only parameter for the `node_property.stream` method adds this information to the result.
 
 In the following example, the `City` nodes have both a numeric and a `String` property.
 The `stream` method retrieves the values of the database-only `name` property alongside the values of the projected `population` property.
