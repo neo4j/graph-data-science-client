@@ -21,6 +21,9 @@ Before version 2.0, the `node_properties.stream` and `relationship_properties.st
 Starting with version 2.0, this behaviour is the default and the parameter has been removed.
 ====
 
+// TODO: Add examples
+
+[[graph-object-streaming-db-properties]]
 === Include node properties from Neo4j
 
 Node properties such as names and descriptions are useful to understand the output of an algorithm, even if not needed to run the algorithm itself.

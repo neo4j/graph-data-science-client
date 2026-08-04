@@ -211,16 +211,20 @@ assert not gds.graph.exists("tmp_offices")
 
 The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog].
 
+// TODO: Remove Placeholders
 
-=== Input to algorithms
+Links:
 
-// TODO: remove section
+* xref:algorithms.adoc[Input to algorithms]
+* [[graph-object-streaming-properties]] xref:read-graph.adoc#graph-object-streaming-properties[Streaming properties]
+* [[graph-object-streaming-db-properties]] xref:read-graph.adoc#graph-object-streaming-db-properties[Including node properties from Neo4j]
 
-The Python client syntax for using a `Graph` as input to an algorithm follows the GDS Cypher procedure API, where the graph is the first parameter passed to the algorithm.
+=== The graph catalog
 
-include::ROOT:partial$/algorithm-syntax.adoc[]
+All procedures of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog] have corresponding Python methods in the client.
+Of those catalog procedures that take a graph name string as input, their Python client equivalents instead take a `Graph` object, with the exception of `gds.graph.exists` which still takes a graph name string.
 
-In this example we run the degree centrality algorithm on a graph `G`:
+Below are some examples of how the GDS Graph Catalog can be used via the client:
 
 [[graph-object-degree-example]]
 [source,python,group=graph-project]
@@ -228,14 +232,6 @@ In this example we run the degree centrality algorithm on a graph `G`:
 result = gds.degree_centrality.mutate(G, mutate_property="degree")
 assert result.centrality_distribution is not None
 ----
-
-
-=== The graph catalog
-
-All procedures of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog] have corresponding Python methods in the client.
-Of those catalog procedures that take a graph name string as input, their Python client equivalents instead take a `Graph` object, with the exception of `gds.graph.exists` which still takes a graph name string.
-
-Below are some examples of how the GDS Graph Catalog can be used via the client, assuming we inspect the graph `G` from the <<graph-object-degree-example, example above>>:
 
 [source,python,group=graph-project]
 ----
@@ -251,9 +247,3 @@ result = gds.graph.node_properties.stream(G, node_properties=["degree"])
 # Drop a graph; same as G.drop()
 gds.graph.drop(G)
 ----
-
-
-// TODO: Remove Placeholders
-
-* [[graph-object-streaming-properties]] Streaming properties
-* [[graph-object-streaming-db-properties]] Including node properties from Neo4j
