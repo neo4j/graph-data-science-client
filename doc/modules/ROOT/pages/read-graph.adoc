@@ -9,10 +9,17 @@ The methods to read node and relationship properties from a graph are the same a
 
 Assuming the `Graph` object is called `gds`:
 
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.streamNodeProperty`) returns a single node property
 * link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_properties.stream`] (previously `gds.graph.streamNodeProperties`) returns multiple node properties
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.streamRelationshipProperty`) returns a single relationship property
 * link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.streamRelationshipProperties`) returns multiple relationship properties
+
+[NOTE]
+====
+Removed in v2:
+
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.streamNodeProperty`) returns a single node property
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.streamRelationshipProperty`) returns a single relationship property
+
+====
 
 === Split property values into columns
 
@@ -62,14 +69,30 @@ gds.graph.node_properties.stream(G, node_properties=["population"], db_node_prop
 
 == Read the graph topology
 
-When reading the graph topology via the client equivalent to link:{gds-docs-base-uri}/graph-catalog-relationship-ops/#_stream[`gds.graph.relationships.stream`], the return type is `TopologyDataFrame` (a subtype of `DataFrame`).
+When reading the graph topology via the client equivalent to link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationships.stream`], the return type is `RelationshipsDataFrame` (a subtype of `DataFrame`).
 
-// TODO: clarify definition
+The result is a node-to-node table with a row for each connected pair of nodes.
 
-This type comes includes the `by_rel_type` method to return a map from relationship types to `2 x m` matrices, where `m` represents the number of relationhips of the given type.
-The first row of each such matrix are the source node ids of the relationships, and the second row are the corresponding target node ids.
+[opts="header,autowidth",cols="1,1e,1e,1m"]
+|===
+| |sourceNodeId | targetNodeId | relationshipType
 
-We can illustrate this transformation with an example graph that is a simple four-node cycle:
+|0|node_id_1|node_id_2|REL_1
+|1|node_id_2|node_id_3|REL_1
+|2|node_id_2|node_id_4|REL_2
+|=== 
+
+This type includes the `by_rel_type` method to return a map between relationship types and lists of source node IDs and target node IDs respectively:
+
+[subs="quotes"]
+----
+{
+  "REL_1": [[_node_id_1_, _node_id_2_], [_node_id_2_, _node_id_3_]],
+  "REL_2": [[_node_id_2_], [_node_id_4_]]
+}
+----
+
+Example:
 
 [source,python, group=graph-roundtrip, min-server-version=2.2.0]
 ----
