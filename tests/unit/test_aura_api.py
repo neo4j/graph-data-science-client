@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from _pytest.logging import LogCaptureFixture
@@ -41,7 +41,7 @@ def test_requests_use_a_timeout(requests_mock: Mocker) -> None:
     api.delete_session("id0")
 
     # Every request needs a bound, so that a stalled connection cannot block indefinitely
-    assert {r.path: r.timeout for r in requests_mock.request_history} == {
+    assert {r.path: cast(tuple[float, float], r.timeout) for r in requests_mock.request_history} == {
         "/oauth/token": AuraApi.DEFAULT_TIMEOUT,
         "/v1/graph-analytics/sessions/id0": AuraApi.DEFAULT_TIMEOUT,
     }
