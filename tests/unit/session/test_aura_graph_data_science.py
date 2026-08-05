@@ -68,6 +68,23 @@ def test_verify_connectivity(mocker: MockerFixture) -> None:
     arrow_client.request_token.assert_called_once()
 
 
+def test_create_lets_the_arrow_client_report_session_errors(mocker: MockerFixture) -> None:
+    arrow_client_constructor = mocker.patch(
+        "graphdatascience.session.aura_graph_data_science.AuthenticatedArrowClient",
+    )
+    mocker.patch("graphdatascience.session.aura_graph_data_science.ArrowEndpointVersion")
+    session_lifecycle_manager = mocker.Mock(spec=SessionLifecycleManager)
+
+    AuraGraphDataScience.create(
+        session_connection_info=("localhost", 8491),
+        arrow_authentication=None,
+        db_endpoint=None,
+        session_lifecycle_manager=session_lifecycle_manager,
+    )
+
+    assert arrow_client_constructor.call_args.kwargs["health_check"] == session_lifecycle_manager
+
+
 def test_delete(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     session_lifecycle_manager = mocker.Mock(spec=SessionLifecycleManager)

@@ -211,6 +211,14 @@ class FakeAuraApi(AuraApi):
         else:
             return None
 
+    def get_session_with_errors(self, session_id: str) -> SessionDetailsWithErrors | None:
+        matched_session = self._sessions.get(session_id, None)
+
+        if matched_session:
+            self._sessions[session_id] = dataclasses.replace(matched_session, status=self._status_after_creating)
+
+        return matched_session
+
     def list_instance(self, instance_id: str) -> InstanceSpecificDetails | None:
         matched_instances = self._instances.get(instance_id, None)
 

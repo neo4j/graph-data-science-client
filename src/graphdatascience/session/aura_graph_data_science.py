@@ -209,6 +209,7 @@ class AuraGraphDataScience:
             auth=arrow_authentication,
             encrypted=encrypted,
             arrow_client_options=arrow_client_options,
+            health_check=session_lifecycle_manager,
         )
 
         db_query_runner: Neo4jQueryRunner | None = None

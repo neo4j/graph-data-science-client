@@ -48,14 +48,46 @@ class SessionStatusError(Exception):
     Raised when a session is in a non-healthy state. Such as after a session failed or got expired.
     """
 
-    def __init__(self, errors: list[SessionErrorData]):
+    def __init__(
+        self,
+        errors: list[SessionErrorData],
+        details: SessionDetails | None = None,
+        hint: str | None = None,
+    ):
         message = f"Session is in an unhealthy state. Details: {[str(e) for e in errors]}"
 
+        for line in self._context_lines(errors, details, hint):
+            message += f"\n\t{line}"
+
         super().__init__(message)
+
+    @staticmethod
+    def _context_lines(errors: list[SessionErrorData], details: SessionDetails | None, hint: str | None) -> list[str]:
+        lines: list[str] = []
+
+        if details:
+            lines.append(
+                f"Session `{details.name}` (id `{details.id}`) has status `{details.status}`"
+                f" and memory `{details.memory.value}`."
+            )
+
+        if hint:
+            lines.append(hint)
+
+        if any(error.is_out_of_memory() for error in errors):
+            lines.append(
+                "A session cannot recover from running out of memory."
+                " Create a new, larger one; use `GdsSessions.estimate` to size it."
+            )
+
+        return lines
 
 
 class AuraApi:
     API_VERSION = "v1"
+    # Health checks are often run while something else already failed, possibly because of a
+    # network problem. They must not add a long delay before the original error is reported.
+    HEALTH_CHECK_TIMEOUT = (5.0, 30.0)
 
     # (connect, read) timeouts in seconds, applied per attempt. These are a guard against a
     # connection stalling indefinitely.
@@ -73,12 +105,14 @@ class AuraApi:
             headers={"User-agent": f"neo4j-graphdatascience-v{__version__}"},
         )
         self._request_session = self._init_request_session()
+        # used for health checks, which should fail fast instead of retrying for a long time
+        self._health_check_session = self._init_request_session(total_retries=1)
         self._logger = logging.getLogger()
 
         self._project_id = project_id if project_id else self._get_project_id()
         self._project_details: ProjectDetails | None = None
 
-    def _init_request_session(self) -> requests.Session:
+    def _init_request_session(self, total_retries: int = 4) -> requests.Session:
         request_session = AuraApi.TokenRefreshSession(self._auth)
         request_session.headers = {"User-agent": f"neo4j-graphdatascience-v{__version__}"}
         request_session.auth = self._auth
@@ -89,7 +123,7 @@ class AuraApi:
                 max_retries=Retry(
                     allowed_methods=["GET", "DELETE"],
                     # These retries reuse the token that was signed in before the first attempt
-                    total=4,
+                    total=total_retries,
                     status_forcelist=[
                         HTTPStatus.TOO_MANY_REQUESTS.value,
                         HTTPStatus.INTERNAL_SERVER_ERROR.value,
@@ -102,6 +136,19 @@ class AuraApi:
             ),
         )
         return request_session
+
+    def __getstate__(self) -> dict[str, Any]:
+        state = self.__dict__.copy()
+        # `requests.Session` only serializes its own attributes, so a `TokenRefreshSession` would
+        # arrive without the auth it needs to refresh a rejected token. We rebuild them instead.
+        del state["_request_session"]
+        del state["_health_check_session"]
+        return state
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        self.__dict__.update(state)
+        self._request_session = self._init_request_session()
+        self._health_check_session = self._init_request_session(total_retries=1)
 
     @staticmethod
     def extract_id(uri: str) -> str:
@@ -172,6 +219,25 @@ class AuraApi:
 
         return SessionDetails.from_json(raw_json["data"])
 
+    def get_session_with_errors(self, session_id: str) -> SessionDetailsWithErrors | None:
+        """
+        Same as `get_session`, but returns the session errors as part of the details instead of
+        raising a `SessionStatusError`.
+        """
+        response = self._health_check_session.get(
+            f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions/{session_id}",
+            timeout=AuraApi.HEALTH_CHECK_TIMEOUT,
+        )
+
+        if response.status_code == HTTPStatus.NOT_FOUND.value:
+            return None
+
+        self._check_resp(response)
+
+        raw_json: dict[str, Any] = response.json()
+
+        return SessionDetailsWithErrors.from_json_with_error(raw_json["data"], raw_json.get("errors", []))
+
     def list_sessions(
         self,
         instance_id: str | None = None,
@@ -223,7 +289,7 @@ class AuraApi:
             session = self.get_session(session_id)
             if session is None:
                 return WaitResult.from_error(f"Session `{session_id}` not found -- please retry")
-            elif session.status == "Ready":
+            elif session.is_ready():
                 return WaitResult.from_connection_url(session.bolt_connection_url())
             else:
                 self._logger.debug(
@@ -477,7 +543,18 @@ class AuraApi:
             self._logger = logging.getLogger()
             self._oauth_url = oauth_url
             self._credentials = credentials
+            self._headers = headers
             self._request_session = self._init_request_session(headers)
+
+        def __getstate__(self) -> dict[str, Any]:
+            state = self.__dict__.copy()
+            # rebuilt on deserialization
+            del state["_request_session"]
+            return state
+
+        def __setstate__(self, state: dict[str, Any]) -> None:
+            self.__dict__.update(state)
+            self._request_session = self._init_request_session(self._headers)
 
         def _init_request_session(self, headers: dict[str, Any]) -> requests.Session:
             request_session = requests.Session()
