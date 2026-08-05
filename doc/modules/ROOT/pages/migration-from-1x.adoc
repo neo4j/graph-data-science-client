@@ -155,13 +155,11 @@ G, result = gds.graph.project.cypher(
 
 === Streaming graph properties
 
-The property streaming endpoints keep their 1.x behaviour, but the plural endpoints have absorbed the ones that streamed properties for a specific relationship type:
-
 * `gds.graph.nodeProperty.stream` is now `gds.graph.node_property.stream`, and `gds.graph.streamNodeProperties` / `gds.graph.nodeProperties.stream` are now `gds.graph.node_properties.stream`.
-* `gds.graph.relationshipProperty.stream` is now `gds.graph.relationship_property.stream`.
-* `gds.graph.relationshipProperties.stream` is now `gds.graph.relationships.stream`, which takes the properties to stream as a `relationship_properties` parameter.
-* The client-only `separate_property_columns` parameter is gone.
-  The plural endpoints always return one column per requested property; the singular endpoints always return the values in a single `propertyValue` column.
+* `gds.graph.streamRelationshipProperty` / `gds.graph.relationshipProperty.stream` are now `gds.graph.relationship_property.stream`.
+* `gds.graph.streamRelationshipProperties` / `gds.graph.relationshipProperties.stream` are now `gds.graph.relationship_properties.stream`.
+  The same data can also be streamed with `gds.graph.relationships.stream`, which takes the properties to stream as an optional `relationship_properties` parameter.
+* The client-only `separate_property_columns` parameter is gone. A separate column per property is always returned now. Reshape the result with pandas if you need the old shape.
 
 .Streaming examples
 [opts=header,cols="1a,1a"]
@@ -189,8 +187,8 @@ df = gds.graph.relationshipProperties.stream(
 |
 [source, python]
 ----
-df = gds.graph.relationships.stream(
-    G, relationship_properties=["weight"]
+df = gds.graph.relationship_properties.stream(
+    G, ["weight"]
 )
 ----
 |===
