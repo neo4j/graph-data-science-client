@@ -7,7 +7,6 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.pathfinding.topological_sort_endpoints import TopologicalSortEndpoints
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import map_topological_sort_stream_result
 
 
 class TopologicalSortArrowEndpoints(TopologicalSortEndpoints):
@@ -45,7 +44,4 @@ class TopologicalSortArrowEndpoints(TopologicalSortEndpoints):
             jobId=job_id,
         )
 
-        result = self._node_property_endpoints.run_job_and_stream("v2/pathfinding.topologicalSort", G, config)
-        map_topological_sort_stream_result(result)
-
-        return result
+        return self._node_property_endpoints.run_job_and_stream("v2/pathfinding.topologicalSort", G, config)

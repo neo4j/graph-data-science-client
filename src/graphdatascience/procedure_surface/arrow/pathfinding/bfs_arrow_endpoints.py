@@ -84,7 +84,8 @@ class BFSArrowEndpoints(BFSEndpoints):
             targetNodes=target_nodes,
         )
 
-        result = self._endpoints_helper.run_job_and_stream("v2/pathfinding.bfs", G, config)
+        # aggregation is done here instead of via the stream mapper, as the source node is known upfront
+        result = self._endpoints_helper.run_job_and_stream("v2/pathfinding.bfs", G, config, apply_mapping=False)
 
         return aggregate_traversal_rels(result, source_node)
 

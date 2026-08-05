@@ -66,7 +66,7 @@ def test_clique_counting_stream(clique_counting_endpoints: CliqueCountingArrowEn
     )
 
     assert "nodeId" in result_df.columns
-    assert "cliqueCount" in result_df.columns
+    assert "counts" in result_df.columns
     assert len(result_df.columns) == 2
 
 
@@ -127,4 +127,4 @@ def test_compute(clique_counting_endpoints: CliqueCountingArrowEndpoints, sample
 
     df = handle.stream()
     assert "nodeId" in df.columns
-    assert "cliqueCount" in df.columns
+    assert "counts" in df.columns

@@ -23,7 +23,6 @@ from graphdatascience.procedure_surface.arrow.pathfinding.single_source_delta_ar
 from graphdatascience.procedure_surface.arrow.pathfinding.single_source_dijkstra_arrow_endpoints import (
     SingleSourceDijkstraArrowEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import map_all_shortest_path_stream_result
 from graphdatascience.procedure_surface.arrow.table_endpoints_helper import TableEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
@@ -89,9 +88,7 @@ class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
             relationship_weight_property=relationship_weight_property,
         )
 
-        result = self._endpoint_helper.run_job_and_stream("v2/pathfinding.allShortestPaths", G, config)
-        map_all_shortest_path_stream_result(result)
-        return result
+        return self._endpoint_helper.run_job_and_stream("v2/pathfinding.allShortestPaths", G, config)
 
     def estimate(
         self,

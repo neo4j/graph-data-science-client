@@ -18,7 +18,6 @@ from graphdatascience.procedure_surface.api.similarity.node_similarity_results i
     NodeSimilarityWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import rename_similarity_stream_result
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
@@ -236,10 +235,7 @@ class NodeSimilarityFilteredArrowEndpoints(NodeSimilarityFilteredEndpoints):
             jobId=job_id,
         )
 
-        result = self._endpoints_helper.run_job_and_stream("v2/similarity.nodeSimilarity.filtered", G, config)
-
-        rename_similarity_stream_result(result)
-        return result
+        return self._endpoints_helper.run_job_and_stream("v2/similarity.nodeSimilarity.filtered", G, config)
 
     def write(
         self,

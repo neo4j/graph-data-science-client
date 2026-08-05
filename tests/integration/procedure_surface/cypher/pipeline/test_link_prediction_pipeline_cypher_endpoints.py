@@ -132,8 +132,8 @@ def test_link_prediction_train_and_predict_stream_cypher_pipeline(
         assert train_result.train_millis >= 0
         assert model.name() == model_name
         assert fetched_pipeline.name() == pipeline_name
-        assert "node1" in stream_result.columns or "sourceNodeId" in stream_result.columns
-        assert "node2" in stream_result.columns or "targetNodeId" in stream_result.columns
+        assert "node1" in stream_result.columns
+        assert "node2" in stream_result.columns
         assert "probability" in stream_result.columns
         assert len(stream_result) > 0
     finally:

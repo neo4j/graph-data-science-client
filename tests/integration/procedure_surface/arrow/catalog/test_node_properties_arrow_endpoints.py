@@ -4,6 +4,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.node_property_endpoints import NodePropertyEndpoints
 from graphdatascience.procedure_surface.arrow.catalog.node_properties_arrow_endpoints import (
     NodePropertiesArrowEndpoints,
 )
@@ -95,8 +96,44 @@ def test_stream_node_properties_with_labels(
     assert len(result) == 3
     assert "nodeId" in result.columns
     assert "prop1" in result.columns
-    assert "labels" in result.columns
+    assert "nodeLabels" in result.columns
     assert set(result["prop1"].tolist()) == {1, 2, 3}
+
+
+def test_stream_single_node_property(
+    node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: Graph
+) -> None:
+    result = NodePropertyEndpoints(node_properties_endpoints).stream(G=sample_graph, node_property="prop1")
+
+    assert len(result) == 3
+    assert set(result.columns) == {"nodeId", "propertyValue"}
+    assert set(result["propertyValue"].tolist()) == {1, 2, 3}
+
+
+def test_stream_single_node_property_with_labels(
+    node_properties_endpoints: NodePropertiesArrowEndpoints, sample_graph: Graph
+) -> None:
+    result = NodePropertyEndpoints(node_properties_endpoints).stream(
+        G=sample_graph, node_property="prop1", list_node_labels=True
+    )
+
+    assert len(result) == 3
+    assert set(result.columns) == {"nodeId", "nodeLabels", "propertyValue"}
+    assert set(result["propertyValue"].tolist()) == {1, 2, 3}
+
+
+@pytest.mark.db_integration
+def test_stream_single_node_property_with_db_properties(
+    node_properties_endpoints_with_db: NodePropertiesArrowEndpoints, db_graph: Graph
+) -> None:
+    result = NodePropertyEndpoints(node_properties_endpoints_with_db).stream(
+        G=db_graph, node_property="prop1", db_node_properties=["prop2"]
+    )
+
+    assert len(result) == 3
+    assert set(result.columns) == {"nodeId", "propertyValue", "prop2"}
+    assert set(result["propertyValue"].tolist()) == {1, 2, 3}
+    assert set(result["prop2"].tolist()) == {42.0, 43.0, 44.0}
 
 
 @pytest.mark.db_integration
