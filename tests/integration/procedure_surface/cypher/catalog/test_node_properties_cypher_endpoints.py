@@ -4,6 +4,7 @@ import pytest
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.node_property_endpoints import NodePropertyEndpoints
 from graphdatascience.procedure_surface.cypher.catalog.node_properties_cypher_endpoints import (
     NodePropertiesCypherEndpoints,
 )
@@ -90,6 +91,53 @@ def test_stream_node_properties_with_db_properties(
     assert "prop1" in result.columns
     assert "prop2" in result.columns
     assert set(result["prop1"].tolist()) == {1, 2, 3}
+    assert set(result["prop2"].tolist()) == {42.0, 43.0, 44.0}
+
+
+def test_stream_single_node_property(
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
+) -> None:
+    result = NodePropertyEndpoints(node_properties_endpoints).stream(G=sample_graph, node_property="prop1")
+
+    assert len(result) == 3
+    assert set(result.columns) == {"nodeId", "propertyValue"}
+    assert set(result["propertyValue"].tolist()) == {1, 2, 3}
+
+
+def test_stream_single_node_property_with_arrow(
+    query_runner: QueryRunner, gds_arrow_client: GdsArrowClient, sample_graph: Graph
+) -> None:
+    endpoints = NodePropertyEndpoints(NodePropertiesCypherEndpoints(query_runner, gds_arrow_client))
+
+    result = endpoints.stream(G=sample_graph, node_property="prop1")
+
+    assert len(result) == 3
+    assert set(result.columns) == {"nodeId", "propertyValue"}
+    assert set(result["propertyValue"].tolist()) == {1, 2, 3}
+
+
+def test_stream_single_node_property_with_labels(
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
+) -> None:
+    result = NodePropertyEndpoints(node_properties_endpoints).stream(
+        G=sample_graph, node_property="prop1", list_node_labels=True
+    )
+
+    assert len(result) == 3
+    assert set(result.columns) == {"nodeId", "nodeLabels", "propertyValue"}
+    assert set(result["propertyValue"].tolist()) == {1, 2, 3}
+
+
+def test_stream_single_node_property_with_db_properties(
+    node_properties_endpoints: NodePropertiesCypherEndpoints, sample_graph: Graph
+) -> None:
+    result = NodePropertyEndpoints(node_properties_endpoints).stream(
+        G=sample_graph, node_property="prop1", db_node_properties=["prop2"]
+    )
+
+    assert len(result) == 3
+    assert set(result.columns) == {"nodeId", "propertyValue", "prop2"}
+    assert set(result["propertyValue"].tolist()) == {1, 2, 3}
     assert set(result["prop2"].tolist()) == {42.0, 43.0, 44.0}
 
 

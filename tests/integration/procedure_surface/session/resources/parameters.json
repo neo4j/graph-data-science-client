@@ -39,6 +39,10 @@
     "Node properties to write. Can be: - A string representing a single property name. - A list of strings representing multiple property names. - A dictionary mapping from property names in the GDS graph to property names in the database.",
     "Node properties to use for the similarity computation."
   ],
+  "node_property": [
+    "The node property to use for clustering",
+    "The node property to stream"
+  ],
   "orientation": "The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.",
   "propagation_probability": "Probability of a node being activated by an active neighbour node.",
   "relationship_types": "Filter the graph using the given relationship types. Relationships with any of the given types will be included.",
