@@ -153,6 +153,49 @@ G, result = gds.graph.project.cypher(
 |===
 
 
+=== Streaming graph properties
+
+The property streaming endpoints keep their 1.x behaviour, but the plural endpoints have absorbed the ones that streamed properties for a specific relationship type:
+
+* `gds.graph.nodeProperty.stream` is now `gds.graph.node_property.stream`, and `gds.graph.streamNodeProperties` / `gds.graph.nodeProperties.stream` are now `gds.graph.node_properties.stream`.
+* `gds.graph.relationshipProperty.stream` is now `gds.graph.relationship_property.stream`.
+* `gds.graph.relationshipProperties.stream` is now `gds.graph.relationships.stream`, which takes the properties to stream as a `relationship_properties` parameter.
+* The client-only `separate_property_columns` parameter is gone.
+  The plural endpoints always return one column per requested property; the singular endpoints always return the values in a single `propertyValue` column.
+
+.Streaming examples
+[opts=header,cols="1a,1a"]
+|===
+| 1.x | 2.0
+
+|
+[source, python]
+----
+df = gds.graph.nodeProperty.stream(G, "pageRank")
+----
+|
+[source, python]
+----
+df = gds.graph.node_property.stream(G, "pageRank")
+----
+
+|
+[source, python]
+----
+df = gds.graph.relationshipProperties.stream(
+    G, ["weight"], separate_property_columns=True
+)
+----
+|
+[source, python]
+----
+df = gds.graph.relationships.stream(
+    G, relationship_properties=["weight"]
+)
+----
+|===
+
+
 === Machine learning pipelines and models
 
 Pipelines are now created via the `gds.pipeline` namespace, and the pipeline and model objects expose snake_case methods:
