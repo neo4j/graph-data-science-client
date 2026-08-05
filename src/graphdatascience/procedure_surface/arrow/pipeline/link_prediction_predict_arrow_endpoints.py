@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.pipeline.link_prediction_predict_end
     LinkPredictionPipelinePredictMutateResult,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
+from graphdatascience.procedure_surface.arrow.stream_result_mapper import apply_stream_mapper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
@@ -108,7 +109,10 @@ class LinkPredictionPredictArrowEndpoints(LinkPredictionPipelinePredictEndpoints
             config,
             show_progress=show_progress,
         )
-        return JobClient.stream_results(self._arrow_client, G.name(), result_job_id)
+        return apply_stream_mapper(
+            "v2/pipeline.linkPrediction.predict",
+            JobClient.stream_results(self._arrow_client, G.name(), result_job_id),
+        )
 
     def mutate(
         self,

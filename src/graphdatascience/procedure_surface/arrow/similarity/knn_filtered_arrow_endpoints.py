@@ -14,7 +14,6 @@ from graphdatascience.procedure_surface.api.similarity.knn_results import (
     KnnWriteResult,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import rename_similarity_stream_result
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
@@ -235,10 +234,7 @@ class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):
             username=username,
         )
 
-        result = self._endpoints_helper.run_job_and_stream("v2/similarity.knn.filtered", G, config)
-        rename_similarity_stream_result(result)
-
-        return result
+        return self._endpoints_helper.run_job_and_stream("v2/similarity.knn.filtered", G, config)
 
     def write(
         self,

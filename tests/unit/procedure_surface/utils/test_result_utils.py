@@ -6,7 +6,11 @@ import pytest
 from pandas import DataFrame
 
 from graphdatascience import ServerVersion
-from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties, transpose_property_columns
+from graphdatascience.procedure_surface.utils.result_utils import (
+    join_db_node_properties,
+    transpose_property_columns,
+    transpose_relationship_property_columns,
+)
 from graphdatascience.query_runner import QueryRunner
 from tests.unit.conftest import CollectingQueryRunner
 
@@ -71,6 +75,51 @@ def test_transpose_property_columns_empty() -> None:
     transposed_result = transpose_property_columns(result, list_node_labels=False)
 
     assert transposed_result.empty
+
+
+def test_transpose_relationship_property_columns_single_property() -> None:
+    result = DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 2],
+            "relationshipType": ["REL", "REL"],
+            "propertyValue": [1.0, 2.0],
+        }
+    )
+
+    transposed_result = transpose_relationship_property_columns(result, ["weight"])
+
+    expected_result = DataFrame(
+        {"sourceNodeId": [0, 1], "targetNodeId": [1, 2], "relationshipType": ["REL", "REL"], "weight": [1.0, 2.0]}
+    )
+
+    pd.testing.assert_frame_equal(expected_result, transposed_result)
+
+
+def test_transpose_relationship_property_columns_multiple_properties() -> None:
+    result = DataFrame(
+        {
+            "sourceNodeId": [0, 0, 1, 1],
+            "targetNodeId": [1, 1, 2, 2],
+            "relationshipType": ["REL", "REL", "REL", "REL"],
+            "relationshipProperty": ["weight", "cost", "weight", "cost"],
+            "propertyValue": [1.0, 10.0, 2.0, 20.0],
+        }
+    )
+
+    transposed_result = transpose_relationship_property_columns(result, ["weight", "cost"])
+
+    expected_result = DataFrame(
+        {
+            "sourceNodeId": [0, 1],
+            "targetNodeId": [1, 2],
+            "relationshipType": ["REL", "REL"],
+            "cost": [10.0, 20.0],
+            "weight": [1.0, 2.0],
+        }
+    )
+
+    pd.testing.assert_frame_equal(expected_result, transposed_result)
 
 
 def test_join_db_node_properties_basic(mock_query_runner: QueryRunner) -> None:

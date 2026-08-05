@@ -27,6 +27,22 @@ def transpose_property_columns(result: DataFrame, list_node_labels: bool) -> Dat
     return wide_result
 
 
+def transpose_relationship_property_columns(result: DataFrame, relationship_properties: list[str]) -> DataFrame:
+    """Reshape a long-format Cypher relationship stream into one column per property, matching the Arrow output."""
+    if len(relationship_properties) == 1:
+        return result.rename(columns={"propertyValue": relationship_properties[0]})
+
+    wide_result = result.pivot(
+        index=["sourceNodeId", "targetNodeId", "relationshipType"],
+        columns="relationshipProperty",
+        values="propertyValue",
+    )
+    wide_result = wide_result.reset_index()
+    wide_result.columns.name = None
+
+    return wide_result
+
+
 def join_db_node_properties(result: DataFrame, db_node_properties: list[str], query_runner: QueryRunner) -> DataFrame:
     query = _build_query(db_node_properties)
     db_properties_df = query_runner.run_retryable_cypher(

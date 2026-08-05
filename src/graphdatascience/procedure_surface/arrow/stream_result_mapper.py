@@ -86,6 +86,22 @@ def map_conductance_stream_result(result: DataFrame) -> None:
     )
 
 
+def map_sllpa_stream_result(result: DataFrame) -> None:
+    result.rename(columns={"community": "values"}, inplace=True)
+
+
+def map_clique_counting_stream_result(result: DataFrame) -> None:
+    result.rename(columns={"cliqueCount": "counts"}, inplace=True)
+
+
+def map_node_properties_stream_result(result: DataFrame) -> None:
+    result.rename(columns={"labels": "nodeLabels"}, inplace=True)
+
+
+def map_scale_properties_stream_result(result: DataFrame) -> None:
+    result.rename(columns={"scaledProperties": "scaledProperty"}, inplace=True)
+
+
 _STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame | None]] = {
     "v2/similarity.knn": rename_similarity_stream_result,
     "v2/similarity.knn.filtered": rename_similarity_stream_result,
@@ -108,6 +124,11 @@ _STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame | None]] = {
     "v2/pathfinding.bfs": aggregate_traversal_rels_from_result,
     "v2/pathfinding.dfs": aggregate_traversal_rels_from_result,
     "v2/community.conductance": map_conductance_stream_result,
+    "v2/community.sllpa": map_sllpa_stream_result,
+    "v2/community.cliquecounting": map_clique_counting_stream_result,
+    "v2/graph.nodeProperties.stream": map_node_properties_stream_result,
+    "v2/graph.nodeProperties.scale": map_scale_properties_stream_result,
+    "v2/pipeline.linkPrediction.predict": rename_similarity_stream_result,
 }
 
 

@@ -16,7 +16,6 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_fo
     SingleSourceBellmanFordEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import map_shortest_path_stream_result
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
@@ -86,7 +85,6 @@ class BellmanFordArrowEndpoints(SingleSourceBellmanFordEndpoints):
         )
 
         result = self._endpoints_helper.run_job_and_stream("v2/pathfinding.singleSource.bellmanFord", G, config)
-        map_shortest_path_stream_result(result)
         if "isNegativeCycle" not in result.columns:
             result["isNegativeCycle"] = (result["sourceNode"] == result["targetNode"]) & (result["totalCost"] < 0)
 

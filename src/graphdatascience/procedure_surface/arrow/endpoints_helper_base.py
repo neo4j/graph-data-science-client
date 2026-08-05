@@ -17,6 +17,7 @@ from ..api.job_handle import JobHandle
 from ..api.write_job_handle import WriteJobHandle
 from ..utils.config_converter import ConfigConverter
 from .mutation_runner import MutationRunner
+from .stream_result_mapper import apply_stream_mapper
 
 
 class EndpointsHelperBase:
@@ -67,11 +68,18 @@ class EndpointsHelperBase:
             mutate_property_overwrites=mutate_property_overwrites,
         )
 
-    def run_job_and_stream(self, endpoint: str, G: Graph, config: dict[str, Any]) -> DataFrame:
-        """Run a job and return streamed results."""
+    def run_job_and_stream(
+        self, endpoint: str, G: Graph, config: dict[str, Any], *, apply_mapping: bool = True
+    ) -> DataFrame:
+        """Run a job and return streamed results.
+
+        The endpoint-specific stream mapper is applied by default, so that the column names match those of the
+        Cypher endpoints. Pass `apply_mapping=False` if the caller maps the result itself.
+        """
         show_progress = config.get("logProgress", True) and self._show_progress
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
-        return JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        return apply_stream_mapper(endpoint, result) if apply_mapping else result
 
     def _run_job_and_write(
         self,

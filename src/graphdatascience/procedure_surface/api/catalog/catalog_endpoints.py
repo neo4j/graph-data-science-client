@@ -15,6 +15,13 @@ from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints impor
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
+from graphdatascience.procedure_surface.api.catalog.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.api.catalog.relationship_properties_endpoints import (
+    RelationshipPropertiesEndpoints,
+)
+from graphdatascience.procedure_surface.api.catalog.relationship_property_endpoints import (
+    RelationshipPropertyEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import RelationshipsEndpoints
 
 
@@ -245,14 +252,29 @@ class CatalogEndpoints(ABC):
     @property
     @abstractmethod
     def node_properties(self) -> NodePropertiesEndpoints:
-        """Endpoints for node label operations."""
+        """Endpoints for node property operations."""
         pass
+
+    @property
+    def node_property(self) -> NodePropertyEndpoints:
+        """Endpoints for streaming a single node property."""
+        return NodePropertyEndpoints(self.node_properties)
 
     @property
     @abstractmethod
     def relationships(self) -> RelationshipsEndpoints:
         """Endpoints for relationship operations."""
         pass
+
+    @property
+    def relationship_property(self) -> RelationshipPropertyEndpoints:
+        """Endpoints for streaming a single relationship property."""
+        return RelationshipPropertyEndpoints(self.relationships)
+
+    @property
+    def relationship_properties(self) -> RelationshipPropertiesEndpoints:
+        """Endpoints for streaming several relationship properties."""
+        return RelationshipPropertiesEndpoints(self.relationships)
 
 
 class GraphFilterResult(BaseResult):

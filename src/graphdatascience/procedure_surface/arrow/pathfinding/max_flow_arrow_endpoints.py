@@ -18,9 +18,6 @@ from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_min_cost_arro
     MaxFlowMinCostArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import (
-    map_max_flow_stream_result,
-)
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
@@ -182,9 +179,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
             username=username,
         )
 
-        result = self._relationship_endpoints.run_job_and_stream("v2/pathfinding.maxFlow", G, config)
-        map_max_flow_stream_result(result)
-        return result
+        return self._relationship_endpoints.run_job_and_stream("v2/pathfinding.maxFlow", G, config)
 
     def write(
         self,

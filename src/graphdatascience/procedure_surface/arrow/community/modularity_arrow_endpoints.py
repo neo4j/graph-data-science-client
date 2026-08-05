@@ -105,9 +105,7 @@ class ModularityArrowEndpoints(ModularityEndpoints):
             relationship_weight_property=relationship_weight_property,
         )
 
-        result = self._endpoints_helper.run_job_and_stream("v2/community.modularity", G, config)
-
-        return result
+        return self._endpoints_helper.run_job_and_stream("v2/community.modularity", G, config)
 
     def estimate(
         self,

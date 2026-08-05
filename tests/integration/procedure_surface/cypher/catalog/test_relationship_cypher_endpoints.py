@@ -5,6 +5,9 @@ import pytest
 
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.relationship_property_endpoints import (
+    RelationshipPropertyEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpoints import (
@@ -150,6 +153,30 @@ def test_stream_relationship_properties_with_arrow(
     assert "weight" in result.columns
     assert set(result["relationshipType"].unique()) == {"REL"}
     assert set(result["weight"].unique()) == {1.0, 2.0, 3.0}
+
+
+def test_stream_single_relationship_property(
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph
+) -> None:
+    result = RelationshipPropertyEndpoints(relationship_endpoints).stream(
+        G=sample_graph, relationship_property="weight"
+    )
+
+    assert len(result) == 3  # only REL has a `weight` property
+    assert set(result.columns) == {"sourceNodeId", "targetNodeId", "relationshipType", "propertyValue"}
+    assert set(result["relationshipType"].unique()) == {"REL"}
+    assert set(result["propertyValue"].unique()) == {1.0, 2.0, 3.0}
+
+
+def test_stream_single_relationship_property_by_rel_type(
+    relationship_endpoints: RelationshipCypherEndpoints, sample_graph: Graph
+) -> None:
+    endpoints = RelationshipPropertyEndpoints(relationship_endpoints)
+
+    by_rel_type = endpoints.stream(G=sample_graph, relationship_property="weight", relationship_types=["REL"])
+
+    assert set(by_rel_type["propertyValue"].unique()) == {1.0, 2.0, 3.0}
+    assert set(by_rel_type.by_rel_type().keys()) == {"REL"}
 
 
 @pytest.mark.db_integration

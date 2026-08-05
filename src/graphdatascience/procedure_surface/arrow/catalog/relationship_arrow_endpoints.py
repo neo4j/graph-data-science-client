@@ -15,6 +15,7 @@ from graphdatascience.procedure_surface.api.catalog.relationships_endpoints impo
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
+from graphdatascience.procedure_surface.arrow.stream_result_mapper import apply_stream_mapper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
@@ -63,7 +64,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         config = ConfigConverter.convert_to_gds_config(**config_input)
 
         job_id = JobClient.run_job(self._arrow_client, endpoint, config)
-        result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        result = apply_stream_mapper(endpoint, JobClient.stream_results(self._arrow_client, G.name(), job_id))
 
         return RelationshipsDataFrame(result)
 
