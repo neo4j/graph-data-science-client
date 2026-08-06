@@ -61,6 +61,28 @@ assert res.bytes_max < 1e12
 
 Cypher API reference: link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]
 
+
+[.tabbed-example]
+====
+[.include-with-Aura-Graph-Analytics]
+=====
+
+[source,python,group=graph-project]
+----
+G, result = gds.graph.project.native(
+    graph_name="offices",                # Graph name
+    node_label_filter=["City"],          # Node projection
+    relationship_type_filter=["FLY_TO"], # Relatioinship projection
+    node_properties=["population"]       # Node properties
+    relationship_properties=["cost"]     # Relationship properties
+)
+----
+
+You can use the wildcard * in the node_label_filter or relationship_type_filter arguments to project all available node labels or relationship types, respectively (for instance `node_label_filter=["*"]`).
+=====
+
+[.include-with-Neo4j-server-and-AuraDS]
+=====
 [source,python,group=graph-project]
 ----
 G, result = gds.graph.project.native(
@@ -86,6 +108,8 @@ where `G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/ca
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `read_concurrency=4` above.
 Read more about the syntax in the link:{gds-docs-base-uri}/management-ops/projections/graph-project/#graph-project-native-syntax[GDS manual].
+=====
+====
 
 [[cypher-projection]]
 === Cypher Projection
@@ -97,6 +121,75 @@ Read more about Cypher projection in the link:{gds-docs-base-uri}/management-ops
 
 The method `gds.graph.project.cypher` bridges the gap between `gds.run_cypher` and having to follow with `gds.graph.get`.
 
+[.tabbed-example]
+====
+[.include-with-Aura-Graph-Analytics]
+=====
+
+[source, python, role=nocollapse]
+----
+G, result = gds.graph.project.cypher(
+    query="""
+      CALL () {
+        MATCH (source:City)-[rel:FLY_TO]->(target:City)
+        RETURN source, rel, target, 
+               { population: source.population } AS sourceNodeProperties, 
+               { population: target.population } AS targetNodeProperties,
+               { cost: rel.cost } AS relProperties
+      }
+      RETURN gds.graph.project.remote(
+        source, 
+        target, 
+        {
+          sourceNodeLabels: labels(source),
+          targetNodeLabels: labels(target),
+          sourceNodeProperties: properties(sourceNodeProperties),
+          targetNodeProperties: properties(targetNodeProperties),
+          relationshipType: type(rel),
+          relationshipProperties: properties(relProperties)
+        }
+      )
+    """,
+    database="neo4j"      #  Target database
+)
+----
+=====
+
+[.include-with-Neo4j-server-and-AuraDS]
+=====
+
+[source,python,group=graph-cyhpher-project,role=nocollapse]
+----
+G, result = gds.graph.project.cypher(
+    """
+      MATCH (source:City)-[rel:FLY_TO]->(target:City)
+      RETURN gds.graph.project(
+        $graph_name, 
+        source,
+        target, 
+        {
+            sourceNodeLabels: labels(source),
+            targetNodeLabels: labels(target),
+            sourceNodeProperties: { population: source.population },
+            targetNodeProperties: { population: target.population },
+            relationshipType: type(rel),
+            relationshipProperties: { cost: rel.cost }
+        }
+      )
+    """,                   #  Cypher query
+    database="neo4j",      #  Target database
+    graph_name="offices"   #  Query parameter
+)
+----
+=====
+====
+
+Unlike `gds.run_cypher` but very much like `gds.graph.project.native`, it returns a tuple of a `Graph` object and a `GraphCypherProjectResult` object containing metadata from the Cypher execution.
+
+The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
+It expects the query to end with a single `RETURN gds.graph.project(...)` aggregation, and raises a `ValueError` if the query returns anything else.
+If your query needs additional aggregations or a renamed result row, use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
+
 === Syntax
 .Cypher projection signature
 [opts="header",cols="2m,2m,1m,6", role="no-break"]
@@ -106,33 +199,6 @@ The method `gds.graph.project.cypher` bridges the gap between `gds.run_cypher` a
 | database       | Optional[str]      | None   | Overrides the target database. The default uses the database from the connection.
 | **params       | Any                | \{\}   | The query parameters as keyword args.
 |===
-
-
-Unlike `gds.run_cypher` but very much like `gds.graph.project.native`, it returns a tuple of a `Graph` object and a `GraphCypherProjectResult` object containing metadata from the Cypher execution.
-
-The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
-It expects the query to end with a single `RETURN gds.graph.project(...)` aggregation, and raises a `ValueError` if the query returns anything else.
-If your query needs additional aggregations or a renamed result row, use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
-
-[source,python,group=graph-cyhpher-project,role=nocollapse]
-----
-G, result = gds.graph.project.cypher(
-    """
-    MATCH (n)-->(m)
-    RETURN gds.graph.project($graph_name, n, m, {
-        sourceNodeLabels: $label,
-        targetNodeLabels: $label,
-        relationshipType: $rel_type
-    })
-    """,                   #  Cypher query
-    database="neo4j",      #  Target database
-    graph_name="offices",  #  Query parameter
-    label="City",          #  Query parameter
-    rel_type="FLY_TO"      #  Query parameter
-)
-
-assert G.node_count() == result.node_count
-----
 
 [[other-creation-methods]]
 == Other ways to create graphs
