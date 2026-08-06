@@ -23,17 +23,11 @@ gds.run_cypher(
 )
 
 G, result = gds.graph.project.native(
-    "offices",
-    {
-        "City": {
-            "properties": ["population"]
-        }
-    },
-    {
-        "FLY_TO": {
-            "properties": ["cost"]
-        }
-    }
+    graph_name="offices",         # Graph name
+    node_projection=["City"],           # Node projection
+    relationship_projection=["FLY_TO"], # Relatioinship projection
+    node_properties=["population"],     # Node properties
+    relationship_properties=["cost"]    # Relationship properties
 )
 ----
 ====

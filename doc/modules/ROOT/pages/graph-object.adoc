@@ -86,21 +86,13 @@ You can use the wildcard * in the node_label_filter or relationship_type_filter 
 [source,python,group=graph-project]
 ----
 G, result = gds.graph.project.native(
-    "offices",          # Graph name
-    {
-        "City": {       # Node projection
-            "properties": ["population"]
-        }
-    },
-    {
-        "FLY_TO": {     # Relationship projection
-            "properties": ["cost"]
-        }
-    },
-    read_concurrency=4  # Configuration parameters
+    graph_name="offices",         # Graph name
+    node_projection=["City"],           # Node projection
+    relationship_projection=["FLY_TO"], # Relatioinship projection
+    node_properties=["population"],     # Node properties
+    relationship_properties=["cost"],   # Relationship properties
+    read_concurrency=4                  # Configuration
 )
-
-assert G.node_count() == result.node_count
 ----
 
 where `G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/catalog_cypher_endpoints/#graphdatascience.procedure_surface.cypher.catalog.GraphProjectResult[`GraphProjectResult`] object containing metadata from the underlying procedure call.
