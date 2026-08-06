@@ -22,27 +22,38 @@ include::ROOT:partial$/gds-object.adoc[]
 [[projection]]
 == Projecting a graph object
 
-As for the Cypher API, the client offers two ways of projecting a graph object:
+As for the Cypher API, the Python client offers two ways of projecting a graph object:
 
 * <<native-projection, Native projection>>
 * <<cypher-projection, Cypher projection>>
 
 [source, python ,group=graph-project]
 ----
-# We put this simple graph in our database
 gds.run_cypher(
   """
   CREATE
-    (m: City {name: "Malmö"}),
-    (l: City {name: "London"}),
-    (s: City {name: "San Mateo"}),
+    (m: City {name: "Malmö", population: 360000}),
+    (l: City {name: "London", population: 8800000}),
+    (s: City {name: "San Mateo", population: 105000}),
 
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
+    (m)-[:FLY_TO {cost: 200}]->(l),
+    (l)-[:FLY_TO {cost: 200}]->(m),
+    (l)-[:FLY_TO {cost: 1000}]->(s),
+    (s)-[:FLY_TO {cost: 1000}]->(l)
   """
 )
+----
+
+[[estimate-memory]]
+=== Estimate memory
+[source,python,group=graph-project]
+----
+res = gds.graph.project.estimate(
+    ["City"],                   #  Node projection
+    "FLY_TO",                   #  Relationship projection
+    read_concurrency=4          #  Configuration parameters
+)
+assert res.bytes_max < 1e12
 ----
 
 [[native-projection]]
@@ -52,19 +63,19 @@ The simplest way is to do a link:{gds-docs-base-uri}/management-ops/projections/
 
 [source,python,group=graph-project]
 ----
-# We estimate required memory of the operation
-res = gds.graph.project.estimate(
-    ["City"],                   #  Node projection
-    "FLY_TO",                   #  Relationship projection
-    read_concurrency=4          #  Configuration parameters
-)
-assert res.bytes_max < 1e12
-
 G, result = gds.graph.project.native(
-    "offices",                  #  Graph name
-    ["City"],                   #  Node projection
-    "FLY_TO",                   #  Relationship projection
-    read_concurrency=4          #  Configuration parameters
+    "offices",          # Graph name
+    {
+        "City": {       # Node projection
+            "properties": ["population"]
+        }
+    },
+    {
+        "FLY_TO": {     # Relationship projection
+            "properties": ["cost"]
+        }
+    },
+    read_concurrency=4  # Configuration parameters
 )
 
 assert G.node_count() == result.node_count
@@ -145,42 +156,6 @@ G, result = gds.graph.project.cypher(
 assert G.node_count() == result.node_count
 ----
 
-== Inspecting a graph object
-
-There are convenience methods on the graph object that let us extract information about our projected graph.
-
-.Graph object methods
-[opts="header",cols="9m,6m,7m,13", role="no-break"]
-|===
-| Name                    | Arguments                     | Return type              | Description
-| name                    | -                             | str                      | The name of the projected graph.
-| database                | -                             | str                      | Name of the database in which the graph has been projected.
-| node_count              | -                             | int                      | The node count of the projected graph.
-| relationship_count      | -                             | int                      | The relationship count of the projected graph.
-| node_labels             | -                             | list[str]                | A list of the node labels present in the graph.
-| relationship_types      | -                             | list[str]                | A list of the relationship types present in the graph.
-| node_properties         | -                             | dict[str, list[str]]     | Returns a dictionary mapping every node label to a list of the properties present on nodes with that label.
-| relationship_properties | -                             | dict[str, list[str]]     | Returns a dictionary mapping every relationship type to a list of the properties present on relationships with that type.
-| degree_distribution     | -                             | Series                   | The average out-degree of generated nodes.
-| density                 | -                             | float                    | Density of the graph.
-| size_in_bytes           | -                             | int                      | Number of bytes used in the Java heap to store the graph.
-| memory_usage            | -                             | str                      | Human-readable description of `size_in_bytes`.
-| exists                  | -                             | bool                     | Returns `True` if the graph exists in the GDS Graph Catalog, otherwise `False`.
-| drop                    | fail_if_missing: Optional[bool] | GraphInfo              | link:{gds-docs-base-uri}/graph-drop/[Removes the graph] from the GDS Graph Catalog.
-| configuration           | -                             | Series                   | The configuration used to project the graph in memory.
-| creation_time           | -                             | neo4j.time.Datetime      | Time when the graph was projected.
-| modification_time       | -                             | neo4j.time.Datetime      | Time when the graph was last modified.
-|===
-
-For example, to get the node count and node properties of a graph `G`, we would do the following:
-
-[source,python,group=graph-project]
-----
-n = G.node_count()
-props = G.node_properties()["City"]
-----
-
-
 == Context management
 
 The graph object also implement the context managment protocol, i.e., is usable inside `with` clauses.
@@ -241,4 +216,39 @@ result = gds.graph.node_properties.stream(G, node_properties=["degree"])
 
 # Drop a graph; same as G.drop()
 gds.graph.drop(G)
+----
+
+=== Inspecting a graph object
+
+There are convenience methods on the graph object that let us extract information about our projected graph.
+
+.Graph object methods
+[opts="header",cols="9m,6m,7m,13", role="no-break"]
+|===
+| Name                    | Arguments                     | Return type              | Description
+| name                    | -                             | str                      | The name of the projected graph.
+| database                | -                             | str                      | Name of the database in which the graph has been projected.
+| node_count              | -                             | int                      | The node count of the projected graph.
+| relationship_count      | -                             | int                      | The relationship count of the projected graph.
+| node_labels             | -                             | list[str]                | A list of the node labels present in the graph.
+| relationship_types      | -                             | list[str]                | A list of the relationship types present in the graph.
+| node_properties         | -                             | dict[str, list[str]]     | Returns a dictionary mapping every node label to a list of the properties present on nodes with that label.
+| relationship_properties | -                             | dict[str, list[str]]     | Returns a dictionary mapping every relationship type to a list of the properties present on relationships with that type.
+| degree_distribution     | -                             | Series                   | The average out-degree of generated nodes.
+| density                 | -                             | float                    | Density of the graph.
+| size_in_bytes           | -                             | int                      | Number of bytes used in the Java heap to store the graph.
+| memory_usage            | -                             | str                      | Human-readable description of `size_in_bytes`.
+| exists                  | -                             | bool                     | Returns `True` if the graph exists in the GDS Graph Catalog, otherwise `False`.
+| drop                    | fail_if_missing: Optional[bool] | GraphInfo              | link:{gds-docs-base-uri}/graph-drop/[Removes the graph] from the GDS Graph Catalog.
+| configuration           | -                             | Series                   | The configuration used to project the graph in memory.
+| creation_time           | -                             | neo4j.time.Datetime      | Time when the graph was projected.
+| modification_time       | -                             | neo4j.time.Datetime      | Time when the graph was last modified.
+|===
+
+For example, to get the node count and node properties of a graph `G`, we would do the following:
+
+[source,python,group=graph-project]
+----
+n = G.node_count()
+props = G.node_properties()["City"]
 ----

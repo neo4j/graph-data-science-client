@@ -1,10 +1,10 @@
 = Read from a graph
 :table-caption!:
 
-The data in a graph can be read in several ways.
+You can read data from a graph in several ways.
 
 [%collapsible]
-.Create a graph for the examples below
+.Example Neo4j graph (same example from xref:graph-object.adoc[])
 ====
 [source,python,group=graph-project,role=nocollapse]
 ----
@@ -29,7 +29,11 @@ G, result = gds.graph.project.native(
             "properties": ["population"]
         }
     },
-    "FLY_TO"
+    {
+        "FLY_TO": {
+            "properties": ["cost"]
+        }
+    }
 )
 ----
 ====
