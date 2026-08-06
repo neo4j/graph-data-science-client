@@ -1,31 +1,31 @@
 = Create a graph
 
-The main entry point to every graph operation in the Python client is the _in-memory graph_.
+The main entry point to every graph operation is the _in-memory graph_.
 
-There are several ways to create an in-memory graph:
+There are several ways to create an in-memory graph with the Python client:
 
 * From a Neo4j database with a <<projection, graph projection>>
+* From an existing in-memory graph or a distribution (see <<other-creation-methods>>)
 * [[construct]] From xref:load-from-pandas.adoc[Pandas DataFrames] with the `construct` method
 * [[networkx]] From a xref:load-from-networkx.adoc[NetworkX graph]
 
-Once created, the link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] object can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
-
-Additionally, the `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
-
-[NOTE]
-====
-// TODO: embed note
-
-include::ROOT:partial$/gds-object.adoc[]
-====
+Once created, a link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] object can be used to run algorithms or train machine learning models.
+Additionally, `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
 
 [[projection]]
-== Projecting a graph object
+== Neo4j graph projection
 
 As for the Cypher API, the Python client offers two ways of projecting a graph object:
 
-* <<native-projection, Native projection>>
-* <<cypher-projection, Cypher projection>>
+* <<native-projection, Native projection>> for most use cases
+* <<cypher-projection, Cypher projection>> for more complex use cases that require custom Cypher queries
+
+[NOTE]
+====
+include::ROOT:partial$/gds-object.adoc[]
+====
+
+=== Example graph
 
 [source, python ,group=graph-project]
 ----
@@ -59,7 +59,7 @@ assert res.bytes_max < 1e12
 [[native-projection]]
 === Native projection
 
-The simplest way is to do a link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]:
+Cypher API reference: link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]
 
 [source,python,group=graph-project]
 ----
@@ -86,28 +86,6 @@ where `G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/ca
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `read_concurrency=4` above.
 Read more about the syntax in the link:{gds-docs-base-uri}/management-ops/projections/graph-project/#graph-project-native-syntax[GDS manual].
-
-Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` method that can be called in an analogous way.
-
-To get a graph object that represents a graph that has already been projected into the graph catalog, one can call the client-side only `get` method and passing it a name:
-
-[source,python,group=graph-project]
-----
-G = gds.graph.get("offices")
-----
-
-For users who are link:{gds-docs-base-uri}/management-ops/administration/[GDS admins], `gds.graph.get` will resolve graph names into `Graph` objects also when the provided name refers to another user's graph projection.
-
-In addition to those aforementioned there are more methods that create graph objects:
-
-* `gds.graph.filter`
-* `gds.graph.generate`
-* `gds.graph.sample.rwr`
-* `gds.graph.sample.cnarw`
-
-Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.
-See <<cypher-projection>> for projecting a graph using a Cypher query.
-
 
 [[cypher-projection]]
 === Cypher Projection
@@ -156,6 +134,28 @@ G, result = gds.graph.project.cypher(
 assert G.node_count() == result.node_count
 ----
 
+[[other-creation-methods]]
+== Other ways to create graphs
+
+To generate a graph from a distribution, use `gds.graph.generate`.
+
+To get a graph object that represents a graph that has already been projected into the graph catalog, one can call the client-side only `get` method and passing it a name:
+
+[source,python,group=graph-project]
+----
+G = gds.graph.get("offices")
+----
+
+For users who are link:{gds-docs-base-uri}/management-ops/administration/[GDS admins], `gds.graph.get` will resolve graph names into `Graph` objects also when the provided name refers to another user's graph projection.
+
+In addition to those aforementioned there are more methods that create graph objects:
+
+* `gds.graph.filter`
+* `gds.graph.sample.rwr`
+* `gds.graph.sample.cnarw`
+
+Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.
+
 == Context management
 
 The graph object also implement the context managment protocol, i.e., is usable inside `with` clauses.
@@ -179,11 +179,9 @@ assert not gds.graph.exists("tmp_offices")
 
 == Using a graph object
 
-The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog].
+The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog]:
 
 // TODO: Remove Placeholders
-
-Links:
 
 * xref:algorithms.adoc[Input to algorithms]
 * [[graph-object-streaming-properties]] xref:read-graph.adoc#graph-object-streaming-properties[Streaming properties]

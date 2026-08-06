@@ -1,2 +1,2 @@
-In the examples below we assume that we have an instantiated `GraphDataScience` object called `gds`.
-Read more about this in xref:getting-started.adoc[Getting started].
+The examples below assume that a `GraphDataScience` object called `gds` has already been created.
+See xref:getting-started.adoc[] for more details.
