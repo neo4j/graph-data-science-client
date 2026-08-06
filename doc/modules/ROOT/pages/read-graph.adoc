@@ -180,21 +180,8 @@ gds.graph.relationships.stream(G)
 
 The `RelationshipsDataFrame` class includes a `by_rel_type` method to return a map between relationship types and lists of source node IDs and target node IDs respectively.
 
-[source,python, group=graph-roundtrip, min-server-version=2.2.0]
-----
-gds.run_cypher(
-  """
-  CREATE
-    (a:N)-[:REL]->(b:N),
-    (b)-[:REL]->(c:N),
-    (c)-[:REL]->(d:N),
-    (d)-[:REL]->(a)
-  """
-)
-----
-
 .Result (NOTE: The node IDs can be different.)
-[source, python]
+[source, python, min-server-version=2.2.0]
 ----
 {'FLY_TO': [[3, 4, 4, 5], [4, 3, 5, 4]]}
 ----
