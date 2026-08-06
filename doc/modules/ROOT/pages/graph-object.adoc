@@ -4,8 +4,8 @@ The main entry point to every graph operation in the Python client is the _in-me
 
 There are several ways to create an in-memory graph:
 
-* From a Neo4j database with a <<projection, projection>>
-* [[construct]] From xref:load-from-pandas.adoc[Pandas DataFrames]
+* From a Neo4j database with a <<projection, graph projection>>
+* [[construct]] From xref:load-from-pandas.adoc[Pandas DataFrames] with the `construct` method
 * [[networkx]] From a xref:load-from-networkx.adoc[NetworkX graph]
 
 Once created, the link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] object can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
@@ -22,10 +22,12 @@ include::ROOT:partial$/gds-object.adoc[]
 [[projection]]
 == Projecting a graph object
 
-There are several ways of projecting a graph object.
-The simplest way is to do a link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]:
+As for the Cypher API, the client offers two ways of projecting a graph object:
 
-[source,python,group=graph-project]
+* <<native-projection, Native projection>>
+* <<cypher-projection, Cypher projection>>
+
+[source, python ,group=graph-project]
 ----
 # We put this simple graph in our database
 gds.run_cypher(
@@ -41,7 +43,15 @@ gds.run_cypher(
     (s)-[:FLY_TO]->(l)
   """
 )
+----
 
+[[native-projection]]
+=== Native projection
+
+The simplest way is to do a link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]:
+
+[source,python,group=graph-project]
+----
 # We estimate required memory of the operation
 res = gds.graph.project.estimate(
     ["City"],                   #  Node projection
@@ -89,7 +99,7 @@ See <<cypher-projection>> for projecting a graph using a Cypher query.
 
 
 [[cypher-projection]]
-== Projecting a graph using Cypher Projection
+=== Cypher Projection
 
 The method `gds.graph.project.cypher` allows for projecting a graph using Cypher projection.
 Cypher projection is not a dedicated procedure; rather it requires writing a Cypher query that calls the `gds.graph.project` aggregation function.
@@ -117,21 +127,6 @@ If your query needs additional aggregations or a renamed result row, use `gds.ru
 
 [source,python,group=graph-cyhpher-project,role=nocollapse]
 ----
-# We put this simple graph in our database
-gds.run_cypher(
-  """
-  CREATE
-    (m: City {name: "Malmö"}),
-    (l: City {name: "London"}),
-    (s: City {name: "San Mateo"}),
-
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
-  """
-)
-
 G, result = gds.graph.project.cypher(
     """
     MATCH (n)-->(m)

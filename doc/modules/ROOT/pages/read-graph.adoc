@@ -1,38 +1,12 @@
 = Read from a graph
+:table-caption!:
 
 The data in a graph can be read in several ways.
 
-[[graph-object-streaming-properties]]
-== Read node and relationship properties
-
-The methods to read node and relationship properties from a graph are the same as in the Cypher API.
-
-Assuming the `GraphDataScience` object is called `gds`:
-
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.streamNodeProperty`) returns a single node property
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_properties.stream`] (previously `gds.graph.streamNodeProperties`) returns multiple node properties
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.streamRelationshipProperty`) returns a single relationship property
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.streamRelationshipProperties`) returns multiple relationship properties
-
-[NOTE]
+[%collapsible]
+.Create a graph for the examples below
 ====
-Before version 2.0, the `node_properties.stream` and `relationship_properties.stream` methods included an additional `separate_property_columns` keyword parameter (default `True`) to return a Pandas `DataFrame` in which each property had its own column.
-
-Starting with version 2.0, this behaviour is the default and the parameter has been removed.
-====
-
-// TODO: Add examples
-
-[[graph-object-streaming-db-properties]]
-=== Include node properties from Neo4j
-
-Node properties such as names and descriptions are useful to understand the output of an algorithm, even if not needed to run the algorithm itself.
-When a graph is projected from a Neo4j database, the `db_node_properties` client-only parameter for the `node_property.stream` method adds this information to the result.
-
-In the following example, the `City` nodes have both a numeric and a `String` property.
-The `stream` method retrieves the values of the database-only `name` property alongside the values of the projected `population` property.
-
-[source,python,group=graph-project]
+[source,python,group=graph-project,role=nocollapse]
 ----
 gds.run_cypher(
   """
@@ -41,10 +15,10 @@ gds.run_cypher(
     (l: City {name: "London", population: 8800000}),
     (s: City {name: "San Mateo", population: 105000}),
 
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
+    (m)-[:FLY_TO {cost: 200}]->(l),
+    (l)-[:FLY_TO {cost: 200}]->(m),
+    (l)-[:FLY_TO {cost: 1000}]->(s),
+    (s)-[:FLY_TO {cost: 1000}]->(l)
   """
 )
 
@@ -57,10 +31,126 @@ G, result = gds.graph.project.native(
     },
     "FLY_TO"
 )
+----
+====
 
+[[graph-object-streaming-properties]]
+== Read node and relationship properties
+
+The methods to read node and relationship properties from a graph are the same as in the Cypher API (see link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[Streaming nodes] and link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[Streaming relationships]).
+
+Assuming the `GraphDataScience` object is called `gds`:
+
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.streamNodeProperty`) returns a single node property
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_properties.stream`] (previously `gds.graph.streamNodeProperties`) returns multiple node properties
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.streamRelationshipProperty`) returns a single relationship property
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.streamRelationshipProperties`) returns multiple relationship properties
+
+[.tabbed-example]
+====
+[.include-with-Single-node-property]
+=====
+.Method call
+[source, cypher]
+----
+gds.graph.node_property.stream(G, node_property="population")
+----
+
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
+|===
+|  | nodeId | propertyValue
+|0 | 3      | 360000
+|1 | 4      | 8800000
+|2 | 5      | 105000
+|===
+=====
+
+[.include-with-Multiple-node-properties]
+=====
+.Method call
+[source, python]
+----
+gds.graph.node_properties.stream(G, node_properties=["population"])
+----
+
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
+|===
+|  | nodeId | propertyValue
+|0 | 3      | 360000
+|1 | 4      | 8800000
+|2 | 5      | 105000
+|===
+=====
+
+[.include-with-Single-relationship-property]
+=====
+[source, python]
+----
+gds.graph.relationship_property.stream(G, relationship_property="cost")
+----
+
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
+|===
+|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
+|0 | 3            | 4            | FLY_TO           | 200.0
+|1 | 4            | 3            | FLY_TO           |      200.0
+|2 | 4            | 5            | FLY_TO           |      1000.0
+|3 | 5            | 4            | FLY_TO           |     1000.0
+|===
+=====
+
+[.include-with-Multiple-relationship-properties]
+=====
+[source, python]
+----
+gds.graph.relationship_properties.stream(G, relationship_properties=["cost"])
+----
+
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
+|===
+|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
+|0 | 3            | 4            | FLY_TO           | 200.0
+|1 | 4            | 3            | FLY_TO           |      200.0
+|2 | 4            | 5            | FLY_TO           |      1000.0
+|3 | 5            | 4            | FLY_TO           |     1000.0
+|===
+=====
+====
+
+[role=label--removed-2.0]
+=== Separate node properties in result
+
+Before version 2.0, the `node_properties.stream` and `relationship_properties.stream` methods included an additional `separate_property_columns` keyword parameter (default `True`) to return a Pandas `DataFrame` in which each property had its own column.
+
+Starting with version 2.0, this behaviour is the default and the parameter has been removed.
+
+
+[[graph-object-streaming-db-properties]]
+=== Include node properties from Neo4j
+
+Node properties such as names and descriptions are useful to understand the output of an algorithm, even if not needed to run the algorithm itself.
+When a graph is projected from a Neo4j database, the `db_node_properties` client-only parameter for the `node_property.stream` method adds this information to the result.
+
+In the following example, the `stream` method retrieves the values of the database-only `name` property alongside the values of the projected `population` property.
+
+.Method call
+[source,python,group=graph-project]
+----
 gds.graph.node_properties.stream(G, node_properties=["population"], db_node_properties=["name"])
 ----
 
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
+|===
+|  | nodeId | propertyValue | name
+|0 | 3      | 360000        | Malmö
+|1 | 4      | 8800000       | London
+|2 | 5      | 105000        | San Mateo
+|===
 
 == Read the graph topology
 
@@ -68,26 +158,23 @@ When reading the graph topology via the client equivalent to link:{gds-docs-base
 
 The result is a node-to-node table with a row for each connected pair of nodes.
 
-[opts="header,autowidth",cols="1,1e,1e,1m"]
+.Method call
+[source,python,group=graph-project]
+----
+gds.graph.relationships.stream(G)
+----
+
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
 |===
-| |sourceNodeId | targetNodeId | relationshipType
+|  | sourceNodeId | targetNodeId | relationshipType
+|0 | 3            | 4            | FLY_TO
+|1 | 4            | 3            | FLY_TO
+|2 | 4            | 5            | FLY_TO
+|3 | 5            | 4            | FLY_TO
+|===
 
-|0|node_id_1|node_id_2|REL_1
-|1|node_id_2|node_id_3|REL_1
-|2|node_id_2|node_id_4|REL_2
-|=== 
-
-This type includes the `by_rel_type` method to return a map between relationship types and lists of source node IDs and target node IDs respectively:
-
-[subs="quotes"]
-----
-{
-  "REL_1": [[_node_id_1_, _node_id_2_], [_node_id_2_, _node_id_3_]],
-  "REL_2": [[_node_id_2_], [_node_id_4_]]
-}
-----
-
-Example:
+The `RelationshipsDataFrame` class includes a `by_rel_type` method to return a map between relationship types and lists of source node IDs and target node IDs respectively.
 
 [source,python, group=graph-roundtrip, min-server-version=2.2.0]
 ----
@@ -100,15 +187,12 @@ gds.run_cypher(
     (d)-[:REL]->(a)
   """
 )
-G, _ = gds.graph.project.native("cycle", "N", "REL")
+----
 
-topology_by_rel_type = gds.graph.relationships.stream(G).by_rel_type()
-
-assert list(topology_by_rel_type.keys()) == ["REL"]
-sources, targets = topology_by_rel_type["REL"]
-# In a cycle every node appears once as a source and once as a target
-assert len(sources) == 4
-assert set(sources) == set(targets)
+.Result (NOTE: The node IDs can be different.)
+[source, python]
+----
+{'FLY_TO': [[3, 4, 4, 5], [4, 3, 5, 4]]}
 ----
 
 == Apache Arrow speedup
