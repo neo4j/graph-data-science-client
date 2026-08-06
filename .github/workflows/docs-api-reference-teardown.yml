@@ -26,6 +26,8 @@ on:
 jobs:
   teardown-api-reference:
     name: Teardown API reference preview
+    # Dependabot PRs get no preview (see docs-api-reference.yml), so nothing to tear down.
+    if: ${{ !startsWith(github.head_ref, 'dependabot/') }}
     runs-on: ubuntu-latest
 
     steps:

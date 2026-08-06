@@ -20,10 +20,12 @@ jobs:
   deploy-api-reference:
     name: Deploy API reference preview
     # A failed build has no artifact to deploy, and a workflow_dispatch run has no PR to
-    # deploy for.
+    # deploy for. The head_branch check is belt-and-braces: a dependabot run is already
+    # 'skipped' rather than 'success'.
     if: |
       github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request'
+      github.event.workflow_run.event == 'pull_request' &&
+      !startsWith(github.event.workflow_run.head_branch, 'dependabot/')
     runs-on: ubuntu-latest
 
     steps:

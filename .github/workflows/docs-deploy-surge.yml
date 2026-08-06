@@ -35,6 +35,7 @@ jobs:
   #       run: echo "Approved"
 
   deploy-docs:
+    if: ${{ !startsWith(github.event.workflow_run.head_branch, 'dependabot/') }}
     # needs: [approve-fork]
     # Run when approve-fork succeeded (fork, approved) or was skipped (non-fork).
     # Uncomment the conclusion check to deploy only when the PR builds cleanly:
