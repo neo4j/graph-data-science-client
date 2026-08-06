@@ -163,7 +163,7 @@ When reading the graph topology via the client equivalent to link:{gds-docs-base
 The result is a node-to-node table with a row for each connected pair of nodes.
 
 .Method call
-[source,python,group=graph-project]
+[source, python]
 ----
 gds.graph.relationships.stream(G)
 ----
@@ -179,6 +179,12 @@ gds.graph.relationships.stream(G)
 |===
 
 The `RelationshipsDataFrame` class includes a `by_rel_type` method to return a map between relationship types and lists of source node IDs and target node IDs respectively.
+
+.Method call
+[source, python]
+----
+gds.graph.relationships.stream(G).by_rel_type()
+----
 
 .Result (NOTE: The node IDs can be different.)
 [source, python, min-server-version=2.2.0]
