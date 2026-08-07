@@ -50,7 +50,7 @@ class NodeRegressionPipelinePredictEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The prediction results as a DataFrame.
         """
         pass

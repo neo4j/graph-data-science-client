@@ -185,7 +185,7 @@ class MaxFlowEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results containing 'source', 'target', and 'flow' columns
         """
         pass

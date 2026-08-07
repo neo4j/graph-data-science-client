@@ -85,7 +85,7 @@ class PrizeSteinerTreeEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A DataFrame containing the tree edges with columns: nodeId, parentId, weight.
         """
         ...

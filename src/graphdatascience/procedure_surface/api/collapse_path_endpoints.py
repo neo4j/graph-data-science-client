@@ -36,7 +36,7 @@ class CollapsePathEndpoints(ABC):
             Name of the relationship type to store the results in.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        allow_self_loops : bool, default=False
+        allow_self_loops : bool
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency
             Number of concurrent threads to use.

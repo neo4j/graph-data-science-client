@@ -64,7 +64,7 @@ class GdsArrowClient:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The requested node property as a DataFrame
         """
         config: dict[str, Any] = {
@@ -102,7 +102,7 @@ class GdsArrowClient:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The requested nodes as a DataFrame
         """
         return self._get_data(graph_name, database, "gds.graph.nodeLabels.stream", concurrency, {})
@@ -130,7 +130,7 @@ class GdsArrowClient:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The requested relationships as a DataFrame
         """
         return self._get_data(
@@ -167,7 +167,7 @@ class GdsArrowClient:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The requested relationships as a DataFrame
         """
         config: dict[str, Any] = {}

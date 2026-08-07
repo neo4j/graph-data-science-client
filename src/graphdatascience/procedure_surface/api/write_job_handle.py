@@ -10,7 +10,8 @@ from graphdatascience.procedure_surface.api.job_not_finished_error import JobNot
 from graphdatascience.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
-from graphdatascience.session.remote_ops.write_protocols import JobStatus, WriteProtocol
+from graphdatascience.arrow_client.v2.api_types import JobStatus
+from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class WriteJobHandle:

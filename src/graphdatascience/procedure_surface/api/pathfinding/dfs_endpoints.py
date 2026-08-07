@@ -36,7 +36,7 @@ class DFSEndpoints(ABC):
            Graph object to use
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int], default=[]
+        target_nodes : int | list[int]
             A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.
@@ -57,7 +57,7 @@ class DFSEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with sourceNode and nodeIds columns.
         """
         pass
@@ -89,7 +89,7 @@ class DFSEndpoints(ABC):
             Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int], default=[]
+        target_nodes : int | list[int]
             A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.
@@ -139,7 +139,7 @@ class DFSEndpoints(ABC):
            Graph object to use
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int], default=[]
+        target_nodes : int | list[int]
             A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.
@@ -185,7 +185,7 @@ class DFSEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int], default=[]
+        target_nodes : int | list[int]
             A single target node or a list of target nodes for the DFS computation.
         max_depth
             The maximum depth of the search.

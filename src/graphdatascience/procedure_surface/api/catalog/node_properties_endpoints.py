@@ -36,7 +36,7 @@ class NodePropertiesEndpoints(ABC):
            Graph object to use
         node_properties : str | list[str]
             The node properties to stream
-        list_node_labels : boolean | None, default=None
+        list_node_labels : boolean | None
             Whether to include node labels in the stream
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -50,11 +50,11 @@ class NodePropertiesEndpoints(ABC):
             As an administrator, impersonate a different user for accessing their graphs.
         job_id
             Identifier for the computation.
-        db_node_properties : list[str] | None, default=None
+        db_node_properties : list[str] | None
             Retrieves additional node properties from the database and attaches them to the stream.
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The streamed node properties
         """
         pass

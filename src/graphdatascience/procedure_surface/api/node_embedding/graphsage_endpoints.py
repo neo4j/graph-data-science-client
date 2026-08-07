@@ -50,31 +50,31 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             The names of the node properties to use as input features
         activation_function : str | None
             The activation function to apply after each layer
-        negative_sample_weight : int | None, default=None
+        negative_sample_weight : int | None
             Weight of negative samples in the loss function
-        embedding_dimension : int | None, default=None
+        embedding_dimension : int | None
             The dimension of the generated embeddings
         tolerance
             Minimum change in loss between iterations for early stopping an epoch.
-        learning_rate : float | None, default=None
+        learning_rate : float | None
             Learning rate for the training optimization
         max_iterations
             Maximum number of iterations to run.
-        sample_sizes : list[int] | None, default=None
+        sample_sizes : list[int] | None
             Number of neighbors to sample at each layer
         aggregator : str | None
             The aggregator function for neighborhood aggregation
-        penalty_l2 : float | None, default=None
+        penalty_l2 : float | None
             L2 regularization penalty
-        search_depth : int | None, default=None
+        search_depth : int | None
             Maximum search depth for neighbor sampling
-        epochs : int | None, default=None
+        epochs : int | None
             Number of training epochs
-        projected_feature_dimension : int | None, default=None
+        projected_feature_dimension : int | None
             Dimension to project input features to before training
-        batch_sampling_ratio : float | None, default=None
+        batch_sampling_ratio : float | None
             Ratio of nodes to sample for each training batch
-        store_model_to_disk : bool | None, default=None
+        store_model_to_disk : bool | None
             Whether to persist the model to disk
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

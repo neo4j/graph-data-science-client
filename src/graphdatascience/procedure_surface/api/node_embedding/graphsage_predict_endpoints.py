@@ -55,7 +55,7 @@ class GraphSagePredictEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with node IDs and their embeddings
         """
 
@@ -188,7 +188,7 @@ class GraphSagePredictEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size : int
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.

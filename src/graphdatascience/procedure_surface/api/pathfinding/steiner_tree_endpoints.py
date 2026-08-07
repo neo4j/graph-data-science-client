@@ -73,9 +73,9 @@ class SteinerTreeEndpoints(ABC):
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float, default=2.0
+        delta : float
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool, default=False
+        apply_rerouting : bool
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -94,7 +94,7 @@ class SteinerTreeEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A DataFrame containing the edges in the computed Steiner tree.
         """
         ...
@@ -129,9 +129,9 @@ class SteinerTreeEndpoints(ABC):
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float, default=2.0
+        delta : float
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool, default=False
+        apply_rerouting : bool
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -191,9 +191,9 @@ class SteinerTreeEndpoints(ABC):
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float, default=2.0
+        delta : float
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool, default=False
+        apply_rerouting : bool
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -254,9 +254,9 @@ class SteinerTreeEndpoints(ABC):
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float, default=2.0
+        delta : float
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool, default=False
+        apply_rerouting : bool
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -308,9 +308,9 @@ class SteinerTreeEndpoints(ABC):
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float, default=2.0
+        delta : float
             The delta parameter for the shortest path computation.
-        apply_rerouting : bool, default=False
+        apply_rerouting : bool
             Whether to apply rerouting optimization.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

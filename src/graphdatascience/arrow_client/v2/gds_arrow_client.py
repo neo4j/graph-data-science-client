@@ -188,7 +188,7 @@ class GdsArrowClient:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A pandas DataFrame containing the results of the job.
         """
         return JobClient().get_stream(self._flight_client, job_id)

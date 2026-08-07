@@ -59,21 +59,21 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be targets.
         top_k
             Number of most similar nodes to return for each node.
-        bottom_k : int, default=10
+        bottom_k : int
             The maximum number of neighbors with the lowest similarity scores to compute per node.
-        top_n : int, default=0
+        top_n : int
             The maximum number of neighbors to select globally based on similarity scores.
-        bottom_n : int, default=0
+        bottom_n : int
             The maximum number of neighbors to select globally based on lowest similarity scores.
         similarity_cutoff
             The threshold for similarity scores.
-        degree_cutoff : int, default=1
+        degree_cutoff : int
             The minimum degree a node must have to be considered.
-        upper_degree_cutoff : int, default=2147483647
+        upper_degree_cutoff : int
             The maximum degree a node can have to be considered.
-        similarity_metric : str, default="JACCARD"
+        similarity_metric : str
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
-        use_components : bool | str, default=False
+        use_components : bool | str
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
             Name of the property to be used as weights.
@@ -135,21 +135,21 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be targets.
         top_k
             Number of most similar nodes to return for each node.
-        bottom_k : int, default=10
+        bottom_k : int
             The maximum number of neighbors with the lowest similarity scores to compute per node.
-        top_n : int, default=0
+        top_n : int
             The maximum number of neighbors to select globally based on similarity scores.
-        bottom_n : int, default=0
+        bottom_n : int
             The maximum number of neighbors to select globally based on lowest similarity scores.
         similarity_cutoff
             The threshold for similarity scores.
-        degree_cutoff : int, default=1
+        degree_cutoff : int
             The minimum degree a node must have to be considered.
-        upper_degree_cutoff : int, default=2147483647
+        upper_degree_cutoff : int
             The maximum degree a node can have to be considered.
-        similarity_metric : str, default="JACCARD"
+        similarity_metric : str
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
-        use_components : bool | str, default=False
+        use_components : bool | str
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
             Name of the property to be used as weights.
@@ -211,21 +211,21 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be targets.
         top_k
             Number of most similar nodes to return for each node.
-        bottom_k : int, default=10
+        bottom_k : int
             The maximum number of neighbors with the lowest similarity scores to compute per node.
-        top_n : int, default=0
+        top_n : int
             The maximum number of neighbors to select globally based on similarity scores.
-        bottom_n : int, default=0
+        bottom_n : int
             The maximum number of neighbors to select globally based on lowest similarity scores.
         similarity_cutoff
             The threshold for similarity scores.
-        degree_cutoff : int, default=1
+        degree_cutoff : int
             The minimum degree a node must have to be considered.
-        upper_degree_cutoff : int, default=2147483647
+        upper_degree_cutoff : int
             The maximum degree a node can have to be considered.
-        similarity_metric : str, default="JACCARD"
+        similarity_metric : str
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
-        use_components : bool | str, default=False
+        use_components : bool | str
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
             Name of the property to be used as weights.
@@ -246,7 +246,7 @@ class NodeSimilarityFilteredEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The similarity results as a DataFrame with columns 'node1', 'node2', and 'similarity'.
         """
 
@@ -294,21 +294,21 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be targets.
         top_k
             Number of most similar nodes to return for each node.
-        bottom_k : int, default=10
+        bottom_k : int
             The maximum number of neighbors with the lowest similarity scores to compute per node.
-        top_n : int, default=0
+        top_n : int
             The maximum number of neighbors to select globally based on similarity scores.
-        bottom_n : int, default=0
+        bottom_n : int
             The maximum number of neighbors to select globally based on lowest similarity scores.
         similarity_cutoff
             The threshold for similarity scores.
-        degree_cutoff : int, default=1
+        degree_cutoff : int
             The minimum degree a node must have to be considered.
-        upper_degree_cutoff : int, default=2147483647
+        upper_degree_cutoff : int
             The maximum degree a node can have to be considered.
-        similarity_metric : str, default="JACCARD"
+        similarity_metric : str
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
-        use_components : bool | str, default=False
+        use_components : bool | str
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
             Name of the property to be used as weights.
@@ -368,21 +368,21 @@ class NodeSimilarityFilteredEndpoints(ABC):
             A Cypher expression or list of node IDs to filter which nodes can be targets.
         top_k
             Number of most similar nodes to return for each node.
-        bottom_k : int, default=10
+        bottom_k : int
             The maximum number of neighbors with the lowest similarity scores to compute per node.
-        top_n : int, default=0
+        top_n : int
             The maximum number of neighbors to select globally based on similarity scores.
-        bottom_n : int, default=0
+        bottom_n : int
             The maximum number of neighbors to select globally based on lowest similarity scores.
         similarity_cutoff
             The threshold for similarity scores.
-        degree_cutoff : int, default=1
+        degree_cutoff : int
             The minimum degree a node must have to be considered.
-        upper_degree_cutoff : int, default=2147483647
+        upper_degree_cutoff : int
             The maximum degree a node can have to be considered.
-        similarity_metric : str, default="JACCARD"
+        similarity_metric : str
             The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
-        use_components : bool | str, default=False
+        use_components : bool | str
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
             Name of the property to be used as weights.

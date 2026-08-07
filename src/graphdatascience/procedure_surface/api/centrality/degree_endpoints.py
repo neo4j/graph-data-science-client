@@ -164,7 +164,7 @@ class DegreeEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with nodeId and score columns containing degree centrality results.
             Each row represents a node with its corresponding degree centrality score.
         """

@@ -66,7 +66,7 @@ class MaxKCutEndpoints(ABC):
             Disable the memory guard.
         username
             As an administrator, impersonate a different user for accessing their graphs.
-        vns_max_neighborhood_order : int | None, default=0
+        vns_max_neighborhood_order : int | None
             The maximum neighborhood order for the Variable Neighborhood Search. Higher values may
             lead to better results but increase computation time.
 
@@ -129,13 +129,13 @@ class MaxKCutEndpoints(ABC):
             Disable the memory guard.
         username
             As an administrator, impersonate a different user for accessing their graphs.
-        vns_max_neighborhood_order : int | None, default=0
+        vns_max_neighborhood_order : int | None
             The maximum neighborhood order for the Variable Neighborhood Search. Higher values may
             lead to better results but increase computation time.
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A DataFrame with columns:
             - nodeId: The node identifier
             - communityId: The community assignment for the node
@@ -179,7 +179,7 @@ class MaxKCutEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_weight_property
             Name of the property to be used as weights.
-        vns_max_neighborhood_order : int | None, default=0
+        vns_max_neighborhood_order : int | None
             The maximum neighborhood order for the Variable Neighborhood Search
 
         Returns

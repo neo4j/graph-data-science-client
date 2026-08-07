@@ -35,7 +35,7 @@ class NodePropertyEndpoints:
            Graph object to use
         node_property : str
             The node property to stream
-        list_node_labels : boolean | None, default=None
+        list_node_labels : boolean | None
             Whether to include node labels in the stream
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -47,11 +47,11 @@ class NodePropertyEndpoints:
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
-        db_node_properties : list[str] | None, default=None
+        db_node_properties : list[str] | None
             Retrieves additional node properties from the database and attaches them to the stream.
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The streamed node property as `nodeId` and `propertyValue` columns, plus a `nodeLabels` column
             if `list_node_labels` is set and one column per requested `db_node_properties`.
         """

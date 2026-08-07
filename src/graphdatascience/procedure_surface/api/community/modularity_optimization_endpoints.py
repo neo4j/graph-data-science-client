@@ -193,7 +193,7 @@ class ModularityOptimizationEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A DataFrame with columns 'nodeId' and 'communityId'
         """
         pass

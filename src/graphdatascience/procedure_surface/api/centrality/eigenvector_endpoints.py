@@ -49,7 +49,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -116,7 +116,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -178,7 +178,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -207,7 +207,7 @@ class EigenvectorEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results containing nodeId and score columns
         """
         pass
@@ -249,7 +249,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -307,7 +307,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])

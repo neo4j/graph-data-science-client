@@ -43,12 +43,12 @@ class TriangleCountEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        label_filter : list[str] | None, default=None
+        label_filter : list[str] | None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress
             Display progress logging.
-        max_degree : int | None, default=None
+        max_degree : int | None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
         node_labels
@@ -95,12 +95,12 @@ class TriangleCountEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        label_filter : list[str] | None, default=None
+        label_filter : list[str] | None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress
             Display progress logging.
-        max_degree : int | None, default=None
+        max_degree : int | None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
         node_labels
@@ -147,12 +147,12 @@ class TriangleCountEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        label_filter : list[str] | None, default=None
+        label_filter : list[str] | None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress
             Display progress logging.
-        max_degree : int | None, default=None
+        max_degree : int | None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
         node_labels
@@ -166,7 +166,7 @@ class TriangleCountEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A DataFrame with columns:
             - nodeId: The node identifier
             - triangleCount: The number of triangles the node participates in
@@ -205,12 +205,12 @@ class TriangleCountEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        label_filter : list[str] | None, default=None
+        label_filter : list[str] | None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
         log_progress
             Display progress logging.
-        max_degree : int | None, default=None
+        max_degree : int | None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
         node_labels
@@ -253,10 +253,10 @@ class TriangleCountEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
-        label_filter : list[str] | None, default=None
+        label_filter : list[str] | None
             Filter triangles by node labels. Only triangles where all nodes have one of the specified
             labels will be counted.
-        max_degree : int | None, default=None
+        max_degree : int | None
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
             triangle counting to improve performance.
         node_labels

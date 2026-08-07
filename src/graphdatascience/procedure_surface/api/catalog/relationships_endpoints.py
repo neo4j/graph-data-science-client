@@ -34,7 +34,7 @@ class RelationshipsEndpoints(ABC):
            Graph object to use
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        relationship_properties: list[str] | None, default = None
+        relationship_properties: list[str] | None
             The relationship properties to stream. If not specified, no properties will be streamed.
         concurrency
             Number of concurrent threads to use.
@@ -75,7 +75,7 @@ class RelationshipsEndpoints(ABC):
            Graph object to use
         relationship_type : str
             The relationship type to write to the database
-        relationship_properties: list[str] | None, default = None
+        relationship_properties: list[str] | None
             The relationship properties to write. If not specified, no properties will be written.
         concurrency
             Number of concurrent threads to use.
@@ -113,7 +113,7 @@ class RelationshipsEndpoints(ABC):
            Graph object to use
         relationship_type: str
             The relationship type to drop
-        fail_if_missing: bool, default=True
+        fail_if_missing: bool
             If set to true, the procedure will fail if the relationship type does not exist in the graph.
         Returns
         -------
@@ -237,7 +237,7 @@ class RelationshipsEndpoints(ABC):
             Name of the relationship type to store the results in.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        allow_self_loops : bool, default=False
+        allow_self_loops : bool
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency
             Number of concurrent threads to use.

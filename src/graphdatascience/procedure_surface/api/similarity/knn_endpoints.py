@@ -61,17 +61,17 @@ class KnnEndpoints(ABC):
             Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -131,17 +131,17 @@ class KnnEndpoints(ABC):
             Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -201,17 +201,17 @@ class KnnEndpoints(ABC):
             Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -234,7 +234,7 @@ class KnnEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The similarity results as a DataFrame with columns 'node1', 'node2', and 'similarity'.
         """
 
@@ -278,17 +278,17 @@ class KnnEndpoints(ABC):
             Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -347,17 +347,17 @@ class KnnEndpoints(ABC):
             Node properties to use for the similarity computation.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.

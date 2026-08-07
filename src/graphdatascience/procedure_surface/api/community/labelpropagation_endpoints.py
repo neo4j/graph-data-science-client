@@ -52,7 +52,7 @@ class LabelPropagationEndpoints(ABC):
             Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        node_weight_property : str | None, default=None
+        node_weight_property : str | None
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -109,7 +109,7 @@ class LabelPropagationEndpoints(ABC):
             Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        node_weight_property : str | None, default=None
+        node_weight_property : str | None
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -169,7 +169,7 @@ class LabelPropagationEndpoints(ABC):
             Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        node_weight_property : str | None, default=None
+        node_weight_property : str | None
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -184,7 +184,7 @@ class LabelPropagationEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results containing nodeId and communityId
         """
         pass
@@ -233,7 +233,7 @@ class LabelPropagationEndpoints(ABC):
             Minimum size for communities to be included in results.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        node_weight_property : str | None, default=None
+        node_weight_property : str | None
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -282,7 +282,7 @@ class LabelPropagationEndpoints(ABC):
             Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        node_weight_property : str | None, default=None
+        node_weight_property : str | None
             The property name for node weights
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

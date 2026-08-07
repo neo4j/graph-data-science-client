@@ -218,26 +218,26 @@ class GraphDataScience:
         ----------
         endpoint : str | Driver | QueryRunner
             The Neo4j endpoint to connect to. Most commonly, this is a Bolt connection URI.
-        auth : tuple[str, str] | None, default None
+        auth : tuple[str, str] | None
             A username, password pair for database authentication.
-        aura_ds : bool | None, default None
+        aura_ds : bool | None
             A flag that indicates that the client is used to connect
             to a Neo4j AuraDS instance. If not set, the client will
             automatically derive whether the database is hosted in Aura.
-        database: str | None, default None
+        database: str | None
             The Neo4j database to query against.
-        arrow : str | bool, default True
+        arrow : str | bool
             Arrow connection information. This is either a string or a bool.
 
             - If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
             - If it is a bool:
                 - True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint.
                 - False will make the client use Bolt for all operations.
-        bookmarks : Any | None, default None
+        bookmarks : Any | None
             The Neo4j bookmarks to require a certain state before the next query gets executed.
-        show_progress : bool, default True
+        show_progress : bool
             A flag to indicate whether to show progress bars for running procedures.
-        arrow_client_options : dict[str, Any] | None, default None
+        arrow_client_options : dict[str, Any] | None
             Additional options to be passed to the Arrow Flight client.
         """
         if isinstance(endpoint, QueryRunner):

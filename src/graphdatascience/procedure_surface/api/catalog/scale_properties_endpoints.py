@@ -159,7 +159,7 @@ class ScalePropertiesEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with nodeId and scaledProperty columns containing scaled property values.
             Each row represents a node with its corresponding scaled property values.
         """

@@ -150,7 +150,7 @@ class ClosenessEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with nodeId and score columns containing closeness centrality results.
             Each row represents a node with its corresponding closeness centrality score.
         """
@@ -184,7 +184,7 @@ class ClosenessEndpoints(ABC):
            Graph object to use
         write_property
             Name of the node property to store the results in.
-        use_wasserman_faust : bool | None, default=None
+        use_wasserman_faust : bool | None
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -224,7 +224,7 @@ class ClosenessEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        use_wasserman_faust : bool | None, default=None
+        use_wasserman_faust : bool | None
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

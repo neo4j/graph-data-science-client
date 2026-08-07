@@ -47,7 +47,7 @@ class BridgesEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with 'from', 'to' and 'remainingSizes' columns. The remainingSizes column contains the sizes of the remaining connected components after removing the bridge relationship.
         """
         pass

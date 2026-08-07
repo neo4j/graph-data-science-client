@@ -72,7 +72,7 @@ class PageRankEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -141,7 +141,7 @@ class PageRankEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
 
             - single node id (e.g., 42)
@@ -209,12 +209,12 @@ class PageRankEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
-        source_nodes : Any | None, default=None
+        source_nodes : Any | None
             The source nodes for personalized PageRank
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with node IDs and their PageRank scores
         """
         pass
@@ -279,7 +279,7 @@ class PageRankEndpoints(ABC):
             Identifier for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes : int | list[int] | list[tuple[int, float]] | None
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -333,7 +333,7 @@ class PageRankEndpoints(ABC):
             Number of concurrent threads to use.
         relationship_weight_property
             Name of the property to be used as weights.
-        source_nodes : Any | None, default=None
+        source_nodes : Any | None
             The source nodes for personalized PageRank
 
         Returns

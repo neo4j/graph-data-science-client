@@ -17,7 +17,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
 class GraphSageModel(Model):
     """
     Represents a GraphSAGE model in the model catalog.
-    Construct this using :func:`gds.v2.graphSage.train()`.
+    Construct this using `gds.v2.graphSage.train()`.
     """
 
     def __init__(self, name: str, catalog: ModelCatalogProtocol, predict_endpoints: GraphSagePredictEndpoints) -> None:
@@ -52,11 +52,11 @@ class GraphSageModel(Model):
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size : int
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
-        write_concurrency : int | None, default=None
+        write_concurrency : int | None
             The concurrency for writing.
         log_progress
             Display progress logging.
@@ -112,7 +112,7 @@ class GraphSageModel(Model):
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size : int
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
@@ -127,7 +127,7 @@ class GraphSageModel(Model):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The streaming results as a DataFrame.
 
         """
@@ -171,7 +171,7 @@ class GraphSageModel(Model):
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size : int
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
@@ -228,7 +228,7 @@ class GraphSageModel(Model):
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size : int
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.

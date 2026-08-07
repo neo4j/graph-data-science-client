@@ -792,7 +792,7 @@ class AuraGraphDataScience:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The query result as a DataFrame
         """
         if not self._db_query_runner:

@@ -42,9 +42,9 @@ class BetweennessEndpoints(ABC):
            Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        sampling_size : int | None, default=None
+        sampling_size : int | None
             Number of source nodes to consider for computing centrality scores.
-        sampling_seed : int | None, default=None
+        sampling_seed : int | None
             Seed value for the random number generator that selects source nodes.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -96,9 +96,9 @@ class BetweennessEndpoints(ABC):
         ----------
         G
            Graph object to use
-        sampling_size : int | None, default=None
+        sampling_size : int | None
             Number of source nodes to consider for computing centrality scores.
-        sampling_seed : int | None, default=None
+        sampling_seed : int | None
             Seed value for the random number generator that selects source nodes.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -145,9 +145,9 @@ class BetweennessEndpoints(ABC):
         ----------
         G
            Graph object to use
-        sampling_size : int | None, default=None
+        sampling_size : int | None
             The number of nodes to use for sampling.
-        sampling_seed : int | None, default=None
+        sampling_seed : int | None
             The seed value for sampling randomization
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -168,7 +168,7 @@ class BetweennessEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with nodeId and score columns containing betweenness centrality results
         """
 
@@ -203,9 +203,9 @@ class BetweennessEndpoints(ABC):
            Graph object to use
         write_property
             Name of the node property to store the results in.
-        sampling_size : int | None, default=None
+        sampling_size : int | None
             Number of source nodes to consider for computing centrality scores.
-        sampling_seed : int | None, default=None
+        sampling_seed : int | None
             Seed value for the random number generator that selects source nodes.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -248,9 +248,9 @@ class BetweennessEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        sampling_size : int | None, default=None
+        sampling_size : int | None
             The number of nodes to use for sampling.
-        sampling_seed : int | None, default=None
+        sampling_seed : int | None
             The seed value for sampling randomization
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

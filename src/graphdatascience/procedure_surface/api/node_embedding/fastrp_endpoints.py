@@ -46,13 +46,13 @@ class FastRPEndpoints(ABC):
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
-        normalization_strength : float, default=0.0
+        normalization_strength : float
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float, default=0.0
+        node_self_influence : float
             The influence of the node's own features on its embedding
-        property_ratio : float, default=0.0
+        property_ratio : float
             The ratio of node properties to use in the embedding
-        feature_properties : list[str] | None, default=None
+        feature_properties : list[str] | None
             List of node properties to use as features in the embedding.
             Defaults to [] if not specified
         relationship_types
@@ -111,13 +111,13 @@ class FastRPEndpoints(ABC):
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
-        normalization_strength : float, default=0.0
+        normalization_strength : float
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float, default=0.0
+        node_self_influence : float
             The influence of the node's own features on its embedding
-        property_ratio : float, default=0.0
+        property_ratio : float
             The ratio of node properties to use in the embedding
-        feature_properties : list[str] | None, default=None
+        feature_properties : list[str] | None
             List of node properties to use as features in the embedding.
             Defaults to [] if not specified
         relationship_types
@@ -176,13 +176,13 @@ class FastRPEndpoints(ABC):
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
-        normalization_strength : float, default=0.0
+        normalization_strength : float
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float, default=0.0
+        node_self_influence : float
             The influence of the node's own features on its embedding
-        property_ratio : float, default=0.0
+        property_ratio : float
             The ratio of node properties to use in the embedding
-        feature_properties : list[str] | None, default=None
+        feature_properties : list[str] | None
             List of node properties to use as features in the embedding.
             Defaults to [] if not specified
         relationship_types
@@ -206,7 +206,7 @@ class FastRPEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with node IDs and their FastRP embeddings
         """
 
@@ -245,13 +245,13 @@ class FastRPEndpoints(ABC):
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
-        normalization_strength : float, default=0.0
+        normalization_strength : float
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float, default=0.0
+        node_self_influence : float
             The influence of the node's own features on its embedding
-        property_ratio : float, default=0.0
+        property_ratio : float
             The ratio of node properties to use in the embedding
-        feature_properties : list[str] | None, default=None
+        feature_properties : list[str] | None
             List of node properties to use as features in the embedding.
             Defaults to [] if not specified
         relationship_types
@@ -306,13 +306,13 @@ class FastRPEndpoints(ABC):
             The dimension of the generated embeddings
         iteration_weights : list[float] = [0.0, 1.0, 1.0]
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
-        normalization_strength : float, default=0.0
+        normalization_strength : float
             The normalization strength parameter controls how much the embedding is normalized
-        node_self_influence : float, default=0.0
+        node_self_influence : float
             The influence of the node's own features on its embedding
-        property_ratio : float, default=0.0
+        property_ratio : float
             The ratio of node properties to use in the embedding
-        feature_properties : list[str] | None, default=None
+        feature_properties : list[str] | None
             List of node properties to use as features in the embedding.
             Defaults to [] if not specified
         relationship_types

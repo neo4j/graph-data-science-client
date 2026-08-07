@@ -46,7 +46,7 @@ class SllpaEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        min_association_strength : float | None, default=None
+        min_association_strength : float | None
             Minimum association strength for community assignment
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -95,7 +95,7 @@ class SllpaEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        min_association_strength : float | None, default=None
+        min_association_strength : float | None
             Minimum association strength for community assignment
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -144,7 +144,7 @@ class SllpaEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        min_association_strength : float | None, default=None
+        min_association_strength : float | None
             Minimum association strength for community assignment
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -159,7 +159,7 @@ class SllpaEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame containing node IDs and their community values
         """
         ...
@@ -197,7 +197,7 @@ class SllpaEndpoints(ABC):
             Identifier for the computation.
         log_progress
             Display progress logging.
-        min_association_strength : float | None, default=None
+        min_association_strength : float | None
             Minimum association strength for community assignment
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -238,7 +238,7 @@ class SllpaEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         concurrency
             Number of concurrent threads to use.
-        min_association_strength : float | None, default=None
+        min_association_strength : float | None
             Minimum association strength for community assignment
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.

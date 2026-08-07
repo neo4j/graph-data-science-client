@@ -182,7 +182,7 @@ class FastPathEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with node IDs and their FastPath embeddings
         """
 

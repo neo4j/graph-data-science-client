@@ -12,3 +12,5 @@ Job Handles
 .. autoclass:: graphdatascience.procedure_surface.api.write_job_handle.WriteJobHandle
     :members:
     :undoc-members:
+
+.. autoclass:: graphdatascience.procedure_surface.api.write_job_handle.WriteBackResult

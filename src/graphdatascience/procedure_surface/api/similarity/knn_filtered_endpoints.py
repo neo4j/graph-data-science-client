@@ -62,21 +62,21 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be sources in the similarity computation.
         target_node_filter : str
             A Cypher expression to filter which nodes can be targets in the similarity computation.
-        seed_target_nodes : bool | None, default=None
+        seed_target_nodes : bool | None
             Whether to use a seeded approach for target node selection.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -144,21 +144,21 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be sources in the similarity computation.
         target_node_filter : str
             A Cypher expression to filter which nodes can be targets in the similarity computation.
-        seed_target_nodes : bool | None, default=None
+        seed_target_nodes : bool | None
             Whether to use a seeded approach for target node selection.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -226,21 +226,21 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be sources in the similarity computation.
         target_node_filter : str
             A Cypher expression to filter which nodes can be targets in the similarity computation.
-        seed_target_nodes : bool | None, default=None
+        seed_target_nodes : bool | None
             Whether to use a seeded approach for target node selection.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -263,7 +263,7 @@ class KnnFilteredEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The similarity results as a DataFrame with columns 'node1', 'node2', and 'similarity'.
         """
         ...
@@ -315,21 +315,21 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be sources in the similarity computation.
         target_node_filter : str
             A Cypher expression to filter which nodes can be targets in the similarity computation.
-        seed_target_nodes : bool | None, default=None
+        seed_target_nodes : bool | None
             Whether to use a seeded approach for target node selection.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -397,21 +397,21 @@ class KnnFilteredEndpoints(ABC):
             A Cypher expression to filter which nodes can be sources in the similarity computation.
         target_node_filter : str
             A Cypher expression to filter which nodes can be targets in the similarity computation.
-        seed_target_nodes : bool | None, default=None
+        seed_target_nodes : bool | None
             Whether to use a seeded approach for target node selection.
         top_k
             Number of most similar nodes to return for each node.
-        similarity_cutoff : float, default=0.0
+        similarity_cutoff : float
             The threshold for similarity scores.
         delta_threshold
             Minimum change between iterations.
         max_iterations
             Maximum number of iterations to run.
-        sample_rate : float, default=0.5
+        sample_rate : float
             The sampling rate for the algorithm.
-        perturbation_rate : float, default=0.0
+        perturbation_rate : float
             The rate at which to perturb the similarity graph.
-        random_joins : int, default=10
+        random_joins : int
             The number of random joins to perform.
         random_seed
             Seed for random number generation to ensure reproducible results.

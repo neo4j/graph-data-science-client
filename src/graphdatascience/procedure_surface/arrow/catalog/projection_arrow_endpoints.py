@@ -72,9 +72,9 @@ class ProjectArrowEndpoints:
             List of relationship types to treat as undirected.
         inverse_indexed_relationship_types : list[str]
             List of relationship types to index in both directions.
-        batch_size : int | None, default=None
+        batch_size : int | None
             Number of rows to process in each batch when projecting the graph.
-        logging : bool, default=True
+        logging : bool
             Whether to log progress during graph projection.
         Returns
         -------
@@ -180,9 +180,9 @@ class ProjectArrowEndpoints:
             List of relationship types to treat as undirected.
         inverse_indexed_relationship_types : list[str]
             List of relationship types to index in both directions.
-        batch_size : int | None, default=None
+        batch_size : int | None
             Number of rows to process in each batch when projecting the graph.
-        logging : bool, default=True
+        logging : bool
             Whether to log progress during graph projection.
         Returns
         -------

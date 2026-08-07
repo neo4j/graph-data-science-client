@@ -129,7 +129,7 @@ class LinkPredictionPipelinePredictEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The predicted links as a DataFrame.
         """
         pass

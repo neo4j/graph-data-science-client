@@ -44,11 +44,11 @@ class HdbscanEndpoints(ABC):
             The node property to use for clustering
         mutate_property
             Name of the node property to store the results in.
-        leaf_size : int | None, default=None
+        leaf_size : int | None
             The maximum leaf size of the tree structure used in the algorithm
-        samples : int | None, default=None
+        samples : int | None
             The number of samples used for density estimation
-        min_cluster_size : int | None, default=None
+        min_cluster_size : int | None
             The minimum size of clusters
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -100,11 +100,11 @@ class HdbscanEndpoints(ABC):
            Graph object to use
         node_property : str
             The node property to use for clustering
-        leaf_size : int | None, default=None
+        leaf_size : int | None
             The maximum leaf size of the tree structure used in the algorithm
-        samples : int | None, default=None
+        samples : int | None
             The number of samples used for density estimation
-        min_cluster_size : int | None, default=None
+        min_cluster_size : int | None
             The minimum size of clusters
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -156,11 +156,11 @@ class HdbscanEndpoints(ABC):
            Graph object to use
         node_property : str
             The node property to use for clustering
-        leaf_size : int | None, default=None
+        leaf_size : int | None
             The maximum leaf size of the tree structure used in the algorithm
-        samples : int | None, default=None
+        samples : int | None
             The number of samples used for density estimation
-        min_cluster_size : int | None, default=None
+        min_cluster_size : int | None
             The minimum size of clusters
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -179,7 +179,7 @@ class HdbscanEndpoints(ABC):
 
         Returns
         -------
-        pd.DataFrame
+        pandas.DataFrame
             A DataFrame with columns 'nodeId' and 'label'
         """
 
@@ -213,11 +213,11 @@ class HdbscanEndpoints(ABC):
             The node property to use for clustering
         write_property
             Name of the node property to store the results in.
-        leaf_size : int | None, default=None
+        leaf_size : int | None
             The maximum leaf size of the tree structure used in the algorithm
-        samples : int | None, default=None
+        samples : int | None
             The number of samples used for density estimation
-        min_cluster_size : int | None, default=None
+        min_cluster_size : int | None
             The minimum size of clusters
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -268,11 +268,11 @@ class HdbscanEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         node_property : str
             The node property to use for clustering
-        leaf_size : int | None, default=None
+        leaf_size : int | None
             The maximum leaf size of the tree structure used in the algorithm
-        samples : int | None, default=None
+        samples : int | None
             The number of samples used for density estimation
-        min_cluster_size : int | None, default=None
+        min_cluster_size : int | None
             The minimum size of clusters
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

@@ -40,10 +40,19 @@ autodoc_pydantic_model_show_json = False
 autodoc_pydantic_settings_show_json = False
 autodoc_pydantic_model_show_config_summary = False
 autodoc_pydantic_model_show_field_summary = False
+autodoc_pydantic_model_show_validator_summary = False
+autodoc_pydantic_model_show_validator_members = False
 autodoc_pydantic_field_show_alias = False
 autodoc_pydantic_field_show_required = False
 autodoc_pydantic_field_show_optional = False
 autodoc_pydantic_field_show_default = False
+
+# Internal pydantic validator methods are not user-facing API; don't warn when
+# autodoc_pydantic links fields to their (undocumented) validators.
+nitpick_ignore = [
+    ("py:obj", "graphdatascience.procedure_surface.api.catalog.catalog_endpoints.GraphGenerationStats.check_empty_property"),
+    ("py:obj", "graphdatascience.procedure_surface.api.catalog.relationships_endpoints.RelationshipsWriteResult.coerce_relationship_properties"),
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

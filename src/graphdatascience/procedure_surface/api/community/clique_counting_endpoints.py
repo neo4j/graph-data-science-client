@@ -134,7 +134,7 @@ class CliqueCountingEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results
         """
         pass

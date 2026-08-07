@@ -88,7 +88,7 @@ class DijkstraEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The shortest path results as a DataFrame with columns for sourceNode, targetNode, totalCost, nodeIds, costs, index.
         """
 
@@ -182,9 +182,9 @@ class DijkstraEndpoints(ABC):
             Node id to use as the starting point.
         target_nodes : int | list[int]
             A single target node or a list of target nodes for the shortest path computation.
-        write_node_ids : bool, default=False
+        write_node_ids : bool
             Whether to write node IDs along the path.
-        write_costs : bool, default=False
+        write_costs : bool
             Whether to write costs along the path.
         relationship_weight_property
             Name of the property to be used as weights.
