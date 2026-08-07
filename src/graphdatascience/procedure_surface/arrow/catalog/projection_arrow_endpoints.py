@@ -21,6 +21,8 @@ from graphdatascience.session.remote_ops.projection_runner import ProjectionRunn
 
 
 class ProjectArrowEndpoints:
+    """Endpoints for projecting graphs via the Arrow pipeline."""
+
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
@@ -76,7 +78,7 @@ class ProjectArrowEndpoints:
             Whether to log progress during graph projection.
         Returns
         -------
-        ProjectionResult:
+        GraphWithProjectResult:
             A result object containing information about the projected graph.
         """
         if self._query_runner is None:
@@ -113,9 +115,9 @@ class ProjectArrowEndpoints:
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a cypher graph projection and return a :class:`ProjectionJobHandle`.
+        """Kick off a cypher graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
-        Unlike :meth:`project`, this method does not block on completion. Use the
+        Unlike :meth:`cypher`, this method does not block on completion. Use the
         returned handle to query status or retrieve the projected graph and result.
         """
         if self._query_runner is None:
@@ -231,9 +233,9 @@ class ProjectArrowEndpoints:
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a native graph projection and return a :class:`ProjectionJobHandle`.
+        """Kick off a native graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
-        Unlike :meth:`project_native`, this method does not block on completion.
+        Unlike :meth:`native`, this method does not block on completion.
         The returned handle can be used to await completion and retrieve the
         projected graph and result.
         """

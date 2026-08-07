@@ -10,6 +10,7 @@ GDS Sessions
    dbms_connection_info
    aura_graphdatascience
    job_handles
+   arrow_runtime_types
 
 
 .. autoclass:: graphdatascience.session.gds_sessions.GdsSessions

@@ -63,6 +63,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def project(self) -> ProjectArrowEndpoints:
+        """
+        Provides access to the project endpoints.
+        """
         return ProjectArrowEndpoints(self._arrow_client, self._query_runner, self._show_progress)
 
     def get(self, graph_name: str) -> Graph:
@@ -169,7 +172,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a graph filter operation and return a :class:`ProjectionJobHandle`.
+        """Kick off a graph filter operation and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
         Unlike :meth:`filter`, this method does not block on completion.
         """
@@ -253,7 +256,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         log_progress: bool = True,
         username: str | None = None,
     ) -> ProjectionJobHandle:
-        """Kick off a graph generation and return a :class:`ProjectionJobHandle`.
+        """Kick off a graph generation and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
         Unlike :meth:`generate`, this method does not block on completion.
         """

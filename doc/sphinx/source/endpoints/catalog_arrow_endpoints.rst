@@ -13,4 +13,4 @@ Catalog Arrow Endpoints
 
 .. automodule:: graphdatascience.procedure_surface.arrow.catalog
     :members:
-    :exclude-members: __init__
+    :exclude-members: __init__, CatalogArrowEndpoints

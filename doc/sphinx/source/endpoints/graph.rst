@@ -8,9 +8,9 @@ Graph
 
 .. autoclass:: graphdatascience.graph.graph_info.GraphInfo
     :members:
-    :exclude-members: __init__
+    :exclude-members: __init__, model_config
 
 
 .. autoclass:: graphdatascience.graph.graph_info.GraphInfoWithDegrees
     :members:
-    :exclude-members: __init__
+    :exclude-members: __init__, model_config

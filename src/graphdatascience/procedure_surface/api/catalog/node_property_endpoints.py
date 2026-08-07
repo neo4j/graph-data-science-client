@@ -8,6 +8,8 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 
 
 class NodePropertyEndpoints:
+    """Endpoints for streaming a single node property"""
+
     def __init__(self, node_properties_endpoints: NodePropertiesEndpoints) -> None:
         self._node_properties_endpoints = node_properties_endpoints
 

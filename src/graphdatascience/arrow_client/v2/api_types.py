@@ -9,6 +9,8 @@ UNKNOWN_PROGRESS = -1
 
 
 class JobStatus(ArrowBaseModel):
+    """Status and progress information for a GDS Arrow job."""
+
     job_id: str
     status: str
     progress: float

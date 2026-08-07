@@ -10,6 +10,8 @@ from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 
 
 class RelationshipPropertiesEndpoints:
+    """Endpoints for streaming several relationship properties"""
+
     def __init__(self, relationships_endpoints: RelationshipsEndpoints) -> None:
         self._relationships_endpoints = relationships_endpoints
 

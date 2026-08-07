@@ -34,6 +34,8 @@ T = TypeVar("T")
 
 
 class AuthenticatedArrowClient:
+    """Arrow Flight client used to communicate with the GDS Arrow server."""
+
     def __init__(
         self,
         connection_info: str | tuple[str, int],
@@ -58,7 +60,7 @@ class AuthenticatedArrowClient:
         arrow_client_options
             Additional options to be passed to the Arrow Flight client.
         user_agent
-            The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION])
+            The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION]`)
         retry_config
             The retry configuration to use for the Arrow requests send by the client.
         advertised_listen_address
@@ -264,6 +266,8 @@ class AuthenticatedArrowClient:
 
 @dataclass
 class ConnectionInfo:
+    """Host, port and encryption details for an Arrow server connection."""
+
     host: str
     port: int
     encrypted: bool

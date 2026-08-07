@@ -15,11 +15,11 @@ Knowledge Graph Embedding Endpoints
 
 .. autoclass:: graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.KgeMutateResult
     :members:
-    :exclude-members: __init__
+    :exclude-members: __init__, model_config
 
 .. autoclass:: graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.KgeWriteResult
     :members:
-    :exclude-members: __init__
+    :exclude-members: __init__, model_config
 
 .. autoclass:: graphdatascience.procedure_surface.api.kge.kge_predict_endpoints.NodeFilter
     :members:
