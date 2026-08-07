@@ -10,9 +10,4 @@ GraphDataScience
     :maxdepth: 1
     :hidden:
 
-    ../endpoints/catalog_cypher_endpoints
-    ../endpoints/kge_endpoints
-    ../endpoints/license_endpoints
-    ../endpoints/debug_endpoints
-    ../endpoints/memory_endpoints
     server_version

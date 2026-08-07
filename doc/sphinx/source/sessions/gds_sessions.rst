@@ -12,7 +12,6 @@ GDS Sessions
    job_handles
    gds_arrow_client
    query_runner_types
-   arrow_runtime_types
 
 
 .. autoclass:: graphdatascience.session.gds_sessions.GdsSessions
