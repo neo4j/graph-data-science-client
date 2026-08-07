@@ -167,14 +167,35 @@ It expects the query to end with a single `RETURN gds.graph.project(...)` aggreg
 If your query needs additional aggregations or a renamed result row, use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
 
 === Syntax
-.Cypher projection signature
+
+[.tabbed-example]
+====
+[.include-with-Aura-Graph-Analytics]
+=====
+[opts="header",cols="2m,2m,1m,6", role="no-break"]
+|===
+| Name           | Type               |Default | Description
+| graph_name                          | str                 | -      | The name of the graph to create.
+| query                               | str                 | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
+| job_id                              | Optional[str]       | None   | 
+| concurrency                         | int                 | 4      | Number of threads used to construct the graph.
+| undirected_relationship_types       | Optional[list[str]] | None   | List of relationship types to be projected as undirected.
+| inverse_indexed_relationship_types  | Optional[list[str]] | None   | 
+| batch_size                          | Optional[int]       | None   | 
+|===
+=====
+
+[.include-with-Neo4j-server-and-AuraDS]
+=====
 [opts="header",cols="2m,2m,1m,6", role="no-break"]
 |===
 | Name           | Type               |Default | Description
 | query          | str                | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
 | database       | Optional[str]      | None   | Overrides the target database. The default uses the database from the connection.
-| **params       | Any                | \{\}   | The query parameters as keyword args.
+| **params       | Any                | {}   | The query parameters as keyword args.
 |===
+=====
+====
 
 [[other-creation-methods]]
 == Other ways to create graphs
