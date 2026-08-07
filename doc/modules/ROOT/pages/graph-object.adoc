@@ -258,32 +258,27 @@ gds.graph.drop(G)
 
 === Inspecting a graph object
 
-There are convenience methods on the graph object that let us extract information about our projected graph.
+The `Graph` object includes convenience methods to retrieve information on the projected graph.
 
-.Graph object methods
-[opts="header",cols="9m,6m,7m,13", role="no-break"]
-|===
-| Name                    | Arguments                     | Return type              | Description
-| name                    | -                             | str                      | The name of the projected graph.
-| database                | -                             | str                      | Name of the database in which the graph has been projected.
-| node_count              | -                             | int                      | The node count of the projected graph.
-| relationship_count      | -                             | int                      | The relationship count of the projected graph.
-| node_labels             | -                             | list[str]                | A list of the node labels present in the graph.
-| relationship_types      | -                             | list[str]                | A list of the relationship types present in the graph.
-| node_properties         | -                             | dict[str, list[str]]     | Returns a dictionary mapping every node label to a list of the properties present on nodes with that label.
-| relationship_properties | -                             | dict[str, list[str]]     | Returns a dictionary mapping every relationship type to a list of the properties present on relationships with that type.
-| degree_distribution     | -                             | Series                   | The average out-degree of generated nodes.
-| density                 | -                             | float                    | Density of the graph.
-| size_in_bytes           | -                             | int                      | Number of bytes used in the Java heap to store the graph.
-| memory_usage            | -                             | str                      | Human-readable description of `size_in_bytes`.
-| exists                  | -                             | bool                     | Returns `True` if the graph exists in the GDS Graph Catalog, otherwise `False`.
-| drop                    | fail_if_missing: Optional[bool] | GraphInfo              | link:{gds-docs-base-uri}/graph-drop/[Removes the graph] from the GDS Graph Catalog.
-| configuration           | -                             | Series                   | The configuration used to project the graph in memory.
-| creation_time           | -                             | neo4j.time.Datetime      | Time when the graph was projected.
-| modification_time       | -                             | neo4j.time.Datetime      | Time when the graph was last modified.
-|===
+* `name`: The name of the projected graph
+* `database`: Name of the database in which the graph has been projected
+* `node_count`: The node count of the projected graph
+* `relationship_count`: The relationship count of the projected graph
+* `node_labels`: A list of the node labels present in the graph
+* `relationship_types`: A list of the relationship types present in the graph
+* `node_properties`: Returns a dictionary mapping every node label to a list of the properties present on nodes with that label
+* `relationship_properties`: Returns a dictionary mapping every relationship type to a list of the properties present on relationships with that type
+* `degree_distribution`: The average out-degree of generated nodes
+* `density`: Density of the graph
+* `size_in_bytes`: Number of bytes used in the Java heap to store the graph
+* `memory_usage`: Human-readable description of `size_in_bytes`
+* `exists`: Returns `True` if the graph exists in the GDS Graph Catalog, otherwise `False`
+* `drop`: link:{gds-docs-base-uri}/graph-drop/[Removes the graph] from the GDS Graph Catalog
+* `configuration`: The configuration used to project the graph in memory
+* `creation_time`: Time when the graph was projected
+* `modification_time`: Time when the graph was last modified
 
-For example, to get the node count and node properties of a graph `G`, we would do the following:
+For example, to get the node count and node properties of a graph `G`, run the following:
 
 [source,python,group=graph-project]
 ----
