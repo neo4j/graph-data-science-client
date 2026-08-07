@@ -24,6 +24,8 @@ Supporting types used by the Arrow-based runtime and job handles.
 
 .. autoclass:: graphdatascience.session.remote_ops.write_protocols.WriteProtocol
 
+.. autoclass::graphdatascience.session.remote_ops.write_protocols.JobStatus
+
 .. autoclass:: graphdatascience.session.session_sizes.SessionMemoryValue
 
 .. autoclass:: graphdatascience.session.aura_api_responses.SessionErrorData
