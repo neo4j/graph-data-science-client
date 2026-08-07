@@ -1,62 +1,178 @@
-= The graph object
+= Create a graph
 
-In order to utilize most the functionality in GDS, you must first project a graph into the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog].
-When projecting a graph with the Python client, a client-side reference to the projected graph is returned.
-We call these references link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] objects.
+The main entry point to every graph operation is the link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] object.
 
-Once created, the `Graph` objects can be passed as arguments to other methods in the Python client, for example for running algorithms or training machine learning models.
-Additionally, the `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
+There are several ways to create a graph with the Python client:
 
-include::ROOT:partial$/gds-object.adoc[]
+* From a Neo4j database with a <<projection, graph projection>>
+* From an existing in-memory graph or a distribution (see <<other-creation-methods>>)
+* [[construct]] From xref:load-from-pandas.adoc[Pandas DataFrames] with the `construct` method
+* [[networkx]] From a xref:load-from-networkx.adoc[NetworkX graph]
+
+Once created, the `Graph` object can be used to inspect the projected graph, run algorithms, or train machine learning models.
 
 [[projection]]
-== Projecting a graph object
+== Neo4j graph projection
 
-There are several ways of projecting a graph object.
-The simplest way is to do a link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]:
+As for the Cypher API, the Python client offers two ways of projecting a graph object:
 
-[source,python,group=graph-project]
+* <<native-projection, Native projection>> for most use cases
+* <<cypher-projection, Cypher projection>> for more complex use cases that require custom Cypher queries
+
+[NOTE]
+====
+include::ROOT:partial$/gds-object.adoc[]
+====
+
+=== Preparation
+
+The following query creates an example graph in the Neo4j database.
+
+[source, python ,group=graph-project]
 ----
-# We put this simple graph in our database
 gds.run_cypher(
   """
   CREATE
-    (m: City {name: "Malmö"}),
-    (l: City {name: "London"}),
-    (s: City {name: "San Mateo"}),
+    (m: City {name: "Malmö", population: 360000}),
+    (l: City {name: "London", population: 8800000}),
+    (s: City {name: "San Mateo", population: 105000}),
 
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
+    (m)-[:FLY_TO {cost: 200}]->(l),
+    (l)-[:FLY_TO {cost: 200}]->(m),
+    (l)-[:FLY_TO {cost: 1000}]->(s),
+    (s)-[:FLY_TO {cost: 1000}]->(l)
   """
 )
-
-# We estimate required memory of the operation
-res = gds.graph.project.estimate(
-    ["City"],                   #  Node projection
-    "FLY_TO",                   #  Relationship projection
-    read_concurrency=4          #  Configuration parameters
-)
-assert res.bytes_max < 1e12
-
-G, result = gds.graph.project.native(
-    "offices",                  #  Graph name
-    ["City"],                   #  Node projection
-    "FLY_TO",                   #  Relationship projection
-    read_concurrency=4          #  Configuration parameters
-)
-
-assert G.node_count() == result.node_count
 ----
 
-where `G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/catalog_cypher_endpoints/#graphdatascience.procedure_surface.cypher.catalog.GraphProjectResult[`GraphProjectResult`] object containing metadata from the underlying procedure call.
+[[native-projection]]
+=== Native projection
+
+The native projection in the client is similar to its link:{gds-docs-base-uri}/management-ops/projections/graph-project/[Cypher API] counterpart.
+
+
+[.tabbed-example]
+====
+[.include-with-Aura-Graph-Analytics]
+=====
+
+[source,python,group=graph-project]
+----
+G, result = gds.graph.project.native(
+    graph_name="offices",                # Graph name
+    node_label_filter=["City"],          # Node projection
+    relationship_type_filter=["FLY_TO"], # Relationship projection
+    node_properties=["population"]       # Node properties
+    relationship_properties=["cost"]     # Relationship properties
+)
+----
+
+`G` is a `Graph` object, and `result` is a `ProjectionResult` object containing metadata from the underlying procedure call.
+
+You can use the wildcard `\*` in the node_label_filter or relationship_type_filter arguments to project all available node labels or relationship types, respectively (for instance `node_label_filter=["*"]`).
+=====
+
+[.include-with-Neo4j-server-and-AuraDS]
+=====
+[source,python,group=graph-project]
+----
+G, result = gds.graph.project.native(
+    graph_name="offices",         # Graph name
+    node_projection=["City"],           # Node projection
+    relationship_projection=["FLY_TO"], # Relationship projection
+    node_properties=["population"],     # Node properties
+    relationship_properties=["cost"],   # Relationship properties
+    read_concurrency=4                  # Configuration
+)
+----
+
+`G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/catalog_cypher_endpoints/#graphdatascience.procedure_surface.cypher.catalog.GraphProjectResult[`GraphProjectResult`] object containing metadata from the underlying procedure call.
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `read_concurrency=4` above.
 Read more about the syntax in the link:{gds-docs-base-uri}/management-ops/projections/graph-project/#graph-project-native-syntax[GDS manual].
+=====
+====
 
-Similarly to Cypher there's also a corresponding `gds.graph.project.estimate` method that can be called in an analogous way.
+[[cypher-projection]]
+=== Cypher Projection
+
+The Cypher projection in the client is similar to its link:{gds-docs-base-uri}/management-ops/projections/graph-project-cypher-projection/[Cypher API] counterpart.
+
+[.tabbed-example]
+====
+[.include-with-Aura-Graph-Analytics]
+=====
+
+[source, python, role=nocollapse]
+----
+G, result = gds.graph.project.cypher(
+    query="""
+      CALL () {
+        MATCH (source:City)-[rel:FLY_TO]->(target:City)
+        RETURN source, rel, target, 
+               { population: source.population } AS sourceNodeProperties, 
+               { population: target.population } AS targetNodeProperties,
+               { cost: rel.cost } AS relProperties
+      }
+      RETURN gds.graph.project.remote(
+        source, 
+        target, 
+        {
+          sourceNodeLabels: labels(source),
+          targetNodeLabels: labels(target),
+          sourceNodeProperties: properties(sourceNodeProperties),
+          targetNodeProperties: properties(targetNodeProperties),
+          relationshipType: type(rel),
+          relationshipProperties: properties(relProperties)
+        }
+      )
+    """,
+    database="neo4j",      #  Target database
+    graph_name="offices"   #  Method parameter
+)
+----
+=====
+
+[.include-with-Neo4j-server-and-AuraDS]
+=====
+
+[source,python,group=graph-cyhpher-project,role=nocollapse]
+----
+G, result = gds.graph.project.cypher(
+    """
+      MATCH (source:City)-[rel:FLY_TO]->(target:City)
+      RETURN gds.graph.project(
+        $graph_name, 
+        source,
+        target, 
+        {
+            sourceNodeLabels: labels(source),
+            targetNodeLabels: labels(target),
+            sourceNodeProperties: { population: source.population },
+            targetNodeProperties: { population: target.population },
+            relationshipType: type(rel),
+            relationshipProperties: { cost: rel.cost }
+        }
+      )
+    """,                   #  Cypher query
+    database="neo4j",      #  Target database
+    graph_name="offices"   #  Query parameter
+)
+----
+=====
+====
+
+Unlike `gds.run_cypher` but very much like `gds.graph.project.native`, it returns a tuple of a `Graph` object and a `GraphCypherProjectResult` object containing metadata from the Cypher execution.
+
+The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
+It expects the query to end with a single `RETURN gds.graph.project(...)` aggregation, and raises a `ValueError` if the query returns anything else.
+If your query needs additional aggregations or a renamed result row, use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
+
+[[other-creation-methods]]
+== Other ways to create graphs
+
+To generate a graph from a distribution, use `gds.graph.generate`.
 
 To get a graph object that represents a graph that has already been projected into the graph catalog, one can call the client-side only `get` method and passing it a name:
 
@@ -70,121 +186,10 @@ For users who are link:{gds-docs-base-uri}/management-ops/administration/[GDS ad
 In addition to those aforementioned there are more methods that create graph objects:
 
 * `gds.graph.filter`
-* `gds.graph.generate`
 * `gds.graph.sample.rwr`
 * `gds.graph.sample.cnarw`
 
 Their Cypher signatures map to Python in much the same way as `gds.graph.project` above.
-See <<cypher-projection>> for projecting a graph using a Cypher query.
-
-
-[[cypher-projection]]
-== Projecting a graph using Cypher Projection
-
-The method `gds.graph.project.cypher` allows for projecting a graph using Cypher projection.
-Cypher projection is not a dedicated procedure; rather it requires writing a Cypher query that calls the `gds.graph.project` aggregation function.
-
-Read more about Cypher projection in the link:{gds-docs-base-uri}/management-ops/projections/graph-project-cypher-projection/[GDS manual].
-
-The method `gds.graph.project.cypher` bridges the gap between `gds.run_cypher` and having to follow with `gds.graph.get`.
-
-=== Syntax
-.Cypher projection signature
-[opts="header",cols="2m,2m,1m,6", role="no-break"]
-|===
-| Name           | Type               |Default | Description
-| query          | str                | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
-| database       | Optional[str]      | None   | Overrides the target database. The default uses the database from the connection.
-| **params       | Any                | \{\}   | The query parameters as keyword args.
-|===
-
-
-Unlike `gds.run_cypher` but very much like `gds.graph.project.native`, it returns a tuple of a `Graph` object and a `GraphCypherProjectResult` object containing metadata from the Cypher execution.
-
-The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
-It expects the query to end with a single `RETURN gds.graph.project(...)` aggregation, and raises a `ValueError` if the query returns anything else.
-If your query needs additional aggregations or a renamed result row, use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
-
-[source,python,group=graph-cyhpher-project,role=nocollapse]
-----
-# We put this simple graph in our database
-gds.run_cypher(
-  """
-  CREATE
-    (m: City {name: "Malmö"}),
-    (l: City {name: "London"}),
-    (s: City {name: "San Mateo"}),
-
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
-  """
-)
-
-G, result = gds.graph.project.cypher(
-    """
-    MATCH (n)-->(m)
-    RETURN gds.graph.project($graph_name, n, m, {
-        sourceNodeLabels: $label,
-        targetNodeLabels: $label,
-        relationshipType: $rel_type
-    })
-    """,                   #  Cypher query
-    database="neo4j",      #  Target database
-    graph_name="offices",  #  Query parameter
-    label="City",          #  Query parameter
-    rel_type="FLY_TO"      #  Query parameter
-)
-
-assert G.node_count() == result.node_count
-----
-
-[[construct]]
-== Constructing a graph from DataFrames [PLACEHOLDER]
-
-xref:load-from-pandas.adoc[]
-
-[[networkx]]
-== Loading a NetworkX graph [PLACEHOLDER]
-
-xref:load-from-networkx.adoc[]
-
-== Inspecting a graph object
-
-There are convenience methods on the graph object that let us extract information about our projected graph.
-
-.Graph object methods
-[opts="header",cols="9m,6m,7m,13", role="no-break"]
-|===
-| Name                    | Arguments                     | Return type              | Description
-| name                    | -                             | str                      | The name of the projected graph.
-| database                | -                             | str                      | Name of the database in which the graph has been projected.
-| node_count              | -                             | int                      | The node count of the projected graph.
-| relationship_count      | -                             | int                      | The relationship count of the projected graph.
-| node_labels             | -                             | list[str]                | A list of the node labels present in the graph.
-| relationship_types      | -                             | list[str]                | A list of the relationship types present in the graph.
-| node_properties         | -                             | dict[str, list[str]]     | Returns a dictionary mapping every node label to a list of the properties present on nodes with that label.
-| relationship_properties | -                             | dict[str, list[str]]     | Returns a dictionary mapping every relationship type to a list of the properties present on relationships with that type.
-| degree_distribution     | -                             | Series                   | The average out-degree of generated nodes.
-| density                 | -                             | float                    | Density of the graph.
-| size_in_bytes           | -                             | int                      | Number of bytes used in the Java heap to store the graph.
-| memory_usage            | -                             | str                      | Human-readable description of `size_in_bytes`.
-| exists                  | -                             | bool                     | Returns `True` if the graph exists in the GDS Graph Catalog, otherwise `False`.
-| drop                    | fail_if_missing: Optional[bool] | GraphInfo              | link:{gds-docs-base-uri}/graph-drop/[Removes the graph] from the GDS Graph Catalog.
-| configuration           | -                             | Series                   | The configuration used to project the graph in memory.
-| creation_time           | -                             | neo4j.time.Datetime      | Time when the graph was projected.
-| modification_time       | -                             | neo4j.time.Datetime      | Time when the graph was last modified.
-|===
-
-For example, to get the node count and node properties of a graph `G`, we would do the following:
-
-[source,python,group=graph-project]
-----
-n = G.node_count()
-props = G.node_properties()["City"]
-----
-
 
 == Context management
 
@@ -209,16 +214,18 @@ assert not gds.graph.exists("tmp_offices")
 
 == Using a graph object
 
-The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog].
+The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog]:
 
+* [[graph-object-streaming-properties]] xref:read-graph.adoc#graph-object-streaming-properties[Streaming properties]
+* [[graph-object-streaming-db-properties]] xref:read-graph.adoc#graph-object-streaming-db-properties[Including node properties from Neo4j]
+* xref:algorithms.adoc[Input to algorithms]
 
-=== Input to algorithms
+=== The graph catalog
 
-The Python client syntax for using a `Graph` as input to an algorithm follows the GDS Cypher procedure API, where the graph is the first parameter passed to the algorithm.
+All procedures of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog] have corresponding Python methods in the client.
+Of those catalog procedures that take a graph name string as input, their Python client equivalents instead take a `Graph` object, with the exception of `gds.graph.exists` which still takes a graph name string.
 
-include::ROOT:partial$/algorithm-syntax.adoc[]
-
-In this example we run the degree centrality algorithm on a graph `G`:
+Below are some examples of how the GDS Graph Catalog can be used via the client:
 
 [[graph-object-degree-example]]
 [source,python,group=graph-project]
@@ -226,14 +233,6 @@ In this example we run the degree centrality algorithm on a graph `G`:
 result = gds.degree_centrality.mutate(G, mutate_property="degree")
 assert result.centrality_distribution is not None
 ----
-
-
-=== The graph catalog
-
-All procedures of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog] have corresponding Python methods in the client.
-Of those catalog procedures that take a graph name string as input, their Python client equivalents instead take a `Graph` object, with the exception of `gds.graph.exists` which still takes a graph name string.
-
-Below are some examples of how the GDS Graph Catalog can be used via the client, assuming we inspect the graph `G` from the <<graph-object-degree-example, example above>>:
 
 [source,python,group=graph-project]
 ----
@@ -250,91 +249,32 @@ result = gds.graph.node_properties.stream(G, node_properties=["degree"])
 gds.graph.drop(G)
 ----
 
+=== Inspecting a graph object
 
-[[graph-object-streaming-properties]]
-==== Streaming properties
+The `Graph` object includes convenience methods to retrieve information on the projected graph.
 
-The client methods
+* `name`: The name of the projected graph
+* `database`: Name of the database in which the graph has been projected
+* `node_count`: The node count of the projected graph
+* `relationship_count`: The relationship count of the projected graph
+* `node_labels`: A list of the node labels present in the graph
+* `relationship_types`: A list of the relationship types present in the graph
+* `node_properties`: Returns a dictionary mapping every node label to a list of the properties present on nodes with that label
+* `relationship_properties`: Returns a dictionary mapping every relationship type to a list of the properties present on relationships with that type
+* `degree_distribution`: The average out-degree of generated nodes
+* `density`: Density of the graph
+* `size_in_bytes`: Number of bytes used in the Java heap to store the graph
+* `memory_usage`: Human-readable description of `size_in_bytes`
+* `exists`: Returns `True` if the graph exists in the GDS Graph Catalog, otherwise `False`
+* `drop`: link:{gds-docs-base-uri}/graph-drop/[Removes the graph] from the GDS Graph Catalog
+* `configuration`: The configuration used to project the graph in memory
+* `creation_time`: Time when the graph was projected
+* `modification_time`: Time when the graph was last modified
 
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperty.stream`] (previously `gds.graph.streamNodeProperty`)
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.nodeProperties.stream`] (previously `gds.graph.streamNodeProperties`)
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperty.stream`] (previously `gds.graph.streamRelationshipProperty`)
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationshipProperties.stream`] (previously `gds.graph.streamRelationshipProperties`)
-
-are greatly sped up if link:{gds-docs-base-uri}/installation/installation-apache-arrow/[Apache Arrow Flight Server] of GDS is enabled.
-
-Additionally, the client only optional keyword parameter `separate_property_columns=True` (it defaults to `True`) for `gds.graph.streamNodeProperties` and `gds.graph.streamRelationshipProperties` returns a pandas `DataFrame` in which each property requested has its own column.
-Note that this is different from the default behavior for which there would only be one column called `propertyValue` that contains all properties requested interleaved for each node or relationship.
-
-
-[[graph-object-streaming-db-properties]]
-==== Including node properties from Neo4j
-
-Node properties such as names and descriptions are useful to understand the output of an algorithm, even if not needed to run the algorithm itself.
-To fetch additional node properties directly from the Neo4j database, you can use the `db_node_properties` client-only parameter of the `gds.graph.nodeProperty.stream` and `gds.graph.nodeProperties.stream` methods.
-
-In the following example, the `City` nodes have both a numeric and a `String` property.
-The `stream` method retrieves the values of the database-only `name` property alongside the values of the projected `population` property.
+For example, to get the node count and node properties of a graph `G`, run the following:
 
 [source,python,group=graph-project]
 ----
-gds.run_cypher(
-  """
-  CREATE
-    (m: City {name: "Malmö", population: 360000}),
-    (l: City {name: "London", population: 8800000}),
-    (s: City {name: "San Mateo", population: 105000}),
-
-    (m)-[:FLY_TO]->(l),
-    (l)-[:FLY_TO]->(m),
-    (l)-[:FLY_TO]->(s),
-    (s)-[:FLY_TO]->(l)
-  """
-)
-
-G, result = gds.graph.project.native(
-    "offices",
-    {
-        "City": {
-            "properties": ["population"]
-        }
-    },
-    "FLY_TO"
-)
-
-gds.graph.node_properties.stream(G, node_properties=["population"], db_node_properties=["name"])
+n = G.node_count()
+props = G.node_properties()["City"]
 ----
-
-
-==== Streaming topology by relationship type
-
-The type returned from the Python client method corresponding to link:{gds-docs-base-uri}/graph-catalog-relationship-ops/#_stream[`gds.graph.relationships.stream`] is called `RelationshipsDataFrame` and inherits from the standard pandas `DataFrame`.
-`TopologyDataFrame` comes with an additional convenience method named `by_rel_type` which takes no arguments, and returns a dictionary of the form `Dict[str, List[List[int]]]`.
-This dictionary maps relationship types as strings to `2 x m` matrices where `m` here represents the number of relationhips of the given type.
-The first row of each such matrix are the source node ids of the relationships, and the second row are the corresponding target node ids.
-
-We can illustrate this transformation with an example graph that is a simple four-node cycle:
-
-[source,python, group=graph-roundtrip, min-server-version=2.2.0]
-----
-gds.run_cypher(
-  """
-  CREATE
-    (a:N)-[:REL]->(b:N),
-    (b)-[:REL]->(c:N),
-    (c)-[:REL]->(d:N),
-    (d)-[:REL]->(a)
-  """
-)
-G, _ = gds.graph.project.native("cycle", "N", "REL")
-
-topology_by_rel_type = gds.graph.relationships.stream(G).by_rel_type()
-
-assert list(topology_by_rel_type.keys()) == ["REL"]
-sources, targets = topology_by_rel_type["REL"]
-# In a cycle every node appears once as a source and once as a target
-assert len(sources) == 4
-assert set(sources) == set(targets)
-----
-
-Like the <<graph-object-streaming-properties>> methods, the `gds.graph.relationships.stream` is also accelerated if the GDS Apache Arrow Flight Server is enabled.

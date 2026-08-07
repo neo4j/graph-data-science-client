@@ -1,4 +1,4 @@
-= Loading a NetworkX graph
+= Load a NetworkX graph
 
 Another way to construct a graph from client-side data is by using the library's convenience https://networkx.org/[NetworkX] loading method.
 In order to use this method, one has to install NetworkX support for the `graphdatascience` library:
