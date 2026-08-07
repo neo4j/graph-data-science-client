@@ -67,7 +67,9 @@ G, result = gds.graph.project.native(
 )
 ----
 
-You can use the wildcard * in the node_label_filter or relationship_type_filter arguments to project all available node labels or relationship types, respectively (for instance `node_label_filter=["*"]`).
+`G` is a `Graph` object, and `result` is a `ProjectionResult` object containing metadata from the underlying procedure call.
+
+You can use the wildcard `\*` in the node_label_filter or relationship_type_filter arguments to project all available node labels or relationship types, respectively (for instance `node_label_filter=["*"]`).
 =====
 
 [.include-with-Neo4j-server-and-AuraDS]
@@ -84,7 +86,7 @@ G, result = gds.graph.project.native(
 )
 ----
 
-where `G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/catalog_cypher_endpoints/#graphdatascience.procedure_surface.cypher.catalog.GraphProjectResult[`GraphProjectResult`] object containing metadata from the underlying procedure call.
+`G` is a `Graph` object, and `result` is a link:{gds-api-uri}/endpoints/catalog_cypher_endpoints/#graphdatascience.procedure_surface.cypher.catalog.GraphProjectResult[`GraphProjectResult`] object containing metadata from the underlying procedure call.
 
 Note that all projection syntax variants are supported by way of specifying a Python `dict` or `list` for the node and relationship projection arguments.
 To specify configuration parameters corresponding to the keys of the procedure's `configuration` map, we give named keyword arguments, like for `read_concurrency=4` above.
@@ -126,7 +128,8 @@ G, result = gds.graph.project.cypher(
         }
       )
     """,
-    database="neo4j"      #  Target database
+    database="neo4j",      #  Target database
+    graph_name="offices"   #  Method parameter
 )
 ----
 =====
@@ -165,37 +168,6 @@ Unlike `gds.run_cypher` but very much like `gds.graph.project.native`, it return
 The method does not modify the Cypher query in any way, all projection configuration must be done in the query itself.
 It expects the query to end with a single `RETURN gds.graph.project(...)` aggregation, and raises a `ValueError` if the query returns anything else.
 If your query needs additional aggregations or a renamed result row, use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
-
-=== Syntax
-
-[.tabbed-example]
-====
-[.include-with-Aura-Graph-Analytics]
-=====
-[opts="header",cols="2m,2m,1m,6", role="no-break"]
-|===
-| Name           | Type               |Default | Description
-| graph_name                          | str                 | -      | The name of the graph to create.
-| query                               | str                 | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
-| job_id                              | Optional[str]       | None   | 
-| concurrency                         | int                 | 4      | Number of threads used to construct the graph.
-| undirected_relationship_types       | Optional[list[str]] | None   | List of relationship types to be projected as undirected.
-| inverse_indexed_relationship_types  | Optional[list[str]] | None   | 
-| batch_size                          | Optional[int]       | None   | 
-|===
-=====
-
-[.include-with-Neo4j-server-and-AuraDS]
-=====
-[opts="header",cols="2m,2m,1m,6", role="no-break"]
-|===
-| Name           | Type               |Default | Description
-| query          | str                | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
-| database       | Optional[str]      | None   | Overrides the target database. The default uses the database from the connection.
-| **params       | Any                | {}   | The query parameters as keyword args.
-|===
-=====
-====
 
 [[other-creation-methods]]
 == Other ways to create graphs

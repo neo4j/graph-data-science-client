@@ -33,16 +33,14 @@ G, result = gds.graph.project.native(
 ====
 
 [[graph-object-streaming-properties]]
-== Read node and relationship properties
+== Read node properties
 
-The methods to read node and relationship properties from a graph are the same as in the Cypher API (see link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[Streaming nodes] and link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[Streaming relationships]).
+The methods to read node and relationship properties from a graph are the same as in the Cypher API (see link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[Streaming nodes]).
 
 Assuming the `GraphDataScience` object is called `gds`:
 
 * link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.nodeProperty.stream`) returns a single node property
 * link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_properties.stream`] (previously `gds.graph.nodeProperties.stream`) returns multiple node properties
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.relationshipProperty.stream`) returns a single relationship property
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.relationshipProperties.stream`) returns multiple relationship properties
 
 [.tabbed-example]
 ====
@@ -81,42 +79,6 @@ gds.graph.node_properties.stream(G, node_properties=["population"])
 |2 | 5      | 105000
 |===
 =====
-
-[.include-with-Single-relationship-property]
-=====
-[source, python]
-----
-gds.graph.relationship_property.stream(G, relationship_property="cost")
-----
-
-.Result (NOTE: The node IDs can be different.)
-[opts="header"]
-|===
-|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
-|0 | 3            | 4            | FLY_TO           | 200.0
-|1 | 4            | 3            | FLY_TO           |      200.0
-|2 | 4            | 5            | FLY_TO           |      1000.0
-|3 | 5            | 4            | FLY_TO           |     1000.0
-|===
-=====
-
-[.include-with-Multiple-relationship-properties]
-=====
-[source, python]
-----
-gds.graph.relationship_properties.stream(G, relationship_properties=["cost"])
-----
-
-.Result (NOTE: The node IDs can be different.)
-[opts="header"]
-|===
-|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
-|0 | 3            | 4            | FLY_TO           | 200.0
-|1 | 4            | 3            | FLY_TO           |      200.0
-|2 | 4            | 5            | FLY_TO           |      1000.0
-|3 | 5            | 4            | FLY_TO           |     1000.0
-|===
-=====
 ====
 
 [role=label--removed-2.0]
@@ -149,6 +111,57 @@ gds.graph.node_properties.stream(G, node_properties=["population"], db_node_prop
 |1 | 4      | 8800000       | London
 |2 | 5      | 105000        | San Mateo
 |===
+
+[[graph-object-streaming-rel-properties]]
+== Read relationship properties
+
+The methods to read node and relationship properties from a graph are the same as in the Cypher API (see link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[Streaming relationships]).
+
+Assuming the `GraphDataScience` object is called `gds`:
+
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.relationshipProperty.stream`) returns a single relationship property
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.relationshipProperties.stream`) returns multiple relationship properties
+
+[.tabbed-example]
+====
+[.include-with-Single-relationship-property]
+=====
+.Method call
+[source, python]
+----
+gds.graph.relationship_property.stream(G, relationship_property="cost")
+----
+
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
+|===
+|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
+|0 | 3            | 4            | FLY_TO           | 200.0
+|1 | 4            | 3            | FLY_TO           |      200.0
+|2 | 4            | 5            | FLY_TO           |      1000.0
+|3 | 5            | 4            | FLY_TO           |     1000.0
+|===
+=====
+
+[.include-with-Multiple-relationship-properties]
+=====
+.Method call
+[source, python]
+----
+gds.graph.relationship_properties.stream(G, relationship_properties=["cost"])
+----
+
+.Result (NOTE: The node IDs can be different.)
+[opts="header"]
+|===
+|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
+|0 | 3            | 4            | FLY_TO           | 200.0
+|1 | 4            | 3            | FLY_TO           |      200.0
+|2 | 4            | 5            | FLY_TO           |      1000.0
+|3 | 5            | 4            | FLY_TO           |     1000.0
+|===
+=====
+====
 
 == Read the graph topology
 
