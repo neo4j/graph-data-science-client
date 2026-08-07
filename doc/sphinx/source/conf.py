@@ -54,8 +54,14 @@ autodoc_pydantic_field_show_default = False
 # Internal pydantic validator methods are not user-facing API; don't warn when
 # autodoc_pydantic links fields to their (undocumented) validators.
 nitpick_ignore = [
-    ("py:obj", "graphdatascience.procedure_surface.api.catalog.catalog_endpoints.GraphGenerationStats.check_empty_property"),
-    ("py:obj", "graphdatascience.procedure_surface.api.catalog.relationships_endpoints.RelationshipsWriteResult.coerce_relationship_properties"),
+    (
+        "py:obj",
+        "graphdatascience.procedure_surface.api.catalog.catalog_endpoints.GraphGenerationStats.check_empty_property",
+    ),
+    (
+        "py:obj",
+        "graphdatascience.procedure_surface.api.catalog.relationships_endpoints.RelationshipsWriteResult.coerce_relationship_properties",
+    ),
 ]
 
 # Remaining nitpicky warnings are bare builtins / prose tokens that napoleon
