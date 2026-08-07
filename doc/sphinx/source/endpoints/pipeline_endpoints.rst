@@ -26,3 +26,6 @@ Machine Learning Pipelines
 .. autoclass:: graphdatascience.procedure_surface.api.pipeline.node_classification_train_endpoints.NodeClassificationPipelineTrainEndpoints
 
 .. autoclass:: graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpoints.LinkPredictionPipelineTrainEndpoints
+
+.. autoclass:: graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol.PipelineCatalogEntryProtocol
+    :members:

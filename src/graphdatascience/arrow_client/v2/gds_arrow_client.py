@@ -251,29 +251,29 @@ class GdsArrowClient:
         job_id: str | None = None,
     ) -> str:
         """
-         Starts a new graph import process on the GDS server.
+        Starts a new graph import process on the GDS server.
 
-         The import process accepts triplets as input data.
+        The import process accepts triplets as input data.
 
         Parameters
-         ----------
-         graph_name
-             The name used to identify the graph in the catalog
-         undirected_relationship_types
-             A list of relationship types that should be treated as undirected
-         inverse_indexed_relationship_types
-             A list of relationship types that should be indexed in reverse direction as well
-         concurrency
-             Number of concurrent threads to use.
-         log_progress
-             Display progress logging.
-         job_id
-             Identifier for the computation.
+        ----------
+        graph_name
+            The name used to identify the graph in the catalog
+        undirected_relationship_types
+            A list of relationship types that should be treated as undirected
+        inverse_indexed_relationship_types
+            A list of relationship types that should be indexed in reverse direction as well
+        concurrency
+            Number of concurrent threads to use.
+        log_progress
+            Display progress logging.
+        job_id
+            Identifier for the computation.
 
-         Returns
-         -------
-         str
-             The JobId identifying the import process
+        Returns
+        -------
+        str
+            The JobId identifying the import process
         """
 
         config = ConfigConverter.convert_to_gds_config(
@@ -428,7 +428,7 @@ class GdsArrowClient:
 
         Returns
         -------
-        JobStatus
+        ~graphdatascience.arrow_client.v2.api_types.JobStatus
             The status of the job
         """
         return JobClient.get_job_status(self._flight_client, job_id)
