@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 
 class ArrowAuthentication(ABC):
+    """Abstract authentication strategy for the GDS Arrow server."""
+
     @abstractmethod
     def auth_pair(self) -> tuple[str, str]:
         """Returns the auth pair used for authentication."""

@@ -17,7 +17,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
 class GraphSageModel(Model):
     """
     Represents a GraphSAGE model in the model catalog.
-    Construct this using :func:`gds.v2.graphSage.train()`.
+    Construct this using `gds.v2.graphSage.train()`.
     """
 
     def __init__(self, name: str, catalog: ModelCatalogProtocol, predict_endpoints: GraphSagePredictEndpoints) -> None:
@@ -44,19 +44,19 @@ class GraphSageModel(Model):
 
         Parameters
         ----------
-        G : Graph
+        G
             The graph to generate embeddings for.
-        write_property : str
+        write_property
             The property to write the embeddings to.
-        relationship_types : list[str]
+        relationship_types
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
-        write_concurrency : int | None, default=None
+        write_concurrency
             The concurrency for writing.
         log_progress
             Display progress logging.
@@ -106,13 +106,13 @@ class GraphSageModel(Model):
 
         Parameters
         ----------
-        G : Graph
+        G
             The graph to generate embeddings for.
-        relationship_types : list[str]
+        relationship_types
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
@@ -127,7 +127,7 @@ class GraphSageModel(Model):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The streaming results as a DataFrame.
 
         """
@@ -163,15 +163,15 @@ class GraphSageModel(Model):
 
         Parameters
         ----------
-        G : Graph
+        G
             The graph to generate embeddings for.
-        mutate_property : str
+        mutate_property
             The property to mutate with the embeddings.
-        relationship_types : list[str]
+        relationship_types
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.
@@ -222,13 +222,13 @@ class GraphSageModel(Model):
 
         Parameters
         ----------
-        G : Graph
+        G
             The graph to generate embeddings for.
-        relationship_types : list[str]
+        relationship_types
             The relationship types to consider.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.

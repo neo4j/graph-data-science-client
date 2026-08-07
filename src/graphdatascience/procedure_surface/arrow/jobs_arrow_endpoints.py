@@ -85,7 +85,7 @@ class JobsArrowEndpoints:
 
         Returns
         -------
-        list[JobInfo]
+        typing.List[JobInfo]
             One row per job containing ``job_id`` and ``name``.
         """
 

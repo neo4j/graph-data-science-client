@@ -10,6 +10,8 @@ from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 
 
 class RelationshipPropertiesEndpoints:
+    """Endpoints for streaming several relationship properties"""
+
     def __init__(self, relationships_endpoints: RelationshipsEndpoints) -> None:
         self._relationships_endpoints = relationships_endpoints
 
@@ -31,7 +33,7 @@ class RelationshipPropertiesEndpoints:
         ----------
         G
            Graph object to use
-        relationship_properties : list[str]
+        relationship_properties
             The relationship properties to stream
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -80,9 +82,9 @@ class RelationshipPropertiesEndpoints:
         ----------
         G
            Graph object to use
-        relationship_type : str
+        relationship_type
             The relationship type to write to the database
-        relationship_properties : list[str]
+        relationship_properties
             The relationship properties to write
         concurrency
             Number of concurrent threads to use.

@@ -17,7 +17,7 @@ class KgePredictEndpoints(ABC):
 
     Mirrors the ``gds.ml.kge.predict`` procedure. The scoring function (e.g. ``transe`` or
     ``distmult``) and the per-relationship-type embedding are typically supplied by a
-    :class:`SimpleRelEmbeddingModel` created via ``gds.kge.transe(...)`` / ``gds.kge.distmult(...)``.
+    :class:`~graphdatascience.procedure_surface.api.kge.simple_rel_embedding_model.SimpleRelEmbeddingModel` created via ``gds.kge.transe(...)`` / ``gds.kge.distmult(...)``.
     """
 
     @abstractmethod
@@ -71,7 +71,7 @@ class KgePredictEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The ``top_k`` highest scoring target nodes for each source node, with the score for the node pair.
         """
 

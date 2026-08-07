@@ -34,7 +34,7 @@ class DefaultsEndpoints(ABC):
                 The configuration key for which the default value is being set.
             value : Any
                 The value to set as the default for the given key.
-            username : str | None, default=None
+            username : str | None
                 If set, the configuration will be set for the given user.
 
         Returns: None
@@ -53,7 +53,7 @@ class DefaultsEndpoints(ABC):
         Parameters:
             key : str | None (default=None)
                 List only the default value for the given key.
-            username : str | None, default=None
+            username : str | None
                 List only default values for the given user.
 
         Returns: dict[str, Any]
@@ -78,7 +78,7 @@ class LimitsEndpoints(ABC):
                 The configuration key for which the limit is being set.
             value : Any
                 The value to set as the limit for the given key.
-            username : str | None, default=None
+            username : str | None
                 If set, the limit will be set for the given user.
 
         Returns: None
@@ -97,7 +97,7 @@ class LimitsEndpoints(ABC):
         Parameters:
             key : str | None (default=None)
                 List only the limits for the given key.
-            username : str | None, default=None
+            username : str | None
                 List only liomits for the given user.
 
         Returns: dict[str, Any]

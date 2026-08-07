@@ -135,7 +135,7 @@ class ArticulationPointsEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A DataFrame containing articulation points with columns:
             - nodeId: The ID of the articulation point
             - resultingComponents: Information about resulting components

@@ -60,7 +60,7 @@ class AllShortestPathEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results containing 'sourceNodeId', 'targetNodeId', and 'distance' columns
         """
         pass

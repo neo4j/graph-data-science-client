@@ -38,7 +38,7 @@ class ScalePropertiesEndpoints(ABC):
            Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        node_properties : list[str]
+        node_properties
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler
             The scaler to use. Can be:
@@ -88,7 +88,7 @@ class ScalePropertiesEndpoints(ABC):
         ----------
         G
            Graph object to use
-        node_properties : list[str]
+        node_properties
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler
             The scaler to use. Can be:
@@ -136,7 +136,7 @@ class ScalePropertiesEndpoints(ABC):
         ----------
         G
            Graph object to use
-        node_properties : list[str]
+        node_properties
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler
             The scaler to use. Can be:
@@ -159,7 +159,7 @@ class ScalePropertiesEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with nodeId and scaledProperty columns containing scaled property values.
             Each row represents a node with its corresponding scaled property values.
         """
@@ -191,7 +191,7 @@ class ScalePropertiesEndpoints(ABC):
            Graph object to use
         write_property
             Name of the node property to store the results in.
-        node_properties : list[str]
+        node_properties
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler
             The scaler to use. Can be:
@@ -235,7 +235,7 @@ class ScalePropertiesEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        node_properties : Any
+        node_properties
             The node properties to scale. Can be a list of property names or a dictionary mapping property names to configurations.
         scaler
             The scaler to use. Can be:

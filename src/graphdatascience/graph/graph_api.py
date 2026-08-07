@@ -32,21 +32,27 @@ class Graph:
 
     def name(self) -> str:
         """
-        Returns:
+        Returns
+        -------
+        str
             the name of the graph
         """
         return self._name
 
     def configuration(self) -> dict[str, Any]:
         """
-        Returns:
+        Returns
+        -------
+        dict[str, Any]
             the configuration of the graph
         """
         return self._backend.graph_info().configuration
 
     def node_count(self) -> int:
         """
-        Returns:
+        Returns
+        -------
+        int
             the number of nodes in the graph
 
         """
@@ -54,28 +60,36 @@ class Graph:
 
     def relationship_count(self) -> int:
         """
-        Returns:
+        Returns
+        -------
+        int
             the number of relationships in the graph
         """
         return self._backend.graph_info().relationship_count
 
     def node_labels(self) -> list[str]:
         """
-        Returns:
+        Returns
+        -------
+        list[str]
             the node labels in the graph
         """
         return list(self._backend.graph_info().graph_schema["nodes"].keys())
 
     def relationship_types(self) -> list[str]:
         """
-        Returns:
+        Returns
+        -------
+        list[str]
             the relationship types in the graph
         """
         return list(self._backend.graph_info().graph_schema["relationships"].keys())
 
     def node_properties(self) -> dict[str, list[str]]:
         """
-        Returns:
+        Returns
+        -------
+        dict[str, list[str]]
             the node properties per node label
 
         """
@@ -85,7 +99,9 @@ class Graph:
 
     def relationship_properties(self) -> dict[str, list[str]]:
         """
-        Returns:
+        Returns
+        -------
+        dict[str, list[str]]
             the relationship properties per relationship type
         """
         rel_schema = self._backend.graph_info().graph_schema["relationships"]
@@ -94,35 +110,45 @@ class Graph:
 
     def degree_distribution(self) -> dict[str, float | int]:
         """
-        Returns:
+        Returns
+        -------
+        dict[str, float | int]
             the degree distribution of the graph
         """
         return self._backend.graph_info().degree_distribution
 
     def density(self) -> float:
         """
-        Returns:
+        Returns
+        -------
+        float
             the density of the graph
         """
         return self._backend.graph_info().density
 
     def memory_usage(self) -> str | None:
         """
-        Returns:
+        Returns
+        -------
+        str | None
             the memory usage of the graph
         """
         return self._backend.graph_info().memory_usage
 
     def size_in_bytes(self) -> int:
         """
-        Returns:
+        Returns
+        -------
+        int
             the size of the graph in bytes
         """
         return self._backend.graph_info().size_in_bytes
 
     def exists(self) -> bool:
         """
-        Returns:
+        Returns
+        -------
+        bool
             whether the graph exists
         """
         return self._backend.exists()
@@ -132,7 +158,9 @@ class Graph:
         Args:
             fail_if_missing: whether to fail if the graph does not exist
 
-        Returns:
+        Returns
+        -------
+        GraphInfo | None
             the result of the drop operation
 
         """
@@ -140,7 +168,9 @@ class Graph:
 
     def creation_time(self) -> datetime:
         """
-        Returns:
+        Returns
+        -------
+        datetime
             the creation time of the graph
 
         """
@@ -148,7 +178,9 @@ class Graph:
 
     def modification_time(self) -> datetime:
         """
-        Returns:
+        Returns
+        -------
+        datetime
             the modification time of the graph
         """
         return self._backend.graph_info().modification_time

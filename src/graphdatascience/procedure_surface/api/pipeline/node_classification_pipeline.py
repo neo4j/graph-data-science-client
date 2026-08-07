@@ -25,7 +25,7 @@ class NodeClassificationPipeline:
     """
     Represents a node classification training pipeline.
 
-    Construct this using :func:`gds.v2.pipeline.node_classification.create()`.
+    Construct this using `gds.v2.pipeline.node_classification.create()`.
     """
 
     def __init__(

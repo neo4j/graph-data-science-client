@@ -141,7 +141,7 @@ class ClosenessHarmonicEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results containing nodeId and score columns
         """
         pass

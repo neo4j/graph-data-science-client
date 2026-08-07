@@ -9,3 +9,7 @@ Catalog Cypher Endpoints
 .. automodule:: graphdatascience.procedure_surface.cypher.catalog
     :exclude-members: __init__, CatalogCypherEndpoints
     :members:
+
+.. autoclass:: graphdatascience.procedure_surface.cypher.pathfinding.dag_cypher_endpoints.DagCypherEndpoints
+
+.. autoclass:: graphdatascience.procedure_surface.cypher.list_progress_cypher_endpoint.ListProgressCypherEndpoint

@@ -52,7 +52,7 @@ class LocalClusteringCoefficientEndpoints:
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
-        triangle_count_property : str | None, default=None
+        triangle_count_property
             Property name for pre-computed triangle counts
         username
             As an administrator, impersonate a different user for accessing their graphs.
@@ -97,7 +97,7 @@ class LocalClusteringCoefficientEndpoints:
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
-        triangle_count_property : str | None, default=None
+        triangle_count_property
             Property name for pre-computed triangle counts
         username
             As an administrator, impersonate a different user for accessing their graphs.
@@ -142,7 +142,7 @@ class LocalClusteringCoefficientEndpoints:
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
-        triangle_count_property : str | None, default=None
+        triangle_count_property
             Property name for pre-computed triangle counts
         username
             As an administrator, impersonate a different user for accessing their graphs.
@@ -191,7 +191,7 @@ class LocalClusteringCoefficientEndpoints:
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
-        triangle_count_property : str | None, default=None
+        triangle_count_property
             Property name for pre-computed triangle counts
         username
             As an administrator, impersonate a different user for accessing their graphs.
@@ -236,7 +236,7 @@ class LocalClusteringCoefficientEndpoints:
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         sudo
             Disable the memory guard.
-        triangle_count_property : str | None, default=None
+        triangle_count_property
             Property name for pre-computed triangle counts
         username
             As an administrator, impersonate a different user for accessing their graphs.
