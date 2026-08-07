@@ -25,7 +25,9 @@ As for the Cypher API, the Python client offers two ways of projecting a graph o
 include::ROOT:partial$/gds-object.adoc[]
 ====
 
-=== Example graph
+=== Preparation
+
+The following query creates an example graph in the Neo4j database.
 
 [source, python ,group=graph-project]
 ----
@@ -44,8 +46,7 @@ gds.run_cypher(
 )
 ----
 
-[[estimate-memory]]
-=== Estimate memory
+Before projecting a graph, it is useful to estimate its memory requirements to correctly size a server or an Aura Graph Analytics session.
 
 [source,python,group=graph-project]
 ----
@@ -60,7 +61,7 @@ assert res.bytes_max < 1e12
 [[native-projection]]
 === Native projection
 
-Cypher API reference: link:{gds-docs-base-uri}/management-ops/projections/graph-project/[native projection]
+The native projection in the client is similar to its link:{gds-docs-base-uri}/management-ops/projections/graph-project/[Cypher API] counterpart.
 
 
 [.tabbed-example]
@@ -107,12 +108,9 @@ Read more about the syntax in the link:{gds-docs-base-uri}/management-ops/projec
 [[cypher-projection]]
 === Cypher Projection
 
-The method `gds.graph.project.cypher` allows for projecting a graph using Cypher projection.
-Cypher projection is not a dedicated procedure; rather it requires writing a Cypher query that calls the `gds.graph.project` aggregation function.
+The Cypher projection in the client is similar to its link:{gds-docs-base-uri}/management-ops/projections/graph-project-cypher-projection/[Cypher API] counterpart.
 
-Read more about Cypher projection in the link:{gds-docs-base-uri}/management-ops/projections/graph-project-cypher-projection/[GDS manual].
-
-The method `gds.graph.project.cypher` bridges the gap between `gds.run_cypher` and having to follow with `gds.graph.get`.
+It requires writing a Cypher query that calls the `gds.graph.project` aggregation function, and it is equivalent to running `gds.run_cypher` followed by `gds.graph.get`.
 
 [.tabbed-example]
 ====
@@ -240,11 +238,9 @@ assert not gds.graph.exists("tmp_offices")
 
 The primary use case for a graph object is to pass it to algorithms, but it's also the input to most methods of the link:{gds-docs-base-uri}/management-ops/graph-catalog-ops/[GDS Graph Catalog]:
 
-// TODO: Remove Placeholders
-
-* xref:algorithms.adoc[Input to algorithms]
 * [[graph-object-streaming-properties]] xref:read-graph.adoc#graph-object-streaming-properties[Streaming properties]
 * [[graph-object-streaming-db-properties]] xref:read-graph.adoc#graph-object-streaming-db-properties[Including node properties from Neo4j]
+* xref:algorithms.adoc[Input to algorithms]
 
 === The graph catalog
 
