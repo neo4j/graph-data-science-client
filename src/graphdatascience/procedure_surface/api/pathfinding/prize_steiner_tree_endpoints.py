@@ -64,7 +64,7 @@ class PrizeSteinerTreeEndpoints(ABC):
         ----------
         G
            Graph object to use
-        prize_property : str
+        prize_property
             The name of the node property containing prize values.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -111,7 +111,7 @@ class PrizeSteinerTreeEndpoints(ABC):
         ----------
         G
            Graph object to use
-        prize_property : str
+        prize_property
             The name of the node property containing prize values.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -164,7 +164,7 @@ class PrizeSteinerTreeEndpoints(ABC):
             Name of the relationship type to store the results in.
         mutate_property
             Name of the node property to store the results in.
-        prize_property : str
+        prize_property
             The name of the node property containing prize values.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -214,11 +214,11 @@ class PrizeSteinerTreeEndpoints(ABC):
         ----------
         G
            Graph object to use
-        write_relationship_type : str
+        write_relationship_type
             Name of the relationship type to store the results in.
         write_property
             Name of the node property to store the results in.
-        prize_property : str
+        prize_property
             The name of the node property containing prize values.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -263,7 +263,7 @@ class PrizeSteinerTreeEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        prize_property : str
+        prize_property
             The name of the node property containing prize values.
         relationship_weight_property
             Name of the property to be used as weights.

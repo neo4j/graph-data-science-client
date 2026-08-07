@@ -20,7 +20,9 @@ class Model(ABC):
         """
         Get the name of the model.
 
-        Returns:
+        Returns
+        -------
+        str
             The name of the model.
 
         """
@@ -30,7 +32,9 @@ class Model(ABC):
         """
         Get metadata about the model from the model catalog.
 
-        Returns:
+        Returns
+        -------
+        ModelDetails
             The details of the model.
 
         """
@@ -40,7 +44,9 @@ class Model(ABC):
         """
         Check whether the model exists.
 
-        Returns:
+        Returns
+        -------
+        bool
             True if the model exists, False otherwise.
 
         """
@@ -53,7 +59,9 @@ class Model(ABC):
         Args:
             fail_if_missing: If True, an error is thrown if the model does not exist. If False, no error is thrown.
 
-        Returns:
+        Returns
+        -------
+        ModelDetails | None
             The result of the drop operation.
 
         """
@@ -66,7 +74,9 @@ class Model(ABC):
         Args:
             fail_if_missing: If True, an error is thrown if the model does not exist. If False, no error is thrown.
 
-        Returns:
+        Returns
+        -------
+        ModelDeleteResult | None
             The result of the delete operation.
 
         """
@@ -76,7 +86,9 @@ class Model(ABC):
         """
         Load the persisted model into the in-memory catalog.
 
-        Returns:
+        Returns
+        -------
+        ModelLoadResult
             The result of the load operation.
 
         """
@@ -89,7 +101,9 @@ class Model(ABC):
         Args:
             fail_if_unsupported: If True, an error is thrown if the model is not supported for storing.
 
-        Returns:
+        Returns
+        -------
+        ModelStoreResult
             The result of the store operation.
 
         """
@@ -99,7 +113,9 @@ class Model(ABC):
         """
         Publish the model so it becomes accessible to other users.
 
-        Returns:
+        Returns
+        -------
+        ModelDetails
             The details of the published model.
 
         """

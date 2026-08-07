@@ -30,7 +30,7 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        flight_client : AuthenticatedArrowClient
+        flight_client
             The authenticated flight client to use for communication with the GDS server. Ownership of the client is transferred to this GdsArrowClient.
         """
         self._flight_client = flight_client
@@ -257,7 +257,7 @@ class GdsArrowClient:
 
         Parameters
          ----------
-         graph_name : str
+         graph_name
              The name used to identify the graph in the catalog
          undirected_relationship_types
              A list of relationship types that should be treated as undirected
@@ -412,7 +412,7 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        job_id : str
+        job_id
             The job id of the process
         """
         JobClient.cancel_job(self._flight_client, job_id)

@@ -69,13 +69,13 @@ class SteinerTreeEndpoints(ABC):
            Graph object to use
         source_node
             Node id to use as the starting point.
-        target_nodes : list[int]
+        target_nodes
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float
+        delta
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool
+        apply_rerouting
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -125,13 +125,13 @@ class SteinerTreeEndpoints(ABC):
            Graph object to use
         source_node
             Node id to use as the starting point.
-        target_nodes : list[int]
+        target_nodes
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float
+        delta
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool
+        apply_rerouting
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -187,13 +187,13 @@ class SteinerTreeEndpoints(ABC):
             Name of the node property to store the results in.
         source_node
             Node id to use as the starting point.
-        target_nodes : list[int]
+        target_nodes
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float
+        delta
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool
+        apply_rerouting
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -244,19 +244,19 @@ class SteinerTreeEndpoints(ABC):
         ----------
         G
            Graph object to use
-        write_relationship_type : str
+        write_relationship_type
             Name of the relationship type to store the results in.
         write_property
             Name of the node property to store the results in.
         source_node
             Node id to use as the starting point.
-        target_nodes : list[int]
+        target_nodes
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float
+        delta
             The delta parameter for the shortest path computation used internally.
-        apply_rerouting : bool
+        apply_rerouting
             Whether to apply rerouting optimization to improve the tree.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -304,13 +304,13 @@ class SteinerTreeEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         source_node
             Node id to use as the starting point.
-        target_nodes : list[int]
+        target_nodes
             List of target node IDs.
         relationship_weight_property
             Name of the property to be used as weights.
-        delta : float
+        delta
             The delta parameter for the shortest path computation.
-        apply_rerouting : bool
+        apply_rerouting
             Whether to apply rerouting optimization.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

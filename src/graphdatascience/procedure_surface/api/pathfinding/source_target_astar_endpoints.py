@@ -56,11 +56,11 @@ class SourceTargetAStarEndpoints(ABC):
            Graph object to use
         source_node
             Node id to use as the starting point.
-        target_node : int
+        target_node
             The target node for the shortest path computation.
-        latitude_property : str
+        latitude_property
             The node property that stores latitude values.
-        longitude_property : str
+        longitude_property
             The node property that stores longitude values.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -114,11 +114,11 @@ class SourceTargetAStarEndpoints(ABC):
            Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
-        target_node : int
+        target_node
             The target node for the shortest path computation.
-        latitude_property : str
+        latitude_property
             The node property that stores latitude values.
-        longitude_property : str
+        longitude_property
             The node property that stores longitude values.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -171,19 +171,19 @@ class SourceTargetAStarEndpoints(ABC):
         ----------
         G
            Graph object to use
-        write_relationship_type : str
+        write_relationship_type
             Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
-        target_node : int
+        target_node
             The target node for the shortest path computation.
-        latitude_property : str
+        latitude_property
             The node property that stores latitude values.
-        longitude_property : str
+        longitude_property
             The node property that stores longitude values.
-        write_node_ids : bool
+        write_node_ids
             Whether to write node IDs of the shortest path onto the relationship.
-        write_costs : bool
+        write_costs
             Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -232,11 +232,11 @@ class SourceTargetAStarEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         source_node
             Node id to use as the starting point.
-        target_node : int
+        target_node
             The target node for the shortest path computation.
-        latitude_property : str
+        latitude_property
             The node property that stores latitude values.
-        longitude_property : str
+        longitude_property
             The node property that stores longitude values.
         relationship_weight_property
             Name of the property to be used as weights.

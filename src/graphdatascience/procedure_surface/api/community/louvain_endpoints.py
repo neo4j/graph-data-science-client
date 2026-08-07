@@ -47,9 +47,9 @@ class LouvainEndpoints(ABC):
             Name of the node property to store the results in.
         tolerance
             Minimum change in scores between iterations.
-        max_levels : int
+        max_levels
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate communities
         max_iterations
             Maximum number of iterations to run per level.
@@ -65,7 +65,7 @@ class LouvainEndpoints(ABC):
             As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
-        job_id : str | None
+        job_id
             Identifier for the computation.
         seed_property
             Name of the property to be used to for the initial value of a node.
@@ -109,9 +109,9 @@ class LouvainEndpoints(ABC):
            Graph object to use
         tolerance
             Minimum change in scores between iterations.
-        max_levels : int
+        max_levels
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate community assignments
         max_iterations
             Maximum number of iterations to run per level.
@@ -172,9 +172,9 @@ class LouvainEndpoints(ABC):
            Graph object to use
         tolerance
             Minimum change in scores between iterations.
-        max_levels : int
+        max_levels
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate community assignments
         max_iterations
             Maximum number of iterations to run per level.
@@ -241,9 +241,9 @@ class LouvainEndpoints(ABC):
             Name of the node property to store the results in.
         tolerance
             Minimum change in scores between iterations.
-        max_levels : int
+        max_levels
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate community assignments
         max_iterations
             Maximum number of iterations to run per level.
@@ -303,9 +303,9 @@ class LouvainEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         tolerance
             Minimum change in scores between iterations.
-        max_levels : int
+        max_levels
             The maximum number of levels in the hierarchy
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate community assignments
         max_iterations
             Maximum number of iterations to run per level.

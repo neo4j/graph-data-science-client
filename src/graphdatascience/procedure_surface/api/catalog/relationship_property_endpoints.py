@@ -30,7 +30,7 @@ class RelationshipPropertyEndpoints:
         ----------
         G
            Graph object to use
-        relationship_property : str
+        relationship_property
             The relationship property to stream
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

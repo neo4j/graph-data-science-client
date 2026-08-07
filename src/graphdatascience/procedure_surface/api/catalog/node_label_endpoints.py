@@ -26,9 +26,9 @@ class NodeLabelEndpoints(ABC):
         ----------
         G
            Graph object to use
-        node_label : str
+        node_label
             The node label to write back.
-        node_filter : str
+        node_filter
             A Cypher predicate for filtering nodes in the input graph.
         sudo
             Disable the memory guard.
@@ -66,9 +66,9 @@ class NodeLabelEndpoints(ABC):
         ----------
         G
            Graph object to use
-        node_label : str
+        node_label
             The node label to write back.
-        node_filter : str
+        node_filter
             A Cypher predicate for filtering nodes in the input graph.
         sudo
             Disable the memory guard.

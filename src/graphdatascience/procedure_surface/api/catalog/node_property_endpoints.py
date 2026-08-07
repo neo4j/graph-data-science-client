@@ -33,9 +33,9 @@ class NodePropertyEndpoints:
         ----------
         G
            Graph object to use
-        node_property : str
+        node_property
             The node property to stream
-        list_node_labels : boolean | None
+        list_node_labels
             Whether to include node labels in the stream
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -47,7 +47,7 @@ class NodePropertyEndpoints:
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
-        db_node_properties : list[str] | None
+        db_node_properties
             Retrieves additional node properties from the database and attaches them to the stream.
         Returns
         -------

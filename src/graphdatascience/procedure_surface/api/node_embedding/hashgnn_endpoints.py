@@ -43,21 +43,21 @@ class HashGNNEndpoints(ABC):
            Graph object to use
         iterations
             Number of iterations to run.
-        embedding_density : int
+        embedding_density
             The density of the generated embeddings (number of bits per embedding)
         mutate_property
             Name of the node property to store the results in.
-        output_dimension : int | None
+        output_dimension
             The dimension of the output embeddings
-        neighbor_influence : float
+        neighbor_influence
             The influence of neighboring nodes
-        generate_features : dict[str, Any] | None
+        generate_features
             Configuration for generating synthetic features from existing node properties
-        binarize_features : dict[str, Any] | None
+        binarize_features
             Configuration for binarizing continuous features
-        heterogeneous : bool
+        heterogeneous
             Whether to use heterogeneous node processing for different node types
-        feature_properties : list[str] | None
+        feature_properties
             The names of the node properties to use as input features.
             Defaults to [] if not specified
         random_seed
@@ -99,19 +99,19 @@ class HashGNNEndpoints(ABC):
            Graph object to use
         iterations
             Number of iterations to run.
-        embedding_density : int
+        embedding_density
             The density of the generated embeddings (number of bits per embedding)
-        output_dimension : int | None
+        output_dimension
             The dimension of the output embeddings
-        neighbor_influence : float
+        neighbor_influence
             The influence of neighboring nodes
-        generate_features : dict[str, Any] | None
+        generate_features
             Configuration for generating synthetic features from existing node properties
-        binarize_features : dict[str, Any] | None
+        binarize_features
             Configuration for binarizing continuous features
-        heterogeneous : bool
+        heterogeneous
             Whether to use heterogeneous node processing for different node types
-        feature_properties : list[str] | None
+        feature_properties
             The names of the node properties to use as input features.
             Defaults to [] if not specified
         random_seed
@@ -155,21 +155,21 @@ class HashGNNEndpoints(ABC):
            Graph object to use
         iterations
             Number of iterations to run.
-        embedding_density : int
+        embedding_density
             The density of the generated embeddings (number of bits per embedding)
         write_property
             Name of the node property to store the results in.
-        output_dimension : int | None
+        output_dimension
             The dimension of the output embeddings. If not specified, defaults to embedding_density / 64
-        neighbor_influence : float
+        neighbor_influence
             The influence of neighboring nodes (0.0 to 1.0)
-        generate_features : dict[str, Any] | None
+        generate_features
             Configuration for generating synthetic features from existing node properties
-        binarize_features : dict[str, Any] | None
+        binarize_features
             Configuration for binarizing continuous features
-        heterogeneous : bool
+        heterogeneous
             Whether to use heterogeneous node processing for different node types
-        feature_properties : list[str] | None
+        feature_properties
             The names of the node properties to use as input features.
             Defaults to [] if not specified
         relationship_types
@@ -220,19 +220,19 @@ class HashGNNEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         iterations
             Number of iterations to run.
-        embedding_density : int
+        embedding_density
             The density of the generated embeddings (number of bits per embedding)
-        output_dimension : int | None
+        output_dimension
             The dimension of the output embeddings.
-        neighbor_influence : float
+        neighbor_influence
             The influence of neighboring nodes.
-        generate_features : dict[str, Any] | None
+        generate_features
             Configuration for generating synthetic features from existing node properties
-        binarize_features : dict[str, Any] | None
+        binarize_features
             Configuration for binarizing continuous features
-        heterogeneous : bool
+        heterogeneous
             Whether to use heterogeneous node processing for different node types
-        feature_properties : list[str] | None
+        feature_properties
             The names of the node properties to use as input features.
             Defaults to [] if not specified
         random_seed

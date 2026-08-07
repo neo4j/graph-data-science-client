@@ -41,7 +41,7 @@ class DegreeEndpoints(ABC):
            Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        orientation : str | None
+        orientation
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -93,7 +93,7 @@ class DegreeEndpoints(ABC):
         ----------
         G
            Graph object to use
-        orientation : str | None
+        orientation
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -140,7 +140,7 @@ class DegreeEndpoints(ABC):
         ----------
         G
            Graph object to use
-        orientation : str | None
+        orientation
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
             'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
             'REVERSE' treats each relationship as if it were directed in the opposite direction.
@@ -200,7 +200,7 @@ class DegreeEndpoints(ABC):
            Graph object to use
         write_property
             Name of the node property to store the results in.
-        orientation : str | None
+        orientation
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -243,7 +243,7 @@ class DegreeEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        orientation : str | None
+        orientation
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

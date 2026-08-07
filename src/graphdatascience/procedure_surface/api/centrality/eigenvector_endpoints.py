@@ -49,7 +49,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None
+        source_nodes
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -116,7 +116,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None
+        source_nodes
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -178,7 +178,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None
+        source_nodes
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -249,7 +249,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None
+        source_nodes
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])
@@ -307,7 +307,7 @@ class EigenvectorEndpoints(ABC):
             Maximum number of iterations to run.
         tolerance
             Minimum change in scores between iterations.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None
+        source_nodes
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])

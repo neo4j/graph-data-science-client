@@ -44,11 +44,11 @@ class K1ColoringEndpoints(ABC):
             Number of nodes to process in each batch.
         concurrency
             Number of concurrent threads to use.
-        job_id : str | None
+        job_id
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_iterations : int
+        max_iterations
             Maximum number of iterations to run.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.

@@ -19,7 +19,9 @@ class SessionMemoryValue:
         Args:
             value: The string value from the API response.
 
-        Returns:
+        Returns
+        -------
+        SessionMemoryValue
             The SessionMemory enumeration value.
 
         """
@@ -54,7 +56,9 @@ class SessionMemory(Enum):
         """
         All supported memory configurations.
 
-        Returns:
+        Returns
+        -------
+        list[SessionMemoryValue]
             A list of strings representing all supported memory configurations for sessions.
 
         """

@@ -39,7 +39,7 @@ class ClosenessEndpoints(ABC):
            Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        use_wasserman_faust : bool
+        use_wasserman_faust
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -87,7 +87,7 @@ class ClosenessEndpoints(ABC):
         ----------
         G
            Graph object to use
-        use_wasserman_faust : bool
+        use_wasserman_faust
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -131,7 +131,7 @@ class ClosenessEndpoints(ABC):
         ----------
         G
            Graph object to use
-        use_wasserman_faust : bool
+        use_wasserman_faust
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -184,7 +184,7 @@ class ClosenessEndpoints(ABC):
            Graph object to use
         write_property
             Name of the node property to store the results in.
-        use_wasserman_faust : bool | None
+        use_wasserman_faust
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -224,7 +224,7 @@ class ClosenessEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        use_wasserman_faust : bool | None
+        use_wasserman_faust
             Use the improved Wasserman-Faust formula for closeness computation.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

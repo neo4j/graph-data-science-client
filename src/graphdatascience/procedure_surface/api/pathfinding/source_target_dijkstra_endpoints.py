@@ -54,7 +54,7 @@ class SourceTargetDijkstraEndpoints(ABC):
            Graph object to use
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int]
+        target_nodes
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -106,7 +106,7 @@ class SourceTargetDijkstraEndpoints(ABC):
            Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int]
+        target_nodes
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -157,15 +157,15 @@ class SourceTargetDijkstraEndpoints(ABC):
         ----------
         G
            Graph object to use
-        write_relationship_type : str
+        write_relationship_type
             Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int]
+        target_nodes
             A single target node or a list of target nodes for the shortest path computation.
-        write_node_ids : bool
+        write_node_ids
             Whether to write node IDs of the shortest path onto the relationship(s).
-        write_costs : bool
+        write_costs
             Whether to write costs of the shortest path onto the relationship(s).
         relationship_weight_property
             Name of the property to be used as weights.
@@ -212,7 +212,7 @@ class SourceTargetDijkstraEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         source_node
             Node id to use as the starting point.
-        target_nodes : int | list[int]
+        target_nodes
             A single target node or a list of target nodes for the shortest path computation.
         relationship_weight_property
             Name of the property to be used as weights.

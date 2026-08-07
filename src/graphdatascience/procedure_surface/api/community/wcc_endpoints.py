@@ -41,7 +41,7 @@ class WccEndpoints(ABC):
            Graph object to use
         mutate_property
             Name of the node property to store the results in.
-        threshold : float
+        threshold
             The minimum required weight to consider a relationship during traversal
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -55,7 +55,7 @@ class WccEndpoints(ABC):
             As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
-        job_id : str | None
+        job_id
             Identifier for the computation.
         seed_property
             Name of the property to be used to for the initial value of a node.
@@ -94,7 +94,7 @@ class WccEndpoints(ABC):
         ----------
         G
            Graph object to use
-        threshold : float
+        threshold
             The minimum required weight to consider a relationship during traversal
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -148,9 +148,9 @@ class WccEndpoints(ABC):
         ----------
         G
            Graph object to use
-        min_component_size : int | None
+        min_component_size
             Don't stream components with fewer nodes than this
-        threshold : float
+        threshold
             The minimum required weight to consider a relationship during traversal
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -208,9 +208,9 @@ class WccEndpoints(ABC):
            Graph object to use
         write_property
             Name of the node property to store the results in.
-        min_component_size : int | None
+        min_component_size
             Don't write components with fewer nodes than this
-        threshold : float
+        threshold
             The minimum required weight to consider a relationship during traversal
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -259,7 +259,7 @@ class WccEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        threshold : float
+        threshold
             The minimum required weight to consider a relationship during traversal
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

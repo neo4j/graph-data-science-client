@@ -68,17 +68,17 @@ class ProjectArrowEndpoints:
             Identifier for the computation.
         concurrency
             Number of concurrent threads to use.
-        undirected_relationship_types : list[str]
+        undirected_relationship_types
             List of relationship types to treat as undirected.
-        inverse_indexed_relationship_types : list[str]
+        inverse_indexed_relationship_types
             List of relationship types to index in both directions.
-        batch_size : int | None
+        batch_size
             Number of rows to process in each batch when projecting the graph.
-        logging : bool
+        logging
             Whether to log progress during graph projection.
         Returns
         -------
-        GraphWithProjectResult:
+        GraphWithProjectResult
             A result object containing information about the projected graph.
         """
         if self._query_runner is None:
@@ -162,31 +162,31 @@ class ProjectArrowEndpoints:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             Name of the graph to be created in the catalog.
-        node_label_filter : list[str]
+        node_label_filter
             List of node labels to include in the graph projection.
-        relationship_type_filter : list[str]
+        relationship_type_filter
             List of relationship types to include in the graph projection.
-        node_properties : list[str]
+        node_properties
             List of node properties to include in the graph projection.
-        relationship_properties : list[str]
+        relationship_properties
             List of relationship properties to include in the graph projection.
         job_id
             Identifier for the computation.
         concurrency
             Number of concurrent threads to use.
-        undirected_relationship_types : list[str]
+        undirected_relationship_types
             List of relationship types to treat as undirected.
-        inverse_indexed_relationship_types : list[str]
+        inverse_indexed_relationship_types
             List of relationship types to index in both directions.
-        batch_size : int | None
+        batch_size
             Number of rows to process in each batch when projecting the graph.
-        logging : bool
+        logging
             Whether to log progress during graph projection.
         Returns
         -------
-        ProjectionResult:
+        GraphWithProjectResult
             A result object containing information about the projected graph.
         """
 

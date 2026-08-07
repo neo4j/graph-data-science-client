@@ -73,7 +73,7 @@ class RelationshipsEndpoints(ABC):
         ----------
         G
            Graph object to use
-        relationship_type : str
+        relationship_type
             The relationship type to write to the database
         relationship_properties: list[str] | None
             The relationship properties to write. If not specified, no properties will be written.
@@ -146,7 +146,7 @@ class RelationshipsEndpoints(ABC):
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         concurrency
             Number of concurrent threads to use.
-        sudo : bool = False,
+        sudo
             Disable the memory guard.
         log_progress
             Display progress logging.
@@ -192,7 +192,7 @@ class RelationshipsEndpoints(ABC):
             A dictionary can be provided to specify property specific aggregations.
         concurrency
             Number of concurrent threads to use.
-        sudo : bool = False,
+        sudo
             Disable the memory guard.
         log_progress
             Display progress logging.
@@ -202,7 +202,7 @@ class RelationshipsEndpoints(ABC):
             Identifier for the computation.
         Returns
         -------
-        RelationshipsInverseIndexResult
+        RelationshipsToUndirectedResult
             Execution metrics and statistics
         """
 
@@ -231,13 +231,13 @@ class RelationshipsEndpoints(ABC):
 
         G
            Graph object to use
-        path_templates : list[list[str]]
+        path_templates
             A path template is an ordered list of relationship types used for the traversal. The same relationship type can be added multiple times, in order to traverse them as indicated. And, you may specify several path templates to process in one go.
-        mutate_relationship_type : str
+        mutate_relationship_type
             Name of the relationship type to store the results in.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        allow_self_loops : bool
+        allow_self_loops
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency
             Number of concurrent threads to use.
@@ -252,7 +252,8 @@ class RelationshipsEndpoints(ABC):
 
         Returns
         -------
-        CollapsePathResult: meta data about the generated relationships.
+        CollapsePathResult
+            Meta data about the generated relationships.
         """
 
     pass

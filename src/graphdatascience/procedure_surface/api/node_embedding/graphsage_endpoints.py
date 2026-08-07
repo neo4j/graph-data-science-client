@@ -44,37 +44,37 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
         ----------
         G
            Graph object to use
-        model_name : str
+        model_name
             Name of the trained model.
-        feature_properties : list[str]
+        feature_properties
             The names of the node properties to use as input features
-        activation_function : str | None
+        activation_function
             The activation function to apply after each layer
-        negative_sample_weight : int | None
+        negative_sample_weight
             Weight of negative samples in the loss function
-        embedding_dimension : int | None
+        embedding_dimension
             The dimension of the generated embeddings
         tolerance
             Minimum change in loss between iterations for early stopping an epoch.
-        learning_rate : float | None
+        learning_rate
             Learning rate for the training optimization
         max_iterations
             Maximum number of iterations to run.
-        sample_sizes : list[int] | None
+        sample_sizes
             Number of neighbors to sample at each layer
-        aggregator : str | None
+        aggregator
             The aggregator function for neighborhood aggregation
-        penalty_l2 : float | None
+        penalty_l2
             L2 regularization penalty
-        search_depth : int | None
+        search_depth
             Maximum search depth for neighbor sampling
-        epochs : int | None
+        epochs
             Number of training epochs
-        projected_feature_dimension : int | None
+        projected_feature_dimension
             Dimension to project input features to before training
-        batch_sampling_ratio : float | None
+        batch_sampling_ratio
             Ratio of nodes to sample for each training batch
-        store_model_to_disk : bool | None
+        store_model_to_disk
             Whether to persist the model to disk
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -99,7 +99,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
 
         Returns
         -------
-        GraphSageModelV2
+        GraphSageTrainEndpoints
             Trained model
         """
         return self._train_endpoints

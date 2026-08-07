@@ -32,6 +32,10 @@ extensions = [
 autodoc_class_signature = "separated"
 autodoc_typehints = "both"  # show type-hints inferred from signature, skip in docstring.
 
+# Treat unresolved cross-references as errors so broken links fail the build
+# instead of silently rendering as plain text.
+nitpicky = True
+
 templates_path = ["_templates"]
 exclude_patterns = []  # type: ignore
 
@@ -52,6 +56,12 @@ autodoc_pydantic_field_show_default = False
 nitpick_ignore = [
     ("py:obj", "graphdatascience.procedure_surface.api.catalog.catalog_endpoints.GraphGenerationStats.check_empty_property"),
     ("py:obj", "graphdatascience.procedure_surface.api.catalog.relationships_endpoints.RelationshipsWriteResult.coerce_relationship_properties"),
+]
+
+# Remaining nitpicky warnings are bare builtins / prose tokens that napoleon
+# mis-reads as type cross-references
+nitpick_ignore_regex = [
+    ("py:class", r"^(1\.0|0\.0|=|bool|None|datetime|timedelta|None = None|bool = False)$"),
 ]
 
 # -- Options for HTML output -------------------------------------------------

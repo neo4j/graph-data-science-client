@@ -30,13 +30,13 @@ class CollapsePathEndpoints(ABC):
         ----------
         G
            Graph object to use
-        path_templates : list[list[str]]
+        path_templates
             A path template is an ordered list of relationship types used for the traversal. The same relationship type can be added multiple times, in order to traverse them as indicated. And, you may specify several path templates to process in one go.
-        mutate_relationship_type : str
+        mutate_relationship_type
             Name of the relationship type to store the results in.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        allow_self_loops : bool
+        allow_self_loops
             Whether nodes in the graph can have relationships where start and end nodes are the same.
         concurrency
             Number of concurrent threads to use.

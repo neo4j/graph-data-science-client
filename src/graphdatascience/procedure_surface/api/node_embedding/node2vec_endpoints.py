@@ -52,21 +52,21 @@ class Node2VecEndpoints(ABC):
             Name of the node property to store the results in.
         iterations
             Number of iterations to run.
-        negative_sampling_rate : int
+        negative_sampling_rate
             Number of negative samples for each positive sample
-        positive_sampling_factor : float
+        positive_sampling_factor
             Factor to multiply positive sampling weights
-        embedding_dimension : int
+        embedding_dimension
             The dimension of the generated embeddings
-        embedding_initializer : str
+        embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
-        initial_learning_rate : float
+        initial_learning_rate
             The initial learning rate
-        min_learning_rate : float
+        min_learning_rate
             The minimum learning rate
-        window_size : int
+        window_size
             Size of the context window
-        negative_sampling_exponent : float
+        negative_sampling_exponent
             Exponent for negative sampling probability distribution
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -82,15 +82,15 @@ class Node2VecEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        walk_length : int
+        walk_length
             The length of each random walk
-        walks_per_node : int
+        walks_per_node
             Number of walks to sample for each node
-        in_out_factor : float
+        in_out_factor
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float
+        return_factor
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int
+        walk_buffer_size
             Buffer size for walk sampling
         relationship_weight_property
             Name of the property to be used as weights.
@@ -140,21 +140,21 @@ class Node2VecEndpoints(ABC):
            Graph object to use
         iterations
             Number of iterations to run.
-        negative_sampling_rate : int
+        negative_sampling_rate
             Number of negative samples for each positive sample
-        positive_sampling_factor : float
+        positive_sampling_factor
             Factor to multiply positive sampling weights
-        embedding_dimension : int
+        embedding_dimension
             The dimension of the generated embeddings
-        embedding_initializer : str
+        embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
-        initial_learning_rate : float
+        initial_learning_rate
             The initial learning rate
-        min_learning_rate : float
+        min_learning_rate
             The minimum learning rate
-        window_size : int
+        window_size
             Size of the context window
-        negative_sampling_exponent : float
+        negative_sampling_exponent
             Exponent for negative sampling probability distribution
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -170,15 +170,15 @@ class Node2VecEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        walk_length : int
+        walk_length
             The length of each random walk
-        walks_per_node : int
+        walks_per_node
             Number of walks to sample for each node
-        in_out_factor : float
+        in_out_factor
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float
+        return_factor
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int
+        walk_buffer_size
             Buffer size for walk sampling
         relationship_weight_property
             Name of the property to be used as weights.
@@ -232,21 +232,21 @@ class Node2VecEndpoints(ABC):
             Name of the node property to store the results in.
         iterations
             Number of iterations to run.
-        negative_sampling_rate : int
+        negative_sampling_rate
             Number of negative samples for each positive sample
-        positive_sampling_factor : float
+        positive_sampling_factor
             Factor to multiply positive sampling weights
-        embedding_dimension : int
+        embedding_dimension
             The dimension of the generated embeddings
-        embedding_initializer : str
+        embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
-        initial_learning_rate : float
+        initial_learning_rate
             The initial learning rate
-        min_learning_rate : float
+        min_learning_rate
             The minimum learning rate
-        window_size : int
+        window_size
             Size of the context window
-        negative_sampling_exponent : float
+        negative_sampling_exponent
             Exponent for negative sampling probability distribution
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -262,15 +262,15 @@ class Node2VecEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        walk_length : int
+        walk_length
             The length of each random walk
-        walks_per_node : int
+        walks_per_node
             Number of walks to sample for each node
-        in_out_factor : float
+        in_out_factor
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float
+        return_factor
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int
+        walk_buffer_size
             Buffer size for walk sampling
         relationship_weight_property
             Name of the property to be used as weights.
@@ -316,21 +316,21 @@ class Node2VecEndpoints(ABC):
            Graph object to use or a dictionary representing the graph dimensions.
         iterations
             Number of iterations to run.
-        negative_sampling_rate : int
+        negative_sampling_rate
             Number of negative samples for each positive sample
-        positive_sampling_factor : float
+        positive_sampling_factor
             Factor to multiply positive sampling weights
-        embedding_dimension : int
+        embedding_dimension
             The dimension of the generated embeddings
-        embedding_initializer : str
+        embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
-        initial_learning_rate : float
+        initial_learning_rate
             The initial learning rate
-        min_learning_rate : float
+        min_learning_rate
             The minimum learning rate
-        window_size : int
+        window_size
             Size of the context window
-        negative_sampling_exponent : float
+        negative_sampling_exponent
             Exponent for negative sampling probability distribution
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -338,15 +338,15 @@ class Node2VecEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         concurrency
             Number of concurrent threads to use.
-        walk_length : int
+        walk_length
             The length of each random walk
-        walks_per_node : int
+        walks_per_node
             Number of walks to sample for each node
-        in_out_factor : float
+        in_out_factor
             Controls the likelihood of immediately revisiting a node in the walk
-        return_factor : float
+        return_factor
             Controls the likelihood of visiting already visited nodes
-        walk_buffer_size : int
+        walk_buffer_size
             Buffer size for walk sampling
         relationship_weight_property
             Name of the property to be used as weights.

@@ -207,7 +207,7 @@ class GraphDataScience:
         aura_ds: bool | None = None,
         database: str | None = None,
         arrow: str | bool = True,
-        bookmarks: Any | None = None,
+        bookmarks: neo4j.Bookmarks | None = None,
         show_progress: bool = True,
         arrow_client_options: dict[str, Any] | None = None,
     ):
@@ -216,28 +216,28 @@ class GraphDataScience:
 
         Parameters
         ----------
-        endpoint : str | Driver | QueryRunner
+        endpoint
             The Neo4j endpoint to connect to. Most commonly, this is a Bolt connection URI.
-        auth : tuple[str, str] | None
+        auth
             A username, password pair for database authentication.
-        aura_ds : bool | None
+        aura_ds
             A flag that indicates that the client is used to connect
             to a Neo4j AuraDS instance. If not set, the client will
             automatically derive whether the database is hosted in Aura.
         database: str | None
             The Neo4j database to query against.
-        arrow : str | bool
+        arrow
             Arrow connection information. This is either a string or a bool.
 
             - If it is a string, it will be interpreted as a connection URL to a GDS Arrow Server.
             - If it is a bool:
                 - True will make the client discover the connection URI to the GDS Arrow server via the Neo4j endpoint.
                 - False will make the client use Bolt for all operations.
-        bookmarks : Any | None
+        bookmarks
             The Neo4j bookmarks to require a certain state before the next query gets executed.
-        show_progress : bool
+        show_progress
             A flag to indicate whether to show progress bars for running procedures.
-        arrow_client_options : dict[str, Any] | None
+        arrow_client_options
             Additional options to be passed to the Arrow Flight client.
         """
         if isinstance(endpoint, QueryRunner):
@@ -748,13 +748,13 @@ class GraphDataScience:
         """
         self._query_runner.set_database(database)
 
-    def set_bookmarks(self, bookmarks: Any) -> None:
+    def set_bookmarks(self, bookmarks: neo4j.Bookmarks | None) -> None:
         """
         Set Neo4j bookmarks to require a certain state before the next query gets executed
 
         Parameters
         ----------
-        bookmarks: Bookmark(s)
+        bookmarks: neo4j.Bookmarks | None
             The Neo4j bookmarks defining the required state
         """
         self._query_runner.set_bookmarks(bookmarks)
@@ -774,28 +774,32 @@ class GraphDataScience:
         """
         Get the database which queries are run against.
 
-        Returns:
+        Returns
+        -------
+        str | None
             The name of the database.
         """
         return self._query_runner.database()
 
-    def bookmarks(self) -> Any | None:
+    def bookmarks(self) -> neo4j.Bookmarks | None:
         """
         Get the Neo4j bookmarks defining the currently required states for queries to execute
 
         Returns
         -------
-        The (possibly None) Neo4j bookmarks defining the currently required state
+        neo4j.Bookmarks | None
+            The Neo4j bookmarks defining the currently required state.
         """
         return self._query_runner.bookmarks()
 
-    def last_bookmarks(self) -> Any | None:
+    def last_bookmarks(self) -> neo4j.Bookmarks | None:
         """
         Get the Neo4j bookmarks defining the state following the most recently called query
 
         Returns
         -------
-        The (possibly None) Neo4j bookmarks defining the state following the most recently called query
+        neo4j.Bookmarks | None
+            The Neo4j bookmarks defining the state following the most recently called query.
         """
         return self._query_runner.last_bookmarks()
 
@@ -820,7 +824,9 @@ class GraphDataScience:
         mode: QueryMode
             the query mode to use (READ or WRITE). Set based on the operation performed in the query.
 
-        Returns:
+        Returns
+        -------
+        pandas.DataFrame
             The query result as a DataFrame
         """
         query_type = QueryType.USER_DIRECTED
@@ -833,7 +839,9 @@ class GraphDataScience:
         """
         Get the configuration used to create the underlying driver used to make queries to Neo4j.
 
-        Returns:
+        Returns
+        -------
+        dict[str, Any]
             The configuration as a dictionary.
         """
         return self._query_runner.driver_config()

@@ -35,11 +35,11 @@ class TrianglesEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
-        label_filter : list[str] | None
+        label_filter
             A list of up to three node labels as strings. Only triangles with nodes having representatives for each specified label will be counted.
         log_progress
             Display progress logging.
-        max_degree : int | None
+        max_degree
             Maximum degree of nodes to consider. Nodes with higher degrees will be excluded.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.

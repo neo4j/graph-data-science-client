@@ -29,7 +29,7 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        flight_client : AuthenticatedArrowClient
+        flight_client
             The authenticated flight client to use for communication with the GDS server. Ownership of the client is transferred to this GdsArrowClient.
         """
         self._flight_client = flight_client
@@ -119,13 +119,13 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the graph
-        database : str
+        database
             The name of the database to which the graph belongs
-        relationship_types : list[str]
+        relationship_types
             The name of the relationship types to retrieve
-        concurrency : int | None
+        concurrency
             The number of threads used on the server side when serving the data
 
         Returns
@@ -198,15 +198,15 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name used to identify the graph in the catalog and the import process
         database: str
             The name of the database from which the graph will be accessible
-        undirected_relationship_types : list[str] | None
+        undirected_relationship_types
             A list of relationship types that should be treated as undirected
-        inverse_indexed_relationship_types : list[str] | None
+        inverse_indexed_relationship_types
             A list of relationship types that should be indexed in reverse direction as well
-        concurrency : int | None
+        concurrency
             The number of threads used on the server side when importing the graph
         """
 
@@ -239,15 +239,15 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name used to identify the graph in the catalog and the import process
         database: str
             The name of the database from which the graph will be accessible
-        undirected_relationship_types : list[str] | None
+        undirected_relationship_types
             A list of relationship types that should be treated as undirected
-        inverse_indexed_relationship_types : list[str] | None
+        inverse_indexed_relationship_types
             A list of relationship types that should be indexed in reverse direction as well
-        concurrency : int | None
+        concurrency
             The number of threads used on the server side when importing the graph
         """
 
@@ -285,13 +285,13 @@ class GdsArrowClient:
         ----------
         database: str
             The name used to identify the database and the import process
-        id_type : str | None
+        id_type
             Sets the node id type used in the input data. Can be either `INTEGER` or `STRING` (default is `INTEGER`)
-        id_property : str | None
+        id_property
             The node property key which stores the node id of the input data (default is `originalId`)
         db_format
             Database format. Valid values standard, aligned, high_limit or block (default is controlled by the db setting `db.db_format`)
-        concurrency : int | None
+        concurrency
             The number of threads used on the server side when importing the graph
         force: bool
             Force deletes any existing database files prior to the import (default is False)
@@ -325,7 +325,7 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the import process
 
         Returns
@@ -343,11 +343,12 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the import process
 
          Returns
-        -------
+         -------
+         RelationshipLoadDoneResult
         RelationshipLoadDoneResult
             A result object containing the name of the import process and the number of relationships loaded
         """
@@ -361,7 +362,7 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the import process
 
         Returns
@@ -377,7 +378,7 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the import process
         """
         self._send_action("ABORT", {"name": graph_name})
@@ -394,13 +395,13 @@ class GdsArrowClient:
 
         Parameters
         ----------
-        graph_name : str
+        graph_name
             The name of the import process
-        node_data : pyarrow.Table | Iterable[pyarrow.RecordBatch] | DataFrame
+        node_data
             The node data to upload
-        batch_size : int
+        batch_size
             The number of rows per batch
-        progress_callback : ProgressCallback
+        progress_callback
             A callback function that is called with the number of rows uploaded after each batch
         """
         self._upload_data(graph_name, "node", node_data, batch_size, progress_callback)
@@ -442,7 +443,7 @@ class GdsArrowClient:
         ----------
         graph_name
             The name of the import process
-        triplet_data : pyarrow.Table | Iterable[pyarrow.RecordBatch] | DataFrame
+        triplet_data
             The triplet data to upload
         batch_size
             The number of rows per batch

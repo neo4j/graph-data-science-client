@@ -82,7 +82,7 @@ class ModelCatalogEndpoints(ABC):
 
         Returns
         -------
-        ModelDetails
+        ModelDetails | None
             The model details after the drop operation when applicable.
         """
 
@@ -99,7 +99,7 @@ class ModelCatalogEndpoints(ABC):
 
         Returns
         -------
-        ModelDeleteResult
+        ModelDeleteResult | None
             The delete result.
         """
 

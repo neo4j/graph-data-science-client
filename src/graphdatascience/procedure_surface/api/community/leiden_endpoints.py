@@ -48,15 +48,15 @@ class LeidenEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        gamma : float
+        gamma
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_levels : int
+        max_levels
             The maximum number of levels
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -70,7 +70,7 @@ class LeidenEndpoints(ABC):
             Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
-        theta : float
+        theta
             The theta parameter for the Leiden algorithm
         tolerance
             Minimum change in scores between iterations.
@@ -116,15 +116,15 @@ class LeidenEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        gamma : float
+        gamma
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_levels : int
+        max_levels
             The maximum number of levels
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -138,7 +138,7 @@ class LeidenEndpoints(ABC):
             Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
-        theta : float
+        theta
             The theta parameter for the Leiden algorithm
         tolerance
             Minimum change in scores between iterations.
@@ -185,15 +185,15 @@ class LeidenEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        gamma : float
+        gamma
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_levels : int
+        max_levels
             The maximum number of levels
         min_community_size
             Minimum size for communities to be included in results.
@@ -209,7 +209,7 @@ class LeidenEndpoints(ABC):
             Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
-        theta : float
+        theta
             The theta parameter for the Leiden algorithm
         tolerance
             Minimum change in scores between iterations.
@@ -260,15 +260,15 @@ class LeidenEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        gamma : float
+        gamma
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate communities
         job_id
             Identifier for the computation.
         log_progress
             Display progress logging.
-        max_levels : int
+        max_levels
             The maximum number of levels
         min_community_size
             Minimum size for communities to be included in results.
@@ -284,7 +284,7 @@ class LeidenEndpoints(ABC):
             Name of the property to be used to for the initial value of a node.
         sudo
             Disable the memory guard.
-        theta : float
+        theta
             The theta parameter for the Leiden algorithm
         tolerance
             Minimum change in scores between iterations.
@@ -326,11 +326,11 @@ class LeidenEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        gamma : float
+        gamma
             The gamma parameter for the Leiden algorithm
-        include_intermediate_communities : bool
+        include_intermediate_communities
             Whether to include intermediate communities
-        max_levels : int
+        max_levels
             The maximum number of levels
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
@@ -342,7 +342,7 @@ class LeidenEndpoints(ABC):
             Name of the property to be used as weights.
         seed_property
             Name of the property to be used to for the initial value of a node.
-        theta : float
+        theta
             The theta parameter for the Leiden algorithm
         tolerance
             Minimum change in scores between iterations.

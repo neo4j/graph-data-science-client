@@ -43,7 +43,7 @@ class SccEndpoints(ABC):
             Number of concurrent threads to use.
         consecutive_ids
             Use consecutive IDs for the components.
-        job_id : str | None
+        job_id
             Identifier for the computation.
         log_progress
             Display progress logging.

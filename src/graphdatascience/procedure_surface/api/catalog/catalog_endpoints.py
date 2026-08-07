@@ -146,11 +146,11 @@ class CatalogEndpoints(ABC):
         ----------
         G
            Graph object to use
-        graph_name (str):
+        graph_name
             Name of subgraph to create
-        node_filter (str):
+        node_filter
             Filter expression for nodes
-        relationship_filter (str):
+        relationship_filter
             Filter expression for relationships
         parameters
             A map of user-defined query parameters that are passed into the node and relationship filters.
@@ -167,7 +167,7 @@ class CatalogEndpoints(ABC):
 
         Returns
         -------
-        GraphWithFilterResult:
+        GraphWithFilterResult
             tuple of the filtered graph object and the information like graph name, node count, relationship count, etc.
         """
         pass
@@ -227,7 +227,7 @@ class CatalogEndpoints(ABC):
 
         Returns
         -------
-        GraphGenerationStats:
+        GraphWithGenerationStats
             tuple of the generated graph object and the result object containing stats about the generation.
         """
 

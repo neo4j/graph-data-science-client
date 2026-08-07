@@ -38,13 +38,13 @@ class CelfEndpoints(ABC):
         ----------
         G
            Graph object to use
-        seed_set_size : int
+        seed_set_size
             The number of nodes to select as the seed set for influence maximization
         mutate_property
             Name of the node property to store the results in.
-        propagation_probability : float | None
+        propagation_probability
             Probability of a node being activated by an active neighbour node.
-        monte_carlo_simulations : int | None
+        monte_carlo_simulations
             Number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -95,11 +95,11 @@ class CelfEndpoints(ABC):
         ----------
         G
            Graph object to use
-        seed_set_size : int
+        seed_set_size
             The number of nodes to select as the seed set for influence maximization
-        propagation_probability : float | None
+        propagation_probability
             Probability of a node being activated by an active neighbour node.
-        monte_carlo_simulations : int | None
+        monte_carlo_simulations
             Number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -148,11 +148,11 @@ class CelfEndpoints(ABC):
         ----------
         G
            Graph object to use
-        seed_set_size : int
+        seed_set_size
             The number of nodes to select as the seed set for influence maximization
-        propagation_probability : float | None
+        propagation_probability
             The probability that influence spreads from one node to another.
-        monte_carlo_simulations : int | None
+        monte_carlo_simulations
             The number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -206,13 +206,13 @@ class CelfEndpoints(ABC):
         ----------
         G
            Graph object to use
-        seed_set_size : int
+        seed_set_size
             The number of nodes to select as the seed set for influence maximization
         write_property
             Name of the node property to store the results in.
-        propagation_probability : float | None
+        propagation_probability
             Probability of a node being activated by an active neighbour node.
-        monte_carlo_simulations : int | None
+        monte_carlo_simulations
             Number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -257,11 +257,11 @@ class CelfEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        seed_set_size : int
+        seed_set_size
             The number of nodes to select as the seed set for influence maximization.
-        propagation_probability : float
+        propagation_probability
             The probability that influence spreads from one node to another.
-        monte_carlo_simulations : int
+        monte_carlo_simulations
             The number of Monte-Carlo simulations.
         random_seed
             Seed for random number generation to ensure reproducible results.

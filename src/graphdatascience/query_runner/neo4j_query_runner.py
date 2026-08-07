@@ -33,7 +33,7 @@ class Neo4jQueryRunner(QueryRunner):
         auth: tuple[str, str] | neo4j.Auth | None = None,
         aura_ds: bool = False,
         database: str | None = None,
-        bookmarks: Any | None = None,
+        bookmarks: neo4j.Bookmarks | None = None,
         show_progress: bool = True,
         config: dict[str, Any] | None = None,
     ) -> Neo4jQueryRunner:
@@ -125,7 +125,7 @@ class Neo4jQueryRunner(QueryRunner):
         config: dict[str, Any] = {},
         database: str | None = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
-        bookmarks: Any | None = None,
+        bookmarks: neo4j.Bookmarks | None = None,
         show_progress: bool = True,
         instance_description: str = "Neo4j DBMS",
     ):
@@ -137,7 +137,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._database = database
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
-        self._last_bookmarks: Any | None = None
+        self._last_bookmarks: neo4j.Bookmarks | None = None
         self._server_version: ServerVersion | None = None
         self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(self.__run_cypher_simplified_for_query_progress_logger)
