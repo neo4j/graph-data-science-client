@@ -73,7 +73,7 @@ Cypher API reference: link:{gds-docs-base-uri}/management-ops/projections/graph-
 G, result = gds.graph.project.native(
     graph_name="offices",                # Graph name
     node_label_filter=["City"],          # Node projection
-    relationship_type_filter=["FLY_TO"], # Relatioinship projection
+    relationship_type_filter=["FLY_TO"], # Relationship projection
     node_properties=["population"]       # Node properties
     relationship_properties=["cost"]     # Relationship properties
 )
@@ -89,7 +89,7 @@ You can use the wildcard * in the node_label_filter or relationship_type_filter 
 G, result = gds.graph.project.native(
     graph_name="offices",         # Graph name
     node_projection=["City"],           # Node projection
-    relationship_projection=["FLY_TO"], # Relatioinship projection
+    relationship_projection=["FLY_TO"], # Relationship projection
     node_properties=["population"],     # Node properties
     relationship_properties=["cost"],   # Relationship properties
     read_concurrency=4                  # Configuration
