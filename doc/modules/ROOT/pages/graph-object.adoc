@@ -46,6 +46,7 @@ gds.run_cypher(
 
 [[estimate-memory]]
 === Estimate memory
+
 [source,python,group=graph-project]
 ----
 res = gds.graph.project.estimate(
