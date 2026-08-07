@@ -19,6 +19,7 @@ include::partial$tutorial-list.adoc[]
 ** xref:load-from-networkx.adoc[]
 * xref:read-graph.adoc[]
 * xref:algorithms.adoc[]
+* xref:async-execution.adoc[]
 * xref:bookmarks.adoc[]
 
 * *Machine learning*
