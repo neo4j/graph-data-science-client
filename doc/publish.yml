@@ -10,7 +10,7 @@ content:
     start_path: doc
     # Includes previous version and current.
     # Does not include preview (main) as it is no longer necessary.
-    branches: ['1.19', '1.20', '1.21', '1.22']
+    branches: ['1.19', '1.20', '1.21', '1.22', 'HEAD']
     include: doc/
     exclude:
     - '!**/_includes/*'
