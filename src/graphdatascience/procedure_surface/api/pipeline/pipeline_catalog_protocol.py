@@ -12,6 +12,7 @@ class PipelineCatalogEntryProtocol(Protocol):
     """
     Represents a pipeline in the catalog.
     """
+
     pipeline_name: str
     pipeline_type: str
 
