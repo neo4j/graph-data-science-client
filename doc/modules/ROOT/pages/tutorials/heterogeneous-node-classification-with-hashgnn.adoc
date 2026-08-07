@@ -285,8 +285,7 @@ found was logistic regression with `penalty=0.159748`.
 
 Further we note that the test set F1 score is 0.59118347, which is
 really good to when comparing to scores of other algorithms on this
-dataset in the literature. More on this in the
-link:#Conclusion[Conclusion] section below.
+dataset in the literature. More on this in the Conclusion section below.
 
 == Making new predictions
 
