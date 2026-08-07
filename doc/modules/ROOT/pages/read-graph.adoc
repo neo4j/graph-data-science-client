@@ -39,10 +39,10 @@ The methods to read node and relationship properties from a graph are the same a
 
 Assuming the `GraphDataScience` object is called `gds`:
 
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.streamNodeProperty`) returns a single node property
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_properties.stream`] (previously `gds.graph.streamNodeProperties`) returns multiple node properties
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.streamRelationshipProperty`) returns a single relationship property
-* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.streamRelationshipProperties`) returns multiple relationship properties
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_property.stream`] (previously `gds.graph.nodeProperty.stream`) returns a single node property
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-nodes/[`gds.graph.node_properties.stream`] (previously `gds.graph.nodeProperties.stream`) returns multiple node properties
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_property.stream`] (previously `gds.graph.relationshipProperty.stream`) returns a single relationship property
+* link:{gds-docs-base-uri}/management-ops/graph-reads/graph-stream-relationships/[`gds.graph.relationship_properties.stream`] (previously `gds.graph.relationshipProperties.stream`) returns multiple relationship properties
 
 [.tabbed-example]
 ====

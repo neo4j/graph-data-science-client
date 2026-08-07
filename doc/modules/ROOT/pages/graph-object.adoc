@@ -46,18 +46,6 @@ gds.run_cypher(
 )
 ----
 
-Before projecting a graph, it is useful to estimate its memory requirements to correctly size a server or an Aura Graph Analytics session.
-
-[source,python,group=graph-project]
-----
-res = gds.graph.project.estimate(
-    ["City"],                   #  Node projection
-    "FLY_TO",                   #  Relationship projection
-    read_concurrency=4          #  Configuration parameters
-)
-assert res.bytes_max < 1e12
-----
-
 [[native-projection]]
 === Native projection
 
@@ -109,8 +97,6 @@ Read more about the syntax in the link:{gds-docs-base-uri}/management-ops/projec
 === Cypher Projection
 
 The Cypher projection in the client is similar to its link:{gds-docs-base-uri}/management-ops/projections/graph-project-cypher-projection/[Cypher API] counterpart.
-
-It requires writing a Cypher query that calls the `gds.graph.project` aggregation function, and it is equivalent to running `gds.run_cypher` followed by `gds.graph.get`.
 
 [.tabbed-example]
 ====
