@@ -1,16 +1,15 @@
 = Create a graph
 
-The main entry point to every graph operation is the _in-memory graph_.
+The main entry point to every graph operation is the link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] object.
 
-There are several ways to create an in-memory graph with the Python client:
+There are several ways to create a graph with the Python client:
 
 * From a Neo4j database with a <<projection, graph projection>>
 * From an existing in-memory graph or a distribution (see <<other-creation-methods>>)
 * [[construct]] From xref:load-from-pandas.adoc[Pandas DataFrames] with the `construct` method
 * [[networkx]] From a xref:load-from-networkx.adoc[NetworkX graph]
 
-Once created, a link:{gds-api-uri}/endpoints/graph/#graphdatascience.graph.graph_api.Graph[`Graph`] object can be used to run algorithms or train machine learning models.
-Additionally, `Graph` objects have convenience methods allowing for inspection of the projected graph represented without explicitly involving the graph catalog.
+Once created, the `Graph` object can be used to inspect the projected graph, run algorithms, or train machine learning models.
 
 [[projection]]
 == Neo4j graph projection
