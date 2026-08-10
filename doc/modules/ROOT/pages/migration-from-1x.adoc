@@ -22,7 +22,7 @@ This page describes the changes needed to migrate code written against the 1.x s
 
 == Migrating from the `gds.v2` preview prefix
 
-If your code already uses the V2 endpoints via the `gds.v2` prefix, migration only requires dropping the prefix:
+If your code already uses the V2 endpoints via the `gds.v2` prefix, migration mostly requires dropping the prefix:
 
 [source, python, role=no-test]
 ----
@@ -33,7 +33,7 @@ result = gds.v2.page_rank.stream(G, damping_factor=0.5)
 result = gds.page_rank.stream(G, damping_factor=0.5)
 ----
 
-All other semantics are unchanged.
+This is sufficient for most endpoints. Graph projections are the exception: the projection endpoints change shape starting with the 2.0 release, so projection code must be updated as described in <<graph-projections,Graph projections>>, even if you're already on `gds.v2`.
 
 
 == Migrating from the 1.x default API
@@ -90,6 +90,7 @@ millis = result.write_millis
 |===
 
 
+[[graph-projections]]
 === Graph projections
 
 The projection endpoints have been renamed to make the projection type explicit:
