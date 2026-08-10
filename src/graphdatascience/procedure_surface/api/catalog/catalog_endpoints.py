@@ -25,6 +25,20 @@ from graphdatascience.procedure_surface.api.catalog.relationship_property_endpoi
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import RelationshipsEndpoints
 
 
+def validate_distinct_from_source(graph_name: str, source_graph: Graph) -> None:
+    """Raise ``ValueError`` if the target graph name equals the source graph's name.
+
+    Creating a derived graph (e.g. a filter or sample) with the same name as the graph it
+    is derived from would overwrite the source mid-operation.
+    """
+    source_name = source_graph.name()
+    if graph_name == source_name:
+        raise ValueError(
+            f"The target graph name '{graph_name}' must not equal the source graph name '{source_name}', "
+            "as this would overwrite the graph being read from."
+        )
+
+
 class CatalogEndpoints(ABC):
     @abstractmethod
     def get(self, graph_name: str) -> Graph:
@@ -68,6 +82,7 @@ class CatalogEndpoints(ABC):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int = 100000,
+        overwrite: bool = False,
     ) -> Graph:
         """Construct a graph from a list of node and relationship dataframes.
 
@@ -96,6 +111,9 @@ class CatalogEndpoints(ABC):
             List of relationship types for which to create an inverse index.
         batch_size
             Batch size to use when sending data to GDS.
+        overwrite
+            If `True`, drop an existing graph with the same name before constructing the new one.
+            Defaults to `False`.
 
         Returns
         -------
@@ -139,6 +157,7 @@ class CatalogEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
@@ -164,6 +183,9 @@ class CatalogEndpoints(ABC):
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        overwrite
+            If `True`, drop an existing graph with the same name before creating the filtered subgraph.
+            Defaults to `False`.
 
         Returns
         -------
@@ -190,6 +212,7 @@ class CatalogEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithGenerationStats:
         """
         Generates a random graph and store it in the graph catalog.
@@ -224,6 +247,9 @@ class CatalogEndpoints(ABC):
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        overwrite
+            If `True`, drop an existing graph with the same name before generating the new one.
+            Defaults to `False`.
 
         Returns
         -------

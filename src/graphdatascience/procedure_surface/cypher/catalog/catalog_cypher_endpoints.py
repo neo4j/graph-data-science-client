@@ -23,6 +23,7 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithFilterResult,
     GraphWithGenerationStats,
     RelationshipPropertySpec,
+    validate_distinct_from_source,
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
@@ -42,6 +43,7 @@ from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpo
 from graphdatascience.procedure_surface.cypher.catalog.utils import (
     GRAPH_INFO_WITH_DEGREES_YIELDS,
     GRAPH_INFO_YIELDS,
+    drop_graph_if_exists,
     require_database,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
@@ -74,7 +76,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int = 100000,
+        overwrite: bool = False,
     ) -> Graph:
+        if overwrite:
+            drop_graph_if_exists(self._cypher_runner, graph_name)
+
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
         if relationships is None:
@@ -184,7 +190,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithFilterResult:
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            drop_graph_if_exists(self._cypher_runner, graph_name)
+
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             jobId=job_id,
@@ -225,7 +236,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithGenerationStats:
+        if overwrite:
+            drop_graph_if_exists(self._cypher_runner, graph_name)
+
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,
             relationship_seed=relationship_seed,

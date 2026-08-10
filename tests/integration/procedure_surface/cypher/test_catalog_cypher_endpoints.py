@@ -279,3 +279,92 @@ def test_graph_construct_arrow_v1(catalog_endpoints_arrow: CatalogCypherEndpoint
         assert G.node_count() == 2
         assert G.relationship_count() == 2
         assert "REL" in G.relationship_types()
+
+
+def test_projection_overwrite_replaces_existing(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+    try:
+        catalog_endpoints.project.native("g2", ["A", "B"], "REL")
+        assert catalog_endpoints.exists("g2")
+
+        # Re-projecting the same name with a narrower projection + overwrite replaces the graph.
+        G, result = catalog_endpoints.project.native("g2", ["A"], "REL", overwrite=True)
+
+        assert G.name() == "g2"
+        assert result.node_count == 2
+        assert catalog_endpoints.exists("g2")
+    finally:
+        catalog_endpoints.drop("g2", fail_if_missing=False)
+
+
+def test_projection_without_overwrite_fails_on_existing_name(
+    catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph
+) -> None:
+    try:
+        catalog_endpoints.project.native("g2", ["A", "B"], "REL")
+        with pytest.raises(Exception):
+            catalog_endpoints.project.native("g2", ["A"], "REL")
+    finally:
+        catalog_endpoints.drop("g2", fail_if_missing=False)
+
+
+def test_graph_generate_overwrite(catalog_endpoints: CatalogCypherEndpoints) -> None:
+    try:
+        catalog_endpoints.generate(
+            "gen_ov",
+            node_count=10,
+            average_degree=4,
+            relationship_seed=42,
+            sudo=True,
+            log_progress=False,
+            username="neo4j",
+        )
+
+        G, result = catalog_endpoints.generate(
+            "gen_ov",
+            node_count=20,
+            average_degree=4,
+            relationship_seed=42,
+            sudo=True,
+            log_progress=False,
+            username="neo4j",
+            overwrite=True,
+        )
+
+        assert result.name == "gen_ov"
+        assert result.nodes == 20
+    finally:
+        catalog_endpoints.drop("gen_ov", fail_if_missing=False)
+
+
+@pytest.mark.filterwarnings("ignore: .*use Apache Arrow.*")
+def test_graph_construct_overwrite(catalog_endpoints: CatalogCypherEndpoints) -> None:
+    try:
+        nodes1 = DataFrame({"nodeId": [0, 1], "labels": [["A"], ["A"]]})
+        G1 = catalog_endpoints.construct("cg_ov", nodes=nodes1, relationships=[])
+        assert G1.node_count() == 2
+
+        nodes2 = DataFrame({"nodeId": [0, 1, 2], "labels": [["A"], ["A"], ["A"]]})
+        G2 = catalog_endpoints.construct("cg_ov", nodes=nodes2, relationships=[], overwrite=True)
+        assert G2.node_count() == 3
+    finally:
+        catalog_endpoints.drop("cg_ov", fail_if_missing=False)
+
+
+def test_graph_filter_overwrite(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
+    try:
+        _, r1 = catalog_endpoints.filter(
+            sample_graph, graph_name="filt_ov", node_filter="n:A", relationship_filter="FALSE"
+        )
+        assert r1.node_count == 2
+
+        _, r2 = catalog_endpoints.filter(
+            sample_graph,
+            graph_name="filt_ov",
+            node_filter="n:Node",
+            relationship_filter="FALSE",
+            overwrite=True,
+        )
+        assert r2.graph_name == "filt_ov"
+        assert r2.node_count == 3
+    finally:
+        catalog_endpoints.drop("filt_ov", fail_if_missing=False)

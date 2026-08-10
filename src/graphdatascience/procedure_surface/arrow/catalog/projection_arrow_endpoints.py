@@ -51,6 +51,7 @@ class ProjectArrowEndpoints:
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
+        overwrite: bool = False,
     ) -> GraphWithProjectResult:
         """
         Projects a graph from the Neo4j database into the GDS graph catalog using Cypher projection.
@@ -76,6 +77,9 @@ class ProjectArrowEndpoints:
             Number of rows to process in each batch when projecting the graph.
         logging
             Whether to log progress during graph projection.
+        overwrite
+            If `True`, drop an existing graph with the same name before projecting the new one.
+            Defaults to `False`.
         Returns
         -------
         GraphWithProjectResult
@@ -83,6 +87,9 @@ class ProjectArrowEndpoints:
         """
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_backend.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
@@ -114,6 +121,7 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
+        overwrite: bool = False,
     ) -> ProjectionJobHandle:
         """Kick off a cypher graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
@@ -122,6 +130,9 @@ class ProjectArrowEndpoints:
         """
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_backend.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
 
@@ -156,6 +167,7 @@ class ProjectArrowEndpoints:
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
+        overwrite: bool = False,
     ) -> GraphWithProjectResult:
         """
         Projects a graph from the Neo4j database into the GDS graph catalog.
@@ -184,6 +196,9 @@ class ProjectArrowEndpoints:
             Number of rows to process in each batch when projecting the graph.
         logging
             Whether to log progress during graph projection.
+        overwrite
+            If `True`, drop an existing graph with the same name before projecting the new one.
+            Defaults to `False`.
         Returns
         -------
         GraphWithProjectResult
@@ -194,6 +209,9 @@ class ProjectArrowEndpoints:
 
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_backend.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
@@ -232,6 +250,7 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
+        overwrite: bool = False,
     ) -> ProjectionJobHandle:
         """Kick off a native graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
@@ -241,6 +260,9 @@ class ProjectArrowEndpoints:
         """
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_backend.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
 

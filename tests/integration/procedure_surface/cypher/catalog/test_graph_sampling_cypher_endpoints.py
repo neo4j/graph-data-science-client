@@ -3,6 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
@@ -90,3 +91,37 @@ def test_cnarw_estimate(graph_sampling_endpoints: GraphSamplingCypherEndpoints, 
     assert result.bytes_max >= 0
     assert result.heap_percentage_min >= 0
     assert result.heap_percentage_max >= 0
+
+
+def test_rwr_overwrite_replaces_existing(
+    graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+) -> None:
+    try:
+        graph_sampling_endpoints.rwr(G=sample_graph, graph_name="rwr_ov", sampling_ratio=0.6)
+
+        G, result = graph_sampling_endpoints.rwr(
+            G=sample_graph, graph_name="rwr_ov", sampling_ratio=0.8, overwrite=True
+        )
+
+        assert result.graph_name == "rwr_ov"
+        assert result.from_graph_name == sample_graph.name()
+        assert result.node_count > 0
+    finally:
+        get_graph("rwr_ov", query_runner).drop(fail_if_missing=False)
+
+
+def test_cnarw_overwrite_replaces_existing(
+    graph_sampling_endpoints: GraphSamplingCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+) -> None:
+    try:
+        graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="cnarw_ov", sampling_ratio=0.6)
+
+        G, result = graph_sampling_endpoints.cnarw(
+            G=sample_graph, graph_name="cnarw_ov", sampling_ratio=0.8, overwrite=True
+        )
+
+        assert result.graph_name == "cnarw_ov"
+        assert result.from_graph_name == sample_graph.name()
+        assert result.node_count > 0
+    finally:
+        get_graph("cnarw_ov", query_runner).drop(fail_if_missing=False)

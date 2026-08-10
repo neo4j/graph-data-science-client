@@ -1,3 +1,5 @@
+from graphdatascience.call_parameters import CallParameters
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 
 # Fields of `GraphInfo`. Yielded explicitly to skip the deprecated `schema` column,
@@ -30,3 +32,15 @@ def require_database(query_runner: QueryRunner) -> str:
         )
 
     return database
+
+
+def drop_graph_if_exists(cypher_runner: QueryRunner, graph_name: str) -> None:
+    """Idempotently drop a graph, ignoring it if it does not exist."""
+    cypher_runner.call_procedure(
+        endpoint="gds.graph.drop",
+        params=CallParameters(graphName=graph_name, failIfMissing=False),
+        yields=GRAPH_INFO_YIELDS,
+        # dropping is idempotent as long as a missing graph is not an error
+        retryable=True,
+        mode=QueryMode.WRITE,
+    )

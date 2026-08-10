@@ -9,6 +9,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
+from graphdatascience.procedure_surface.cypher.catalog.utils import drop_graph_if_exists
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -87,8 +88,12 @@ class ProjectCypherEndpoints:
         sudo: bool = False,
         username: str | None = None,
         log_progress: bool = True,
+        overwrite: bool = False,
     ) -> GraphWithProjectResult:
         """Project a graph into the catalog using a native projection (``gds.graph.project``)."""
+        if overwrite:
+            drop_graph_if_exists(self._cypher_runner, graph_name)
+
         config = ConfigConverter.convert_to_gds_config(
             nodeProperties=node_properties,
             relationshipProperties=relationship_properties,

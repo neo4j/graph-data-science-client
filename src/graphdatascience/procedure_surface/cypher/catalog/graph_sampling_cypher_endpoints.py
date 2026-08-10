@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import validate_distinct_from_source
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
@@ -10,6 +11,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints imp
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
+from graphdatascience.procedure_surface.cypher.catalog.utils import drop_graph_if_exists
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -36,7 +38,12 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            drop_graph_if_exists(self._query_runner, graph_name)
+
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,
             restart_probability=restart_probability,
@@ -85,7 +92,12 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            drop_graph_if_exists(self._query_runner, graph_name)
+
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,
             restart_probability=restart_probability,

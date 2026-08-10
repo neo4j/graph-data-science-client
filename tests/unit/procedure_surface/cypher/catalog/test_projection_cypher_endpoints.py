@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 import pandas as pd
 import pytest
 
@@ -17,6 +19,45 @@ def _aggregation_row() -> dict[str, object]:
         "configuration": {"readConcurrency": 4},
         "query": "RETURN gds.graph.project(...)",
     }
+
+
+def _drop_row() -> dict[str, object]:
+    return {
+        "graphName": "g",
+        "database": "dummy",
+        "databaseLocation": "local",
+        "configuration": {},
+        "memoryUsage": "1 KiB",
+        "sizeInBytes": 1024,
+        "nodeCount": 3,
+        "relationshipCount": 4,
+        "creationTime": datetime(2024, 1, 1),
+        "modificationTime": datetime(2024, 1, 2),
+        "schemaWithOrientation": {"nodes": {"Node": {}}, "relationships": {"REL": {}}},
+        "density": 0.25,
+    }
+
+
+def _project_row() -> dict[str, object]:
+    return {
+        "graphName": "g",
+        "nodeCount": 3,
+        "relationshipCount": 4,
+        "projectMillis": 42,
+        "nodeProjection": {"Node": {}},
+        "relationshipProjection": {"REL": {}},
+    }
+
+
+def _project_endpoints() -> tuple[ProjectCypherEndpoints, CollectingQueryRunner]:
+    runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {
+            "gds.graph.drop": pd.DataFrame([_drop_row()]),
+            "gds.graph.project": pd.DataFrame([_project_row()]),
+        },
+    )
+    return ProjectCypherEndpoints(runner), runner
 
 
 def test_cypher_projection_returns_graph_and_typed_result() -> None:
@@ -48,3 +89,27 @@ def test_cypher_projection_rejects_non_aggregation_result() -> None:
 
     with pytest.raises(ValueError, match="must end with a single"):
         endpoints.cypher("RETURN 1 AS a, 2 AS b")
+
+
+def test_native_overwrite_drops_existing_graph_first() -> None:
+    endpoints, runner = _project_endpoints()
+
+    endpoints.native("g", "Node", "REL", overwrite=True)
+
+    assert "gds.graph.drop" in runner.queries[0]
+    assert "gds.graph.project" in runner.queries[1]
+
+    drop_params = runner.params[0]
+    assert drop_params["graphName"] == "g"
+    assert drop_params["failIfMissing"] is False
+    assert runner.run_args[0]["retryable"] is True
+    assert runner.run_args[0]["mode"] == QueryMode.WRITE
+
+
+def test_native_does_not_drop_by_default() -> None:
+    endpoints, runner = _project_endpoints()
+
+    endpoints.native("g", "Node", "REL")
+
+    assert not any("gds.graph.drop" in q for q in runner.queries)
+    assert any("gds.graph.project" in q for q in runner.queries)

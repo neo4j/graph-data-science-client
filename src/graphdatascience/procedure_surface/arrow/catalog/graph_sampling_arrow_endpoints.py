@@ -3,6 +3,7 @@ from __future__ import annotations
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import validate_distinct_from_source
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import (
     GraphSamplingEndpoints,
     GraphSamplingResult,
@@ -11,6 +12,7 @@ from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints imp
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
+from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 
@@ -20,6 +22,7 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         self._arrow_client = arrow_client
         self._show_progress = show_progress
         self._helper = EndpointsHelperBase(arrow_client, show_progress=show_progress)
+        self._graph_backend = GraphOpsArrow(arrow_client)
 
     def rwr(
         self,
@@ -38,7 +41,12 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            self._graph_backend.drop(graph_name, fail_if_missing=False)
+
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -84,7 +92,12 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            self._graph_backend.drop(graph_name, fail_if_missing=False)
+
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
