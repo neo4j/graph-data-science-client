@@ -42,7 +42,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
     ) -> GraphWithSamplingResult:
         validate_distinct_from_source(graph_name, G)
         if overwrite:
-            drop_graph_if_exists(self._query_runner, graph_name)
+            drop_graph_if_exists(self._query_runner, graph_name, username=username)
 
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,
@@ -96,7 +96,7 @@ class GraphSamplingCypherEndpoints(GraphSamplingEndpoints):
     ) -> GraphWithSamplingResult:
         validate_distinct_from_source(graph_name, G)
         if overwrite:
-            drop_graph_if_exists(self._query_runner, graph_name)
+            drop_graph_if_exists(self._query_runner, graph_name, username=username)
 
         config = ConfigConverter.convert_to_gds_config(
             start_nodes=start_nodes,

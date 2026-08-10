@@ -119,3 +119,29 @@ def test_cnarw_does_not_drop_by_default() -> None:
 
     assert not any("gds.graph.drop" in q for q in runner.queries)
     assert any("gds.graph.sample.cnarw" in q for q in runner.queries)
+
+
+def test_rwr_overwrite_drops_as_impersonated_user() -> None:
+    endpoints, runner = _endpoints()
+    G = get_graph("g", runner)
+
+    endpoints.rwr(G, "sampled", overwrite=True, username="alice")
+
+    drop_params = runner.params[0]
+    assert drop_params["graphName"] == "sampled"
+    assert drop_params["failIfMissing"] is False
+    assert drop_params["username"] == "alice"
+    assert drop_params["dbName"] == ""
+
+
+def test_cnarw_overwrite_drops_as_impersonated_user() -> None:
+    endpoints, runner = _endpoints()
+    G = get_graph("g", runner)
+
+    endpoints.cnarw(G, "sampled", overwrite=True, username="alice")
+
+    drop_params = runner.params[0]
+    assert drop_params["graphName"] == "sampled"
+    assert drop_params["failIfMissing"] is False
+    assert drop_params["username"] == "alice"
+    assert drop_params["dbName"] == ""

@@ -194,7 +194,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     ) -> GraphWithFilterResult:
         validate_distinct_from_source(graph_name, G)
         if overwrite:
-            drop_graph_if_exists(self._cypher_runner, graph_name)
+            drop_graph_if_exists(self._cypher_runner, graph_name, username=username)
 
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -239,7 +239,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         overwrite: bool = False,
     ) -> GraphWithGenerationStats:
         if overwrite:
-            drop_graph_if_exists(self._cypher_runner, graph_name)
+            drop_graph_if_exists(self._cypher_runner, graph_name, username=username)
 
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,

@@ -228,3 +228,42 @@ def test_filter_rejects_name_equal_to_source_graph() -> None:
         endpoints.filter(G, "g", "true", "true", overwrite=True)
 
     assert not any("gds.graph.drop" in q for q in runner.queries)
+
+
+def test_generate_overwrite_drops_as_impersonated_user() -> None:
+    runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {
+            "gds.graph.drop": pd.DataFrame([_drop_row()]),
+            "gds.graph.generate": pd.DataFrame([_generate_row()]),
+        },
+    )
+    endpoints = CatalogCypherEndpoints(runner)
+
+    endpoints.generate("g", 4, 2.5, overwrite=True, username="alice")
+
+    drop_params = runner.params[0]
+    assert drop_params["graphName"] == "g"
+    assert drop_params["failIfMissing"] is False
+    assert drop_params["username"] == "alice"
+    assert drop_params["dbName"] == ""
+
+
+def test_filter_overwrite_drops_as_impersonated_user() -> None:
+    runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {
+            "gds.graph.drop": pd.DataFrame([_drop_row()]),
+            "gds.graph.filter": pd.DataFrame([_filter_row()]),
+        },
+    )
+    endpoints = CatalogCypherEndpoints(runner)
+    G = get_graph("g", runner)
+
+    endpoints.filter(G, "filtered", "true", "true", overwrite=True, username="alice")
+
+    drop_params = runner.params[0]
+    assert drop_params["graphName"] == "filtered"
+    assert drop_params["failIfMissing"] is False
+    assert drop_params["username"] == "alice"
+    assert drop_params["dbName"] == ""
