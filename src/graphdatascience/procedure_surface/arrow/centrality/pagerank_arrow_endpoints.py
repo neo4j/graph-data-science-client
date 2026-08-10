@@ -56,11 +56,11 @@ class PageRankArrowEndpoints(PageRankEndpoints):
         ----------
         G
            Graph object to use
-        damping_factor : float
+        damping_factor
             Probability of a jump to a random node.
         tolerance
             Minimum change in scores between iterations.
-        max_iterations : int
+        max_iterations
             Maximum number of iterations to run.
         scaler
             The scaler to use. Can be:
@@ -82,7 +82,7 @@ class PageRankArrowEndpoints(PageRankEndpoints):
             Identifier for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
-        source_nodes : int | list[int] | list[tuple[int, float]] | None, default=None
+        source_nodes
             node ids to use as starting points. Can be:
             - single node id (e.g., 42)
             - list of node id (e.g., [42, 43, 44])

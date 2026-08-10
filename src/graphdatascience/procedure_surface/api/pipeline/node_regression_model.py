@@ -60,7 +60,7 @@ class NodeRegressionModel(PipelineModel):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The prediction results as a DataFrame.
         """
         return self._predict_endpoints.stream(

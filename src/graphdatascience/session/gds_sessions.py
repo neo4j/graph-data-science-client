@@ -160,7 +160,9 @@ class GdsSessions:
         """
         Retrieves the list of available cloud locations in Aura.
 
-        Returns:
+        Returns
+        -------
+        list[CloudLocation]
             Set[CloudLocation]: The list of available cloud locations.
         """
         return list(self._aura_api.project_details().cloud_locations)
@@ -188,13 +190,15 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory | SessionMemoryValue | str): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo | None): The database connection information.
-            ttl: (timedelta | None): The sessions time to live after inactivity in seconds.
+            ttl (datetime.timedelta | None): The sessions time to live after inactivity in seconds.
             cloud_location (CloudLocation | None): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client.
             show_progress (bool): Whether the returned client should print its own job-progress bars (projection, algorithm execution, ...). Defaults to True.
-        Returns:
+        Returns
+        -------
+        AuraGraphDataScience
             AuraGraphDataScience: The session.
         """
         if isinstance(memory, str) or isinstance(memory, SessionMemoryValue):
@@ -273,7 +277,9 @@ class GdsSessions:
             session_name: the name of the session to delete
             session_id: the id of the session to delete
 
-        Returns:
+        Returns
+        -------
+        bool
             True iff a session was deleted as a result of this call.
         """
         if not session_name and not session_id:
@@ -307,7 +313,9 @@ class GdsSessions:
             start_date: Optional lower bound for session creation timestamp.
             end_date: Optional upper bound for session creation timestamp.
 
-        Returns:
+        Returns
+        -------
+        list[SessionInfo]
             A list of SessionInfo objects representing the GDS sessions.
         """
         sessions = self._aura_api.list_sessions(

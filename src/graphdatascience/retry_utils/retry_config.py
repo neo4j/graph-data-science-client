@@ -51,7 +51,7 @@ class RetryConfigV2(
 
         Returns
         -------
-        Callable
+        Callable[[WrappedFn], WrappedFn]
             A decorator that can be applied to functions to add retry behavior.
 
         Examples

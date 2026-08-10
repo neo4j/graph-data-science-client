@@ -41,7 +41,7 @@ class KCoreEndpoints(ABC):
             Name of the node property to store the results in.
         concurrency
             Number of concurrent threads to use.
-        job_id : str | None, default=None
+        job_id
             Identifier for the computation.
         log_progress
             Display progress logging.
@@ -140,7 +140,7 @@ class KCoreEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results containing nodeId and coreValue
         """
         pass

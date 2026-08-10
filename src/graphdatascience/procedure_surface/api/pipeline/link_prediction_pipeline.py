@@ -25,7 +25,7 @@ class LinkPredictionPipeline:
     """
     Represents a link prediction training pipeline.
 
-    Construct this using :func:`gds.v2.pipeline.link_prediction.create()`.
+    Construct this using `gds.v2.pipeline.link_prediction.create()`.
     """
 
     def __init__(

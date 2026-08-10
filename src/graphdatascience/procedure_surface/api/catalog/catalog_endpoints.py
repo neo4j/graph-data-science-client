@@ -33,7 +33,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            The name of the graph.
+            Name of the graph
 
         Returns
         -------
@@ -49,7 +49,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            The name of the graph.
+            Name of the graph
 
         Returns
         -------
@@ -74,7 +74,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            Name of the graph to construct
+            Name of the graph to be created
         nodes
             Node dataframes. A dataframe should follow the schema:
 
@@ -146,11 +146,11 @@ class CatalogEndpoints(ABC):
         ----------
         G
            Graph object to use
-        graph_name (str):
-            Name of subgraph to create
-        node_filter (str):
+        graph_name
+            Name of the graph to be created
+        node_filter
             Filter expression for nodes
-        relationship_filter (str):
+        relationship_filter
             Filter expression for relationships
         parameters
             A map of user-defined query parameters that are passed into the node and relationship filters.
@@ -167,7 +167,7 @@ class CatalogEndpoints(ABC):
 
         Returns
         -------
-        GraphWithFilterResult:
+        GraphWithFilterResult
             tuple of the filtered graph object and the information like graph name, node count, relationship count, etc.
         """
         pass
@@ -197,7 +197,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            Name of the generated graph.
+            Name of the graph to be created
         node_count
             The number of nodes in the generated graph
         average_degree
@@ -227,7 +227,7 @@ class CatalogEndpoints(ABC):
 
         Returns
         -------
-        GraphGenerationStats:
+        GraphWithGenerationStats
             tuple of the generated graph object and the result object containing stats about the generation.
         """
 

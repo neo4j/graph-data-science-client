@@ -74,21 +74,21 @@ class NodeSimilarityArrowEndpoints(NodeSimilarityEndpoints):
            Graph object to use
         top_k
             Number of most similar nodes to return for each node.
-        bottom_k : int, default=10
+        bottom_k
             The maximum number of neighbors with the lowest similarity scores to compute per node.
-        top_n : int, default=0
+        top_n
             The maximum number of neighbors to select globally based on similarity scores.
-        bottom_n : int, default=0
+        bottom_n
             The maximum number of neighbors to select globally based on lowest similarity scores.
         similarity_cutoff
             The threshold for similarity scores.
-        degree_cutoff : int, default=1
+        degree_cutoff
             The minimum degree a node must have to be considered.
-        upper_degree_cutoff : int, default=2147483647
+        upper_degree_cutoff
             The maximum degree a node can have to be considered.
-        similarity_metric : str, default="JACCARD"
+        similarity_metric
             The similarity metric to use for computation.
-        use_components : bool | str, default=False
+        use_components
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
             Name of the property to be used as weights.

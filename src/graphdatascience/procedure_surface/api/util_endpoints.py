@@ -21,7 +21,7 @@ class UtilEndpoints(ABC):
 
         Returns
         -------
-        Node
+        neo4j.graph.Node
             The node with the given id.
         """
         pass
@@ -38,7 +38,7 @@ class UtilEndpoints(ABC):
 
         Returns
         -------
-        list[Node]
+        list[neo4j.graph.Node]
             The nodes with the given ids.
         """
         pass
@@ -59,7 +59,7 @@ class UtilEndpoints(ABC):
             The id of the node to get the property from.
         property_key: str
             The key of the property to get.
-        node_label: str, default="*"
+        node_label: str
             The label of the node to get the property from.
 
         Returns
@@ -78,9 +78,9 @@ class UtilEndpoints(ABC):
 
         Parameters
         ----------
-        labels : list[str] | None, default None
+        labels
             The labels the node must have.
-        properties : dict[str, Any] | None, default None
+        properties
             The properties the node must match.
 
         Returns

@@ -92,7 +92,13 @@ def get_all_endpoint_methods(session_class: type, prefix: str = "", visited: set
             if not prop_func:
                 continue
 
-            hints = get_type_hints(prop_func)
+            try:
+                hints = get_type_hints(prop_func)
+            except NameError:
+                # Forward references to optional-dependency types (e.g. NXLoader,
+                # imported only under TYPE_CHECKING) can't be resolved at runtime.
+                # Skip traversal into such properties.
+                continue
             return_annotation = hints.get("return")
 
             if return_annotation and return_annotation is not type(None):

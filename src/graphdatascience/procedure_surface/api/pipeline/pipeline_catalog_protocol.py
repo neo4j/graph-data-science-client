@@ -9,6 +9,10 @@ from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_result imp
 
 
 class PipelineCatalogEntryProtocol(Protocol):
+    """
+    Represents a pipeline in the catalog.
+    """
+
     pipeline_name: str
     pipeline_type: str
 

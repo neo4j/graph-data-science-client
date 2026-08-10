@@ -15,3 +15,7 @@ This API reference manual lists all available endpoints in the Neo4j Graph Data 
 
    plugin/graphdatascience
    sessions/gds_sessions
+   algorithms
+   catalog
+   machine_learning
+   system_config

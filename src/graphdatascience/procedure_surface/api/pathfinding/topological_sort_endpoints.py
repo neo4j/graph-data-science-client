@@ -49,6 +49,6 @@ class TopologicalSortEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The topological sort results as a DataFrame with columns for nodeId and maxDistanceFromSource.
         """

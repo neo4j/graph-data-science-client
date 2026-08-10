@@ -66,7 +66,7 @@ class SpanningTreeEndpoints(ABC):
             Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
-        objective : str, default="minimum"
+        objective
             The objective function to optimize. Either "minimum" or "maximum".
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -85,7 +85,7 @@ class SpanningTreeEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             A DataFrame containing the edges in the computed Spanning tree.
         """
         ...
@@ -116,7 +116,7 @@ class SpanningTreeEndpoints(ABC):
             Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
-        objective : str, default="minimum"
+        objective
             The objective function to optimize. Either "minimum" or "maximum".
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -172,7 +172,7 @@ class SpanningTreeEndpoints(ABC):
             Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
-        objective : str, default="minimum"
+        objective
             The objective function to optimize. Either "minimum" or "maximum".
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -221,7 +221,7 @@ class SpanningTreeEndpoints(ABC):
         ----------
         G
            Graph object to use
-        write_relationship_type : str
+        write_relationship_type
             Name of the relationship type to store the results in.
         write_property
             Name of the node property to store the results in.
@@ -229,7 +229,7 @@ class SpanningTreeEndpoints(ABC):
             Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
-        objective : str, default="minimum"
+        objective
             The objective function to optimize. Either "minimum" or "maximum".
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -277,7 +277,7 @@ class SpanningTreeEndpoints(ABC):
             Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
-        objective : str, default="minimum"
+        objective
             The objective function to optimize. Either "minimum" or "maximum".
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

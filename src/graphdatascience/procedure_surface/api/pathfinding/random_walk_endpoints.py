@@ -72,7 +72,7 @@ class RandomWalkEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with nodeIds and path columns.
         """
         pass
