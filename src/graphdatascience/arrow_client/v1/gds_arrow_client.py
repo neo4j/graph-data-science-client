@@ -50,17 +50,17 @@ class GdsArrowClient:
         Parameters
         ----------
         graph_name
-            The name of the graph
+            Name of the graph to be created
         database
-            The name of the database to which the graph belongs
+            Name of the database to which the graph belongs
         node_properties
-            The name of the node properties to retrieve
+            Name of the node properties to retrieve
         node_labels
             A list of node labels to filter the nodes
         list_node_labels
             A flag that indicates whether the node labels should be included in the result
         concurrency
-            The number of threads used on the server side when serving the data
+            Number of threads used on the server side when serving the data
 
         Returns
         -------
@@ -94,11 +94,11 @@ class GdsArrowClient:
         Parameters
         ----------
         graph_name
-            The name of the graph
+            Name of the graph to be created
         database
-            The name of the database to which the graph belongs
+            Name of the database to which the graph belongs
         concurrency
-            The number of threads used on the server side when serving the data
+            Number of threads used on the server side when serving the data
 
         Returns
         -------
@@ -120,13 +120,13 @@ class GdsArrowClient:
         Parameters
         ----------
         graph_name
-            The name of the graph
+            Name of the graph to be created
         database
-            The name of the database to which the graph belongs
+            Name of the database to which the graph belongs
         relationship_types
-            The name of the relationship types to retrieve
+            Name of the relationship types to retrieve
         concurrency
-            The number of threads used on the server side when serving the data
+            Number of threads used on the server side when serving the data
 
         Returns
         -------
@@ -155,15 +155,15 @@ class GdsArrowClient:
         Parameters
         ----------
         graph_name
-            The name of the graph
+            Name of the graph
         database
-            The name of the database to which the graph belongs
+            Name of the database to which the graph belongs
         relationship_properties
-            The name of the relationship properties to retrieve
+            Name of the relationship properties to retrieve
         relationship_types
-            The name of the relationship types to retrieve
+            Name of the relationship types to retrieve
         concurrency
-            The number of threads used on the server side when serving the data
+            Number of threads used on the server side when serving the data
 
         Returns
         -------

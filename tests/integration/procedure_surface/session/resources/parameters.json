@@ -8,6 +8,10 @@
     "Graph object to use.",
     "Graph object to use or a dictionary representing the graph dimensions."
   ],
+  "graph_name": [
+    "Name of the graph to be created",
+    "Name of the graph"
+  ],
   "initial_sampler": [
     "Sampling method for initial centroids.",
     "Sampling strategy for the initial nearest neighbors."

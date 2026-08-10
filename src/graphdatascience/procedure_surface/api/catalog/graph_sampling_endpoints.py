@@ -42,7 +42,7 @@ class GraphSamplingEndpoints(ABC):
         G
            Graph object to use
         graph_name
-            The name of the new graph that is stored in the graph catalog.
+            Name of the graph to be created
         start_nodes
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
             By default, a single node is chosen uniformly at random.
@@ -114,7 +114,7 @@ class GraphSamplingEndpoints(ABC):
         G
            Graph object to use
         graph_name
-            The name of the new graph that is stored in the graph catalog.
+            Name of the graph to be created
         start_nodes
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
                 By default, a single node is chosen uniformly at random.

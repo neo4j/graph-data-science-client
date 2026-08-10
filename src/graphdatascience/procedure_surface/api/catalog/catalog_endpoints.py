@@ -33,7 +33,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            The name of the graph.
+            Name of the graph
 
         Returns
         -------
@@ -49,7 +49,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            The name of the graph.
+            Name of the graph
 
         Returns
         -------
@@ -74,7 +74,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            Name of the graph to construct
+            Name of the graph to be created
         nodes
             Node dataframes. A dataframe should follow the schema:
 
@@ -147,7 +147,7 @@ class CatalogEndpoints(ABC):
         G
            Graph object to use
         graph_name
-            Name of subgraph to create
+            Name of the graph to be created
         node_filter
             Filter expression for nodes
         relationship_filter
@@ -197,7 +197,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            Name of the generated graph.
+            Name of the graph to be created
         node_count
             The number of nodes in the generated graph
         average_degree

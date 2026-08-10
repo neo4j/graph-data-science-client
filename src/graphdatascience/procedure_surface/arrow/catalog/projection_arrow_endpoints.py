@@ -58,7 +58,7 @@ class ProjectArrowEndpoints:
         Parameters
         ----------
         graph_name
-            Name of the graph to be created in the catalog.
+            Name of the graph to be created
         query
             Cypher query to select nodes and relationships for the graph projection.
             Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
@@ -163,7 +163,7 @@ class ProjectArrowEndpoints:
         Parameters
         ----------
         graph_name
-            Name of the graph to be created in the catalog.
+            Name of the graph to be created
         node_label_filter
             List of node labels to include in the graph projection.
         relationship_type_filter

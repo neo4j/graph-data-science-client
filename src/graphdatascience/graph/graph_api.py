@@ -35,7 +35,7 @@ class Graph:
         Returns
         -------
         str
-            the name of the graph
+            name of the graph
         """
         return self._name
 
