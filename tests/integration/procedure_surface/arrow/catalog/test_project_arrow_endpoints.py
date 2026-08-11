@@ -222,3 +222,76 @@ def test_store_projection_async(
     finally:
         endpoints.drop("g", fail_if_missing=False)
         query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
+
+
+@pytest.mark.db_integration
+def test_store_projection_overwrite_replaces_existing(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
+) -> None:
+    try:
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x CREATE (:Person)-[:KNOWS]->(:Person)",
+            QueryType.USER_ACTION,
+        )
+
+        endpoints.project.native(graph_name="g", node_label_filter=["Person"], relationship_type_filter=["KNOWS"])
+        assert len(endpoints.list("g")) == 1
+
+        # add more data and re-project the same name with overwrite
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x CREATE (:Person)-[:KNOWS]->(:Person)",
+            QueryType.USER_ACTION,
+        )
+
+        G, result = endpoints.project.native(
+            graph_name="g",
+            node_label_filter=["Person"],
+            relationship_type_filter=["KNOWS"],
+            overwrite=True,
+        )
+
+        assert G.name() == "g"
+        assert result.graph_name == "g"
+        assert result.node_count == 20
+        assert result.relationship_count == 10
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
+
+
+@pytest.mark.db_integration
+def test_store_projection_async_overwrite_replaces_existing(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
+) -> None:
+    try:
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x CREATE (:Person)-[:KNOWS]->(:Person)",
+            QueryType.USER_ACTION,
+        )
+
+        endpoints.project.native_async(
+            graph_name="g", node_label_filter=["Person"], relationship_type_filter=["KNOWS"]
+        ).result()
+
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x CREATE (:Person)-[:KNOWS]->(:Person)",
+            QueryType.USER_ACTION,
+        )
+
+        handle = endpoints.project.native_async(
+            graph_name="g",
+            node_label_filter=["Person"],
+            relationship_type_filter=["KNOWS"],
+            overwrite=True,
+        )
+        G, result = handle.result()
+
+        assert G.name() == "g"
+        assert result["graphName"] == "g"
+        assert result["nodeCount"] == 20
+        assert result["relationshipCount"] == 10
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)

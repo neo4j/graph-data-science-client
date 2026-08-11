@@ -117,10 +117,12 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
 IGNORED_ACTUAL_PARAMETERS = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
     r".*graph.node_properties.stream": ["job_id", "db_node_properties"],
-    # client-only convenience parameter, kept for parity with the 1.x endpoint
+    # client-only convenience parameter
     r".*graph\.node_property\.stream$": ["db_node_properties"],
     r".*graph.relationships.stream": ["relationship_properties"],
     r".*graph.relationships.drop": ["fail_if_missing"],
+    r"graph.[filter|generate]": ["overwrite"],
+    r"graph.sample.*": ["overwrite"],
 }
 
 ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {

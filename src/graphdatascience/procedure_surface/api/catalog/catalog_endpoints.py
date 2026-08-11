@@ -68,6 +68,7 @@ class CatalogEndpoints(ABC):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int = 100000,
+        overwrite: bool = False,
     ) -> Graph:
         """Construct a graph from a list of node and relationship dataframes.
 
@@ -96,6 +97,9 @@ class CatalogEndpoints(ABC):
             List of relationship types for which to create an inverse index.
         batch_size
             Batch size to use when sending data to GDS.
+        overwrite
+            If `True`, drop an existing graph with the same name before constructing the new one.
+            Defaults to `False`.
 
         Returns
         -------
@@ -139,6 +143,7 @@ class CatalogEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
@@ -164,6 +169,9 @@ class CatalogEndpoints(ABC):
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        overwrite
+            If `True`, drop an existing graph with the same name before creating the filtered subgraph.
+            Defaults to `False`.
 
         Returns
         -------
@@ -190,6 +198,7 @@ class CatalogEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithGenerationStats:
         """
         Generates a random graph and store it in the graph catalog.
@@ -224,6 +233,9 @@ class CatalogEndpoints(ABC):
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        overwrite
+            If `True`, drop an existing graph with the same name before generating the new one.
+            Defaults to `False`.
 
         Returns
         -------

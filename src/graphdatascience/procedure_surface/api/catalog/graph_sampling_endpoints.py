@@ -29,6 +29,7 @@ class GraphSamplingEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
         """
         Random walk with restarts (RWR) samples the graph by taking random walks from a set of start nodes.
@@ -73,6 +74,9 @@ class GraphSamplingEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
+        overwrite
+            If `True`, drop an existing graph with the same name before sampling the new one.
+            Defaults to `False`.
 
         Returns
         -------
@@ -99,6 +103,7 @@ class GraphSamplingEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
         """
         Common Neighbour Aware Random Walk (CNARW) samples the graph by taking random walks from a set of start nodes
@@ -145,6 +150,9 @@ class GraphSamplingEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
+        overwrite
+            If `True`, drop an existing graph with the same name before sampling the new one.
+            Defaults to `False`.
 
         Returns
         -------

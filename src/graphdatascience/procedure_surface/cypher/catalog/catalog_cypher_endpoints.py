@@ -26,10 +26,12 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.catalog.validation import validate_distinct_from_source
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.catalog.graph_export_cypher_endpoints import (
     GraphExportCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.catalog.graph_ops_cypher import GraphOpsCypher
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
@@ -53,6 +55,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     def __init__(self, cypher_runner: QueryRunner, arrow_client: GdsArrowClient | None = None):
         self._cypher_runner = cypher_runner
         self._arrow_client = arrow_client
+        self._graph_ops = GraphOpsCypher(cypher_runner)
 
     def get(self, graph_name: str) -> Graph:
         if not self.list(graph_name):
@@ -74,7 +77,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int = 100000,
+        overwrite: bool = False,
     ) -> Graph:
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
+
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
         if relationships is None:
@@ -184,7 +191,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithFilterResult:
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False, username=username)
+
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
             jobId=job_id,
@@ -225,7 +237,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithGenerationStats:
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False, username=username)
+
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,
             relationship_seed=relationship_seed,
