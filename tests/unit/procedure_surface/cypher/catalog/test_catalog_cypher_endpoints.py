@@ -132,7 +132,7 @@ def test_construct_overwrite_drops_existing_graph_first() -> None:
     G = endpoints.construct(graph_name="g", nodes=_construct_nodes(), relationships=[], overwrite=True)
 
     assert "gds.graph.drop" in runner.queries[0]
-    assert runner.params[0]["graphName"] == "g"
+    assert runner.params[0]["graph_name"] == "g"
     assert runner.params[0]["failIfMissing"] is False
     assert runner.run_args[0]["retryable"] is True
     assert isinstance(G, Graph)
@@ -164,7 +164,7 @@ def test_generate_overwrite_drops_existing_graph_first() -> None:
 
     assert "gds.graph.drop" in runner.queries[0]
     assert "gds.graph.generate" in runner.queries[1]
-    assert runner.params[0]["graphName"] == "g"
+    assert runner.params[0]["graph_name"] == "g"
     assert runner.params[0]["failIfMissing"] is False
     assert result.name == "g"
 
@@ -197,7 +197,7 @@ def test_filter_overwrite_drops_existing_graph_first() -> None:
 
     assert "gds.graph.drop" in runner.queries[0]
     assert "gds.graph.filter" in runner.queries[1]
-    assert runner.params[0]["graphName"] == "filtered"
+    assert runner.params[0]["graph_name"] == "filtered"
     assert runner.params[0]["failIfMissing"] is False
     assert result.graph_name == "filtered"
 
@@ -243,7 +243,7 @@ def test_generate_overwrite_drops_as_impersonated_user() -> None:
     endpoints.generate("g", 4, 2.5, overwrite=True, username="alice")
 
     drop_params = runner.params[0]
-    assert drop_params["graphName"] == "g"
+    assert drop_params["graph_name"] == "g"
     assert drop_params["failIfMissing"] is False
     assert drop_params["username"] == "alice"
     assert drop_params["dbName"] == ""
@@ -263,7 +263,7 @@ def test_filter_overwrite_drops_as_impersonated_user() -> None:
     endpoints.filter(G, "filtered", "true", "true", overwrite=True, username="alice")
 
     drop_params = runner.params[0]
-    assert drop_params["graphName"] == "filtered"
+    assert drop_params["graph_name"] == "filtered"
     assert drop_params["failIfMissing"] is False
     assert drop_params["username"] == "alice"
     assert drop_params["dbName"] == ""

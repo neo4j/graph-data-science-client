@@ -66,7 +66,7 @@ def test_cypher_logging_false_disables_logging(mocker: MockerFixture) -> None:
 
 def test_native_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
 
     endpoints.native("g", ["A"], ["REL"], overwrite=True)
 
@@ -75,7 +75,7 @@ def test_native_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
 
 def test_native_does_not_drop_by_default(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
 
     endpoints.native("g", ["A"], ["REL"])
 
@@ -84,7 +84,7 @@ def test_native_does_not_drop_by_default(mocker: MockerFixture) -> None:
 
 def test_native_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch.object(
         endpoints._project_protocol,
         "start_store_projection",
@@ -98,7 +98,7 @@ def test_native_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> N
 
 def test_cypher_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
 
     endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)", overwrite=True)
 
@@ -107,7 +107,7 @@ def test_cypher_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
 
 def test_cypher_does_not_drop_by_default(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
 
     endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)")
 
@@ -116,7 +116,7 @@ def test_cypher_does_not_drop_by_default(mocker: MockerFixture) -> None:
 
 def test_cypher_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch.object(
         endpoints._project_protocol,
         "start_cypher_projection",

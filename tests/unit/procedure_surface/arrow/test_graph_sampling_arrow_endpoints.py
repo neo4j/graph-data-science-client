@@ -36,7 +36,7 @@ def _endpoints(mocker: MockerFixture) -> tuple[GraphSamplingArrowEndpoints, mock
 
 def test_rwr_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints(mocker)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     G = Graph("g", mocker.Mock())
 
     endpoints.rwr(G, "sampled", overwrite=True)
@@ -46,7 +46,7 @@ def test_rwr_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
 
 def test_rwr_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints(mocker)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     G = Graph("g", mocker.Mock())
 
     with pytest.raises(ValueError, match="must not equal the source graph name"):
@@ -57,7 +57,7 @@ def test_rwr_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> None:
 
 def test_cnarw_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints(mocker)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     G = Graph("g", mocker.Mock())
 
     with pytest.raises(ValueError, match="must not equal the source graph name"):
@@ -68,7 +68,7 @@ def test_cnarw_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> None
 
 def test_rwr_does_not_drop_by_default(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints(mocker)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     G = Graph("g", mocker.Mock())
 
     endpoints.rwr(G, "sampled")
@@ -78,7 +78,7 @@ def test_rwr_does_not_drop_by_default(mocker: MockerFixture) -> None:
 
 def test_cnarw_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints(mocker)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     G = Graph("g", mocker.Mock())
 
     endpoints.cnarw(G, "sampled", overwrite=True)
@@ -88,7 +88,7 @@ def test_cnarw_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
 
 def test_cnarw_does_not_drop_by_default(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints(mocker)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     G = Graph("g", mocker.Mock())
 
     endpoints.cnarw(G, "sampled")

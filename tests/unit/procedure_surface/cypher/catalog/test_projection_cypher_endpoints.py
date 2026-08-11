@@ -100,7 +100,7 @@ def test_native_overwrite_drops_existing_graph_first() -> None:
     assert "gds.graph.project" in runner.queries[1]
 
     drop_params = runner.params[0]
-    assert drop_params["graphName"] == "g"
+    assert drop_params["graph_name"] == "g"
     assert drop_params["failIfMissing"] is False
     assert runner.run_args[0]["retryable"] is True
     assert runner.run_args[0]["mode"] == QueryMode.WRITE
@@ -121,7 +121,7 @@ def test_native_overwrite_drops_as_impersonated_user() -> None:
     endpoints.native("g", "Node", "REL", overwrite=True, username="alice")
 
     drop_params = runner.params[0]
-    assert drop_params["graphName"] == "g"
+    assert drop_params["graph_name"] == "g"
     assert drop_params["failIfMissing"] is False
     # the drop must run as the impersonated user so a graph owned by them is removed
     assert drop_params["username"] == "alice"

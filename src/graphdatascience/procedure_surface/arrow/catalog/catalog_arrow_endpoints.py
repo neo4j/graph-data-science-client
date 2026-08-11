@@ -22,10 +22,10 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithFilterResult,
     GraphWithGenerationStats,
     RelationshipPropertySpec,
-    validate_distinct_from_source,
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.catalog.validation import validate_distinct_from_source
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.arrow.catalog.graph_export_arrow_endpoints import (
@@ -56,7 +56,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._graph_backend = GraphOpsArrow(arrow_client)
+        self._graph_ops = GraphOpsArrow(arrow_client)
         self._show_progress = show_progress
         self._write_protocol: WriteProtocol | None = None
         if query_runner is not None:
@@ -89,7 +89,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         overwrite: bool = False,
     ) -> Graph:
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
@@ -127,7 +127,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         """
         graph_name = G.name() if isinstance(G, Graph) else G
 
-        return self._graph_backend.drop(graph_name, fail_if_missing)
+        return self._graph_ops.drop(graph_name, fail_if_missing)
 
     def filter(
         self,
@@ -145,7 +145,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     ) -> GraphWithFilterResult:
         validate_distinct_from_source(graph_name, G)
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
@@ -189,7 +189,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         """
         validate_distinct_from_source(graph_name, G)
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
@@ -228,7 +228,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         overwrite: bool = False,
     ) -> GraphWithGenerationStats:
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
@@ -281,7 +281,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         Unlike :meth:`generate`, this method does not block on completion.
         """
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
@@ -311,7 +311,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         elif isinstance(G, str):
             graph_name = G
 
-        return self._graph_backend.list(graph_name)
+        return self._graph_ops.list(graph_name)
 
     @property
     def export(self) -> GraphExportEndpoints:

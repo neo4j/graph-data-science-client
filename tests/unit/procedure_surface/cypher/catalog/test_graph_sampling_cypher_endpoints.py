@@ -61,7 +61,7 @@ def test_rwr_overwrite_drops_existing_graph_first() -> None:
 
     assert "gds.graph.drop" in runner.queries[0]
     assert "gds.graph.sample.rwr" in runner.queries[1]
-    assert runner.params[0]["graphName"] == "sampled"
+    assert runner.params[0]["graph_name"] == "sampled"
     assert runner.params[0]["failIfMissing"] is False
     assert runner.run_args[0]["retryable"] is True
     assert runner.run_args[0]["mode"] == QueryMode.WRITE
@@ -106,7 +106,7 @@ def test_cnarw_overwrite_drops_existing_graph_first() -> None:
 
     assert "gds.graph.drop" in runner.queries[0]
     assert "gds.graph.sample.cnarw" in runner.queries[1]
-    assert runner.params[0]["graphName"] == "sampled"
+    assert runner.params[0]["graph_name"] == "sampled"
     assert runner.params[0]["failIfMissing"] is False
     assert result.graph_name == "sampled"
 
@@ -128,7 +128,7 @@ def test_rwr_overwrite_drops_as_impersonated_user() -> None:
     endpoints.rwr(G, "sampled", overwrite=True, username="alice")
 
     drop_params = runner.params[0]
-    assert drop_params["graphName"] == "sampled"
+    assert drop_params["graph_name"] == "sampled"
     assert drop_params["failIfMissing"] is False
     assert drop_params["username"] == "alice"
     assert drop_params["dbName"] == ""
@@ -141,7 +141,7 @@ def test_cnarw_overwrite_drops_as_impersonated_user() -> None:
     endpoints.cnarw(G, "sampled", overwrite=True, username="alice")
 
     drop_params = runner.params[0]
-    assert drop_params["graphName"] == "sampled"
+    assert drop_params["graph_name"] == "sampled"
     assert drop_params["failIfMissing"] is False
     assert drop_params["username"] == "alice"
     assert drop_params["dbName"] == ""

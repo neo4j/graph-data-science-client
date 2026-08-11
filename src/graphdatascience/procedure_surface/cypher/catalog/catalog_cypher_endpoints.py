@@ -23,14 +23,15 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithFilterResult,
     GraphWithGenerationStats,
     RelationshipPropertySpec,
-    validate_distinct_from_source,
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.catalog.validation import validate_distinct_from_source
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import get_graph
 from graphdatascience.procedure_surface.cypher.catalog.graph_export_cypher_endpoints import (
     GraphExportCypherEndpoints,
 )
+from graphdatascience.procedure_surface.cypher.catalog.graph_ops_cypher import GraphOpsCypher
 from graphdatascience.procedure_surface.cypher.catalog.graph_sampling_cypher_endpoints import (
     GraphSamplingCypherEndpoints,
 )
@@ -43,7 +44,6 @@ from graphdatascience.procedure_surface.cypher.catalog.relationship_cypher_endpo
 from graphdatascience.procedure_surface.cypher.catalog.utils import (
     GRAPH_INFO_WITH_DEGREES_YIELDS,
     GRAPH_INFO_YIELDS,
-    drop_graph_if_exists,
     require_database,
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
@@ -55,6 +55,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     def __init__(self, cypher_runner: QueryRunner, arrow_client: GdsArrowClient | None = None):
         self._cypher_runner = cypher_runner
         self._arrow_client = arrow_client
+        self._graph_ops = GraphOpsCypher(cypher_runner)
 
     def get(self, graph_name: str) -> Graph:
         if not self.list(graph_name):
@@ -79,7 +80,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         overwrite: bool = False,
     ) -> Graph:
         if overwrite:
-            drop_graph_if_exists(self._cypher_runner, graph_name)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
@@ -194,7 +195,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
     ) -> GraphWithFilterResult:
         validate_distinct_from_source(graph_name, G)
         if overwrite:
-            drop_graph_if_exists(self._cypher_runner, graph_name, username=username)
+            self._graph_ops.drop(graph_name, fail_if_missing=False, username=username)
 
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
@@ -239,7 +240,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         overwrite: bool = False,
     ) -> GraphWithGenerationStats:
         if overwrite:
-            drop_graph_if_exists(self._cypher_runner, graph_name, username=username)
+            self._graph_ops.drop(graph_name, fail_if_missing=False, username=username)
 
         config = ConfigConverter.convert_to_gds_config(
             relationship_distribution=relationship_distribution,

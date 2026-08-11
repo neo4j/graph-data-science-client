@@ -184,7 +184,7 @@ def _construct_endpoints(mocker: MockerFixture, job_id: str) -> CatalogArrowEndp
 
 def test_construct_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints = _construct_endpoints(mocker, "job-123")
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
 
     with patch_gds_arrow_client("job-123"):
         G = endpoints.construct(graph_name="g", nodes=_construct_nodes(), relationships=[], overwrite=True)
@@ -195,7 +195,7 @@ def test_construct_overwrite_drops_existing_graph(mocker: MockerFixture) -> None
 
 def test_construct_does_not_drop_by_default(mocker: MockerFixture) -> None:
     endpoints = _construct_endpoints(mocker, "job-123")
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
 
     with patch_gds_arrow_client("job-123"):
         endpoints.construct(graph_name="g", nodes=_construct_nodes(), relationships=[])
@@ -206,7 +206,7 @@ def test_construct_does_not_drop_by_default(mocker: MockerFixture) -> None:
 def test_generate_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_generate_summary())
     mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
@@ -219,7 +219,7 @@ def test_generate_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
 def test_generate_does_not_drop_by_default(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_generate_summary())
     mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
@@ -232,7 +232,7 @@ def test_generate_does_not_drop_by_default(mocker: MockerFixture) -> None:
 def test_generate_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job", return_value="job-1")
 
     endpoints.generate_async("g", 4, 2.5, overwrite=True)
@@ -243,7 +243,7 @@ def test_generate_async_overwrite_drops_existing_graph(mocker: MockerFixture) ->
 def test_filter_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_filter_summary())
     mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
@@ -258,7 +258,7 @@ def test_filter_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
 def test_filter_does_not_drop_by_default(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_filter_summary())
     mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
@@ -273,7 +273,7 @@ def test_filter_does_not_drop_by_default(mocker: MockerFixture) -> None:
 def test_filter_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job", return_value="job-1")
 
     G = Graph("g", mocker.Mock())
@@ -286,7 +286,7 @@ def test_filter_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> N
 def test_filter_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    drop_spy = mocker.patch.object(endpoints._graph_backend, "drop")
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_filter_summary())
     mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())

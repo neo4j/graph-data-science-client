@@ -31,7 +31,7 @@ class ProjectArrowEndpoints:
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._graph_backend = GraphOpsArrow(arrow_client)
+        self._graph_ops = GraphOpsArrow(arrow_client)
         self._show_progress = show_progress
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
@@ -89,7 +89,7 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
@@ -132,7 +132,7 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
 
@@ -211,7 +211,7 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
@@ -262,7 +262,7 @@ class ProjectArrowEndpoints:
             raise ValueError("Remote projection is only supported for attached Sessions.")
 
         if overwrite:
-            self._graph_backend.drop(graph_name, fail_if_missing=False)
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
 
