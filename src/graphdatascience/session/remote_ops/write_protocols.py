@@ -170,7 +170,7 @@ class RemoteWriteBackV4(WriteProtocol):
         )
 
     def get_status(self, job_id: str) -> JobStatus:
-        row: Series[Any] = self._query_runner.run_cypher(
+        row: Series[Any] = self._query_runner.run_retryable_cypher(
             f"CALL gds.arrow.job.status.v4('{job_id}')",
             QueryType.USER_TRANSPILED,
         ).iloc[0]

@@ -251,7 +251,9 @@ class ProjectProtocolV4(ProjectProtocol):
         self._termination_flag.assert_running()
 
         status_result = single_row(
-            query_runner.run_cypher(f"CALL gds.arrow.job.status.v4('{job_id}')", QueryType.USER_TRANSPILED)
+            query_runner.run_retryable_cypher(
+                f"CALL gds.arrow.job.status.v4('{job_id}')", QueryType.USER_TRANSPILED
+            )
         )
 
         if status_result["error"] is not None:
