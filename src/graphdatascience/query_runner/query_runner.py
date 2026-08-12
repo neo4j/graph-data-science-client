@@ -32,6 +32,7 @@ class QueryRunner(ABC):
     ) -> Any:
         pass
 
+    # only use for user defined queries, and queries changing the GDS in-memory state
     @abstractmethod
     def run_cypher(
         self,

@@ -7,6 +7,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import single_row
+from graphdatascience.query_runner import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlag
@@ -163,10 +164,11 @@ class ProjectProtocolV3(ProjectProtocol):
 
         self._termination_flag.assert_running()
         projection_result: dict[str, Any] = single_row(
-            query_runner.run_cypher(
+            query_runner.run_retryable_cypher(
                 "CALL gds.arrow.project.v3($graph_name, $query, $jobId, $arrow_config, $configuration)",
                 QueryType.USER_TRANSPILED,
                 params,
+                mode=QueryMode.READ,
             )
         )
 
@@ -252,7 +254,7 @@ class ProjectProtocolV4(ProjectProtocol):
 
         status_result = single_row(
             query_runner.run_retryable_cypher(
-                f"CALL gds.arrow.job.status.v4('{job_id}')", QueryType.USER_TRANSPILED
+                f"CALL gds.arrow.job.status.v4('{job_id}')", QueryType.USER_TRANSPILED, mode=QueryMode.READ
             )
         )
 
@@ -266,6 +268,7 @@ class ProjectProtocolV4(ProjectProtocol):
             self._query_runner.run_cypher(
                 query,
                 QueryType.USER_TRANSPILED,
+                mode=QueryMode.READ,
                 params=params,
             )
         )
