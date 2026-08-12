@@ -160,7 +160,7 @@ class Neo4jQueryRunner(QueryRunner):
         else:
             return self._auth
 
-    # only use for user defined queries
+    # only use for user defined queries, and queries changing the GDS in-memory state
     def run_cypher(
         self,
         query: str,
