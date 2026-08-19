@@ -11,7 +11,11 @@ from graphdatascience.session.session_lifecycle_manager import SessionLifecycleM
 from graphdatascience.session.session_sizes import SessionMemory
 
 
-def session_details(status: str, errors: list[SessionErrorData] | None = None) -> SessionDetailsWithErrors:
+def session_details(
+    status: str,
+    errors: list[SessionErrorData] | None = None,
+    termination_reason: str | None = None,
+) -> SessionDetailsWithErrors:
     return SessionDetailsWithErrors(
         id="ffff0-ffff1",
         name="my-session",
@@ -25,6 +29,7 @@ def session_details(status: str, errors: list[SessionErrorData] | None = None) -
         ttl=None,
         project_id="project-1",
         user_id="user-1",
+        termination_reason=termination_reason,
         errors=errors,
     )
 
@@ -71,15 +76,6 @@ def test_verify_health_of_failed_session_without_errors() -> None:
     assert "has status `Failed` and memory `8GB`." in message
 
 
-def test_verify_health_of_expired_session() -> None:
-    manager, _ = lifecycle_manager(session_details("Expired"))
-
-    with pytest.raises(SessionStatusError) as e:
-        manager.verify_health()
-
-    assert "has status `Expired` and memory `8GB`." in str(e.value)
-
-
 def test_verify_health_of_deleted_session() -> None:
     manager, _ = lifecycle_manager(session_details("deleted"))
 
@@ -87,6 +83,15 @@ def test_verify_health_of_deleted_session() -> None:
         manager.verify_health()
 
     assert "has status `deleted` and memory `8GB`." in str(e.value)
+
+
+def test_verify_health_of_deleted_session_shows_termination_reason() -> None:
+    manager, _ = lifecycle_manager(session_details("deleted", termination_reason="UserInitiated"))
+
+    with pytest.raises(SessionStatusError) as e:
+        manager.verify_health()
+
+    assert "Termination reason: `UserInitiated`." in str(e.value)
 
 
 def test_verify_health_of_missing_session() -> None:
@@ -97,7 +102,7 @@ def test_verify_health_of_missing_session() -> None:
 
     message = str(e.value)
     assert "Session `ffff0-ffff1` does not exist any more." in message
-    assert "It was either deleted or expired. Create a new session to continue." in message
+    assert "It was deleted. Create a new session to continue." in message
 
 
 def test_verify_health_of_session_which_is_not_ready_yet() -> None:

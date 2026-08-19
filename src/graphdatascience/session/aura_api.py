@@ -45,7 +45,7 @@ class AuraApiError(Exception):
 
 class SessionStatusError(Exception):
     """
-    Raised when a session is in a non-healthy state. Such as after a session failed or got expired.
+    Raised when a session is in a non-healthy state. Such as after a session failed or was deleted.
     """
 
     def __init__(
@@ -70,6 +70,9 @@ class SessionStatusError(Exception):
                 f"Session `{details.name}` (id `{details.id}`) has status `{details.status}`"
                 f" and memory `{details.memory.value}`."
             )
+
+        if details and details.termination_reason:
+            lines.append(f"Termination reason: `{details.termination_reason}`.")
 
         if hint:
             lines.append(hint)
