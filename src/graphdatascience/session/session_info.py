@@ -25,6 +25,7 @@ class SessionInfo:
         cloud_location (CloudLocation | None): The provider and region in which the session is located at.
         ttl (datetime.timedelta | None): The time until the session is deleted if unused. The TTL gets renewed on every activity. Rounded down to the nearest minute.
         errors (list[SessionErrorData]): The list of errors related to the session.
+        termination_reason (str | None): The reason the session was terminated, if it has been deleted.
     """
 
     id: str
@@ -38,6 +39,7 @@ class SessionInfo:
     cloud_location: CloudLocation | None
     ttl: timedelta | None = None
     errors: list[SessionErrorData] | None = None
+    termination_reason: str | None = None
 
     @classmethod
     def from_session_details(cls, details: SessionDetailsWithErrors | SessionDetails) -> SessionInfo:
@@ -57,4 +59,5 @@ class SessionInfo:
             cloud_location=details.cloud_location,
             ttl=details.ttl,
             errors=errors,
+            termination_reason=details.termination_reason,
         )

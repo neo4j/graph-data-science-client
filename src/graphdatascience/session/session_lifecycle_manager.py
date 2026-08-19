@@ -45,13 +45,13 @@ class SessionLifecycleManager(LifecycleManager):
             raise SessionStatusError(
                 [],
                 hint=f"Session `{self.session_id}` does not exist any more."
-                " It was either deleted or expired. Create a new session to continue.",
+                " It was deleted. Create a new session to continue.",
             )
 
         if details.is_ready():
             return
 
-        if details.is_failed() or details.is_expired() or details.is_deleted():
+        if details.is_failed() or details.is_deleted():
             raise SessionStatusError(details.errors or [], details)
 
         raise SessionStatusError(

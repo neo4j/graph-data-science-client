@@ -15,6 +15,7 @@
 * `GraphV2` was renamed to `Graph` and `ModelV2` was renamed to `Model`. `Graph` is now exported at the top level, so `from graphdatascience import Graph` works.
 * For Aura Graph Analytics `gds.graph.project` was renamed to `gds.graph.project.cypher`
 * For Aura Graph Analytics `gds.graph.project_native` was renamed to `gds.graph.project.native`
+* Provide reason for deleted state of a deleted GDS Sessions
 
 ## New features
 

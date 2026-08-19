@@ -644,38 +644,6 @@ def test_get_or_create_with_multidb_aura_instance(aura_api: AuraApi) -> None:
     assert session.database_id == "db-id-1"
 
 
-def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
-    db = _setup_db_instance(aura_api)
-
-    fake_aura_api = cast(FakeAuraApi, aura_api)
-    fake_aura_api.add_session(
-        SessionDetailsWithErrors(
-            id="ffff0-ffff1",
-            name="one",
-            instance_id=db.id,
-            database_id=None,
-            memory=SessionMemory.m_8GB.value,
-            status="Expired",
-            created_at=datetime.now(),
-            host="foo.bar",
-            expiry_date=None,
-            ttl=None,
-            project_id=aura_api._project_id,
-            user_id="user-1",
-            cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
-            errors=[SessionErrorData("foo", "inactivity")],
-        )
-    )
-
-    with pytest.raises(SessionStatusError, match=re.escape("Session is in an unhealthy state")):
-        sessions = FakeGdsSessions(aura_api)
-        sessions.get_or_create(
-            "one",
-            SessionMemory.m_8GB,
-            DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
-        )
-
-
 def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 

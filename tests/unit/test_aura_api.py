@@ -923,7 +923,7 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
         api.wait_for_session_running("id0")
 
 
-def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
+def test_wait_for_session_running_until_deleted(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
         "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
@@ -931,7 +931,7 @@ def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
             "data": {
                 "id": "id0",
                 "name": "name-0",
-                "status": "Expired",
+                "status": "Deleted",
                 "instance_id": "dbid-1",
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "foo.bar",
@@ -940,7 +940,7 @@ def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
                 "project_id": "tenant-1",
                 "user_id": "user-1",
             },
-            "errors": [{"id": "id0", "message": "Session is expired", "reason": "Inactivity"}],
+            "errors": [{"id": "id0", "message": "Session is deleted", "reason": "UserInitiated"}],
         },
     )
 
