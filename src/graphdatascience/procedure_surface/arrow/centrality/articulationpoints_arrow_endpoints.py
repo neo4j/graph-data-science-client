@@ -161,6 +161,9 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
             concurrency=concurrency,
         )
 
+        if "propertiesWritten" in result:
+            result["nodePropertiesWritten"] = result.pop("propertiesWritten")
+
         return ArticulationPointsWriteResult(**result)
 
     def estimate(
