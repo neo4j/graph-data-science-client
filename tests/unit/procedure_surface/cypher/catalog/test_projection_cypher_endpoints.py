@@ -68,7 +68,6 @@ def test_cypher_projection_returns_graph_and_typed_result() -> None:
 
     G, result = endpoints.cypher(
         "MATCH (n)-->(m) RETURN gds.graph.project($graph_name, n, m, {})",
-        database="neo4j",
         graph_name="offices",
         label="City",
     )
@@ -78,7 +77,7 @@ def test_cypher_projection_returns_graph_and_typed_result() -> None:
     assert result.node_count == 3
     assert result.relationship_count == 4
     assert result.project_millis == 42
-    # Only the query parameters are forwarded; `database` is a dedicated argument.
+    # Only the query parameters are forwarded.
     assert runner.last_params() == {"graph_name": "offices", "label": "City"}
     assert runner.last_run_args()["mode"] == QueryMode.READ
 

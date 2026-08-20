@@ -94,7 +94,6 @@ The method `gds.graph.project.cypher` bridges the gap between `gds.run_cypher` a
 |===
 | Name           | Type               |Default | Description
 | query          | str                | -      | The Cypher query to be executed. Must end with `RETURN gds.graph.project(...)`.
-| database       | Optional[str]      | None   | Overrides the target database. The default uses the database from the connection.
 | **params       | Any                | \{\}   | The query parameters as keyword args.
 |===
 
@@ -131,7 +130,6 @@ G, result = gds.graph.project.cypher(
         relationshipType: $rel_type
     })
     """,                   #  Cypher query
-    database="neo4j",      #  Target database
     graph_name="offices",  #  Query parameter
     label="City",          #  Query parameter
     rel_type="FLY_TO"      #  Query parameter

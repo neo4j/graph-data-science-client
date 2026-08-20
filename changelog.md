@@ -16,6 +16,7 @@
 * For Aura Graph Analytics `gds.graph.project` was renamed to `gds.graph.project.cypher`
 * For Aura Graph Analytics `gds.graph.project_native` was renamed to `gds.graph.project.native`
 * Provide reason for deleted state of a deleted GDS Sessions
+* The `database` parameter has been removed from `gds.graph.project.cypher` and `gds.graph.project.cypher_async`. The database is now always sourced from the gds object; use `gds.set_database()` to change it.
 
 ## New features
 
@@ -40,6 +41,7 @@
 * The `show_progress` setting of a client is now honoured consistently: graph projections, `WriteJobHandle.wait` and the node property endpoints all inherit it. `ProgressBar.set_default_options` allows setting process-wide progress bar options.
 * Estimation errors and documentation now refer to Python endpoint names instead of GDS procedure names.
 * Session errors, such as a session failing with an out-of-memory error, are now reported together with the session status. They are also surfaced automatically when an operation fails because the session can no longer be reached, instead of only reporting the underlying connection error.
+* Allow specifying `database` parameter for projecting graphs into a GDS Session using `gds.graph.project.cypher`  
 
 ## Other changes
 

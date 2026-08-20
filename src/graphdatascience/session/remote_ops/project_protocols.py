@@ -268,8 +268,8 @@ class ProjectProtocolV4(ProjectProtocol):
             self._query_runner.run_cypher(
                 query,
                 QueryType.USER_TRANSPILED,
+                params,
                 mode=QueryMode.READ,
-                params=params,
             )
         )
 
