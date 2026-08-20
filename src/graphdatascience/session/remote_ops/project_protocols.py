@@ -35,7 +35,6 @@ class ProjectProtocol(ABC):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        database: str | None = None,
     ) -> Tuple[str, QueryRunner]:
         """Kick off a cypher projection without polling for completion.
 
@@ -102,7 +101,6 @@ class ProjectProtocolV3(ProjectProtocol):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        database: str | None = None,
     ) -> Tuple[str, QueryRunner]:
         self._result_cache.pop(job_id, None)
 
@@ -128,7 +126,6 @@ class ProjectProtocolV3(ProjectProtocol):
                 "CALL gds.arrow.project.v3($graph_name, $query, $jobId, $arrow_config, $configuration)",
                 QueryType.USER_TRANSPILED,
                 params,
-                database,
             )
         )
 
@@ -192,7 +189,6 @@ class ProjectProtocolV4(ProjectProtocol):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
-        database: str | None = None,
     ) -> Tuple[str, QueryRunner]:
         configuration = ConfigConverter.convert_to_gds_config(
             queryParameters=query_parameters,
@@ -212,7 +208,6 @@ class ProjectProtocolV4(ProjectProtocol):
         actual_job_id, projection_query_runner = self._start_job(
             "CALL gds.arrow.project.cypher.v4($graph_name, $query, $jobId, $arrow_config, $configuration)",
             params,
-            database=database,
         )
 
         return actual_job_id, projection_query_runner
@@ -268,13 +263,12 @@ class ProjectProtocolV4(ProjectProtocol):
 
         return status_result
 
-    def _start_job(self, query: str, params: dict[str, Any], database: str | None = None) -> Tuple[str, QueryRunner]:
+    def _start_job(self, query: str, params: dict[str, Any]) -> Tuple[str, QueryRunner]:
         start_response = single_row(
             self._query_runner.run_cypher(
                 query,
                 QueryType.USER_TRANSPILED,
                 params,
-                database,
                 mode=QueryMode.READ,
             )
         )

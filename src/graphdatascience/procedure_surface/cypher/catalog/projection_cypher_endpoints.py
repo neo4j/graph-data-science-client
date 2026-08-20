@@ -172,7 +172,6 @@ class ProjectCypherEndpoints:
     def cypher(
         self,
         query: str,
-        database: str | None = None,
         **params: Any,
     ) -> GraphWithCypherProjectResult:
         """Project a graph using a Cypher projection.
@@ -183,8 +182,6 @@ class ProjectCypherEndpoints:
         ----------
         query
             The Cypher projection query. Must end with a ``RETURN gds.graph.project(...)`` call.
-        database
-            The database to run the query against. Defaults to the configured database.
         **params
             Query parameters referenced in the Cypher query.
 
@@ -194,7 +191,7 @@ class ProjectCypherEndpoints:
             The projected graph and metadata about the projection.
         """
         result = self._cypher_runner.run_retryable_cypher(
-            query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=QueryMode.READ
+            query, QueryType.USER_DIRECTED, params, custom_error=False, mode=QueryMode.READ
         ).squeeze()
 
         if not isinstance(result, dict):

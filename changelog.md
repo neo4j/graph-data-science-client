@@ -16,6 +16,7 @@
 * For Aura Graph Analytics `gds.graph.project` was renamed to `gds.graph.project.cypher`
 * For Aura Graph Analytics `gds.graph.project_native` was renamed to `gds.graph.project.native`
 * Provide reason for deleted state of a deleted GDS Sessions
+* The `database` parameter has been removed from `gds.graph.project.cypher` and `gds.graph.project.cypher_async`. The database is now always sourced from the gds object; use `gds.set_database()` to change it.
 
 ## New features
 
