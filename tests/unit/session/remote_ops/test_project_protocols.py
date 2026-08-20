@@ -126,6 +126,25 @@ class TestProjectProtocolV3:
         assert job_id == "my-job"
         assert len(qr.queries) == 1
 
+    def test_start_cypher_projection_forwards_database_to_query_runner(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.v3",
+            DataFrame([{"host": "member-host", "port": 7777}]),
+        )
+
+        protocol = ProjectProtocolV3(arrow_client, qr, TerminationFlagNoop())
+
+        protocol.start_cypher_projection(
+            graph_name="g",
+            query="MATCH (n) RETURN n",
+            job_id="my-job",
+            database="myDb",
+        )
+
+        assert qr.last_run_args()["db"] == "myDb"
+
     def test_get_status_replays_start_query(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
         qr.add__mock_result(
             "gds.arrow.project.v3",
@@ -259,6 +278,25 @@ class TestProjectProtocolV4:
                 "batchSize": 200,
             },
         }
+
+    def test_start_cypher_projection_forwards_database_to_query_runner(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.cypher.v4",
+            DataFrame([{"jobId": "server-job", "host": "member-host", "port": 7777}]),
+        )
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        protocol.start_cypher_projection(
+            graph_name="g",
+            query="MATCH (n) RETURN n",
+            job_id="my-job",
+            database="myDb",
+        )
+
+        assert qr.last_run_args()["db"] == "myDb"
 
     def test_start_store_projection_dispatches_expected_query_and_params(
         self, arrow_client: MagicMock, qr: CollectingQueryRunner

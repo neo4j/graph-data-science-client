@@ -60,6 +60,7 @@ def test_run_cypher_projection_starts_job_and_returns_done_result(
         ["REL"],
         ["REL2"],
         200,
+        database=None,
     )
     # The runner uses the caller-supplied job_id for status polling, not the protocol's return.
     protocol.get_status.assert_called_once_with("my-job", projection_qr)

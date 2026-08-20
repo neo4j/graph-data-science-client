@@ -50,6 +50,7 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
+        database: str | None = None,
         logging: bool = True,
         overwrite: bool = False,
     ) -> GraphWithProjectResult:
@@ -75,6 +76,8 @@ class ProjectArrowEndpoints:
             List of relationship types to index in both directions.
         batch_size
             Number of rows to process in each batch when projecting the graph.
+        database
+            The database to run the projection query against. Defaults to the configured database.
         logging
             Whether to log progress during graph projection.
         overwrite
@@ -104,6 +107,7 @@ class ProjectArrowEndpoints:
             inverse_indexed_relationship_types,
             batch_size,
             logging,
+            database=database,
         )
 
         job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
@@ -121,6 +125,7 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
+        database: str | None = None,
         overwrite: bool = False,
     ) -> ProjectionJobHandle:
         """Kick off a cypher graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
@@ -145,6 +150,7 @@ class ProjectArrowEndpoints:
             undirected_relationship_types,
             inverse_indexed_relationship_types,
             batch_size,
+            database=database,
         )
 
         # get the status at least once to make sure the job is actually running

@@ -37,6 +37,7 @@ class ProjectionRunner:
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int | None = None,
         show_progress: bool = True,
+        database: str | None = None,
     ) -> dict[str, Any]:
         if "gds.graph.project" in query and "gds.graph.project.remote" not in query:
             getLogger("gds_arrow_client").warning(
@@ -58,6 +59,7 @@ class ProjectionRunner:
             undirected_relationship_types,
             inverse_indexed_relationship_types,
             batch_size,
+            database=database,
         )
 
         return self._await_result(actual_job_id, query_runner, show_progress)
