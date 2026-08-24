@@ -644,7 +644,7 @@ def test_get_or_create_with_multidb_aura_instance(aura_api: AuraApi) -> None:
     assert session.database_id == "db-id-1"
 
 
-def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
+def test_get_or_create_expired_session(aura_api: AuraApi) -> None:
     db = _setup_db_instance(aura_api)
 
     fake_aura_api = cast(FakeAuraApi, aura_api)
@@ -666,7 +666,38 @@ def test_get_or_create_soon_expired_session(aura_api: AuraApi) -> None:
         )
     )
 
-    with pytest.raises(Warning, match=re.escape("Session `one` is expiring in 59 minutes.")):
+    with pytest.raises(RuntimeError, match=re.escape("Session `one` expired 23 hours ago")):
+        sessions = FakeGdsSessions(aura_api)
+        sessions.get_or_create(
+            "one",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+        )
+
+
+def test_get_or_create_soon_expiring_session_warns(aura_api: AuraApi) -> None:
+    db = _setup_db_instance(aura_api)
+
+    fake_aura_api = cast(FakeAuraApi, aura_api)
+    fake_aura_api.add_session(
+        SessionDetailsWithErrors(
+            id="ffff0-ffff1",
+            name="one",
+            instance_id=db.id,
+            database_id=None,
+            memory=SessionMemory.m_8GB.value,
+            status="Ready",
+            created_at=datetime.now(),
+            host="foo.bar",
+            expiry_date=datetime.now(tz=timezone.utc) + timedelta(minutes=30),
+            ttl=None,
+            project_id=aura_api._project_id,
+            cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+            user_id="user-1",
+        )
+    )
+
+    with pytest.warns(UserWarning, match=re.escape("Session `one` is expiring in")):
         sessions = FakeGdsSessions(aura_api)
         sessions.get_or_create(
             "one",

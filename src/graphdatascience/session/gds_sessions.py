@@ -24,6 +24,21 @@ from graphdatascience.session.session_lifecycle_manager import SessionLifecycleM
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
 
+def _humanize_duration(duration: timedelta) -> str:
+    """Format a timedelta as a coarse human-readable string (e.g. `2 hours`, `3 days`)."""
+    seconds = duration.total_seconds()
+    if seconds < 60:
+        return f"{int(seconds)} seconds"
+    if seconds < 3600:
+        minutes = int(seconds // 60)
+        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+    if seconds < 86400:
+        hours = int(seconds // 3600)
+        return f"{hours} hour{'s' if hours != 1 else ''}"
+    days = int(seconds // 86400)
+    return f"{days} day{'s' if days != 1 else ''}"
+
+
 @dataclass
 class AuraAPICredentials:
     """
@@ -344,10 +359,10 @@ class GdsSessions:
     def _await_session_running(self, session_details: SessionDetails, timeout: int | None = None) -> None:
         if session_details.expiry_date:
             until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
-            if until_expiry < timedelta(hours=1):
-                raise Warning(
-                    f"Session `{session_details.name}` is expiring in {math.floor(until_expiry.seconds / 60)} minutes."
-                )
+            if until_expiry < timedelta(0):
+                raise RuntimeError(f"Session `{session_details.name}` expired {_humanize_duration(-until_expiry)} ago.")
+            elif until_expiry < timedelta(hours=1):
+                warnings.warn(f"Session `{session_details.name}` is expiring in {_humanize_duration(until_expiry)}.")
         if not session_details.is_ready():
             max_wait_time = float(timeout) if timeout is not None else math.inf
             wait_result = self._aura_api.wait_for_session_running(session_details.id, max_wait_time=max_wait_time)
