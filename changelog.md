@@ -32,6 +32,7 @@
 * `GdsSessions.delete` now returns `False` if no session was deleted when called with a `session_id`. It previously always returned `True`.
 * `AuraApiError` and `SessionStatusError` no longer include a repetition of the exception object in their message.
 * The Arrow endpoint version is now checked when the client is created. If it is unsupported, the client raises an error asking to update the `graphdatascience` package, instead of failing later with an unrelated error.
+* `gds.graph.construct` now correctly forwards the `inverse_indexed_relationship_types` parameter to the Arrow v1 and Cypher graph constructors. Previously the value was silently discarded on both paths.
 
 ## Improvements
 

@@ -14,6 +14,12 @@ from graphdatascience.progress.static_progress_provider import StaticProgressPro
 from graphdatascience.query_runner import QueryType
 from tests.unit.conftest import CollectingQueryRunner
 
+_ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
+
+
+def _strip_ansi(s: str) -> str:
+    return _ANSI_ESCAPE_RE.sub("", s)
+
 
 def test_call_through_functions() -> None:
     progress_fetched_event = threading.Event()
@@ -90,16 +96,19 @@ def test_progress_bar_quantitive_output() -> None:
         )
 
         pbar = qpl._init_pbar(TaskWithProgress("test task", "0%", "PENDING", ""))
-        assert pbarOutputStream.getvalue().split("\r")[-1] == "test task:   0%|          | 0.0/100 [00:00<?, ?%/s]"
+        assert (
+            _strip_ansi(pbarOutputStream.getvalue()).split("\r")[-1]
+            == "test task:   0%|          | 0.0/100 [00:00<?, ?%/s]"
+        )
 
         qpl._update_pbar(pbar, TaskWithProgress("test task", "0%", "PENDING", ""))
         assert (
-            pbarOutputStream.getvalue().split("\r")[-1]
+            _strip_ansi(pbarOutputStream.getvalue()).split("\r")[-1]
             == "test task:   0%|          | 0.0/100 [00:00<?, ?%/s, status: PENDING]"
         )
         qpl._update_pbar(pbar, TaskWithProgress("test task", "42%", "RUNNING", "root::1/1::leaf"))
 
-        running_output = pbarOutputStream.getvalue().split("\r")[-1]
+        running_output = _strip_ansi(pbarOutputStream.getvalue()).split("\r")[-1]
         assert re.match(
             r"test task:  42%\|####2     \| 42.0/100 \[00:00<00:00, \d+.\d*%/s, status: RUNNING, task: root::1/1::leaf\]",
             running_output,
@@ -109,7 +118,7 @@ def test_progress_bar_quantitive_output() -> None:
             future = executor.submit(lambda: None)
             qpl._finish_pbar(future, pbar)
 
-        finished_output = pbarOutputStream.getvalue().split("\r")[-1]
+        finished_output = _strip_ansi(pbarOutputStream.getvalue()).split("\r")[-1]
         assert re.match(
             r"test task: 100%\|##########\| 100.0/100 \[00:00<00:00, \d+.\d+%/s, status: FINISHED\]", finished_output
         ), finished_output
@@ -198,4 +207,4 @@ def test_uses_static_store() -> None:
 
 
 def last_output_line(output_stream: StringIO) -> str:
-    return output_stream.getvalue().split("\r")[-1]
+    return _strip_ansi(output_stream.getvalue()).split("\r")[-1]
