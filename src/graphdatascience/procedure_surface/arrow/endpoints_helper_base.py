@@ -118,8 +118,8 @@ class EndpointsHelperBase:
 
         if relationship_type_overwrite:
             computation_result["relationshipsWritten"] = write_result.written_relationships
-        if property_overwrites:
-            computation_result["propertiesWritten"] = write_result.written_node_properties
+        if property_overwrites and not relationship_type_overwrite:
+            computation_result["nodePropertiesWritten"] = write_result.written_node_properties
 
         return computation_result
 
