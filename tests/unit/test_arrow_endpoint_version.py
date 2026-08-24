@@ -26,5 +26,5 @@ def test_check_version_compatibility() -> None:
 
     with pytest.raises(UnsupportedArrowEndpointVersion) as e:
         ArrowEndpointVersion.check_version_compatibility({ArrowEndpointVersion.V1}, arrow_client_mock)
-    assert "Unsupported" in str(e.value)
+    assert "please update the `graphdatascience` package" in str(e.value)
     assert "v1" in str(e.value)

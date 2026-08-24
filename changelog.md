@@ -33,6 +33,8 @@
 * `AuraApiError` and `SessionStatusError` no longer include a repetition of the exception object in their message.
 * The Arrow endpoint version is now checked when the client is created. If it is unsupported, the client raises an error asking to update the `graphdatascience` package, instead of failing later with an unrelated error.
 * Getting a session that has already expired now raises a `RuntimeError` with a human-readable duration, instead of warning with a wrapped (and misleading) `timedelta.seconds` value. Sessions expiring within the next hour still emit a warning.
+* `GraphDataScience.close()` now closes the Arrow Flight client in addition to the query runner.
+* `gds.graph.construct` now correctly forwards the `inverse_indexed_relationship_types`.
 
 ## Improvements
 

@@ -876,6 +876,8 @@ class GraphDataScience:
 
         If the GraphDataScience object was instantiated with a Neo4j Driver, the driver will not be closed as we cannot assume sole ownership of it.
         """
+        if self._arrow_client is not None:
+            self._arrow_client.close()
         self._query_runner.close()
 
     def __enter__(self) -> GraphDataScience:

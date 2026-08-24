@@ -182,6 +182,18 @@ def _construct_endpoints(mocker: MockerFixture, job_id: str) -> CatalogArrowEndp
     return CatalogArrowEndpoints(arrow_client=arrow_client)
 
 
+def test_construct_forwards_inverse_indexed_relationship_types(mocker: MockerFixture) -> None:
+    endpoints = _construct_endpoints(mocker, "job-123")
+
+    with patch_gds_arrow_client("job-123"):
+        endpoints.construct(
+            graph_name="g",
+            nodes=_construct_nodes(),
+            relationships=[],
+            inverse_indexed_relationship_types=["REL"],
+        )
+
+
 def test_construct_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints = _construct_endpoints(mocker, "job-123")
     drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
