@@ -333,7 +333,8 @@ class TestProjectProtocolV4:
 
         assert status == {"status": Status.RUNNING.name, "error": None, "result": None}
         assert len(qr.queries) == 1
-        assert "gds.arrow.job.status.v4('server-job')" in qr.queries[0]
+        assert "gds.arrow.job.status.v4" in qr.queries[0]
+        assert qr.params[0]["job_id"] == "server-job"
 
     def test_get_status_raises_when_error_present(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
         qr.add__mock_result(

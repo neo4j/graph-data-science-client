@@ -255,7 +255,8 @@ def test_v4_get_status_returns_done_job_status(arrow_client: MagicMock, qr: Coll
     assert status.written_node_properties == 5
     assert status.written_node_labels == 1
     assert status.written_relationships == 2
-    assert "gds.arrow.job.status.v4('my-job')" in qr.queries[0]
+    assert "gds.arrow.job.status.v4" in qr.queries[0]
+    assert qr.params[0]["job_id"] == "my-job"
 
 
 def test_v4_get_status_running_is_not_done(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
