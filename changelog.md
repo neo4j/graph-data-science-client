@@ -33,8 +33,6 @@
 * `AuraApiError` and `SessionStatusError` no longer include a repetition of the exception object in their message.
 * The Arrow endpoint version is now checked when the client is created. If it is unsupported, the client raises an error asking to update the `graphdatascience` package, instead of failing later with an unrelated error.
 * Getting a session that has already expired now raises a `RuntimeError` with a human-readable duration, instead of warning with a wrapped (and misleading) `timedelta.seconds` value. Sessions expiring within the next hour still emit a warning.
-* `CypherGraphBackend.graph_info` now raises a `ValueError` instead of an `IndexError` when a graph name exists in multiple databases but none match the current database.
-* Job status Cypher queries now use parameterized `$job_id` instead of f-string interpolation, preventing potential query injection from user-supplied job IDs.
 
 ## Improvements
 
