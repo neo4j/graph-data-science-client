@@ -3,7 +3,6 @@ from __future__ import annotations
 import concurrent
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any
 
 from pandas import DataFrame
 from tqdm.auto import tqdm
@@ -36,22 +35,11 @@ class ArrowV1GraphConstructor(GraphConstructor):
 
     def run(self, node_dfs: list[DataFrame], relationship_dfs: list[DataFrame]) -> None:
         try:
-            config: dict[str, Any] = {
-                "name": self._graph_name,
-                "database_name": self._database,
-            }
-
-            if self._undirected_relationship_types:
-                config["undirected_relationship_types"] = self._undirected_relationship_types
-
-            if self._inverse_indexed_relationship_types:
-                config["inverse_indexed_relationship_types"] = self._inverse_indexed_relationship_types
-
             self._client.create_graph(
                 graph_name=self._graph_name,
                 database=self._database,
                 undirected_relationship_types=self._undirected_relationship_types,
-                inverse_indexed_relationship_types=None,
+                inverse_indexed_relationship_types=self._inverse_indexed_relationship_types,
                 concurrency=self._concurrency,
             )
 
