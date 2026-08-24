@@ -83,6 +83,7 @@ class CypherGraphConstructor(GraphConstructor):
             self._server_version,
             self._concurrency,
             self._undirected_relationship_types,
+            self._inverse_indexed_relationship_types,
         ).run(node_dfs, relationship_dfs)
 
     def _should_warn_about_arrow_missing(self) -> bool:
