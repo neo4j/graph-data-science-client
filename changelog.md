@@ -35,6 +35,7 @@
 * `GraphDataScience.close()` now closes the Arrow Flight client in addition to the query runner.
 * `gds.graph.construct` now correctly forwards the `inverse_indexed_relationship_types`.
 
+
 ## Improvements
 
 * `GraphDataScience` no longer requires the `aura_ds` parameter to be set. If left unset, the client automatically derives whether the database is hosted in Aura.
