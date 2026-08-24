@@ -33,6 +33,7 @@
 * `AuraApiError` and `SessionStatusError` no longer include a repetition of the exception object in their message.
 * The Arrow endpoint version is now checked when the client is created. If it is unsupported, the client raises an error asking to update the `graphdatascience` package, instead of failing later with an unrelated error.
 
+
 ## Improvements
 
 * `GraphDataScience` no longer requires the `aura_ds` parameter to be set. If left unset, the client automatically derives whether the database is hosted in Aura.

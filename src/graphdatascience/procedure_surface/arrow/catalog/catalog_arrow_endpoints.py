@@ -84,7 +84,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         relationships: DataFrame | typing.List[DataFrame] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: typing.List[str] | None = None,
-        inverse_index_relationship_types: typing.List[str] | None = None,
+        inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int = 100000,
         overwrite: bool = False,
     ) -> Graph:
@@ -103,7 +103,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             graph_name,
             concurrency,
             undirected_relationship_types,
-            inverse_index_relationship_types,
+            inverse_indexed_relationship_types,
             batch_size,
             self._show_progress,
         )
