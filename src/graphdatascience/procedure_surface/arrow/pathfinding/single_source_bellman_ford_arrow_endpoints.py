@@ -138,6 +138,8 @@ class BellmanFordArrowEndpoints(SingleSourceBellmanFordEndpoints):
         config = self._endpoints_helper.create_base_config(
             G,
             sourceNode=source_node,
+            # The Arrow v2 endpoint uses writeNegativeCycles for both mutate and write modes,
+            # unlike the Cypher procedure which uses mutateNegativeCycles for mutate.
             writeNegativeCycles=mutate_negative_cycles,
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,
