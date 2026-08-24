@@ -398,7 +398,7 @@ class Neo4jQueryRunner(QueryRunner):
             auth=self._auth,
             config=self._config,
             database=self._database,
-            auto_close=self._auto_close,
+            auto_close=True,
             bookmarks=self._bookmarks,
             show_progress=self._show_progress,
             instance_description=self._instance_description,
