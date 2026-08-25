@@ -27,6 +27,8 @@ class CypherGraphBackend(GraphBackend):
         if len(info) > 1:
             # for multiple dbs we can have the same graph name. But db + graph name is unique
             info = [g for g in info if g.database == self._db]
+            if len(info) == 0:
+                raise ValueError(f"There is no projected graph named '{self._name}' in database '{self._db}'")
 
         return info[0]
 

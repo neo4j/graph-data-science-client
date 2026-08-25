@@ -254,7 +254,10 @@ class ProjectProtocolV4(ProjectProtocol):
 
         status_result = single_row(
             query_runner.run_retryable_cypher(
-                f"CALL gds.arrow.job.status.v4('{job_id}')", QueryType.USER_TRANSPILED, mode=QueryMode.READ
+                "CALL gds.arrow.job.status.v4($job_id)",
+                QueryType.USER_TRANSPILED,
+                params={"job_id": job_id},
+                mode=QueryMode.READ,
             )
         )
 

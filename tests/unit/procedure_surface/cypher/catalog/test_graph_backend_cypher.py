@@ -70,6 +70,16 @@ def test_graph_info_filters_by_database_when_name_is_ambiguous() -> None:
     assert info.node_count == 4
 
 
+def test_graph_info_raises_when_graph_only_in_other_database() -> None:
+    # Graph exists in multiple databases but none match the runner's database.
+    rows = pd.DataFrame([_list_row(database="other1", nodeCount=99), _list_row(database="other2", nodeCount=88)])
+    runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.list": rows})
+    backend = CypherGraphBackend("g", runner)
+
+    with pytest.raises(ValueError, match="There is no projected graph named 'g' in database"):
+        backend.graph_info()
+
+
 def test_exists_returns_flag() -> None:
     runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.exists": pd.DataFrame([{"exists": True}])})
     backend = CypherGraphBackend("g", runner)
