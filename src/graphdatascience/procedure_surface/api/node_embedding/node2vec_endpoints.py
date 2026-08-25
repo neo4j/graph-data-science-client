@@ -57,7 +57,7 @@ class Node2VecEndpoints(ABC):
         positive_sampling_factor
             Factor to multiply positive sampling weights
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
         initial_learning_rate
@@ -145,7 +145,7 @@ class Node2VecEndpoints(ABC):
         positive_sampling_factor
             Factor to multiply positive sampling weights
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
         initial_learning_rate
@@ -237,7 +237,7 @@ class Node2VecEndpoints(ABC):
         positive_sampling_factor
             Factor to multiply positive sampling weights
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
         initial_learning_rate
@@ -321,7 +321,7 @@ class Node2VecEndpoints(ABC):
         positive_sampling_factor
             Factor to multiply positive sampling weights
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         embedding_initializer
             Strategy for initializing node embeddings. Either "UNIFORM" or "NORMALIZED"
         initial_learning_rate

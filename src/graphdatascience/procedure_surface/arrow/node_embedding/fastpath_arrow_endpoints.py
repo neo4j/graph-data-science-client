@@ -1,4 +1,3 @@
-import warnings
 from contextlib import contextmanager
 from typing import Any, Iterator
 
@@ -24,20 +23,20 @@ class FeatureNotEnabledError(Exception):
 
 
 _NOT_ENABLED_MESSAGE = (
-    "FastPath is not enabled for this session. It is a preview feature; "
-    "please reach out to the Neo4j GDS team to have it enabled for your session."
+    "{feature} is not enabled for this session. "
+    "Please reach out to the Neo4j GDS team to have it enabled for your session."
 )
 
 
 @contextmanager
-def _translate_feature_not_enabled() -> Iterator[None]:
+def _translate_feature_not_enabled(endpoint: str, feature: str) -> Iterator[None]:
     """Translate the session's "unsupported action" error into a clear feature-not-enabled error."""
     try:
         yield
     except Exception as e:
         message = str(e)
-        if "Unsupported action" in message and FAST_PATH_ENDPOINT in message:
-            raise FeatureNotEnabledError(_NOT_ENABLED_MESSAGE) from e
+        if "Unsupported action" in message and endpoint in message:
+            raise FeatureNotEnabledError(_NOT_ENABLED_MESSAGE.format(feature=feature)) from e
         raise
 
 
@@ -48,11 +47,6 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         write_protocol: WriteProtocol | None = None,
         show_progress: bool = True,
     ):
-        warnings.warn(
-            "FastPath is a preview feature and may change or be removed in future releases.",
-            UserWarning,
-            stacklevel=2,
-        )
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
@@ -62,24 +56,24 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         G: Graph,
         base_node_label: str,
         event_node_label: str,
-        dimension: int,
-        max_elapsed_time: int,
-        num_elapsed_times: int,
+        embedding_dimension: int,
+        lookback_horizon: int,
+        num_time_anchors: int,
         *,
-        categorical_event_properties: list[str] = [],
+        event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float = 1.0,
-        event_features: str | None = None,
+        decay_rate: float = 1.0,
+        event_node_feature_vector_property: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int = -1,
+        event_node_ignored_category: int = -1,
         next_relationship_type: str | None = None,
-        output_time: float | None = None,
-        output_time_property: str | None = None,
+        observation_time: float | None = None,
+        base_node_observation_time_property: str | None = None,
         random_seed: Any | None = None,
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
-        time_node_property: str | None = None,
+        event_node_time_property: str | None = None,
         job_id: str | None = None,
     ) -> JobHandle:
         """Start the FastPath algorithm and return a :class:`JobHandle`.
@@ -92,28 +86,28 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         config = self._node_property_endpoints.create_base_config(
             G,
             base_node_label=base_node_label,
-            categorical_event_properties=categorical_event_properties,
+            event_node_categorical_properties=event_node_categorical_properties,
             context_node_label=context_node_label,
-            decay_factor=decay_factor,
-            dimension=dimension,
-            event_features=event_features,
+            decay_rate=decay_rate,
+            embedding_dimension=embedding_dimension,
+            event_node_feature_vector_property=event_node_feature_vector_property,
             event_node_label=event_node_label,
             first_relationship_type=first_relationship_type,
-            ignored_event_category=ignored_event_category,
-            max_elapsed_time=max_elapsed_time,
+            event_node_ignored_category=event_node_ignored_category,
+            lookback_horizon=lookback_horizon,
             next_relationship_type=next_relationship_type,
-            num_elapsed_times=num_elapsed_times,
-            output_time=output_time,
-            output_time_property=output_time_property,
+            num_time_anchors=num_time_anchors,
+            observation_time=observation_time,
+            base_node_observation_time_property=base_node_observation_time_property,
             random_seed=random_seed,
             relationship_types=relationship_types,
             smoothing_rate=smoothing_rate,
             smoothing_window=smoothing_window,
-            time_node_property=time_node_property,
+            event_node_time_property=event_node_time_property,
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled():
+        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             return self._node_property_endpoints.run_job(G, FAST_PATH_ENDPOINT, config)
 
     def mutate(
@@ -122,51 +116,51 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         base_node_label: str,
         event_node_label: str,
         mutate_property: str,
-        dimension: int,
-        max_elapsed_time: int,
-        num_elapsed_times: int,
+        embedding_dimension: int,
+        lookback_horizon: int,
+        num_time_anchors: int,
         *,
-        categorical_event_properties: list[str] = [],
+        event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float = 1.0,
-        event_features: str | None = None,
+        decay_rate: float = 1.0,
+        event_node_feature_vector_property: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int = -1,
+        event_node_ignored_category: int = -1,
         next_relationship_type: str | None = None,
-        output_time: float | None = None,
-        output_time_property: str | None = None,
+        observation_time: float | None = None,
+        base_node_observation_time_property: str | None = None,
         random_seed: Any | None = None,
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
-        time_node_property: str | None = None,
+        event_node_time_property: str | None = None,
         job_id: str | None = None,
     ) -> FastPathMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
             base_node_label=base_node_label,
-            categorical_event_properties=categorical_event_properties,
+            event_node_categorical_properties=event_node_categorical_properties,
             context_node_label=context_node_label,
-            decay_factor=decay_factor,
-            dimension=dimension,
-            event_features=event_features,
+            decay_rate=decay_rate,
+            embedding_dimension=embedding_dimension,
+            event_node_feature_vector_property=event_node_feature_vector_property,
             event_node_label=event_node_label,
             first_relationship_type=first_relationship_type,
-            ignored_event_category=ignored_event_category,
-            max_elapsed_time=max_elapsed_time,
+            event_node_ignored_category=event_node_ignored_category,
+            lookback_horizon=lookback_horizon,
             next_relationship_type=next_relationship_type,
-            num_elapsed_times=num_elapsed_times,
-            output_time=output_time,
-            output_time_property=output_time_property,
+            num_time_anchors=num_time_anchors,
+            observation_time=observation_time,
+            base_node_observation_time_property=base_node_observation_time_property,
             random_seed=random_seed,
             relationship_types=relationship_types,
             smoothing_rate=smoothing_rate,
             smoothing_window=smoothing_window,
-            time_node_property=time_node_property,
+            event_node_time_property=event_node_time_property,
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled():
+        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             result = self._node_property_endpoints.run_job_and_mutate(FAST_PATH_ENDPOINT, config, mutate_property)
 
         return FastPathMutateResult(**result)
@@ -176,51 +170,51 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         G: Graph,
         base_node_label: str,
         event_node_label: str,
-        dimension: int,
-        max_elapsed_time: int,
-        num_elapsed_times: int,
+        embedding_dimension: int,
+        lookback_horizon: int,
+        num_time_anchors: int,
         *,
-        categorical_event_properties: list[str] = [],
+        event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float = 1.0,
-        event_features: str | None = None,
+        decay_rate: float = 1.0,
+        event_node_feature_vector_property: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int = -1,
+        event_node_ignored_category: int = -1,
         next_relationship_type: str | None = None,
-        output_time: float | None = None,
-        output_time_property: str | None = None,
+        observation_time: float | None = None,
+        base_node_observation_time_property: str | None = None,
         random_seed: Any | None = None,
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
-        time_node_property: str | None = None,
+        event_node_time_property: str | None = None,
         job_id: str | None = None,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
             base_node_label=base_node_label,
-            categorical_event_properties=categorical_event_properties,
+            event_node_categorical_properties=event_node_categorical_properties,
             context_node_label=context_node_label,
-            decay_factor=decay_factor,
-            dimension=dimension,
-            event_features=event_features,
+            decay_rate=decay_rate,
+            embedding_dimension=embedding_dimension,
+            event_node_feature_vector_property=event_node_feature_vector_property,
             event_node_label=event_node_label,
             first_relationship_type=first_relationship_type,
-            ignored_event_category=ignored_event_category,
-            max_elapsed_time=max_elapsed_time,
+            event_node_ignored_category=event_node_ignored_category,
+            lookback_horizon=lookback_horizon,
             next_relationship_type=next_relationship_type,
-            num_elapsed_times=num_elapsed_times,
-            output_time=output_time,
-            output_time_property=output_time_property,
+            num_time_anchors=num_time_anchors,
+            observation_time=observation_time,
+            base_node_observation_time_property=base_node_observation_time_property,
             random_seed=random_seed,
             relationship_types=relationship_types,
             smoothing_rate=smoothing_rate,
             smoothing_window=smoothing_window,
-            time_node_property=time_node_property,
+            event_node_time_property=event_node_time_property,
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled():
+        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             return self._node_property_endpoints.run_job_and_stream(FAST_PATH_ENDPOINT, G, config)
 
     def write(
@@ -229,52 +223,52 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         base_node_label: str,
         event_node_label: str,
         write_property: str,
-        dimension: int,
-        max_elapsed_time: int,
-        num_elapsed_times: int,
+        embedding_dimension: int,
+        lookback_horizon: int,
+        num_time_anchors: int,
         *,
-        categorical_event_properties: list[str] = [],
+        event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float = 1.0,
-        event_features: str | None = None,
+        decay_rate: float = 1.0,
+        event_node_feature_vector_property: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int = -1,
+        event_node_ignored_category: int = -1,
         next_relationship_type: str | None = None,
-        output_time: float | None = None,
-        output_time_property: str | None = None,
+        observation_time: float | None = None,
+        base_node_observation_time_property: str | None = None,
         random_seed: Any | None = None,
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
-        time_node_property: str | None = None,
+        event_node_time_property: str | None = None,
         write_concurrency: int | None = None,
         job_id: str | None = None,
     ) -> FastPathWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
             base_node_label=base_node_label,
-            categorical_event_properties=categorical_event_properties,
+            event_node_categorical_properties=event_node_categorical_properties,
             context_node_label=context_node_label,
-            decay_factor=decay_factor,
-            dimension=dimension,
-            event_features=event_features,
+            decay_rate=decay_rate,
+            embedding_dimension=embedding_dimension,
+            event_node_feature_vector_property=event_node_feature_vector_property,
             event_node_label=event_node_label,
             first_relationship_type=first_relationship_type,
-            ignored_event_category=ignored_event_category,
-            max_elapsed_time=max_elapsed_time,
+            event_node_ignored_category=event_node_ignored_category,
+            lookback_horizon=lookback_horizon,
             next_relationship_type=next_relationship_type,
-            num_elapsed_times=num_elapsed_times,
-            output_time=output_time,
-            output_time_property=output_time_property,
+            num_time_anchors=num_time_anchors,
+            observation_time=observation_time,
+            base_node_observation_time_property=base_node_observation_time_property,
             random_seed=random_seed,
             relationship_types=relationship_types,
             smoothing_rate=smoothing_rate,
             smoothing_window=smoothing_window,
-            time_node_property=time_node_property,
+            event_node_time_property=event_node_time_property,
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled():
+        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             result = self._node_property_endpoints.run_job_and_write(
                 FAST_PATH_ENDPOINT,
                 G,

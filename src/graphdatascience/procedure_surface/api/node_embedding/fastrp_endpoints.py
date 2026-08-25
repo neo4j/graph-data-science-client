@@ -43,7 +43,7 @@ class FastRPEndpoints(ABC):
         mutate_property
             Name of the node property to store the results in.
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         iteration_weights
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
         normalization_strength
@@ -108,7 +108,7 @@ class FastRPEndpoints(ABC):
         G
            Graph object to use
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         iteration_weights
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
         normalization_strength
@@ -173,7 +173,7 @@ class FastRPEndpoints(ABC):
         G
            Graph object to use
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         iteration_weights
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
         normalization_strength
@@ -242,7 +242,7 @@ class FastRPEndpoints(ABC):
         write_property
             Name of the node property to store the results in.
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         iteration_weights
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
         normalization_strength
@@ -303,7 +303,7 @@ class FastRPEndpoints(ABC):
         G
            Graph object to use or a dictionary representing the graph dimensions.
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         iteration_weights
             Weights for each iteration. Controls the influence of each iteration on the final embedding.
         normalization_strength

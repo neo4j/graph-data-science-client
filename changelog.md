@@ -24,6 +24,7 @@
 * Added `gds.pipeline.get` to retrieve a pipeline from the pipeline catalog, and pipeline objects can now return their pipeline info.
 * `GdsSessions.get_or_create` now accepts a `show_progress` parameter to control whether the returned client prints its own progress bars.
 * Added an optional `overwrite` parameter to `gds.graph.project`, `gds.graph.generate`, `gds.graph.construct`, `gds.graph.filter` and `gds.graph.sample` (and their async/session variants). When set to `True`, an existing graph with the same name is dropped before the new graph is created.
+* Expose `gds.fast_path` for Aura Graph Analytics / GDS Sessions. 
 
 ## Bug fixes
 
