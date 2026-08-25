@@ -16,8 +16,7 @@ from tests.integration.procedure_surface.arrow.graph_creation_helper import (
     create_graph_from_db,
 )
 
-# FastPath emits a preview warning on construction; tests that aren't asserting on it
-# filter it out explicitly via this marker.
+# Marker for filtering out preview warnings; kept for future preview endpoints.
 ignore_preview_warning = pytest.mark.filterwarnings("ignore:FastPath is a preview feature:UserWarning")
 
 graph = """
@@ -66,27 +65,25 @@ def fastpath_endpoints(arrow_client_runtime: AuthenticatedArrowClient) -> Genera
     yield FastPathArrowEndpoints(arrow_client_runtime)
 
 
-@ignore_preview_warning
 def test_fastpath_stream(fastpath_endpoints: FastPathArrowEndpoints, sample_graph: Graph) -> None:
     """Test FastPath stream operation."""
     result_df = fastpath_endpoints.stream(
         G=sample_graph,
         base_node_label="Base",
         event_node_label="Event",
-        dimension=16,
-        max_elapsed_time=10,
-        num_elapsed_times=4,
+        embedding_dimension=16,
+        lookback_horizon=10,
+        num_time_anchors=4,
         first_relationship_type="HAS_EVENT",
         next_relationship_type="NEXT",
-        time_node_property="time",
-        output_time=3,
+        event_node_time_property="time",
+        observation_time=3,
     )
 
     assert "nodeId" in result_df.columns
     assert "embedding" in result_df.columns
 
 
-@ignore_preview_warning
 def test_fastpath_mutate(fastpath_endpoints: FastPathArrowEndpoints, sample_graph: Graph) -> None:
     """Test FastPath mutate operation."""
     result = fastpath_endpoints.mutate(
@@ -94,13 +91,13 @@ def test_fastpath_mutate(fastpath_endpoints: FastPathArrowEndpoints, sample_grap
         mutate_property="fastpath_embedding",
         base_node_label="Base",
         event_node_label="Event",
-        dimension=16,
-        max_elapsed_time=10,
-        num_elapsed_times=4,
+        embedding_dimension=16,
+        lookback_horizon=10,
+        num_time_anchors=4,
         first_relationship_type="HAS_EVENT",
         next_relationship_type="NEXT",
-        time_node_property="time",
-        output_time=3,
+        event_node_time_property="time",
+        observation_time=3,
     )
 
     assert result.compute_millis >= 0
@@ -110,7 +107,6 @@ def test_fastpath_mutate(fastpath_endpoints: FastPathArrowEndpoints, sample_grap
 
 
 @pytest.mark.db_integration
-@ignore_preview_warning
 def test_fastpath_write(
     arrow_client_runtime: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph
 ) -> None:
@@ -120,13 +116,13 @@ def test_fastpath_write(
         write_property="fastpath_embedding",
         base_node_label="Base",
         event_node_label="Event",
-        dimension=16,
-        max_elapsed_time=10,
-        num_elapsed_times=4,
+        embedding_dimension=16,
+        lookback_horizon=10,
+        num_time_anchors=4,
         first_relationship_type="HAS_EVENT",
         next_relationship_type="NEXT",
-        time_node_property="time",
-        output_time=3,
+        event_node_time_property="time",
+        observation_time=3,
     )
 
     assert isinstance(result, FastPathWriteResult)
@@ -144,12 +140,6 @@ def test_fastpath_write(
     )
 
 
-def test_fastpath_emits_preview_warning(arrow_client_runtime: AuthenticatedArrowClient) -> None:
-    with pytest.warns(UserWarning, match="preview feature"):
-        FastPathArrowEndpoints(arrow_client_runtime)
-
-
-@ignore_preview_warning
 def test_fastpath_not_enabled_without_runtime(arrow_client: AuthenticatedArrowClient) -> None:
     # arrow_client is the plain session WITHOUT the python-runtime API, so FastPath is unavailable.
     with create_graph(arrow_client, "g_plain", graph) as G:
@@ -158,12 +148,12 @@ def test_fastpath_not_enabled_without_runtime(arrow_client: AuthenticatedArrowCl
             endpoints.stream(
                 G=G,
                 base_node_label="Base",
-                dimension=16,
+                embedding_dimension=16,
                 event_node_label="Event",
-                max_elapsed_time=10,
-                num_elapsed_times=4,
+                lookback_horizon=10,
+                num_time_anchors=4,
                 first_relationship_type="HAS_EVENT",
                 next_relationship_type="NEXT",
-                time_node_property="time",
-                output_time=3,
+                event_node_time_property="time",
+                observation_time=3,
             )

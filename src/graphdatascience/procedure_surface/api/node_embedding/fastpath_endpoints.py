@@ -30,24 +30,24 @@ class FastPathEndpoints(ABC):
         base_node_label: str,
         event_node_label: str,
         mutate_property: str,
-        dimension: int,
-        max_elapsed_time: int,
-        num_elapsed_times: int,
+        embedding_dimension: int,
+        lookback_horizon: int,
+        num_time_anchors: int,
         *,
-        categorical_event_properties: list[str] = [],
+        event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float = 1.0,
-        event_features: str | None = None,
+        decay_rate: float = 1.0,
+        event_node_feature_vector_property: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int = -1,
+        event_node_ignored_category: int = -1,
         next_relationship_type: str | None = None,
-        output_time: float | None = None,
-        output_time_property: str | None = None,
+        observation_time: float | None = None,
+        base_node_observation_time_property: str | None = None,
         random_seed: Any | None = None,
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
-        time_node_property: str | None = None,
+        event_node_time_property: str | None = None,
         job_id: str | None = None,
     ) -> FastPathMutateResult:
         """
@@ -63,31 +63,31 @@ class FastPathEndpoints(ABC):
             Node label marking the event nodes linked to base nodes.
         mutate_property
             Name of the node property to store the results in.
-        dimension
+        embedding_dimension
             Output dimensionality of the embeddings.
-        max_elapsed_time
-            Maximum age of events (relative to the output time) that are processed.
-        num_elapsed_times
+        lookback_horizon
+            Maximum age of events (relative to the observation time) that are processed.
+        num_time_anchors
             Number of grid points used to discretize elapsed time.
-        categorical_event_properties
+        event_node_categorical_properties
             Event node properties holding categorical values.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         context_node_label
             Optional node label for context nodes describing events.
-        decay_factor
+        decay_rate
             Controls how quickly the influence of older events decays.
-        event_features
+        event_node_feature_vector_property
             Name of the vector property on event nodes holding numerical features.
         first_relationship_type
             Relationship type connecting base nodes to the first event in a chain.
-        ignored_event_category
+        event_node_ignored_category
             Event category value treated as missing/ignored.
         next_relationship_type
             Relationship type ordering sequential events in a chain.
-        output_time
+        observation_time
             Single fixed timestamp the embeddings are produced for.
-        output_time_property
+        base_node_observation_time_property
             Base node property giving a per-node output timestamp.
         random_seed
             Seed for reproducible random vector generation.
@@ -95,7 +95,7 @@ class FastPathEndpoints(ABC):
             Controls how event embedding similarity decays with time distance.
         smoothing_window
             Window size for aggregating embeddings across nearby grid times.
-        time_node_property
+        event_node_time_property
             Numeric event node property holding the event timestamp.
         job_id
             Identifier for the computation.
@@ -112,24 +112,24 @@ class FastPathEndpoints(ABC):
         G: Graph,
         base_node_label: str,
         event_node_label: str,
-        dimension: int,
-        max_elapsed_time: int,
-        num_elapsed_times: int,
+        embedding_dimension: int,
+        lookback_horizon: int,
+        num_time_anchors: int,
         *,
-        categorical_event_properties: list[str] = [],
+        event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float = 1.0,
-        event_features: str | None = None,
+        decay_rate: float = 1.0,
+        event_node_feature_vector_property: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int = -1,
+        event_node_ignored_category: int = -1,
         next_relationship_type: str | None = None,
-        output_time: float | None = None,
-        output_time_property: str | None = None,
+        observation_time: float | None = None,
+        base_node_observation_time_property: str | None = None,
         random_seed: Any | None = None,
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
-        time_node_property: str | None = None,
+        event_node_time_property: str | None = None,
         job_id: str | None = None,
     ) -> DataFrame:
         """
@@ -143,31 +143,31 @@ class FastPathEndpoints(ABC):
             Node label identifying the nodes to compute embeddings for.
         event_node_label
             Node label marking the event nodes linked to base nodes.
-        dimension
+        embedding_dimension
             Output dimensionality of the embeddings.
-        max_elapsed_time
-            Maximum age of events (relative to the output time) that are processed.
-        num_elapsed_times
+        lookback_horizon
+            Maximum age of events (relative to the observation time) that are processed.
+        num_time_anchors
             Number of grid points used to discretize elapsed time.
-        categorical_event_properties
+        event_node_categorical_properties
             Event node properties holding categorical values.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         context_node_label
             Optional node label for context nodes describing events.
-        decay_factor
+        decay_rate
             Controls how quickly the influence of older events decays.
-        event_features
+        event_node_feature_vector_property
             Name of the vector property on event nodes holding numerical features.
         first_relationship_type
             Relationship type connecting base nodes to the first event in a chain.
-        ignored_event_category
+        event_node_ignored_category
             Event category value treated as missing/ignored.
         next_relationship_type
             Relationship type ordering sequential events in a chain.
-        output_time
+        observation_time
             Single fixed timestamp the embeddings are produced for.
-        output_time_property
+        base_node_observation_time_property
             Base node property giving a per-node output timestamp.
         random_seed
             Seed for reproducible random vector generation.
@@ -175,7 +175,7 @@ class FastPathEndpoints(ABC):
             Controls how event embedding similarity decays with time distance.
         smoothing_window
             Window size for aggregating embeddings across nearby grid times.
-        time_node_property
+        event_node_time_property
             Numeric event node property holding the event timestamp.
         job_id
             Identifier for the computation.
@@ -193,24 +193,24 @@ class FastPathEndpoints(ABC):
         base_node_label: str,
         event_node_label: str,
         write_property: str,
-        dimension: int,
-        max_elapsed_time: int,
-        num_elapsed_times: int,
+        embedding_dimension: int,
+        lookback_horizon: int,
+        num_time_anchors: int,
         *,
-        categorical_event_properties: list[str] = [],
+        event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
         context_node_label: str | None = None,
-        decay_factor: float = 1.0,
-        event_features: str | None = None,
+        decay_rate: float = 1.0,
+        event_node_feature_vector_property: str | None = None,
         first_relationship_type: str | None = None,
-        ignored_event_category: int = -1,
+        event_node_ignored_category: int = -1,
         next_relationship_type: str | None = None,
-        output_time: float | None = None,
-        output_time_property: str | None = None,
+        observation_time: float | None = None,
+        base_node_observation_time_property: str | None = None,
         random_seed: Any | None = None,
         smoothing_rate: float = 0.0,
         smoothing_window: int = 0,
-        time_node_property: str | None = None,
+        event_node_time_property: str | None = None,
         write_concurrency: int | None = None,
         job_id: str | None = None,
     ) -> FastPathWriteResult:
@@ -227,31 +227,31 @@ class FastPathEndpoints(ABC):
             Node label marking the event nodes linked to base nodes.
         write_property
             Name of the node property to store the results in.
-        dimension
+        embedding_dimension
             Output dimensionality of the embeddings.
-        max_elapsed_time
-            Maximum age of events (relative to the output time) that are processed.
-        num_elapsed_times
+        lookback_horizon
+            Maximum age of events (relative to the observation time) that are processed.
+        num_time_anchors
             Number of grid points used to discretize elapsed time.
-        categorical_event_properties
+        event_node_categorical_properties
             Event node properties holding categorical values.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         context_node_label
             Optional node label for context nodes describing events.
-        decay_factor
+        decay_rate
             Controls how quickly the influence of older events decays.
-        event_features
+        event_node_feature_vector_property
             Name of the vector property on event nodes holding numerical features.
         first_relationship_type
             Relationship type connecting base nodes to the first event in a chain.
-        ignored_event_category
+        event_node_ignored_category
             Event category value treated as missing/ignored.
         next_relationship_type
             Relationship type ordering sequential events in a chain.
-        output_time
+        observation_time
             Single fixed timestamp the embeddings are produced for.
-        output_time_property
+        base_node_observation_time_property
             Base node property giving a per-node output timestamp.
         random_seed
             Seed for reproducible random vector generation.
@@ -259,7 +259,7 @@ class FastPathEndpoints(ABC):
             Controls how event embedding similarity decays with time distance.
         smoothing_window
             Window size for aggregating embeddings across nearby grid times.
-        time_node_property
+        event_node_time_property
             Numeric event node property holding the event timestamp.
         write_concurrency
             Number of concurrent threads to use for writing.
