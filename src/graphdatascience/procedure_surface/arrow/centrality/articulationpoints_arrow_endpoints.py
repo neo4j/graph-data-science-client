@@ -122,11 +122,18 @@ class ArticulationPointsArrowEndpoints(ArticulationPointsEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
     ) -> DataFrame:
-        raise NotImplementedError(
-            "Stream mode is not supported for ArticulationPoints arrow endpoints. "
-            "The result columns cannot be preserved with the current implementation. "
-            "Use cypher endpoints for stream functionality."
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            concurrency=concurrency,
+            job_id=job_id,
+            log_progress=log_progress,
+            node_labels=node_labels,
+            relationship_types=relationship_types,
+            sudo=sudo,
+            username=username,
         )
+
+        return self._node_property_endpoints.run_job_and_stream("v2/centrality.articulationPoints", G, config)
 
     def write(
         self,
