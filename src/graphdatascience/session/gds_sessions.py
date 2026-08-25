@@ -209,7 +209,7 @@ class GdsSessions:
             cloud_location (CloudLocation | None): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
-            arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client.
+            arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client. The key ``call_timeout`` sets the per-call RPC timeout in seconds (default 30s).
             show_progress (bool): Whether the returned client should print its own job-progress bars (projection, algorithm execution, ...). Defaults to True.
         Returns
         -------

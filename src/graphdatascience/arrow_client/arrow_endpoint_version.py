@@ -19,7 +19,9 @@ class ArrowEndpointVersion(Enum):
     def check_version_compatibility(
         compatible_versions: set[ArrowEndpointVersion], arrow_client: AuthenticatedArrowClient
     ) -> None:
-        supported_server_versions = {action.type.split("/")[0].lower() for action in arrow_client.list_actions()}
+        supported_server_versions = {
+            action.type.split("/")[0].lower() for action in arrow_client.list_actions_with_retry()
+        }
         for version in compatible_versions:
             if version.version() in supported_server_versions:
                 return
