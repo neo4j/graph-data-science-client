@@ -64,7 +64,7 @@ class FastPathEndpoints(ABC):
         mutate_property
             Name of the node property to store the results in.
         embedding_dimension
-            Output dimensionality of the embeddings.
+            Output dimensionality of the embeddings
         lookback_horizon
             Maximum age of events (relative to the observation time) that are processed.
         num_time_anchors
@@ -144,7 +144,7 @@ class FastPathEndpoints(ABC):
         event_node_label
             Node label marking the event nodes linked to base nodes.
         embedding_dimension
-            Output dimensionality of the embeddings.
+            Output dimensionality of the embeddings
         lookback_horizon
             Maximum age of events (relative to the observation time) that are processed.
         num_time_anchors
@@ -228,7 +228,7 @@ class FastPathEndpoints(ABC):
         write_property
             Name of the node property to store the results in.
         embedding_dimension
-            Output dimensionality of the embeddings.
+            Output dimensionality of the embeddings
         lookback_horizon
             Maximum age of events (relative to the observation time) that are processed.
         num_time_anchors

@@ -96,7 +96,7 @@ class GraphSageTrainEndpoints(ABC):
         negative_sample_weight
             Weight of negative samples in the loss function
         embedding_dimension
-            The dimension of the generated embeddings
+            Output dimensionality of the embeddings
         tolerance
             Minimum change in loss between iterations for early stopping an epoch.
         learning_rate
