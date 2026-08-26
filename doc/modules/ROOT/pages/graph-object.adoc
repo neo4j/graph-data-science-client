@@ -106,44 +106,12 @@ The Cypher projection in the client is similar to its link:{gds-docs-base-uri}/m
 
 [source, python, role=nocollapse]
 ----
-G, result = gds.graph.project.cypher(
+G, result = gds.graph.project(
+    # The query has to use the .remote endpoint in AGA,
+    # which does not include the graph name
     query="""
-      CALL () {
-        MATCH (source:City)-[rel:FLY_TO]->(target:City)
-        RETURN source, rel, target, 
-               { population: source.population } AS sourceNodeProperties, 
-               { population: target.population } AS targetNodeProperties,
-               { cost: rel.cost } AS relProperties
-      }
-      RETURN gds.graph.project.remote(
-        source, 
-        target, 
-        {
-          sourceNodeLabels: labels(source),
-          targetNodeLabels: labels(target),
-          sourceNodeProperties: properties(sourceNodeProperties),
-          targetNodeProperties: properties(targetNodeProperties),
-          relationshipType: type(rel),
-          relationshipProperties: properties(relProperties)
-        }
-      )
-    """,
-    database="neo4j",      #  Target database
-    graph_name="offices"   #  Method parameter
-)
-----
-=====
-
-[.include-with-Neo4j-server-and-AuraDS]
-=====
-
-[source,python,group=graph-cyhpher-project,role=nocollapse]
-----
-G, result = gds.graph.project.cypher(
-    """
       MATCH (source:City)-[rel:FLY_TO]->(target:City)
-      RETURN gds.graph.project(
-        $graph_name, 
+      RETURN gds.graph.project.remote(
         source,
         target, 
         {
@@ -156,8 +124,33 @@ G, result = gds.graph.project.cypher(
         }
       )
     """,                   #  Cypher query
-    database="neo4j",      #  Target database
-    graph_name="offices"   #  Query parameter
+    graph_name="offices"   #  Method parameter
+)
+----
+=====
+
+[.include-with-Neo4j-server-and-AuraDS]
+=====
+
+[source,python,group=graph-cyhpher-project,role=nocollapse]
+----
+G, result = gds.graph.project.cypher(
+    query="""
+      MATCH (source:City)-[rel:FLY_TO]->(target:City)
+      RETURN gds.graph.project(
+        'offices', 
+        source,
+        target, 
+        {
+            sourceNodeLabels: labels(source),
+            targetNodeLabels: labels(target),
+            sourceNodeProperties: { population: source.population },
+            targetNodeProperties: { population: target.population },
+            relationshipType: type(rel),
+            relationshipProperties: { cost: rel.cost }
+        }
+      )
+    """                   #  Cypher query
 )
 ----
 =====
@@ -170,7 +163,7 @@ It expects the query to end with a single `RETURN gds.graph.project(...)` aggreg
 If your query needs additional aggregations or a renamed result row, use `gds.run_cypher` together with `gds.graph.get` to achieve the same result.
 
 [[other-creation-methods]]
-== Other ways to create graphs
+== Other ways to generate graphs
 
 To generate a graph from a distribution, use `gds.graph.generate`.
 

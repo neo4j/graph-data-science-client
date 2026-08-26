@@ -51,14 +51,14 @@ If the `neo4j` database does not exist or you want to use a different database, 
 
 [source, python, role=no-test]
 ----
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="my-db")
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="neo4j")
 ----
 
 You can also change the database after creating the `GraphDataScience` object:
 
 [source, python, role=no-test]
 ----
-gds.set_database("my-db")
+gds.set_database("neo4j")
 ----
 =====
 ====

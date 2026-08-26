@@ -55,10 +55,10 @@ gds.graph.node_property.stream(G, node_property="population")
 .Result (NOTE: The node IDs can be different.)
 [opts="header"]
 |===
-|  | nodeId | propertyValue
-|0 | 3      | 360000
-|1 | 4      | 8800000
-|2 | 5      | 105000
+| nodeId | propertyValue
+| 3      | 360000
+| 4      | 8800000
+| 5      | 105000
 |===
 =====
 
@@ -73,10 +73,10 @@ gds.graph.node_properties.stream(G, node_properties=["population"])
 .Result (NOTE: The node IDs can be different.)
 [opts="header"]
 |===
-|  | nodeId | propertyValue
-|0 | 3      | 360000
-|1 | 4      | 8800000
-|2 | 5      | 105000
+| nodeId | population
+| 3      | 360000
+| 4      | 8800000
+| 5      | 105000
 |===
 =====
 ====
@@ -106,10 +106,10 @@ gds.graph.node_properties.stream(G, node_properties=["population"], db_node_prop
 .Result (NOTE: The node IDs can be different.)
 [opts="header"]
 |===
-|  | nodeId | propertyValue | name
-|0 | 3      | 360000        | Malmö
-|1 | 4      | 8800000       | London
-|2 | 5      | 105000        | San Mateo
+| nodeId | population | name
+| 3      | 360000     | Malmö
+| 4      | 8800000    | London
+| 5      | 105000     | San Mateo
 |===
 
 [[graph-object-streaming-rel-properties]]
@@ -135,11 +135,11 @@ gds.graph.relationship_property.stream(G, relationship_property="cost")
 .Result (NOTE: The node IDs can be different.)
 [opts="header"]
 |===
-|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
-|0 | 3            | 4            | FLY_TO           | 200.0
-|1 | 4            | 3            | FLY_TO           |      200.0
-|2 | 4            | 5            | FLY_TO           |      1000.0
-|3 | 5            | 4            | FLY_TO           |     1000.0
+| sourceNodeId | targetNodeId | relationshipType | propertyValue
+| 3            | 4            | FLY_TO           | 200.0
+| 4            | 3            | FLY_TO           | 200.0
+| 4            | 5            | FLY_TO           | 1000.0
+| 5            | 4            | FLY_TO           | 1000.0
 |===
 =====
 
@@ -154,11 +154,11 @@ gds.graph.relationship_properties.stream(G, relationship_properties=["cost"])
 .Result (NOTE: The node IDs can be different.)
 [opts="header"]
 |===
-|  | sourceNodeId | targetNodeId | relationshipType | propertyValue
-|0 | 3            | 4            | FLY_TO           | 200.0
-|1 | 4            | 3            | FLY_TO           |      200.0
-|2 | 4            | 5            | FLY_TO           |      1000.0
-|3 | 5            | 4            | FLY_TO           |     1000.0
+| sourceNodeId | targetNodeId | relationshipType | cost
+| 3            | 4            | FLY_TO           | 200.0
+| 4            | 3            | FLY_TO           | 200.0
+| 4            | 5            | FLY_TO           | 1000.0
+| 5            | 4            | FLY_TO           | 1000.0
 |===
 =====
 ====
@@ -178,11 +178,11 @@ gds.graph.relationships.stream(G)
 .Result (NOTE: The node IDs can be different.)
 [opts="header"]
 |===
-|  | sourceNodeId | targetNodeId | relationshipType
-|0 | 3            | 4            | FLY_TO
-|1 | 4            | 3            | FLY_TO
-|2 | 4            | 5            | FLY_TO
-|3 | 5            | 4            | FLY_TO
+| sourceNodeId | targetNodeId | relationshipType
+| 3            | 4            | FLY_TO
+| 4            | 3            | FLY_TO
+| 4            | 5            | FLY_TO
+| 5            | 4            | FLY_TO
 |===
 
 The `RelationshipsDataFrame` class includes a `by_rel_type` method to return a map between relationship types and lists of source node IDs and target node IDs respectively.
