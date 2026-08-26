@@ -95,7 +95,7 @@ Read more about the syntax in the link:{gds-docs-base-uri}/management-ops/projec
 ====
 
 [[cypher-projection]]
-=== Cypher Projection
+=== Cypher projection
 
 The Cypher projection in the client is similar to its link:{gds-docs-base-uri}/management-ops/projections/graph-project-cypher-projection/[Cypher API] counterpart.
 
