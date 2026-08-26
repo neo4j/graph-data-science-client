@@ -72,7 +72,7 @@ G, result = gds.graph.project.native(
 You can use the wildcard `\*` in the node_label_filter or relationship_type_filter arguments to project all available node labels or relationship types, respectively (for instance `node_label_filter=["*"]`).
 =====
 
-[.include-with-Neo4j-server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 [source,python,group=graph-project]
 ----
@@ -129,7 +129,7 @@ G, result = gds.graph.project(
 ----
 =====
 
-[.include-with-Neo4j-server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source,python,group=graph-cyhpher-project,role=nocollapse]

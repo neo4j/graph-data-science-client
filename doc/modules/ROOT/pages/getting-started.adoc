@@ -31,7 +31,7 @@ gds = sessions.get_or_create(
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 If you are connecting to a Neo4j database with the link:{gds-docs-base-uri}/installation/neo4j-server/[GDS Plugin] installed, or to an link:https://neo4j.com/cloud/graph-data-science/[AuraDS instance].
 
@@ -81,7 +81,7 @@ gds.verify_connectivity()
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python, role=no-test]
@@ -103,7 +103,7 @@ Check if the GDS library running on the server has an enterprise license:
 Aura Graph Analytics sessions always use an enterprise license.
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python, role=no-test]
@@ -163,7 +163,7 @@ assert G_office.node_properties()["City"] == ["rank"]
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python]
@@ -216,7 +216,7 @@ gds.delete()
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python, role=no-test]
