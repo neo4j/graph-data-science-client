@@ -5,7 +5,7 @@ The main entry point to every graph operation is the link:{gds-api-uri}/endpoint
 There are several ways to create a graph with the Python client:
 
 * From a Neo4j database with a <<projection, graph projection>>
-* From an existing in-memory graph or a distribution (see <<other-creation-methods>>)
+* From a distribution or previously created graph (see <<other-creation-methods>>)
 * [[construct]] From xref:load-from-pandas.adoc[Pandas DataFrames] with the `construct` method
 * [[networkx]] From a xref:load-from-networkx.adoc[NetworkX graph]
 
