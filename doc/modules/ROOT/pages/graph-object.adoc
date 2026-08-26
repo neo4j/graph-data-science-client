@@ -59,11 +59,11 @@ The native projection in the client is similar to its link:{gds-docs-base-uri}/m
 [source,python,group=graph-project]
 ----
 G, result = gds.graph.project.native(
-    graph_name="offices",                # Graph name
-    node_label_filter=["City"],          # Node projection
-    relationship_type_filter=["FLY_TO"], # Relationship projection
-    node_properties=["population"]       # Node properties
-    relationship_properties=["cost"]     # Relationship properties
+    graph_name="offices",                 # Graph name
+    node_label_filter=["City"],           # Node projection
+    relationship_type_filter=["FLY_TO"],  # Relationship projection
+    node_properties=["population"],       # Node properties
+    relationship_properties=["cost"]      # Relationship properties
 )
 ----
 
@@ -77,12 +77,12 @@ You can use the wildcard `\*` in the node_label_filter or relationship_type_filt
 [source,python,group=graph-project]
 ----
 G, result = gds.graph.project.native(
-    graph_name="offices",         # Graph name
-    node_projection=["City"],           # Node projection
-    relationship_projection=["FLY_TO"], # Relationship projection
-    node_properties=["population"],     # Node properties
-    relationship_properties=["cost"],   # Relationship properties
-    read_concurrency=4                  # Configuration
+    graph_name="offices",                # Graph name
+    node_projection=["City"],            # Node projection
+    relationship_projection=["FLY_TO"],  # Relationship projection
+    node_properties=["population"],      # Node properties
+    relationship_properties=["cost"],    # Relationship properties
+    read_concurrency=4                   # Configuration
 )
 ----
 
@@ -106,7 +106,7 @@ The Cypher projection in the client is similar to its link:{gds-docs-base-uri}/m
 
 [source, python, role=nocollapse]
 ----
-G, result = gds.graph.project(
+G, result = gds.graph.project.cypher(
     # The query has to use the .remote endpoint in AGA,
     # which does not include the graph name
     query="""
@@ -123,7 +123,7 @@ G, result = gds.graph.project(
             relationshipProperties: { cost: rel.cost }
         }
       )
-    """,                   #  Cypher query
+    """,
     graph_name="offices"   #  Method parameter
 )
 ----
@@ -150,7 +150,7 @@ G, result = gds.graph.project.cypher(
             relationshipProperties: { cost: rel.cost }
         }
       )
-    """                   #  Cypher query
+    """
 )
 ----
 =====
