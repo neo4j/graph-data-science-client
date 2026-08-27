@@ -124,7 +124,7 @@ G, result = gds.graph.project.cypher(
         }
       )
     """,
-    graph_name="offices"   #  Method parameter
+    graph_name="offices-cypher"   #  Method parameter
 )
 ----
 =====
@@ -138,7 +138,7 @@ G, result = gds.graph.project.cypher(
     query="""
       MATCH (source:City)-[rel:FLY_TO]->(target:City)
       RETURN gds.graph.project(
-        'offices', 
+        'offices-cypher', 
         source,
         target, 
         {
