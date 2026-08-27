@@ -190,9 +190,18 @@ class ProjectCypherEndpoints:
         GraphWithCypherProjectResult
             The projected graph and metadata about the projection.
         """
-        result = self._cypher_runner.run_retryable_cypher(
+        result_df = self._cypher_runner.run_retryable_cypher(
             query, QueryType.USER_DIRECTED, params, custom_error=False, mode=QueryMode.READ
-        ).squeeze()
+        )
+
+        if result_df.empty:
+            raise ValueError(
+                "The Cypher projection query produced no rows. "
+                "Please check that the query matches the expected data. "
+                f"Query: {query}"
+            )
+
+        result = result_df.squeeze()
 
         if not isinstance(result, dict):
             raise ValueError(
