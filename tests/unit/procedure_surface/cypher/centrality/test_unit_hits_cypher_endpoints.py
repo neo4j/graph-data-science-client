@@ -9,6 +9,7 @@ from graphdatascience.procedure_surface.api.centrality.hits_endpoints import (
 )
 from graphdatascience.procedure_surface.cypher.centrality.hits_cypher_endpoints import HitsCypherEndpoints
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
+from tests.unit.procedure_surface.cypher.conftest import estimate_mock_result
 
 
 @pytest.fixture
@@ -151,3 +152,16 @@ def test_write_basic(graph: Graph) -> None:
     assert isinstance(result_obj, HitsWriteResult)
     assert result_obj.node_properties_written == 10
     assert result_obj.write_millis == 42
+
+
+def test_estimate_basic(graph: Graph) -> None:
+    query_runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION, {"hits.stats.estimate": pd.DataFrame([estimate_mock_result()])}
+    )
+
+    HitsCypherEndpoints(query_runner).estimate(graph, hits_iterations=5)
+
+    assert len(query_runner.queries) == 1
+    assert "gds.hits.stats.estimate" in query_runner.queries[0]
+    algo_config = query_runner.params[0]["algoConfig"]
+    assert algo_config["hitsIterations"] == 5

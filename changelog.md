@@ -22,6 +22,7 @@
 
 * Added an `algorithms` parameter to `GdsSessions.estimate` to estimate the memory for individual algorithms and their configuration, instead of whole algorithm categories. The parameter accepts either a list of algorithm names or a mapping from algorithm name to configuration. Names are matched case-insensitively, the `gds.` prefix is optional, and Python endpoint names such as `node_embedding.fastrp` are mapped to their GDS procedure names.
 * Added `gds.pipeline.get` to retrieve a pipeline from the pipeline catalog, and pipeline objects can now return their pipeline info.
+* Added support for the HITS algorithm (`gds.hits`) in Aura Graph Analytics sessions, with `stream`, `stats`, `mutate` and `write` modes.
 * `GdsSessions.get_or_create` now accepts a `show_progress` parameter to control whether the returned client prints its own progress bars.
 * Added an optional `overwrite` parameter to `gds.graph.project`, `gds.graph.generate`, `gds.graph.construct`, `gds.graph.filter` and `gds.graph.sample` (and their async/session variants). When set to `True`, an existing graph with the same name is dropped before the new graph is created.
 * Expose `gds.fast_path` for Aura Graph Analytics / GDS Sessions. 
