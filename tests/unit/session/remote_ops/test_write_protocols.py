@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+import neo4j.exceptions
 import pytest
 from pandas import DataFrame
 
@@ -283,3 +284,65 @@ def test_v4_get_status_raises_when_error_field_is_set(arrow_client: MagicMock, q
 
     with pytest.raises(Exception, match="boom"):
         protocol.get_status("my-job")
+
+
+def test_v4_start_job_does_not_retry_when_job_already_started(
+    arrow_client: MagicMock, qr: CollectingQueryRunner
+) -> None:
+    qr.add__mock_result(
+        "gds.arrow.write.v4",
+        neo4j.exceptions.SessionExpired("connection lost"),
+    )
+    qr.add__mock_result(
+        "gds.arrow.job.status.v4",
+        DataFrame([{"status": Status.RUNNING.name, "error": None, "progress": 0.0, "result": None}]),
+    )
+
+    protocol = RemoteWriteBackV4(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job", log_progress=False)
+
+    write_calls = [q for q in qr.queries if "gds.arrow.write.v4" in q]
+    status_calls = [q for q in qr.queries if "gds.arrow.job.status.v4" in q]
+    assert len(write_calls) == 1
+    assert len(status_calls) == 1
+
+
+def test_v4_start_job_retries_when_job_not_started(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+    qr.add__mock_result(
+        "gds.arrow.write.v4",
+        [
+            neo4j.exceptions.SessionExpired("connection lost"),
+            DataFrame([{"host": "leader-host", "port": 7777}]),
+        ],
+    )
+    qr.add__mock_result("gds.arrow.job.status.v4", Exception("job not found"))
+
+    protocol = RemoteWriteBackV4(arrow_client, qr)
+    protocol.start_job(graph_name="g", job_id="my-job", log_progress=False)
+
+    write_calls = [q for q in qr.queries if "gds.arrow.write.v4" in q]
+    status_calls = [q for q in qr.queries if "gds.arrow.job.status.v4" in q]
+    assert len(write_calls) == 2
+    assert len(status_calls) == 1
+
+
+def test_v4_start_job_raises_after_max_attempts(arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+    qr.add__mock_result(
+        "gds.arrow.write.v4",
+        [
+            neo4j.exceptions.SessionExpired("timeout 1"),
+            neo4j.exceptions.SessionExpired("timeout 2"),
+            neo4j.exceptions.SessionExpired("timeout 3"),
+        ],
+    )
+    qr.add__mock_result("gds.arrow.job.status.v4", Exception("job not found"))
+
+    protocol = RemoteWriteBackV4(arrow_client, qr)
+
+    with pytest.raises(neo4j.exceptions.SessionExpired):
+        protocol.start_job(graph_name="g", job_id="my-job", log_progress=False)
+
+    write_calls = [q for q in qr.queries if "gds.arrow.write.v4" in q]
+    status_calls = [q for q in qr.queries if "gds.arrow.job.status.v4" in q]
+    assert len(write_calls) == 3
+    assert len(status_calls) == 3
