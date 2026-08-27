@@ -90,6 +90,14 @@ def test_cypher_projection_rejects_non_aggregation_result() -> None:
         endpoints.cypher("RETURN 1 AS a, 2 AS b")
 
 
+def test_cypher_projection_empty_result_gives_clear_error() -> None:
+    runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"RETURN gds.graph.project": pd.DataFrame(columns=["g"])})
+    endpoints = ProjectCypherEndpoints(runner)
+
+    with pytest.raises(ValueError, match="produced no rows"):
+        endpoints.cypher("MATCH (n)-->(m) RETURN gds.graph.project('g', n, m)")
+
+
 def test_native_overwrite_drops_existing_graph_first() -> None:
     endpoints, runner = _project_endpoints()
 
