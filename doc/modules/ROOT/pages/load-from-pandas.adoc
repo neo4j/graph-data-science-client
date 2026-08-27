@@ -1,4 +1,4 @@
-= Constructing a graph from DataFrames
+= Construct a graph from DataFrames
 
 In addition to projecting a graph from the Neo4j database, it is also possible to create graphs directly from pandas `DataFrame` objects.
 

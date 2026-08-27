@@ -31,7 +31,7 @@ gds = sessions.get_or_create(
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 If you are connecting to a Neo4j database with the link:{gds-docs-base-uri}/installation/neo4j-server/[GDS Plugin] installed, or to an link:https://neo4j.com/cloud/graph-data-science/[AuraDS instance].
 
@@ -47,18 +47,17 @@ gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 The client automatically detects whether it is connected to an AuraDS instance and, if so, applies the recommended non-default Python driver settings.
 
 The `GraphDataScience` object needs the Neo4j database to be available upon construction, and uses the default `neo4j` database by default.
-If the `neo4j` database does not exist or you want to use a different database, use the `database` keyword parameter:
 
 [source, python, role=no-test]
 ----
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="my-db")
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="neo4j")
 ----
 
-You can also change the database after creating the `GraphDataScience` object:
+You can replace `"neo4j"` with a different database, or change the database after creating the `GraphDataScience` object:
 
 [source, python, role=no-test]
 ----
-gds.set_database("my-db")
+gds.set_database("other-db")
 ----
 =====
 ====
@@ -81,7 +80,7 @@ gds.verify_connectivity()
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python, role=no-test]
@@ -103,7 +102,7 @@ Check if the GDS library running on the server has an enterprise license:
 Aura Graph Analytics sessions always use an enterprise license.
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python, role=no-test]
@@ -163,7 +162,7 @@ assert G_office.node_properties()["City"] == ["rank"]
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python]
@@ -216,7 +215,7 @@ gds.delete()
 ----
 =====
 
-[.include-with-Neo4j-Server-and-AuraDS]
+[.include-with-GDS-database-plugin]
 =====
 
 [source, python, role=no-test]
