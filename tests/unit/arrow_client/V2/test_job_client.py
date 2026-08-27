@@ -1,6 +1,8 @@
 from io import StringIO
 
 import pytest
+from pyarrow import ArrowKeyError
+from pyarrow.flight import FlightTimedOutError
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.v2.api_types import UNKNOWN_PROGRESS, JobIdConfig, JobStatus
@@ -238,3 +240,96 @@ def test_get_summary(mocker: MockerFixture) -> None:
         "v2/results.summary", JobIdConfig(jobId=job_id).dump_camel()
     )
     assert result == expected_summary
+
+
+def test_run_job_recovers_when_job_already_started(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "client-job-id"
+    endpoint = "v2/test.endpoint"
+    config = {"jobId": job_id, "param": "value"}
+
+    status = JobStatus(jobId=job_id, progress=0.5, status="RUNNING", description="")
+
+    do_action_with_retry = mocker.Mock()
+    do_action_with_retry.side_effect = [
+        FlightTimedOutError("connection lost"),
+        iter([ArrowTestResult(status.dump_camel())]),
+    ]
+    mock_client.do_action_with_retry = do_action_with_retry
+
+    result = JobClient.run_job(mock_client, endpoint, config)
+
+    assert result == job_id
+    assert do_action_with_retry.call_count == 2
+
+
+def test_run_job_retries_when_job_not_started(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "client-job-id"
+    endpoint = "v2/test.endpoint"
+    config = {"jobId": job_id, "param": "value"}
+
+    do_action_with_retry = mocker.Mock()
+    do_action_with_retry.side_effect = [
+        FlightTimedOutError("connection lost"),
+        ArrowKeyError("job not found"),
+        iter([ArrowTestResult({"jobId": job_id})]),
+    ]
+    mock_client.do_action_with_retry = do_action_with_retry
+
+    result = JobClient.run_job(mock_client, endpoint, config)
+
+    assert result == job_id
+    run_calls = [c for c in do_action_with_retry.call_args_list if c.args[0] == endpoint]
+    status_calls = [c for c in do_action_with_retry.call_args_list if c.args[0] == "v2/jobs.status"]
+    assert len(run_calls) == 2
+    assert len(status_calls) == 1
+
+
+def test_run_job_raises_after_max_attempts(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    job_id = "client-job-id"
+    endpoint = "v2/test.endpoint"
+    config = {"jobId": job_id, "param": "value"}
+
+    do_action_with_retry = mocker.Mock()
+    do_action_with_retry.side_effect = [
+        FlightTimedOutError("timeout 1"),
+        ArrowKeyError("job not found 1"),
+        FlightTimedOutError("timeout 2"),
+        ArrowKeyError("job not found 2"),
+        FlightTimedOutError("timeout 3"),
+        ArrowKeyError("job not found 3"),
+    ]
+    mock_client.do_action_with_retry = do_action_with_retry
+
+    with pytest.raises(FlightTimedOutError):
+        JobClient.run_job(mock_client, endpoint, config)
+
+    run_calls = [c for c in do_action_with_retry.call_args_list if c.args[0] == endpoint]
+    status_calls = [c for c in do_action_with_retry.call_args_list if c.args[0] == "v2/jobs.status"]
+    assert len(run_calls) == 3
+    assert len(status_calls) == 3
+
+
+def test_run_job_generates_job_id_and_retries(mocker: MockerFixture) -> None:
+    mock_client = mocker.Mock()
+    endpoint = "v2/test.endpoint"
+    config = {"param": "value"}
+
+    do_action_with_retry = mocker.Mock()
+    do_action_with_retry.side_effect = [
+        FlightTimedOutError("timeout 1"),
+        ArrowKeyError("job not found"),
+        iter([ArrowTestResult({"jobId": "server-job"})]),
+    ]
+    mock_client.do_action_with_retry = do_action_with_retry
+
+    result = JobClient.run_job(mock_client, endpoint, config)
+
+    assert result == "server-job"
+    assert "jobId" in config
+    run_calls = [c for c in do_action_with_retry.call_args_list if c.args[0] == endpoint]
+    status_calls = [c for c in do_action_with_retry.call_args_list if c.args[0] == "v2/jobs.status"]
+    assert len(run_calls) == 2
+    assert len(status_calls) == 1

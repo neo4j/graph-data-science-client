@@ -33,6 +33,12 @@ from .middleware.user_agent_middleware import UserAgentFactory
 
 T = TypeVar("T")
 
+FLIGHT_TRANSIENT_EXCEPTIONS = (
+    FlightTimedOutError,
+    FlightUnavailableError,
+    FlightInternalError,
+)
+
 
 class AuthenticatedArrowClient:
     """Arrow Flight client used to communicate with the GDS Arrow server."""
@@ -81,11 +87,7 @@ class AuthenticatedArrowClient:
 
         if retry_config is None:
             retry_config = RetryConfigV2(
-                retryable_exceptions=[
-                    FlightTimedOutError,
-                    FlightUnavailableError,
-                    FlightInternalError,
-                ],
+                retryable_exceptions=list(FLIGHT_TRANSIENT_EXCEPTIONS),
                 stop_config=StopConfig(after_delay=10, after_attempt=5),
                 wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
             )
@@ -152,7 +154,7 @@ class AuthenticatedArrowClient:
                 if self._auth:
                     auth_pair = self._auth.auth_pair()
                     client.authenticate_basic_token(auth_pair[0], auth_pair[1], self._call_options)
-            except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+            except FLIGHT_TRANSIENT_EXCEPTIONS:
                 self._reconnect()
                 raise
 
@@ -177,7 +179,7 @@ class AuthenticatedArrowClient:
                 # the Flight response error code is only checked on iterator consumption
                 # we eagerly collect iterator here to trigger retry in case of an error
                 return list(self.do_action(endpoint, payload))
-            except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+            except FLIGHT_TRANSIENT_EXCEPTIONS:
                 self._reconnect()
                 raise
 
@@ -204,7 +206,7 @@ class AuthenticatedArrowClient:
         def run_with_retry() -> tuple[flight.FlightStreamWriter, flight.FlightMetadataReader]:
             try:
                 return self._flight_client.do_put(descriptor, schema)  # type: ignore
-            except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+            except FLIGHT_TRANSIENT_EXCEPTIONS:
                 self._reconnect()
                 raise
 
@@ -217,7 +219,7 @@ class AuthenticatedArrowClient:
         """
         try:
             return operation()
-        except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+        except FLIGHT_TRANSIENT_EXCEPTIONS:
             if self._health_check:
                 self._health_check.raise_if_unhealthy()
             raise

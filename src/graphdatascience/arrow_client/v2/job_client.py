@@ -1,16 +1,22 @@
 import json
+import logging
+import uuid
 from typing import Any
 
 from pandas import ArrowDtype, DataFrame
+from pyarrow import ArrowKeyError
 from pyarrow.flight import Ticket
-from tenacity import Retrying, retry_if_result
+from tenacity import Retrying, retry_if_exception, retry_if_result, stop_after_attempt, wait_fixed
 
-from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.authenticated_flight_client import (
+    FLIGHT_TRANSIENT_EXCEPTIONS,
+    AuthenticatedArrowClient,
+)
 from graphdatascience.arrow_client.v2.api_types import JobIdConfig, JobStatus
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
 from graphdatascience.progress.progress_bar import TqdmProgressBar
 from graphdatascience.query_runner.termination_flag import TerminationFlag
-from graphdatascience.retry_utils.retry_utils import job_wait_strategy
+from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strategy
 
 JOB_STATUS_ENDPOINT = "v2/jobs.status"
 JOBS_CANCEL_ENDPOINT = "v2/jobs.cancel"
@@ -31,10 +37,30 @@ class JobClient:
 
     @staticmethod
     def run_job(client: AuthenticatedArrowClient, endpoint: str, config: dict[str, Any]) -> str:
-        res = client.do_action_with_retry(endpoint, config)
+        job_id: str = config.setdefault("jobId", str(uuid.uuid4()))
+        logger = logging.getLogger(__name__)
 
-        single = deserialize_single(res)
-        return JobIdConfig(**single).job_id
+        for attempt in Retrying(
+            stop=stop_after_attempt(3),
+            wait=wait_fixed(2),
+            retry=retry_if_exception(lambda e: isinstance(e, FLIGHT_TRANSIENT_EXCEPTIONS)),
+            before=before_log(f"run_job ({endpoint})", logger, logging.DEBUG),
+            reraise=True,
+        ):
+            with attempt:
+                try:
+                    res = client.do_action_with_retry(endpoint, config)
+                    return JobIdConfig(**deserialize_single(res)).job_id
+                except FLIGHT_TRANSIENT_EXCEPTIONS as e:
+                    try:
+                        JobClient.get_job_status(client, job_id)
+                        logger.debug(f"Job '{job_id}' already started, recovering job_id.")
+                        return job_id
+                    except ArrowKeyError:
+                        logger.debug(f"Job '{job_id}' not found on server, will retry run_job.")
+                        raise e
+
+        raise RuntimeError("unreachable due to retry logic above")
 
     def wait_for_job(
         self,
