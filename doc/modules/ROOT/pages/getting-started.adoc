@@ -47,18 +47,17 @@ gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
 The client automatically detects whether it is connected to an AuraDS instance and, if so, applies the recommended non-default Python driver settings.
 
 The `GraphDataScience` object needs the Neo4j database to be available upon construction, and uses the default `neo4j` database by default.
-If the `neo4j` database does not exist or you want to use a different database, use the `database` keyword parameter:
 
 [source, python, role=no-test]
 ----
 gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), database="neo4j")
 ----
 
-You can also change the database after creating the `GraphDataScience` object:
+You can replace `"neo4j"` with a different database, or change the database after creating the `GraphDataScience` object:
 
 [source, python, role=no-test]
 ----
-gds.set_database("neo4j")
+gds.set_database("other-db")
 ----
 =====
 ====
