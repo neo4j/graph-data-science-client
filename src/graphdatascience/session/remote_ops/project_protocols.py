@@ -267,6 +267,10 @@ class ProjectProtocolV4(ProjectProtocol):
         return status_result
 
     def _start_job(self, query: str, params: dict[str, Any]) -> Tuple[str, QueryRunner]:
+        # Unlike write-back, projection start cannot be safely retried on transient
+        # errors. The response contains routing info (host/port of the cluster member
+        # the job was assigned to) that cannot be recovered from get_status. Retrying
+        # could route to a different member, resulting in duplicate projectin jobs.
         start_response = single_row(
             self._query_runner.run_cypher(
                 query,
