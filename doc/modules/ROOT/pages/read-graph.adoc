@@ -47,7 +47,7 @@ Assuming the `GraphDataScience` object is called `gds`:
 [.include-with-Single-node-property]
 =====
 .Method call
-[source, cypher]
+[source, cypher, group=graph-project]
 ----
 gds.graph.node_property.stream(G, node_property="population")
 ----
@@ -65,7 +65,7 @@ gds.graph.node_property.stream(G, node_property="population")
 [.include-with-Multiple-node-properties]
 =====
 .Method call
-[source, python]
+[source, python, group=graph-project]
 ----
 gds.graph.node_properties.stream(G, node_properties=["population"])
 ----
@@ -127,7 +127,7 @@ Assuming the `GraphDataScience` object is called `gds`:
 [.include-with-Single-relationship-property]
 =====
 .Method call
-[source, python]
+[source, python, group=graph-project]
 ----
 gds.graph.relationship_property.stream(G, relationship_property="cost")
 ----
@@ -146,7 +146,7 @@ gds.graph.relationship_property.stream(G, relationship_property="cost")
 [.include-with-Multiple-relationship-properties]
 =====
 .Method call
-[source, python]
+[source, python, group=graph-project]
 ----
 gds.graph.relationship_properties.stream(G, relationship_properties=["cost"])
 ----
