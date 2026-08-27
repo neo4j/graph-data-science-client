@@ -192,7 +192,7 @@ class RemoteWriteBackV4(WriteProtocol):
                         )
                         return
                     except Exception:
-                        logger.debug(f"Write-back job '{job_id}' not found on server, will retry start_job.")
+                        logger.debug(f"Could not confirm state of write-back job '{job_id}', will retry start_job.")
                         raise e
 
     def get_status(self, job_id: str) -> JobStatus:
