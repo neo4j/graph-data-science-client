@@ -266,7 +266,7 @@ The `Graph` object includes convenience methods to retrieve information on the p
 
 For example, to get the node count and node properties of a graph `G`, run the following:
 
-[source,python,group=graph-project]
+[source,python,role=no-test]
 ----
 n = G.node_count()
 props = G.node_properties()["City"]
