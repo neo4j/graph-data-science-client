@@ -90,7 +90,6 @@ class AuthenticatedArrowClient:
                 wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
             )
 
-        # Extract our own call_timeout before forwarding the rest to FlightClient
         options_copy = dict(arrow_client_options) if arrow_client_options else {}
         call_timeout = options_copy.pop("call_timeout", 30.0)
 
@@ -166,22 +165,18 @@ class AuthenticatedArrowClient:
     def get_stream(self, ticket: Ticket) -> FlightStreamReader:
         return self._flight_client.do_get(ticket)
 
-    def do_action(
-        self, endpoint: str, payload: bytes | dict[str, Any], options: FlightCallOptions | None = None
-    ) -> Iterator[Result]:
+    def do_action(self, endpoint: str, payload: bytes | dict[str, Any]) -> Iterator[Result]:
         payload_bytes = payload if isinstance(payload, bytes) else json.dumps(payload).encode("utf-8")
 
-        return self._flight_client.do_action(Action(endpoint, payload_bytes), options or self._call_options)  # type: ignore
+        return self._flight_client.do_action(Action(endpoint, payload_bytes), self._call_options)  # type: ignore
 
-    def do_action_with_retry(
-        self, endpoint: str, payload: bytes | dict[str, Any], options: FlightCallOptions | None = None
-    ) -> list[Result]:
+    def do_action_with_retry(self, endpoint: str, payload: bytes | dict[str, Any]) -> list[Result]:
         @self._retry_config.decorator(operation_name="Send action", logger=self._logger)
         def run_with_retry() -> list[Result]:
             try:
                 # the Flight response error code is only checked on iterator consumption
                 # we eagerly collect iterator here to trigger retry in case of an error
-                return list(self.do_action(endpoint, payload, options))
+                return list(self.do_action(endpoint, payload))
             except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
                 self._reconnect()
                 raise
@@ -201,10 +196,6 @@ class AuthenticatedArrowClient:
                 raise
 
         return self._diagnose_connection_failure(run_with_retry)
-
-    def wait_for_available(self, timeout: int = 30) -> None:
-        """Block until the Arrow Flight server can be contacted or the timeout fires."""
-        self._flight_client.wait_for_available(timeout)
 
     def do_put_with_retry(
         self, descriptor: flight.FlightDescriptor, schema: Schema
