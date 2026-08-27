@@ -8,6 +8,7 @@ from pandas import DataFrame
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class HitsEndpoints(ABC):
@@ -227,6 +228,41 @@ class HitsEndpoints(ABC):
         -------
         HitsWriteResult
             Algorithm metrics and statistics
+        """
+
+    @abstractmethod
+    def estimate(
+        self,
+        G: Graph | dict[str, Any],
+        *,
+        hits_iterations: int = 20,
+        partitioning: str = "AUTO",
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        concurrency: int | None = None,
+    ) -> EstimationResult:
+        """
+        Estimate the memory consumption of an algorithm run.
+
+        Parameters
+        ----------
+        G
+           Graph object to use or a dictionary representing the graph dimensions.
+        hits_iterations
+            Number of iterations to run HITS for.
+        partitioning
+            The partitioning scheme used to divide the work between threads.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        concurrency
+            Number of concurrent threads to use.
+
+        Returns
+        -------
+        EstimationResult
+            An object containing the result of the estimation including memory requirements
         """
 
 
