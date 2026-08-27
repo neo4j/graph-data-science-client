@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import re
 from datetime import datetime
 from typing import Any
@@ -23,6 +24,14 @@ class GraphInfo(BaseResult):
     modification_time: datetime
     graph_schema: dict[str, Any] = Field(alias="schemaWithOrientation")
     density: float
+
+    @field_validator("memory_usage", mode="before")
+    @classmethod
+    def coerce_nan_to_none(cls, value: Any) -> Any:
+        # pandas transforms the memory_usage column with a null value to NaN
+        if isinstance(value, float) and math.isnan(value):
+            return None
+        return value
 
     @field_validator("creation_time", "modification_time", mode="before")
     @classmethod

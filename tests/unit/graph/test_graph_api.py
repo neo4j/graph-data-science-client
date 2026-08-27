@@ -118,6 +118,11 @@ def test_memory_usage_can_be_none() -> None:
     assert graph.memory_usage() is None
 
 
+def test_memory_usage_nan_coerced_to_none() -> None:
+    graph = Graph("g", FakeGraphBackend(_graph_info(memoryUsage=float("nan"))))
+    assert graph.memory_usage() is None
+
+
 def test_size_in_bytes(G: Graph) -> None:
     assert G.size_in_bytes() == 1024
 
