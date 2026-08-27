@@ -5,6 +5,9 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.catalog.relationship_property_endpoints import (
+    RelationshipPropertyEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import Aggregation
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoints import (
@@ -128,6 +131,20 @@ def test_stream_with_properties(relationship_endpoints: RelationshipArrowEndpoin
     assert "weight" in result.columns
     assert set(result["relationshipType"].unique()) == {"REL"}
     assert set(result["weight"].unique()) == {1.0, 2.0, 3.0}
+
+
+def test_stream_single_relationship_property(
+    relationship_endpoints: RelationshipArrowEndpoints, sample_graph: Graph
+) -> None:
+    result = RelationshipPropertyEndpoints(relationship_endpoints).stream(
+        G=sample_graph, relationship_property="weight", relationship_types=["REL"]
+    )
+
+    assert len(result) == 3
+    assert set(result.columns) == {"sourceNodeId", "targetNodeId", "relationshipType", "propertyValue"}
+    assert set(result["relationshipType"].unique()) == {"REL"}
+    assert set(result["propertyValue"].unique()) == {1.0, 2.0, 3.0}
+    assert set(result.by_rel_type().keys()) == {"REL"}
 
 
 @pytest.mark.db_integration

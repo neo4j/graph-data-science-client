@@ -34,7 +34,7 @@ class GraphSagePredictEndpoints(ABC):
         ----------
         G
            Graph object to use
-        model_name : str
+        model_name
             Name under which the model will is stored
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -55,7 +55,7 @@ class GraphSagePredictEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with node IDs and their embeddings
         """
 
@@ -83,7 +83,7 @@ class GraphSagePredictEndpoints(ABC):
         ----------
         G
            Graph object to use
-        model_name : str
+        model_name
             Name under which the model will is stored
         write_property
             Name of the node property to store the results in.
@@ -134,7 +134,7 @@ class GraphSagePredictEndpoints(ABC):
         ----------
         G
            Graph object to use
-        model_name : str
+        model_name
             Name under which the model will is stored
         mutate_property
             Name of the node property to store the results in.
@@ -182,13 +182,13 @@ class GraphSagePredictEndpoints(ABC):
         ----------
         G
            Graph object to use or a dictionary representing the graph dimensions.
-        model_name : str
+        model_name
             Name under which the model will is stored
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
-        batch_size : int = 100
+        batch_size
             The batch size for prediction.
         concurrency
             Number of concurrent threads to use.

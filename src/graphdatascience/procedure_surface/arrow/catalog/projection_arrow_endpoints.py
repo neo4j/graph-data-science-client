@@ -21,6 +21,8 @@ from graphdatascience.session.remote_ops.projection_runner import ProjectionRunn
 
 
 class ProjectArrowEndpoints:
+    """Endpoints for projecting graphs via the Arrow pipeline."""
+
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
@@ -29,7 +31,7 @@ class ProjectArrowEndpoints:
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._graph_backend = GraphOpsArrow(arrow_client)
+        self._graph_ops = GraphOpsArrow(arrow_client)
         self._show_progress = show_progress
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
@@ -49,6 +51,7 @@ class ProjectArrowEndpoints:
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
+        overwrite: bool = False,
     ) -> GraphWithProjectResult:
         """
         Projects a graph from the Neo4j database into the GDS graph catalog using Cypher projection.
@@ -56,7 +59,7 @@ class ProjectArrowEndpoints:
         Parameters
         ----------
         graph_name
-            Name of the graph to be created in the catalog.
+            Name of the graph to be created
         query
             Cypher query to select nodes and relationships for the graph projection.
             Must contain `gds.graph.project.remote`. Example: `MATCH (n)-->(m) RETURN gds.graph.project.remote(n, m)`
@@ -66,21 +69,27 @@ class ProjectArrowEndpoints:
             Identifier for the computation.
         concurrency
             Number of concurrent threads to use.
-        undirected_relationship_types : list[str]
+        undirected_relationship_types
             List of relationship types to treat as undirected.
-        inverse_indexed_relationship_types : list[str]
+        inverse_indexed_relationship_types
             List of relationship types to index in both directions.
-        batch_size : int | None, default=None
+        batch_size
             Number of rows to process in each batch when projecting the graph.
-        logging : bool, default=True
+        logging
             Whether to log progress during graph projection.
+        overwrite
+            If `True`, drop an existing graph with the same name before projecting the new one.
+            Defaults to `False`.
         Returns
         -------
-        ProjectionResult:
+        GraphWithProjectResult
             A result object containing information about the projected graph.
         """
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
@@ -112,14 +121,18 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
+        overwrite: bool = False,
     ) -> ProjectionJobHandle:
-        """Kick off a cypher graph projection and return a :class:`ProjectionJobHandle`.
+        """Kick off a cypher graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
-        Unlike :meth:`project`, this method does not block on completion. Use the
+        Unlike :meth:`cypher`, this method does not block on completion. Use the
         returned handle to query status or retrieve the projected graph and result.
         """
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
 
@@ -154,37 +167,41 @@ class ProjectArrowEndpoints:
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
         logging: bool = True,
+        overwrite: bool = False,
     ) -> GraphWithProjectResult:
         """
         Projects a graph from the Neo4j database into the GDS graph catalog.
 
         Parameters
         ----------
-        graph_name : str
-            Name of the graph to be created in the catalog.
-        node_label_filter : list[str]
+        graph_name
+            Name of the graph to be created
+        node_label_filter
             List of node labels to include in the graph projection.
-        relationship_type_filter : list[str]
+        relationship_type_filter
             List of relationship types to include in the graph projection.
-        node_properties : list[str]
+        node_properties
             List of node properties to include in the graph projection.
-        relationship_properties : list[str]
+        relationship_properties
             List of relationship properties to include in the graph projection.
         job_id
             Identifier for the computation.
         concurrency
             Number of concurrent threads to use.
-        undirected_relationship_types : list[str]
+        undirected_relationship_types
             List of relationship types to treat as undirected.
-        inverse_indexed_relationship_types : list[str]
+        inverse_indexed_relationship_types
             List of relationship types to index in both directions.
-        batch_size : int | None, default=None
+        batch_size
             Number of rows to process in each batch when projecting the graph.
-        logging : bool, default=True
+        logging
             Whether to log progress during graph projection.
+        overwrite
+            If `True`, drop an existing graph with the same name before projecting the new one.
+            Defaults to `False`.
         Returns
         -------
-        ProjectionResult:
+        GraphWithProjectResult
             A result object containing information about the projected graph.
         """
 
@@ -192,6 +209,9 @@ class ProjectArrowEndpoints:
 
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
@@ -230,15 +250,19 @@ class ProjectArrowEndpoints:
         undirected_relationship_types: typing.List[str] | None = None,
         inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int | None = None,
+        overwrite: bool = False,
     ) -> ProjectionJobHandle:
-        """Kick off a native graph projection and return a :class:`ProjectionJobHandle`.
+        """Kick off a native graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
-        Unlike :meth:`project_native`, this method does not block on completion.
+        Unlike :meth:`native`, this method does not block on completion.
         The returned handle can be used to await completion and retrieve the
         projected graph and result.
         """
         if self._query_runner is None:
             raise ValueError("Remote projection is only supported for attached Sessions.")
+
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
 

@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
+from graphdatascience.procedure_surface.arrow.stream_result_mapper import apply_stream_mapper
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.procedure_surface.utils.result_utils import join_db_node_properties
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -71,7 +72,9 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         )
 
         job_id = JobClient.run_job(self._arrow_client, "v2/graph.nodeProperties.stream", config)
-        result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        result = apply_stream_mapper(
+            "v2/graph.nodeProperties.stream", JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        )
 
         if has_db_properties:
             return join_db_node_properties(result, db_node_properties, self._query_runner)  # type: ignore

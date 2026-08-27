@@ -125,7 +125,7 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         return self._run_query(query, params)
 
     def _run_query(self, query: str, params: dict[str, Any]) -> float:
-        result = self._query_runner.run_cypher(
+        result = self._query_runner.run_retryable_cypher(
             query,
             QueryType.USER_TRANSPILED,
             params,

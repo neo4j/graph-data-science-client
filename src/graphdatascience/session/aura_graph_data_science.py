@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Tuple
 
+import neo4j
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
@@ -201,7 +202,7 @@ class AuraGraphDataScience:
         session_lifecycle_manager: LifecycleManager,
         encrypted: bool = True,
         arrow_client_options: dict[str, Any] | None = None,
-        bookmarks: Any | None = None,
+        bookmarks: neo4j.Bookmarks | None = None,
         show_progress: bool = True,
     ) -> AuraGraphDataScience:
         authenticated_arrow_client = AuthenticatedArrowClient(
@@ -209,6 +210,7 @@ class AuraGraphDataScience:
             auth=arrow_authentication,
             encrypted=encrypted,
             arrow_client_options=arrow_client_options,
+            health_check=session_lifecycle_manager,
         )
 
         db_query_runner: Neo4jQueryRunner | None = None
@@ -791,7 +793,7 @@ class AuraGraphDataScience:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The query result as a DataFrame
         """
         if not self._db_query_runner:
@@ -806,7 +808,9 @@ class AuraGraphDataScience:
         Returns a GdsArrowClient that is authenticated to communicate with the Aura Graph Analytics Session.
         This client can be used to get direct access to the specific session's Arrow Flight server.
 
-        Returns:
+        Returns
+        -------
+        GdsArrowClient
             A GdsArrowClient
         -------
 
@@ -826,13 +830,13 @@ class AuraGraphDataScience:
             raise NotAvailableInStandaloneSessions("Setting the database")
         self._db_query_runner.set_database(database)
 
-    def set_bookmarks(self, bookmarks: Any) -> None:
+    def set_bookmarks(self, bookmarks: neo4j.Bookmarks | None) -> None:
         """
         Set Neo4j bookmarks to require a certain state before the next query gets executed
 
         Parameters
         ----------
-        bookmarks: Bookmark(s)
+        bookmarks: neo4j.Bookmarks | None
             The Neo4j bookmarks defining the required state
         """
         if not self._db_query_runner:
@@ -856,32 +860,36 @@ class AuraGraphDataScience:
         """
         Get the database which cypher queries are run against.
 
-        Returns:
+        Returns
+        -------
+        str | None
             The name of the database.
         """
         if not self._db_query_runner:
             raise NotAvailableInStandaloneSessions("Getting the database")
         return self._db_query_runner.database()
 
-    def bookmarks(self) -> Any | None:
+    def bookmarks(self) -> neo4j.Bookmarks | None:
         """
         Get the Neo4j bookmarks defining the currently required states for cypher queries to execute
 
         Returns
         -------
-        The (possibly None) Neo4j bookmarks defining the currently required state
+        neo4j.Bookmarks | None
+            The Neo4j bookmarks defining the currently required state.
         """
         if not self._db_query_runner:
             raise NotAvailableInStandaloneSessions("Getting bookmarks")
         return self._db_query_runner.bookmarks()
 
-    def last_bookmarks(self) -> Any | None:
+    def last_bookmarks(self) -> neo4j.Bookmarks | None:
         """
         Get the Neo4j bookmarks defining the state following the most recently called query
 
         Returns
         -------
-        The (possibly None) Neo4j bookmarks defining the state following the most recently called query
+        neo4j.Bookmarks | None
+            The Neo4j bookmarks defining the state following the most recently called query.
         """
         if not self._db_query_runner:
             raise NotAvailableInStandaloneSessions("Getting last bookmarks")

@@ -22,10 +22,19 @@ from graphdatascience.version import __version__
 from graphdatascience.versions import SemanticVersion, ServerVersion
 
 
+def _skip_gds_deprecated_field(record: logging.LogRecord) -> bool:
+    return not ("The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg)
+
+
+def _skip_gds_deprecated_procedure(record: logging.LogRecord) -> bool:
+    return not ("The procedure has a deprecated field" in record.msg and "gds." in record.msg)
+
+
 class Neo4jQueryRunner(QueryRunner):
     _AURA_DS_PROTOCOL = "neo4j+s"
     _LOG_POLLING_INTERVAL = 0.5
     _NEO4J_DRIVER_VERSION = SemanticVersion.from_string(neo4j.__version__)
+    _warnings_filters_configured = False
 
     @staticmethod
     def create_for_db(
@@ -33,7 +42,7 @@ class Neo4jQueryRunner(QueryRunner):
         auth: tuple[str, str] | neo4j.Auth | None = None,
         aura_ds: bool = False,
         database: str | None = None,
-        bookmarks: Any | None = None,
+        bookmarks: neo4j.Bookmarks | None = None,
         show_progress: bool = True,
         config: dict[str, Any] | None = None,
     ) -> Neo4jQueryRunner:
@@ -125,7 +134,7 @@ class Neo4jQueryRunner(QueryRunner):
         config: dict[str, Any] = {},
         database: str | None = neo4j.DEFAULT_DATABASE,
         auto_close: bool = False,
-        bookmarks: Any | None = None,
+        bookmarks: neo4j.Bookmarks | None = None,
         show_progress: bool = True,
         instance_description: str = "Neo4j DBMS",
     ):
@@ -137,7 +146,7 @@ class Neo4jQueryRunner(QueryRunner):
         self._database = database
         self._logger = logging.getLogger()
         self._bookmarks = bookmarks
-        self._last_bookmarks: Any | None = None
+        self._last_bookmarks: neo4j.Bookmarks | None = None
         self._server_version: ServerVersion | None = None
         self._show_progress = show_progress
         self._progress_logger = QueryProgressLogger(self.__run_cypher_simplified_for_query_progress_logger)
@@ -160,7 +169,7 @@ class Neo4jQueryRunner(QueryRunner):
         else:
             return self._auth
 
-    # only use for user defined queries
+    # only use for user defined queries, and queries changing the GDS in-memory state
     def run_cypher(
         self,
         query: str,
@@ -389,7 +398,7 @@ class Neo4jQueryRunner(QueryRunner):
             auth=self._auth,
             config=self._config,
             database=self._database,
-            auto_close=self._auto_close,
+            auto_close=True,
             bookmarks=self._bookmarks,
             show_progress=self._show_progress,
             instance_description=self._instance_description,
@@ -448,14 +457,13 @@ class Neo4jQueryRunner(QueryRunner):
     def __configure_warnings_filter(self) -> None:
         notifications_logger = logging.getLogger("neo4j.notifications")
         # the client does not expose YIELD fields so we just skip these warnings for now
-        notifications_logger.addFilter(
-            lambda record: (
-                "The query used a deprecated field from a procedure" in record.msg and "by 'gds." in record.msg
-            )
-        )
-        notifications_logger.addFilter(
-            lambda record: "The procedure has a deprecated field" in record.msg and "gds." in record.msg
-        )
+        if _skip_gds_deprecated_field not in notifications_logger.filters:
+            notifications_logger.addFilter(_skip_gds_deprecated_field)
+        if _skip_gds_deprecated_procedure not in notifications_logger.filters:
+            notifications_logger.addFilter(_skip_gds_deprecated_procedure)
+
+        if Neo4jQueryRunner._warnings_filters_configured:
+            return
         warnings.filterwarnings(
             "ignore",
             message=r"^pandas support is experimental and might be changed or removed in future versions$",
@@ -465,6 +473,7 @@ class Neo4jQueryRunner(QueryRunner):
         # neo4j driver 6.0
         warnings.filterwarnings("ignore", message=r".*returned by the procedure.* is deprecated.*")
         warnings.filterwarnings("ignore", message=r".*procedure field deprecated..*")
+        Neo4jQueryRunner._warnings_filters_configured = True
 
     def _wrap_query(self, query: str, query_type: QueryType) -> neo4j.Query:
         return neo4j.Query(

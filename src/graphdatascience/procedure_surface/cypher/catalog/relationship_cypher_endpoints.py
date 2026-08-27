@@ -15,6 +15,7 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.cypher.catalog.utils import require_database
 from graphdatascience.procedure_surface.cypher.collapse_path_cypher_endpoints import CollapsePathCypherEndpoints
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.procedure_surface.utils.result_utils import transpose_relationship_property_columns
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -89,17 +90,8 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
 
             result = self._query_runner.call_procedure(endpoint=endpoint, params=params)
 
-            if relationship_properties and len(relationship_properties) == 1:
-                result = result.rename(columns={"propertyValue": relationship_properties[0]})
-            elif relationship_properties and len(relationship_properties) > 1:
-                # Reshape the long-format Cypher result into one column per property to match the Arrow output.
-                result = result.pivot(
-                    index=["sourceNodeId", "targetNodeId", "relationshipType"],
-                    columns="relationshipProperty",
-                    values="propertyValue",
-                )
-                result = result.reset_index()
-                result.columns.name = None
+            if relationship_properties:
+                result = transpose_relationship_property_columns(result, relationship_properties)
 
             return RelationshipsDataFrame(result)
 

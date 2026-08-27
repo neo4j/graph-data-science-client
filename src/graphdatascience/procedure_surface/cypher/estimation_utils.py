@@ -21,15 +21,15 @@ def estimate_algorithm(
 
     Parameters
     ----------
-    query_runner : QueryRunner
+    query_runner
         The query runner to use for the estimation call
-    endpoint : str
+    endpoint
         The full endpoint name for the estimation procedure (e.g., "gds.kcore.stats.estimate")
-    G : GraphV2 | None, optional
+    G
         The graph to be used in the estimation
-    projection_config : dict[str, Any] | None, optional
+    projection_config
         Configuration dictionary for the projection
-    algo_config : dict[str, Any] | None, optional
+    algo_config
         Additional algorithm-specific configuration parameters
 
     Returns

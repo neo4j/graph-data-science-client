@@ -69,7 +69,7 @@ class SimpleRelEmbeddingModel:
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The ``top_k`` highest scoring target nodes for each source node, with the score for the node pair.
         """
         return self._predict_endpoints.stream(

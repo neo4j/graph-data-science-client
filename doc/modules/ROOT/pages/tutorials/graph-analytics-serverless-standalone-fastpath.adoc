@@ -245,15 +245,15 @@ embedding_df = gds.fast_path.stream(
     G,
     base_node_label="Entity",
     event_node_label="Event",
-    dimension=8,
-    max_elapsed_time=365 * 2,
-    num_elapsed_times=30,
-    event_features="event_features",
-    output_time_property="output_time",
-    time_node_property="event_time",
+    embedding_dimension=8,
+    lookback_horizon=365 * 2,
+    num_time_anchors=30,
+    event_node_feature_vector_property="event_features",
+    base_node_observation_time_property="output_time",
+    event_node_time_property="event_time",
     smoothing_rate=0.9,
     smoothing_window=2,
-    decay_factor=0.0,
+    decay_rate=0.0,
 )
 
 embedding_df

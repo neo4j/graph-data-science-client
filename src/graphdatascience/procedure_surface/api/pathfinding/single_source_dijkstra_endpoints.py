@@ -73,7 +73,7 @@ class SingleSourceDijkstraEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The shortest path results as a DataFrame with columns for sourceNode, targetNode, totalCost, nodeIds, costs, index.
         """
 
@@ -155,11 +155,11 @@ class SingleSourceDijkstraEndpoints(ABC):
            Graph object to use
         source_node
             Node id to use as the starting point.
-        write_relationship_type : str
+        write_relationship_type
             Name of the relationship type to store the results in.
-        write_node_ids : bool, default=False
+        write_node_ids
             Whether to write node IDs of the shortest path onto the relationship.
-        write_costs : bool, default=False
+        write_costs
             Whether to write costs of the shortest path onto the relationship.
         relationship_weight_property
             Name of the property to be used as weights.

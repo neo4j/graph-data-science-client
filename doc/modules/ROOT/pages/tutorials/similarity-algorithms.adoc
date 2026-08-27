@@ -1,0 +1,728 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+= Similarity Algorithms in Neo4j
+
+
+
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/similarity_algorithms.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook demonstrates the usage of the `graphdatascience` library
+for performing similarity analysis on the *SNAP MOOC dataset*, which can
+be downloaded https://snap.stanford.edu/data/act-mooc.html[here].
+
+The tasks covered here include data ingestion, structural node
+similarity (Jaccard, Overlap), and feature-based similarity using the
+K-Nearest Neighbors (KNN) algorithm.
+
+== Dataset Overview: `act-mooc`
+
+The *`act-mooc`* dataset (from Stanford's SNAP library) tracks user
+behavior on a Massive Open Online Course platform. It provides a
+real-world benchmark for graph-based modeling and analytics.
+
+[width="100%",cols="<20%,<20%,<20%,<20%,<20%",options="header",]
+|===
+|Name |Type |Nodes |Edges |Description
+|*`act-mooc`* |Bipartite, Directed, Attributed, Temporal |7,143 |411,749
+|Student actions on a MOOC platform, with binary drop-out labels.
+|===
+
+'''''
+
+== Key Characteristics
+
+* *Bipartite Structure:* Nodes are split into *Users* (~7,047 students)
+and *Targets* (97 course items).
+* *Temporal & Attributed:* Every action (edge) includes precise
+timestamps and *4D feature vectors*.
+* *Machine Learning Labels:* Tracks ground-truth student dropout status.
+
+'''''
+
+== Learning Objectives
+
+[arabic]
+. *Data Ingestion*: Load large-scale interaction data into Neo4j Aura.
+. *Graph Projections*: Create in-memory graphs for analysis.
+. *Similarity Algorithms*: Execute Node Similarity in various modes
+(Stream, Mutate, Write).
+. *Metric Comparison*: Understand the differences between Jaccard,
+Overlap, and Cosine similarities.
+
+== Setup for SNAP `act-mooc` Dataset
+
+[source, python, role=no-test]
+----
+import os
+import tarfile
+
+import requests
+
+url = "https://snap.stanford.edu/data/act-mooc.tar.gz"
+dest = "act-mooc.tar.gz"
+
+print("Downloading and extracting dataset...")
+with open(dest, "wb") as f:
+    f.write(requests.get(url).content)
+
+os.makedirs("act-mooc_data", exist_ok=True)
+with tarfile.open(dest, "r:gz") as tar:
+    tar.extractall("act-mooc_data")
+print("Done. Contents:")
+for root, dirs, files in os.walk("act-mooc_data"):
+    for f in files:
+        print(os.path.join(root, f))
+----
+
+[source, python, role=no-test]
+----
+%pip install "graphdatascience>2.0a5" python-dotenv
+----
+
+[source, python, role=no-test]
+----
+import os
+
+from dotenv import load_dotenv
+
+# This allows to load required secrets from `.env` file in local directory
+# This can include Aura API Credentials and Database Credentials.
+# If file does not exist this is a noop.
+load_dotenv(".env")
+----
+
+== Aura API credentials
+
+The entry point for managing GDS Sessions is the `GdsSessions` object,
+which requires creating
+https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
+
+[source, python, role=no-test]
+----
+from graphdatascience.session import AuraAPICredentials, GdsSessions
+
+api_credentials = AuraAPICredentials(
+    client_id=os.environ["CLIENT_ID"],
+    client_secret=os.environ["CLIENT_SECRET"],
+    project_id=os.environ["PROJECT_ID"],
+)
+
+sessions = GdsSessions(api_credentials=api_credentials)
+----
+
+== Section 1: Data Preparation
+
+In this section, we download the dataset and define the ingestion logic
+to map TSV files to a graph schema consisting of `MoocUser`,
+`MoocAction`, and `MoocActivity` nodes.
+
+=== 1.1 Connecting to Session
+
+[source, python, role=no-test]
+----
+from graphdatascience.session import DbmsConnectionInfo, SessionMemory
+
+db_connection = DbmsConnectionInfo(
+    uri=os.environ["NEO4J_URI"],
+    username=os.environ["NEO4J_USERNAME"],
+    password=os.environ["NEO4J_PASSWORD"],
+)
+
+gds = sessions.get_or_create(
+    session_name="Similarity",
+    memory=SessionMemory.m_2GB,
+    db_connection=db_connection,
+)
+
+gds.verify_connectivity()
+----
+
+=== 1.2 Populate Neo4j Instance and Project Graph
+
+This section creates the graph schema and projects it into the GDS
+session for analysis.
+
+We will use
+https://neo4j.com/docs/cypher-manual/current/schema/constraints/create-constraints/[CONSTRAINTS]
+here.
+
+In Cypher, constraints are schema-level rules applied to node labels or
+relationship types to enforce data integrity, maintain consistency, and
+safeguard the graph.
+
+=== Step 1: Tutorial Setup & Constraints
+
+We define the dataset paths and schema constraints to ensure data
+integrity during ingestion.
+
+[source, python, role=no-test]
+----
+import csv
+from decimal import Decimal
+from itertools import islice
+from pathlib import Path
+
+# dataset paths
+DATA_DIR = Path("act-mooc_data/act-mooc")
+DATASET_ID = "act-mooc"
+
+# Schema constraints to ensure data integrity
+CONSTRAINTS = [
+    "CREATE CONSTRAINT mooc_user_identity IF NOT EXISTS FOR (u:MoocUser) REQUIRE (u.datasetId, u.userId) IS UNIQUE",
+    "CREATE CONSTRAINT mooc_activity_identity IF NOT EXISTS FOR (t:MoocActivity) REQUIRE (t.datasetId, t.targetId) IS UNIQUE",
+    "CREATE CONSTRAINT mooc_action_identity IF NOT EXISTS FOR (a:MoocAction) REQUIRE (a.datasetId, a.actionId) IS UNIQUE",
+    "CREATE RANGE INDEX mooc_action_time IF NOT EXISTS FOR (a:MoocAction) ON (a.datasetId, a.timestampSeconds)",
+]
+----
+
+=== Step 2: The Ingestion Engine
+
+In this step, we define the core functions responsible for reading the
+TSV files and batching the data. Using a generator (`yield`) and a
+chunking function helps us stay within memory limits and handle large
+datasets efficiently.
+
+Note: We are limiting this to 150000 as the session supports 2GB memory.
+You can change this by increasing the session memory allocation.
+
+[source, python, role=no-test]
+----
+def get_action_rows(limit=150000):
+    """Parses the 3 TSV files into a unified dictionary format."""
+    a_path = DATA_DIR / "mooc_actions.tsv"
+    f_path = DATA_DIR / "mooc_action_features.tsv"
+    l_path = DATA_DIR / "mooc_action_labels.tsv"
+    with open(a_path) as ah, open(f_path) as fh, open(l_path) as lh:
+        zipped = zip(
+            csv.DictReader(ah, delimiter="\t"),
+            csv.DictReader(fh, delimiter="\t"),
+            csv.DictReader(lh, delimiter="\t"),
+        )
+        for i, (a_row, f_row, l_row) in enumerate(islice(zipped, limit)):
+            yield {
+                "actionId": i,
+                "userId": int(a_row["USERID"]),
+                "targetId": int(a_row["TARGETID"]),
+                "timestampSeconds": int(Decimal(a_row["TIMESTAMP"])),
+                "featureVector": [float(f_row[f"FEATURE{j}"]) for j in range(4)],
+                "dropoutAfterAction": bool(int(l_row["LABEL"])),
+                "sourceLabelActionId": int(l_row["ACTIONID"]),
+            }
+
+
+def chunked(rows, size=5000):
+    batch = []
+    for r in rows:
+        batch.append(r)
+        if len(batch) == size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+----
+
+=== Step 3: Executing the Ingestion
+
+Finally, we apply the database constraints and execute the batch import.
+We use `gds.run++_++cypher` to send chunks of data to Neo4j. This
+approach ensures high throughput while preventing the transaction log
+from growing too large.
+
+[source, python, role=no-test]
+----
+IMPORT_CYPHER = """
+UNWIND $rows AS row
+MERGE (u:MoocUser {datasetId: $datasetId, userId: row.userId})
+MERGE (t:MoocActivity {datasetId: $datasetId, targetId: row.targetId})
+MERGE (a:MoocAction {datasetId: $datasetId, actionId: row.actionId})
+SET a.timestampSeconds = row.timestampSeconds,
+    a.featureVector = row.featureVector,
+    a.dropoutAfterAction = row.dropoutAfterAction
+MERGE (u)-[:PERFORMED]->(a)
+MERGE (a)-[:ON_ACTIVITY]->(t)
+"""
+
+print("Applying schema constraints...")
+for cmd in CONSTRAINTS:
+    gds.run_cypher(cmd)
+
+print("Starting batch import...")
+total = 0
+for batch in chunked(get_action_rows()):
+    gds.run_cypher(IMPORT_CYPHER, params={"datasetId": DATASET_ID, "rows": batch})
+    total += len(batch)
+    if total % 25000 == 0:
+        print(f"Imported {total} actions...")
+
+print(f"\nSuccess! Total actions imported: {total}")
+----
+
+==== Database Stats: Labels and Relationships
+
+[source, python, role=no-test]
+----
+import pandas as pd
+
+# Query to count nodes by label for the act-mooc dataset
+verify_query = """
+MATCH (n)
+WHERE n.datasetId = 'act-mooc'
+RETURN labels(n)[0] AS Label, count(n) AS Count
+ORDER BY Count DESC
+"""
+
+counts_df = gds.run_cypher(verify_query)
+display(counts_df)
+----
+
+[source, python, role=no-test]
+----
+rel_counts = gds.run_cypher("""
+    MATCH ()-[r]->()
+    RETURN type(r) AS Type, count(*) AS Count
+""")
+display(rel_counts)
+----
+
+== Section 2: Structural Node Similarity
+
+Node Similarity in GDS compares sets of neighbors. Here, we compare
+users based on the activities they have interacted with. We will explore
+how different metrics respond to the graph structure.
+
+=== 2.1 Project a Bipartite Graph for Node Similarity
+
+[source, python, role=no-test]
+----
+REMOTE_PROJECT_CYPHER = """
+MATCH (u:MoocUser {datasetId: $datasetId})-[:PERFORMED]->(a:MoocAction)-[:ON_ACTIVITY]->(t:MoocActivity {datasetId: $datasetId})
+RETURN gds.graph.project.remote(
+  u,
+  t,
+  {
+    sourceNodeLabels: labels(u),
+    targetNodeLabels: labels(t),
+    relationshipType: 'ACTED_ON'
+  }
+)
+""".strip()
+----
+
+[source, python, role=no-test]
+----
+graph_name = "user-activity-similarity"
+
+g_sim, project_result = gds.graph.project.cypher(
+    graph_name,
+    REMOTE_PROJECT_CYPHER,
+    query_parameters={"datasetId": "act-mooc"},
+    overwrite=True,
+)
+
+print(f"Graph '{graph_name}' projected successfully.")
+display(project_result)
+----
+
+==== Run Node Similarity in Stream mode
+
+[source, python, role=no-test]
+----
+import matplotlib.pyplot as plt
+
+print("Running Node Similarity algorithm...")
+similarity_results = gds.node_similarity.stream(
+    g_sim,
+    top_k=5,
+    similarity_cutoff=0.1,
+)
+
+similarity_results = similarity_results.rename(
+    columns={"node1": "user1_id", "node2": "user2_id", "similarity": "jaccard_score"}
+)
+
+similarity_results["user1_id"] = similarity_results["user1_id"].astype(int)
+similarity_results["user2_id"] = similarity_results["user2_id"].astype(int)
+
+display(similarity_results.head(10))
+----
+
+=== Visualizing Jaccard Similarity Distribution
+
+[source, python, role=no-test]
+----
+plt.figure(figsize=(10, 6))
+plt.hist(similarity_results["jaccard_score"], bins=30, color="skyblue", edgecolor="black")
+plt.title("Distribution of Jaccard Similarity Scores between Users")
+plt.xlabel("Jaccard Similarity Score")
+plt.ylabel("Frequency")
+plt.grid(axis="y", linestyle="--", alpha=0.7)
+plt.show()
+----
+
+=== 2.2 Mutate Mode
+
+Save similarity scores as relationships within the in-memory graph.
+Mutate mode adds relationships to the projected graph and returns
+summary execution statistics.
+
+[source, python, role=no-test]
+----
+mutate_results = gds.node_similarity.mutate(
+    g_sim,
+    mutate_relationship_type="SIMILAR_TO",
+    mutate_property="score",
+    similarity_cutoff=0.5,
+)
+
+print("Mutate Mode Results (Relationships added to in-memory graph):")
+display(mutate_results)
+----
+
+[source, python, role=no-test]
+----
+print(f"Nodes compared:        {mutate_results.nodes_compared}")
+print(f"Relationships created: {mutate_results.relationships_written}")
+print(f"Compute time (ms):     {mutate_results.compute_millis}")
+print("\nSimilarity distribution:")
+display(pd.Series(mutate_results.similarity_distribution))
+----
+
+=== 2.3 Write Mode
+
+Persist the top similarity results back to the Neo4j Database. We write
+back the `SIMILAR++_++TO` relationships and `score` property mutated in
+the previous step.
+
+[source, python, role=no-test]
+----
+write_results = gds.graph.relationships.write(
+    g_sim,
+    "SIMILAR_TO",
+    ["score"],
+)
+
+print("Write Mode Results (Persisted mutated relationships back to Neo4j):")
+display(write_results)
+----
+
+=== Implementing Multiple Similarity Metrics
+
+We will now compare the results of *Jaccard*, *Overlap*, and *Cosine*
+similarity metrics.
+
+=== Jaccard Similarity (Intersection / Union)
+
+Best suited for comparing unweighted neighbour sets.
+
+[source, python, role=no-test]
+----
+g_sim, project_result = gds.graph.project.cypher(
+    "user-activity-similarity",
+    REMOTE_PROJECT_CYPHER,
+    query_parameters={"datasetId": "act-mooc"},
+    overwrite=True,
+)
+
+jaccard_df = gds.node_similarity.stream(
+    g_sim,
+    similarity_metric="JACCARD",
+    top_k=5,
+    similarity_cutoff=0.1,
+)
+
+print("Top Pairs using Jaccard Similarity (Default):")
+display(jaccard_df.head(5))
+----
+
+=== Overlap Coefficient (Intersection / Min(++|++A++|++, ++|++B++|++))
+
+Best suited for detecting when one neighbour set is mostly contained in
+another.
+
+[source, python, role=no-test]
+----
+g_sim, project_result = gds.graph.project.cypher(
+    "user-activity-similarity",
+    REMOTE_PROJECT_CYPHER,
+    query_parameters={"datasetId": "act-mooc"},
+    overwrite=True,
+)
+
+overlap_df = gds.node_similarity.stream(
+    g_sim,
+    similarity_metric="OVERLAP",
+    top_k=5,
+    similarity_cutoff=0.1,
+)
+
+print("Top Pairs using Overlap Coefficient:")
+display(overlap_df.head(5))
+----
+
+For *Cosine Similarity*, we need a relationship property to act as a
+weight. We will re-project the graph to count the number of actions
+between a User and an Activity as a weight.
+
+=== Cosine Similarity (Weighted Dot Product)
+
+Best suited for weighted relationships.
+
+[source, python, role=no-test]
+----
+weighted_project_query = """
+MATCH (u:MoocUser {datasetId: $datasetId})-[:PERFORMED]->(a:MoocAction)-[:ON_ACTIVITY]->(t:MoocActivity {datasetId: $datasetId})
+WITH u, t, count(a) as interaction_count
+RETURN gds.graph.project.remote(
+  u,
+  t,
+  {
+    sourceNodeLabels: labels(u),
+    targetNodeLabels: labels(t),
+    relationshipType: 'ACTED_ON',
+    relationshipProperties: { weight: toFloat(interaction_count) }
+  }
+)
+""".strip()
+
+g_weighted, _ = gds.graph.project.cypher(
+    "weighted-sim",
+    weighted_project_query,
+    query_parameters={"datasetId": "act-mooc"},
+    overwrite=True,
+)
+
+cosine_df = gds.node_similarity.stream(
+    g_weighted,
+    similarity_metric="COSINE",
+    relationship_weight_property="weight",
+    top_k=5,
+    similarity_cutoff=0.1,
+)
+
+print("Top Pairs using Cosine Similarity (Weighted):")
+display(cosine_df.head(5))
+----
+
+== Section 3: Feature-Based Vector Similarity
+
+Beyond just looking at 'who clicked what', we can compare users based on
+the *content* of their actions. We aggregate the 4-dimensional feature
+vectors from each user's actions and compare these profile vectors using
+Cypher functions.
+
+=== Feature-Based Similarity: Averaging Features per User
+
+We aggregate (average) the 4D feature vectors of all actions performed
+by a user to create a single representative "behavioral profile" vector
+for that user. This profile captures their overall interaction pattern
+across activities.
+
+[source, python, role=no-test]
+----
+similarity_comp_query = """
+MATCH (u:MoocUser {datasetId: 'act-mooc'})
+WHERE u.userId IN [0, 1]
+MATCH (u)-[:PERFORMED]->(a:MoocAction)
+WITH u.userId AS userId,
+     [avg(a.featureVector[0]), avg(a.featureVector[1]), avg(a.featureVector[2]), avg(a.featureVector[3])] AS vector
+WITH max(CASE WHEN userId = 0 THEN vector END) AS v1,
+     max(CASE WHEN userId = 1 THEN vector END) AS v2
+RETURN
+    gds.similarity.jaccard(v1, v2) AS jaccard,
+    gds.similarity.overlap(v1, v2) AS overlap,
+    gds.similarity.cosine(v1, v2) AS cosine,
+    gds.similarity.pearson(v1, v2) AS pearson
+"""
+
+sim_comparison = gds.run_cypher(similarity_comp_query)
+display(sim_comparison)
+----
+
+=== Similarity Comparison: User 2 vs User 3
+
+We will now apply the same logic to compare the feature vectors of User
+2 and User 3.
+
+[source, python, role=no-test]
+----
+similarity_comp_query_2 = """
+MATCH (u:MoocUser {datasetId: 'act-mooc'})
+WHERE u.userId IN [2, 3]
+MATCH (u)-[:PERFORMED]->(a:MoocAction)
+WITH u.userId AS userId,
+     [avg(a.featureVector[0]), avg(a.featureVector[1]), avg(a.featureVector[2]), avg(a.featureVector[3])] AS vector
+WITH max(CASE WHEN userId = 2 THEN vector END) AS v1,
+     max(CASE WHEN userId = 3 THEN vector END) AS v2
+RETURN
+    gds.similarity.jaccard(v1, v2) AS jaccard,
+    gds.similarity.overlap(v1, v2) AS overlap,
+    gds.similarity.cosine(v1, v2) AS cosine,
+    gds.similarity.pearson(v1, v2) AS pearson
+"""
+
+sim_comparison_2 = gds.run_cypher(similarity_comp_query_2)
+display(sim_comparison_2)
+----
+
+== Section 4: K-Nearest Neighbors (KNN)
+
+While Node Similarity uses the graph structure (shared activities),
+*KNN* finds similar nodes based on specific properties—like the feature
+vectors we've been looking at.
+
+We will: 1. *Aggregate Features*: Average the action features for each
+user. 2. *Project Node Properties*: Create a graph projection where
+`MoocUser` nodes have a `featureVector` property. 3. *Run KNN*: Find the
+top-K most similar users based on Euclidean distance of those vectors.
+
+=== 4.1 Prepare User Feature Vectors in the Database
+
+We calculate the *average* across all 4 interaction features for each
+user's actions. This condenses a user's multi-action history into a
+single 4D behavioral profile vector stored on the MoocUser node,
+enabling property-based similarity algorithms like KNN.
+
+[source, python, role=no-test]
+----
+print("Calculating average feature vectors for users...")
+
+gds.run_cypher("""
+MATCH (u:MoocUser {datasetId: 'act-mooc'})-[:PERFORMED]->(a:MoocAction)
+WITH u,
+     avg(a.featureVector[0]) as f1,
+     avg(a.featureVector[1]) as f2,
+     avg(a.featureVector[2]) as f3,
+     avg(a.featureVector[3]) as f4
+SET u.featureVector = [f1, f2, f3, f4]
+""")
+----
+
+=== 4.2 Project Graph with Properties
+
+Remote projection including the node property.
+
+[source, python, role=no-test]
+----
+knn_graph_name = "user-features-knn"
+
+REMOTE_KNN_PROJECT = """
+MATCH (u:MoocUser {datasetId: $datasetId})
+RETURN gds.graph.project.remote(
+  u,
+  null,
+  {
+    sourceNodeLabels: labels(u),
+    sourceNodeProperties: { featureVector: u.featureVector }
+  }
+)
+""".strip()
+
+g_knn, _ = gds.graph.project.cypher(
+    knn_graph_name,
+    REMOTE_KNN_PROJECT,
+    query_parameters={"datasetId": "act-mooc"},
+    overwrite=True,
+)
+----
+
+=== 4.3 Run KNN Stream
+
+[source, python, role=no-test]
+----
+print("Running KNN algorithm...")
+
+knn_results = gds.knn.stream(
+    g_knn,
+    node_properties=["featureVector"],
+    top_k=3,
+    sample_rate=1.0,
+    random_seed=42,
+)
+
+knn_results = knn_results.rename(columns={"node1": "user_a", "node2": "user_b", "similarity": "score"})
+
+print("Top KNN Similarity results (Feature-based similarity):")
+display(knn_results.sort_values("score", ascending=False).head(10))
+----
+
+=== Summary of top 5 most similar user pairs from KNN results
+
+[source, python, role=no-test]
+----
+top_5_knn = knn_results.sort_values("score", ascending=False).head(5)
+
+print("Top 5 Most Similar User Pairs (KNN):")
+for index, row in top_5_knn.iterrows():
+    print(f"- User {int(row['user_a'])} and User {int(row['user_b'])} with a similarity score of {row['score']:.4f}")
+
+display(top_5_knn)
+----
+
+=== Comparing KNN (Behavioral) vs. Jaccard (Structural) Similarity
+
+In this step, we merge the results from the KNN algorithm (which used
+averaged feature vectors) with the Jaccard similarity results (which
+used shared activity neighbors). This helps us identify if users who
+_act_ similarly also interact with the _same_ activities.
+
+[source, python, role=no-test]
+----
+# Prepare Jaccard results for comparison
+jaccard_compare = jaccard_df.rename(columns={"node1": "user_a", "node2": "user_b", "similarity": "jaccard_score"})
+
+# Convert IDs to integer to ensure matching types across datasets
+jaccard_compare["user_a"] = jaccard_compare["user_a"].astype(int)
+jaccard_compare["user_b"] = jaccard_compare["user_b"].astype(int)
+knn_results["user_a"] = knn_results["user_a"].astype(int)
+knn_results["user_b"] = knn_results["user_b"].astype(int)
+
+# Inner merge on matching user pairs
+comparison_df = pd.merge(knn_results, jaccard_compare, on=["user_a", "user_b"], how="inner")
+
+print(f"Found {len(comparison_df)} pairs that appear in both similarity results.")
+display(comparison_df.sort_values(by=["score", "jaccard_score"], ascending=False).head(10))
+----
+
+== Final Summary: Multi-Faceted Similarity Analysis
+
+In this notebook, we successfully built an end-to-end Graph Data Science
+pipeline using the *SNAP `act-mooc`* dataset and *Neo4j Aura*.
+
+=== Key Stages Completed:
+
+[arabic]
+. *Data Ingestion*: We managed a high-volume import of 150,000 actions,
+mapping users and activities into a structured graph schema while
+respecting the session memory limits.
+. *Structural Similarity (Jaccard & Overlap)*: We identified users who
+interact with the same resources. Our comparison showed that many users
+share nearly identical activity sets, which is ideal for collaborative
+filtering recommendations.
+. *Feature-Based Similarity (KNN)*: We used behavior-based vectors
+(averages of action features) to find users who _act_ similarly, even if
+they don't share the same target activities.
+. *Metric Comparison*: We merged structural and behavioral results,
+finding user pairs that were highly similar in both metrics—proving that
+behavioral profiles are strong indicators of shared intent in this
+dataset.
+
+=== Which Metric to Use?
+
+* *Jaccard*: Best for 'people who bought this also bought that'
+scenarios.
+* *Overlap*: Best for detecting 'Expert' vs. 'Novice' users where one
+user's history is a subset of another's.
+* *KNN (Cosine/Euclidean)*: Best for content-based matching based on
+latent features or interaction style.
+
+[source, python, role=no-test]
+----
+gds.delete()
+----
+
+[source, python, role=no-test]
+----
+gds.run_cypher("MATCH (n) DETACH DELETE n")
+----

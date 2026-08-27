@@ -30,6 +30,5 @@ class ArrowEndpointVersion(Enum):
 class UnsupportedArrowEndpointVersion(Exception):
     def __init__(self, compatible_versions: set[ArrowEndpointVersion], supported_server_versions: set[str]) -> None:
         super().__init__(
-            self,
             f"The GDS version is not supported by this client version, please update the `graphdatascience` package. Arrow versions supported by this client are: {compatible_versions}, but GDS supports: {supported_server_versions}",
         )

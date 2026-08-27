@@ -24,6 +24,21 @@ from graphdatascience.session.session_lifecycle_manager import SessionLifecycleM
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
 
+def _humanize_duration(duration: timedelta) -> str:
+    """Format a timedelta as a coarse human-readable string (e.g. `2 hours`, `3 days`)."""
+    seconds = duration.total_seconds()
+    if seconds < 60:
+        return f"{int(seconds)} seconds"
+    if seconds < 3600:
+        minutes = int(seconds // 60)
+        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+    if seconds < 86400:
+        hours = int(seconds // 3600)
+        return f"{hours} hour{'s' if hours != 1 else ''}"
+    days = int(seconds // 86400)
+    return f"{days} day{'s' if days != 1 else ''}"
+
+
 @dataclass
 class AuraAPICredentials:
     """
@@ -160,7 +175,9 @@ class GdsSessions:
         """
         Retrieves the list of available cloud locations in Aura.
 
-        Returns:
+        Returns
+        -------
+        list[CloudLocation]
             Set[CloudLocation]: The list of available cloud locations.
         """
         return list(self._aura_api.project_details().cloud_locations)
@@ -188,13 +205,15 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory | SessionMemoryValue | str): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo | None): The database connection information.
-            ttl: (timedelta | None): The sessions time to live after inactivity in seconds.
+            ttl (datetime.timedelta | None): The sessions time to live after inactivity in seconds.
             cloud_location (CloudLocation | None): The cloud location. Required if the GDS session is for a self-managed database.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client.
             show_progress (bool): Whether the returned client should print its own job-progress bars (projection, algorithm execution, ...). Defaults to True.
-        Returns:
+        Returns
+        -------
+        AuraGraphDataScience
             AuraGraphDataScience: The session.
         """
         if isinstance(memory, str) or isinstance(memory, SessionMemoryValue):
@@ -273,19 +292,21 @@ class GdsSessions:
             session_name: the name of the session to delete
             session_id: the id of the session to delete
 
-        Returns:
+        Returns
+        -------
+        bool
             True iff a session was deleted as a result of this call.
         """
         if not session_name and not session_id:
             raise ValueError("Either session_name or session_id must be provided.")
 
         if session_id:
-            return self._aura_api.delete_session(session_id) is not None
+            return self._aura_api.delete_session(session_id)
 
         if session_name:
             candidate = self._find_existing_session(session_name)
             if candidate:
-                return self._aura_api.delete_session(candidate.id) is not None
+                return self._aura_api.delete_session(candidate.id)
 
         return False
 
@@ -307,7 +328,9 @@ class GdsSessions:
             start_date: Optional lower bound for session creation timestamp.
             end_date: Optional upper bound for session creation timestamp.
 
-        Returns:
+        Returns
+        -------
+        list[SessionInfo]
             A list of SessionInfo objects representing the GDS sessions.
         """
         sessions = self._aura_api.list_sessions(
@@ -336,10 +359,10 @@ class GdsSessions:
     def _await_session_running(self, session_details: SessionDetails, timeout: int | None = None) -> None:
         if session_details.expiry_date:
             until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
-            if until_expiry < timedelta(hours=1):
-                raise Warning(
-                    f"Session `{session_details.name}` is expiring in {math.floor(until_expiry.seconds / 60)} minutes."
-                )
+            if until_expiry < timedelta(0):
+                raise RuntimeError(f"Session `{session_details.name}` expired {_humanize_duration(-until_expiry)} ago.")
+            elif until_expiry < timedelta(hours=1):
+                warnings.warn(f"Session `{session_details.name}` is expiring in {_humanize_duration(until_expiry)}.")
         if not session_details.is_ready():
             max_wait_time = float(timeout) if timeout is not None else math.inf
             wait_result = self._aura_api.wait_for_session_running(session_details.id, max_wait_time=max_wait_time)

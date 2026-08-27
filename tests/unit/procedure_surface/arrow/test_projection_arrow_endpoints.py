@@ -62,3 +62,67 @@ def test_cypher_logging_false_disables_logging(mocker: MockerFixture) -> None:
 
     logging_arg = runner.run_cypher_projection.call_args.args[-1]
     assert logging_arg is False
+
+
+def test_native_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
+
+    endpoints.native("g", ["A"], ["REL"], overwrite=True)
+
+    drop_spy.assert_called_once_with("g", fail_if_missing=False)
+
+
+def test_native_does_not_drop_by_default(mocker: MockerFixture) -> None:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
+
+    endpoints.native("g", ["A"], ["REL"])
+
+    drop_spy.assert_not_called()
+
+
+def test_native_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
+    mocker.patch.object(
+        endpoints._project_protocol,
+        "start_store_projection",
+        return_value=("job-1", mocker.Mock()),
+    )
+
+    endpoints.native_async("g", ["A"], ["REL"], overwrite=True)
+
+    drop_spy.assert_called_once_with("g", fail_if_missing=False)
+
+
+def test_cypher_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
+
+    endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)", overwrite=True)
+
+    drop_spy.assert_called_once_with("g", fail_if_missing=False)
+
+
+def test_cypher_does_not_drop_by_default(mocker: MockerFixture) -> None:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
+
+    endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)")
+
+    drop_spy.assert_not_called()
+
+
+def test_cypher_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")
+    mocker.patch.object(
+        endpoints._project_protocol,
+        "start_cypher_projection",
+        return_value=("job-1", mocker.Mock()),
+    )
+
+    endpoints.cypher_async("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)", overwrite=True)
+
+    drop_spy.assert_called_once_with("g", fail_if_missing=False)

@@ -20,7 +20,7 @@ _UNSUPPORTED_ACTION_ERROR = ArrowInvalid(
 
 # An unrelated invalid-argument error (config validation) that must keep propagating unchanged.
 _CONFIG_VALIDATION_ERROR = ArrowInvalid(
-    "Flight returned invalid argument error, with message: Must specify either outputTime or outputTimeProperty"
+    "Flight returned invalid argument error, with message: Must specify either observationTime or baseNodeObservationTimeProperty"
 )
 
 
@@ -35,9 +35,9 @@ def _call(endpoints: FastPathArrowEndpoints) -> None:
         G=mock.Mock(),
         base_node_label="Base",
         event_node_label="Event",
-        dimension=16,
-        max_elapsed_time=10,
-        num_elapsed_times=4,
+        embedding_dimension=16,
+        lookback_horizon=10,
+        num_time_anchors=4,
     )
 
 
@@ -72,7 +72,7 @@ def test_unrelated_invalid_argument_error_is_not_translated() -> None:
         "graphdatascience.procedure_surface.arrow.endpoints_helper_base.JobClient.run_job_and_wait",
         side_effect=_CONFIG_VALIDATION_ERROR,
     ):
-        with pytest.raises(ArrowInvalid, match="Must specify either outputTime"):
+        with pytest.raises(ArrowInvalid, match="Must specify either observationTime"):
             _call(endpoints)
 
 
@@ -87,9 +87,9 @@ def test_compute_returns_job_handle_for_fastpath_endpoint() -> None:
             G=mock.Mock(),
             base_node_label="Base",
             event_node_label="Event",
-            dimension=16,
-            max_elapsed_time=10,
-            num_elapsed_times=4,
+            embedding_dimension=16,
+            lookback_horizon=10,
+            num_time_anchors=4,
         )
 
     assert isinstance(handle, JobHandle)
@@ -110,7 +110,7 @@ def test_compute_translates_unsupported_action_to_feature_not_enabled() -> None:
                 G=mock.Mock(),
                 base_node_label="Base",
                 event_node_label="Event",
-                dimension=16,
-                max_elapsed_time=10,
-                num_elapsed_times=4,
+                embedding_dimension=16,
+                lookback_horizon=10,
+                num_time_anchors=4,
             )

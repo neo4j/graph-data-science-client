@@ -84,7 +84,7 @@ class SingleSourceBellmanFordEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The shortest path results as a DataFrame with columns for sourceNode, targetNode,
             totalCost, nodeIds, costs, index, and isNegativeCycle.
         """
@@ -164,7 +164,7 @@ class SingleSourceBellmanFordEndpoints(ABC):
            Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
-        mutate_negative_cycles : bool, default=False
+        mutate_negative_cycles
             Whether to write negative cycles to the in-memory graph.
         relationship_weight_property
             Name of the property to be used as weights.
@@ -215,15 +215,15 @@ class SingleSourceBellmanFordEndpoints(ABC):
         ----------
         G
            Graph object to use
-        write_relationship_type : str
+        write_relationship_type
             Name of the relationship type to store the results in.
         source_node
             Node id to use as the starting point.
-        write_node_ids : bool, default=False
+        write_node_ids
             Whether to write node IDs of the shortest path onto the relationship.
-        write_costs : bool, default=False
+        write_costs
             Whether to write costs of the shortest path onto the relationship.
-        write_negative_cycles : bool, default=False
+        write_negative_cycles
             Whether to write negative cycles to the database.
         relationship_weight_property
             Name of the property to be used as weights.

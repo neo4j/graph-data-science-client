@@ -23,7 +23,7 @@ class ListProgressEndpoint(ABC):
             Include completed jobs, by default False
 
         Returns
-        --------
+        -------
         list[ProgressResult]
             Progress of the requested job(s).
         """

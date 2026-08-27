@@ -162,7 +162,7 @@ class MaxFlowMinCostEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             Dataframe containing `source`, `target`, and `flow` per relationship.
         """
         pass

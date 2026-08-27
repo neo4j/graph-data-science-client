@@ -8,6 +8,8 @@ from types import FrameType
 
 
 class TerminationFlag(ABC):
+    """Abstract flag used to signal cancellation of a running GDS operation."""
+
     @abstractmethod
     def is_set(self) -> bool:
         pass

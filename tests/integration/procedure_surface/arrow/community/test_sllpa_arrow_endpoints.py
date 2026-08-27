@@ -75,7 +75,7 @@ def test_sllpa_stream(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph)
 
     assert len(result_df) == 6  # 6 nodes in the graph
     assert "nodeId" in result_df.columns
-    assert "community" in result_df.columns
+    assert "values" in result_df.columns
 
 
 def test_sllpa_mutate(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph) -> None:
@@ -140,5 +140,5 @@ def test_compute(sllpa_endpoints: SllpaArrowEndpoints, sample_graph: Graph) -> N
 
     df = handle.stream()
     assert "nodeId" in df.columns
-    assert "community" in df.columns
+    assert "values" in df.columns
     assert len(df) == 6

@@ -29,6 +29,7 @@ class GraphSamplingEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
         """
         Random walk with restarts (RWR) samples the graph by taking random walks from a set of start nodes.
@@ -41,18 +42,18 @@ class GraphSamplingEndpoints(ABC):
         ----------
         G
            Graph object to use
-        graph_name : str
-            The name of the new graph that is stored in the graph catalog.
-        start_nodes : list of int, optional
+        graph_name
+            Name of the graph to be created
+        start_nodes
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
             By default, a single node is chosen uniformly at random.
-        restart_probability : float, optional
+        restart_probability
             The probability that a sampling random walk restarts from one of the start nodes.
             Default is 0.1.
-        sampling_ratio : float, optional
+        sampling_ratio
             The fraction of nodes in the original graph to be sampled.
             Default is 0.15.
-        node_label_stratification : bool, optional
+        node_label_stratification
             If true, preserves the node label distribution of the original graph.
             Default is False.
         relationship_weight_property
@@ -73,6 +74,9 @@ class GraphSamplingEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
+        overwrite
+            If `True`, drop an existing graph with the same name before sampling the new one.
+            Defaults to `False`.
 
         Returns
         -------
@@ -99,6 +103,7 @@ class GraphSamplingEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithSamplingResult:
         """
         Common Neighbour Aware Random Walk (CNARW) samples the graph by taking random walks from a set of start nodes
@@ -113,18 +118,18 @@ class GraphSamplingEndpoints(ABC):
         ----------
         G
            Graph object to use
-        graph_name : str
-            The name of the new graph that is stored in the graph catalog.
-        start_nodes : list of int, optional
+        graph_name
+            Name of the graph to be created
+        start_nodes
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
                 By default, a single node is chosen uniformly at random.
-        restart_probability : float, optional
+        restart_probability
             The probability that a sampling random walk restarts from one of the start nodes.
             Default is 0.1.
-        sampling_ratio : float, optional
+        sampling_ratio
             The fraction of nodes in the original graph to be sampled.
             Default is 0.15.
-        node_label_stratification : bool, optional
+        node_label_stratification
             If true, preserves the node label distribution of the original graph.
             Default is False.
         relationship_weight_property
@@ -145,10 +150,13 @@ class GraphSamplingEndpoints(ABC):
             Number of concurrent threads to use.
         job_id
             Identifier for the computation.
+        overwrite
+            If `True`, drop an existing graph with the same name before sampling the new one.
+            Defaults to `False`.
 
         Returns
         -------
-        GraphSamplingResult
+        GraphWithSamplingResult
             tuple of the graph object and the result of the Common Neighbour Aware Random Walk (CNARW), including the dimensions of the sampled graph.
         """
         pass
@@ -173,16 +181,16 @@ class GraphSamplingEndpoints(ABC):
         ----------
         G
             Graph object to use
-        start_nodes : list of int, optional
+        start_nodes
             IDs of the initial set of nodes in the original graph from which the sampling random walks will start.
             By default, a single node is chosen uniformly at random.
-        restart_probability : float, optional
+        restart_probability
             The probability that a sampling random walk restarts from one of the start nodes.
             Default is 0.1.
-        sampling_ratio : float, optional
+        sampling_ratio
             The fraction of nodes in the original graph to be sampled.
             Default is 0.15.
-        node_label_stratification : bool, optional
+        node_label_stratification
             If true, preserves the node label distribution of the original graph.
             Default is False.
         relationship_weight_property

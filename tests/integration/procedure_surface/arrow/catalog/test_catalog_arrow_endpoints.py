@@ -242,3 +242,119 @@ def test_graph_generate(catalog_endpoints: CatalogArrowEndpoints) -> None:
         assert result.relationship_distribution == "UNIFORM"
         assert result.relationship_property is None
         assert catalog_endpoints.list("generated") is not None
+
+
+def test_construct_overwrite(arrow_client: AuthenticatedArrowClient) -> None:
+    endpoints = CatalogArrowEndpoints(arrow_client)
+    try:
+        nodes1 = DataFrame({"nodeId": [0, 1], "labels": [["A"], ["A"]]})
+        G1 = endpoints.construct(graph_name="g", nodes=nodes1, relationships=[])
+        assert G1.node_count() == 2
+
+        nodes2 = DataFrame({"nodeId": [0, 1, 2], "labels": [["A"], ["A"], ["A"]]})
+        G2 = endpoints.construct(graph_name="g", nodes=nodes2, relationships=[], overwrite=True)
+        assert G2.node_count() == 3
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+
+
+def test_graph_generate_overwrite(catalog_endpoints: CatalogArrowEndpoints) -> None:
+    try:
+        catalog_endpoints.generate(
+            "generated",
+            node_count=10,
+            average_degree=4,
+            relationship_seed=42,
+            sudo=True,
+            log_progress=False,
+            username="neo4j",
+        )
+
+        G, result = catalog_endpoints.generate(
+            "generated",
+            node_count=20,
+            average_degree=4,
+            relationship_seed=42,
+            sudo=True,
+            log_progress=False,
+            username="neo4j",
+            overwrite=True,
+        )
+
+        with G:
+            assert result.name == "generated"
+            assert result.nodes == 20
+    finally:
+        catalog_endpoints.drop("generated", fail_if_missing=False)
+
+
+def test_graph_generate_async_overwrite(catalog_endpoints: CatalogArrowEndpoints) -> None:
+    try:
+        catalog_endpoints.generate_async(
+            "generated",
+            node_count=10,
+            average_degree=4,
+            relationship_seed=42,
+            sudo=True,
+            log_progress=False,
+            username="neo4j",
+        ).wait()
+
+        handle = catalog_endpoints.generate_async(
+            "generated",
+            node_count=20,
+            average_degree=4,
+            relationship_seed=42,
+            sudo=True,
+            log_progress=False,
+            username="neo4j",
+            overwrite=True,
+        )
+        G, result = handle.result()
+
+        with G:
+            assert result["name"] == "generated"
+            assert result["nodes"] == 20
+    finally:
+        catalog_endpoints.drop("generated", fail_if_missing=False)
+
+
+def test_graph_filter_overwrite(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+    try:
+        _, r1 = catalog_endpoints.filter(
+            sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="*"
+        )
+        assert r1.node_count == 2
+
+        _, r2 = catalog_endpoints.filter(
+            sample_graph,
+            graph_name="filtered",
+            node_filter="n:Node",
+            relationship_filter="*",
+            overwrite=True,
+        )
+        assert r2.graph_name == "filtered"
+        assert r2.node_count == 3
+    finally:
+        catalog_endpoints.drop("filtered", fail_if_missing=False)
+
+
+def test_graph_filter_async_overwrite(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
+    try:
+        catalog_endpoints.filter_async(
+            sample_graph, graph_name="filtered", node_filter="n:A", relationship_filter="*"
+        ).wait()
+
+        handle = catalog_endpoints.filter_async(
+            sample_graph,
+            graph_name="filtered",
+            node_filter="n:Node",
+            relationship_filter="*",
+            overwrite=True,
+        )
+        G, result = handle.result()
+
+        assert result["graphName"] == "filtered"
+        assert result["nodeCount"] == 3
+    finally:
+        catalog_endpoints.drop("filtered", fail_if_missing=False)

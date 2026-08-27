@@ -166,7 +166,7 @@ class HitsEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with node IDs and their HITS scores (hub and auth) in a ``values`` map column
         """
 

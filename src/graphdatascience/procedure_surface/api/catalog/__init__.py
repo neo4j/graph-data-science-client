@@ -29,6 +29,13 @@ from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints im
     NodePropertiesWriteResult,
     NodePropertySpec,
 )
+from graphdatascience.procedure_surface.api.catalog.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.api.catalog.relationship_properties_endpoints import (
+    RelationshipPropertiesEndpoints,
+)
+from graphdatascience.procedure_surface.api.catalog.relationship_property_endpoints import (
+    RelationshipPropertyEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
@@ -67,7 +74,10 @@ __all__ = [
     "NodePropertiesDropResult",
     "NodePropertiesEndpoints",
     "NodePropertiesWriteResult",
+    "NodePropertyEndpoints",
     "NodePropertySpec",
+    "RelationshipPropertiesEndpoints",
+    "RelationshipPropertyEndpoints",
     "RelationshipPropertySpec",
     "RelationshipsDataFrame",
     "RelationshipsDropResult",

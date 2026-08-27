@@ -38,7 +38,9 @@ class DbmsConnectionInfo:
 
     def get_auth(self) -> Auth | None:
         """
-        Returns:
+        Returns
+        -------
+        neo4j.Auth | None
             A neo4j.Auth object for authentication.
         """
         auth = self.auth

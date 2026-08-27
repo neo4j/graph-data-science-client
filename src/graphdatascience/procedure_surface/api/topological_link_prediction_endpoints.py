@@ -32,9 +32,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The first node, either as a node id or a node object.
         node2: int | Node
             The second node, either as a node id or a node object.
-        relationship_query: str | None, default=None
+        relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction, default=Direction.BOTH
+        direction: Direction
             The relationship direction used to compute similarity between node1 and node2
 
         Returns
@@ -61,9 +61,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The first node, either as a node id or a node object.
         node2: int | Node
             The second node, either as a node id or a node object.
-        relationship_query: str | None, default=None
+        relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2The relationship type used to compute similarity between node1 and node2
-        direction: Direction, default=Direction.BOTH
+        direction: Direction
             The relationship direction used to compute similarity between node1 and node2
 
         Returns
@@ -90,9 +90,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The first node, either as a node id or a node object.
         node2: int | Node
             The second node, either as a node id or a node object.
-        relationship_query: str | None, default=None
+        relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction, default=Direction.BOTH
+        direction: Direction
             The relationship direction used to compute similarity between node1 and node2
 
         Returns
@@ -119,9 +119,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The first node, either as a node id or a node object.
         node2: int | Node
             The second node, either as a node id or a node object.
-        relationship_query: str | None, default=None
+        relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction, default=Direction.BOTH
+        direction: Direction
             The relationship direction used to compute similarity between node1 and node2
 
         Returns
@@ -147,7 +147,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The first node, either as a node id or a node object.
         node2: int | Node
             The second node, either as a node id or a node object.
-        community_property: str, default="community"
+        community_property: str
             The node property holding the community id.
 
         Returns
@@ -174,9 +174,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The first node, either as a node id or a node object.
         node2: int | Node
             The second node, either as a node id or a node object.
-        relationship_query: str | None, default=None
+        relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction, default=Direction.BOTH
+        direction: Direction
             The relationship direction used to compute similarity between node1 and node2
 
         Returns

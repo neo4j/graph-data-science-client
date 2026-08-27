@@ -15,6 +15,13 @@ from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints impor
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_label_endpoints import NodeLabelEndpoints
 from graphdatascience.procedure_surface.api.catalog.node_properties_endpoints import NodePropertiesEndpoints
+from graphdatascience.procedure_surface.api.catalog.node_property_endpoints import NodePropertyEndpoints
+from graphdatascience.procedure_surface.api.catalog.relationship_properties_endpoints import (
+    RelationshipPropertiesEndpoints,
+)
+from graphdatascience.procedure_surface.api.catalog.relationship_property_endpoints import (
+    RelationshipPropertyEndpoints,
+)
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import RelationshipsEndpoints
 
 
@@ -26,7 +33,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            The name of the graph.
+            Name of the graph
 
         Returns
         -------
@@ -42,7 +49,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            The name of the graph.
+            Name of the graph
 
         Returns
         -------
@@ -61,13 +68,14 @@ class CatalogEndpoints(ABC):
         undirected_relationship_types: list[str] | None = None,
         inverse_indexed_relationship_types: list[str] | None = None,
         batch_size: int = 100000,
+        overwrite: bool = False,
     ) -> Graph:
         """Construct a graph from a list of node and relationship dataframes.
 
         Parameters
         ----------
         graph_name
-            Name of the graph to construct
+            Name of the graph to be created
         nodes
             Node dataframes. A dataframe should follow the schema:
 
@@ -89,6 +97,9 @@ class CatalogEndpoints(ABC):
             List of relationship types for which to create an inverse index.
         batch_size
             Batch size to use when sending data to GDS.
+        overwrite
+            If `True`, drop an existing graph with the same name before constructing the new one.
+            Defaults to `False`.
 
         Returns
         -------
@@ -132,6 +143,7 @@ class CatalogEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithFilterResult:
         """Create a subgraph of a graph based on a filter expression.
 
@@ -139,11 +151,11 @@ class CatalogEndpoints(ABC):
         ----------
         G
            Graph object to use
-        graph_name (str):
-            Name of subgraph to create
-        node_filter (str):
+        graph_name
+            Name of the graph to be created
+        node_filter
             Filter expression for nodes
-        relationship_filter (str):
+        relationship_filter
             Filter expression for relationships
         parameters
             A map of user-defined query parameters that are passed into the node and relationship filters.
@@ -157,10 +169,13 @@ class CatalogEndpoints(ABC):
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        overwrite
+            If `True`, drop an existing graph with the same name before creating the filtered subgraph.
+            Defaults to `False`.
 
         Returns
         -------
-        GraphWithFilterResult:
+        GraphWithFilterResult
             tuple of the filtered graph object and the information like graph name, node count, relationship count, etc.
         """
         pass
@@ -183,6 +198,7 @@ class CatalogEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithGenerationStats:
         """
         Generates a random graph and store it in the graph catalog.
@@ -190,7 +206,7 @@ class CatalogEndpoints(ABC):
         Parameters
         ----------
         graph_name
-            Name of the generated graph.
+            Name of the graph to be created
         node_count
             The number of nodes in the generated graph
         average_degree
@@ -217,10 +233,13 @@ class CatalogEndpoints(ABC):
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        overwrite
+            If `True`, drop an existing graph with the same name before generating the new one.
+            Defaults to `False`.
 
         Returns
         -------
-        GraphGenerationStats:
+        GraphWithGenerationStats
             tuple of the generated graph object and the result object containing stats about the generation.
         """
 
@@ -245,14 +264,29 @@ class CatalogEndpoints(ABC):
     @property
     @abstractmethod
     def node_properties(self) -> NodePropertiesEndpoints:
-        """Endpoints for node label operations."""
+        """Endpoints for node property operations."""
         pass
+
+    @property
+    def node_property(self) -> NodePropertyEndpoints:
+        """Endpoints for streaming a single node property."""
+        return NodePropertyEndpoints(self.node_properties)
 
     @property
     @abstractmethod
     def relationships(self) -> RelationshipsEndpoints:
         """Endpoints for relationship operations."""
         pass
+
+    @property
+    def relationship_property(self) -> RelationshipPropertyEndpoints:
+        """Endpoints for streaming a single relationship property."""
+        return RelationshipPropertyEndpoints(self.relationships)
+
+    @property
+    def relationship_properties(self) -> RelationshipPropertiesEndpoints:
+        """Endpoints for streaming several relationship properties."""
+        return RelationshipPropertiesEndpoints(self.relationships)
 
 
 class GraphFilterResult(BaseResult):

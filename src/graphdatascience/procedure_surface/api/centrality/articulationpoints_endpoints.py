@@ -135,10 +135,10 @@ class ArticulationPointsEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
-            A DataFrame containing articulation points with columns:
-            - nodeId: The ID of the articulation point
-            - resultingComponents: Information about resulting components
+        pandas.DataFrame
+            A DataFrame with 'nodeId' and 'resultingComponents' columns. The 'resultingComponents'
+            column contains a map with 'min', 'max', and 'count' keys describing the resulting
+            components when the node is removed (null for non-articulation-point nodes).
         """
 
     @abstractmethod

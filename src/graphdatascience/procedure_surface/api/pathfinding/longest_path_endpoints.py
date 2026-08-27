@@ -49,6 +49,6 @@ class LongestPathEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             The longest path results as a DataFrame with columns for index, sourceNode, targetNode, totalCost, nodeIds, costs.
         """

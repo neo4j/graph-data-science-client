@@ -121,7 +121,7 @@ def test_store_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -
     assert stored.loaded
 
     model_catalog.drop(gs_model_name)
-    dropped = model_catalog.get(gs_model_name)
+    dropped = [m for m in model_catalog.list() if m.model_name == gs_model_name][0]
     assert dropped.stored
     assert not dropped.loaded
 
@@ -133,7 +133,7 @@ def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     model_catalog.store(gs_model_name)
     model_catalog.drop(gs_model_name)
 
-    stored = model_catalog.get(gs_model_name)
+    stored = [m for m in model_catalog.list() if m.model_name == gs_model_name][0]
     assert stored.stored
     assert not stored.loaded
 

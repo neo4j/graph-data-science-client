@@ -7,6 +7,7 @@ import pytest
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.catalog.graph_backend_cypher import CypherGraphBackend, get_graph
+from graphdatascience.procedure_surface.cypher.catalog.graph_ops_cypher import GraphOpsCypher
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
@@ -69,6 +70,16 @@ def test_graph_info_filters_by_database_when_name_is_ambiguous() -> None:
     assert info.node_count == 4
 
 
+def test_graph_info_raises_when_graph_only_in_other_database() -> None:
+    # Graph exists in multiple databases but none match the runner's database.
+    rows = pd.DataFrame([_list_row(database="other1", nodeCount=99), _list_row(database="other2", nodeCount=88)])
+    runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.list": rows})
+    backend = CypherGraphBackend("g", runner)
+
+    with pytest.raises(ValueError, match="There is no projected graph named 'g' in database"):
+        backend.graph_info()
+
+
 def test_exists_returns_flag() -> None:
     runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.exists": pd.DataFrame([{"exists": True}])})
     backend = CypherGraphBackend("g", runner)
@@ -125,3 +136,26 @@ def test_drop_returns_none_when_result_empty() -> None:
     backend = CypherGraphBackend("g", runner)
 
     assert backend.drop(fail_if_missing=False) is None
+
+
+def test_drop_forwards_impersonated_user() -> None:
+    runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.drop": pd.DataFrame([_list_row()])})
+    ops = GraphOpsCypher(runner)
+
+    ops.drop("g", fail_if_missing=False, username="alice")
+
+    params = runner.last_params()
+    assert params["failIfMissing"] is False
+    assert params["username"] == "alice"
+    assert params["dbName"] == ""
+
+
+def test_drop_without_username_omits_impersonation_params() -> None:
+    runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"gds.graph.drop": pd.DataFrame([_list_row()])})
+    ops = GraphOpsCypher(runner)
+
+    ops.drop("g", fail_if_missing=False)
+
+    params = runner.last_params()
+    assert "username" not in params
+    assert "dbName" not in params

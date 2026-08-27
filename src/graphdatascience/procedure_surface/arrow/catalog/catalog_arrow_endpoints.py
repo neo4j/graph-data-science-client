@@ -25,6 +25,7 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
+from graphdatascience.procedure_surface.api.catalog.validation import validate_distinct_from_source
 from graphdatascience.procedure_surface.api.projection_job_handle import ProjectionJobHandle
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import get_graph
 from graphdatascience.procedure_surface.arrow.catalog.graph_export_arrow_endpoints import (
@@ -55,7 +56,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._graph_backend = GraphOpsArrow(arrow_client)
+        self._graph_ops = GraphOpsArrow(arrow_client)
         self._show_progress = show_progress
         self._write_protocol: WriteProtocol | None = None
         if query_runner is not None:
@@ -63,6 +64,9 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def project(self) -> ProjectArrowEndpoints:
+        """
+        Provides access to the project endpoints.
+        """
         return ProjectArrowEndpoints(self._arrow_client, self._query_runner, self._show_progress)
 
     def get(self, graph_name: str) -> Graph:
@@ -80,9 +84,13 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         relationships: DataFrame | typing.List[DataFrame] | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: typing.List[str] | None = None,
-        inverse_index_relationship_types: typing.List[str] | None = None,
+        inverse_indexed_relationship_types: typing.List[str] | None = None,
         batch_size: int = 100000,
+        overwrite: bool = False,
     ) -> Graph:
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
+
         if isinstance(nodes, DataFrame):
             nodes = [nodes]
         if relationships is not None and isinstance(relationships, DataFrame):
@@ -95,7 +103,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             graph_name,
             concurrency,
             undirected_relationship_types,
-            inverse_index_relationship_types,
+            inverse_indexed_relationship_types,
             batch_size,
             self._show_progress,
         )
@@ -119,7 +127,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         """
         graph_name = G.name() if isinstance(G, Graph) else G
 
-        return self._graph_backend.drop(graph_name, fail_if_missing)
+        return self._graph_ops.drop(graph_name, fail_if_missing)
 
     def filter(
         self,
@@ -133,7 +141,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithFilterResult:
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
+
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -168,11 +181,16 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> ProjectionJobHandle:
-        """Kick off a graph filter operation and return a :class:`ProjectionJobHandle`.
+        """Kick off a graph filter operation and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
         Unlike :meth:`filter`, this method does not block on completion.
         """
+        validate_distinct_from_source(graph_name, G)
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
+
         config = ConfigConverter.convert_to_gds_config(
             from_graph_name=G.name(),
             graph_name=graph_name,
@@ -207,7 +225,11 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> GraphWithGenerationStats:
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
+
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
             node_count=node_count,
@@ -252,11 +274,15 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        overwrite: bool = False,
     ) -> ProjectionJobHandle:
-        """Kick off a graph generation and return a :class:`ProjectionJobHandle`.
+        """Kick off a graph generation and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
 
         Unlike :meth:`generate`, this method does not block on completion.
         """
+        if overwrite:
+            self._graph_ops.drop(graph_name, fail_if_missing=False)
+
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,
             node_count=node_count,
@@ -285,7 +311,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         elif isinstance(G, str):
             graph_name = G
 
-        return self._graph_backend.list(graph_name)
+        return self._graph_ops.list(graph_name)
 
     @property
     def export(self) -> GraphExportEndpoints:

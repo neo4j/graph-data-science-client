@@ -23,6 +23,7 @@ This page describes the changes needed to migrate code written against the 1.x s
 == Migrating from the `gds.v2` preview prefix
 
 If your code already uses the V2 endpoints via the `gds.v2` prefix, migration mostly requires dropping the prefix:
+If your code already uses the V2 endpoints via the `gds.v2` prefix, migration mostly requires dropping the prefix:
 
 [source, python, role=no-test]
 ----
@@ -92,6 +93,7 @@ millis = result.write_millis
 
 
 [[graph-projections]]
+[[graph-projections]]
 === Graph projections
 
 The projection endpoints have been renamed to make the projection type explicit:
@@ -150,6 +152,47 @@ G, result = gds.graph.project.cypher(
     MATCH (n:City)-[r:FLY_TO]->(m:City)
     RETURN gds.graph.project('offices', n, m)
     """
+)
+----
+|===
+
+
+=== Streaming graph properties
+
+* `gds.graph.nodeProperty.stream` is now `gds.graph.node_property.stream`, and `gds.graph.streamNodeProperties` / `gds.graph.nodeProperties.stream` are now `gds.graph.node_properties.stream`.
+* `gds.graph.streamRelationshipProperty` / `gds.graph.relationshipProperty.stream` are now `gds.graph.relationship_property.stream`.
+* `gds.graph.streamRelationshipProperties` / `gds.graph.relationshipProperties.stream` are now `gds.graph.relationship_properties.stream`.
+  The same data can also be streamed with `gds.graph.relationships.stream`, which takes the properties to stream as an optional `relationship_properties` parameter.
+* The client-only `separate_property_columns` parameter is gone. A separate column per property is always returned now. Reshape the result with pandas if you need the old shape.
+
+.Streaming examples
+[opts=header,cols="1a,1a"]
+|===
+| 1.x | 2.0
+
+|
+[source, python]
+----
+df = gds.graph.nodeProperty.stream(G, "pageRank")
+----
+|
+[source, python]
+----
+df = gds.graph.node_property.stream(G, "pageRank")
+----
+
+|
+[source, python]
+----
+df = gds.graph.relationshipProperties.stream(
+    G, ["weight"], separate_property_columns=True
+)
+----
+|
+[source, python]
+----
+df = gds.graph.relationship_properties.stream(
+    G, ["weight"]
 )
 ----
 |===

@@ -87,37 +87,37 @@ class GraphSageTrainEndpoints(ABC):
         ----------
         G
            Graph object to use
-        model_name : str
+        model_name
             Name of the trained model.
-        feature_properties : list[str]
+        feature_properties
             The names of the node properties to use as input features
-        activation_function : str = "SIGMOID"
+        activation_function
             The activation function to apply after each layer
-        negative_sample_weight : int = 20
+        negative_sample_weight
             Weight of negative samples in the loss function
-        embedding_dimension : int = 64
-            The dimension of the generated embeddings
+        embedding_dimension
+            Output dimensionality of the embeddings
         tolerance
             Minimum change in loss between iterations for early stopping an epoch.
-        learning_rate : float = 0.1
+        learning_rate
             Learning rate for the training optimization
         max_iterations
             Maximum number of iterations to run.
-        sample_sizes : list[int] | None = None
+        sample_sizes
             Number of neighbors to sample at each layer. Defaults to [25, 10] if not specified
-        aggregator : str = "MEAN"
+        aggregator
             The aggregator function for neighborhood aggregation
-        penalty_l2 : float = 0.0
+        penalty_l2
             L2 regularization penalty
-        search_depth : int = 5
+        search_depth
             Maximum search depth for neighbor sampling
-        epochs : int = 1
+        epochs
             Number of training epochs
-        projected_feature_dimension : int | None = None
+        projected_feature_dimension
             Dimension to project input features to before training
-        batch_sampling_ratio : float | None = None
+        batch_sampling_ratio
             Ratio of nodes to sample for each training batch
-        store_model_to_disk : bool = False
+        store_model_to_disk
             Whether to persist the model to disk
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

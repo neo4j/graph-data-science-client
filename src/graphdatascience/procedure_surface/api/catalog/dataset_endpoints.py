@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
 from graphdatascience.datasets.ogb_loader import OGBLLoader, OGBNLoader
 from graphdatascience.datasets.simple_file_loader import SimpleDatasetLoader
 from graphdatascience.graph import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
+
+if TYPE_CHECKING:
+    from graphdatascience.datasets.nx_loader import NXLoader
 
 
 class DatasetEndpoints:
@@ -22,7 +29,7 @@ class DatasetEndpoints:
             Whether the graph should be undirected
 
         Returns
-        --------
+        -------
         Graph
             A handle to the graph.
         """
@@ -42,7 +49,7 @@ class DatasetEndpoints:
             Whether the graph should be undirected
 
         Returns
-        --------
+        -------
         Graph
             A handle to the graph.
         """
@@ -66,7 +73,7 @@ class DatasetEndpoints:
             Whether the graph should be undirected
 
         Returns
-        --------
+        -------
         Graph
             A handle to the graph.
         """
@@ -94,7 +101,7 @@ class DatasetEndpoints:
             Whether the graph should be undirected
 
         Returns
-        --------
+        -------
         Graph
             A handle to the graph.
         """
@@ -125,13 +132,14 @@ class DatasetEndpoints:
         return OGBLLoader(self.construct)
 
     @property
-    def networkx(self):  # type:ignore
+    def networkx(self) -> NXLoader:
         """
         Convenience wrapper to load networkx graphs into the graph catalog.
 
         Returns
         -------
         NXLoader
+            A loader to load networkx graphs into the graph catalog.
         """
         try:
             from graphdatascience.datasets.nx_loader import NXLoader

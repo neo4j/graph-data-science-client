@@ -16,7 +16,6 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_fo
     SingleSourceBellmanFordEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
-from graphdatascience.procedure_surface.arrow.stream_result_mapper import map_shortest_path_stream_result
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
@@ -86,7 +85,6 @@ class BellmanFordArrowEndpoints(SingleSourceBellmanFordEndpoints):
         )
 
         result = self._endpoints_helper.run_job_and_stream("v2/pathfinding.singleSource.bellmanFord", G, config)
-        map_shortest_path_stream_result(result)
         if "isNegativeCycle" not in result.columns:
             result["isNegativeCycle"] = (result["sourceNode"] == result["targetNode"]) & (result["totalCost"] < 0)
 
@@ -140,6 +138,8 @@ class BellmanFordArrowEndpoints(SingleSourceBellmanFordEndpoints):
         config = self._endpoints_helper.create_base_config(
             G,
             sourceNode=source_node,
+            # The Arrow v2 endpoint uses writeNegativeCycles for both mutate and write modes,
+            # unlike the Cypher procedure which uses mutateNegativeCycles for mutate.
             writeNegativeCycles=mutate_negative_cycles,
             relationshipWeightProperty=relationship_weight_property,
             relationshipTypes=relationship_types,

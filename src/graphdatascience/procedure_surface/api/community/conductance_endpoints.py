@@ -52,7 +52,7 @@ class ConductanceEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
             DataFrame with the algorithm results containing 'community' and 'conductance' columns
         """
         pass

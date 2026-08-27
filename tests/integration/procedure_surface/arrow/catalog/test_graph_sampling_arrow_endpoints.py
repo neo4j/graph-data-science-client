@@ -4,6 +4,9 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import (
+    CatalogArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.catalog.graph_sampling_arrow_endpoints import GraphSamplingArrowEndpoints
 from tests.integration.procedure_surface.arrow.graph_creation_helper import (
     create_graph,
@@ -74,3 +77,41 @@ def test_cnarw_estimate(graph_sampling_endpoints: GraphSamplingArrowEndpoints, s
     assert result.bytes_max >= 0
     assert result.heap_percentage_min >= 0
     assert result.heap_percentage_max >= 0
+
+
+def test_rwr_overwrite_replaces_existing(
+    graph_sampling_endpoints: GraphSamplingArrowEndpoints,
+    sample_graph: Graph,
+    arrow_client: AuthenticatedArrowClient,
+) -> None:
+    try:
+        graph_sampling_endpoints.rwr(G=sample_graph, graph_name="rwr_ov", sampling_ratio=0.6)
+
+        G, result = graph_sampling_endpoints.rwr(
+            G=sample_graph, graph_name="rwr_ov", sampling_ratio=0.8, overwrite=True
+        )
+
+        assert result.graph_name == "rwr_ov"
+        assert result.from_graph_name == sample_graph.name()
+        assert result.node_count > 0
+    finally:
+        CatalogArrowEndpoints(arrow_client).drop("rwr_ov", fail_if_missing=False)
+
+
+def test_cnarw_overwrite_replaces_existing(
+    graph_sampling_endpoints: GraphSamplingArrowEndpoints,
+    sample_graph: Graph,
+    arrow_client: AuthenticatedArrowClient,
+) -> None:
+    try:
+        graph_sampling_endpoints.cnarw(G=sample_graph, graph_name="cnarw_ov", sampling_ratio=0.6)
+
+        G, result = graph_sampling_endpoints.cnarw(
+            G=sample_graph, graph_name="cnarw_ov", sampling_ratio=0.8, overwrite=True
+        )
+
+        assert result.graph_name == "cnarw_ov"
+        assert result.from_graph_name == sample_graph.name()
+        assert result.node_count > 0
+    finally:
+        CatalogArrowEndpoints(arrow_client).drop("cnarw_ov", fail_if_missing=False)

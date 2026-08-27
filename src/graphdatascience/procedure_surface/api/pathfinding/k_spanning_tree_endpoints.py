@@ -51,7 +51,7 @@ class KSpanningTreeEndpoints(ABC):
             Node id to use as the starting point.
         relationship_weight_property
             Name of the property to be used as weights.
-        objective : str, default="minimum"
+        objective
             The objective function to optimize. Either "minimum" or "maximum".
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

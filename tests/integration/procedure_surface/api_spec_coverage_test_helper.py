@@ -36,11 +36,7 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "list",  # listing only available endpoints, doesnt make sense as we mapout the important endpoints
     "user_log",  # no relevant usage of this feature inside GDS
     "internal.graph.size_of",  # not a user-facing endpoint
-    "graph.node_property.stream",  # mapped only the plural version. no need to use this one
-    "graph.relationship_properties.write",  # mapped via gds.relationships
     "graph.relationship.write",  # mapped via gds.relationships
-    "graph.relationship_property.stream",  # mapped via gds.relationships
-    "graph.relationship_properties.stream",  # mapped via gds.relationships
     "util.infinity",  # built-in in python
     "util.is_finite",  # built-in in python
     "util.is_infinite",  # built-in in python
@@ -121,8 +117,12 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
 IGNORED_ACTUAL_PARAMETERS = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
     r".*graph.node_properties.stream": ["job_id", "db_node_properties"],
+    # client-only convenience parameter
+    r".*graph\.node_property\.stream$": ["db_node_properties"],
     r".*graph.relationships.stream": ["relationship_properties"],
     r".*graph.relationships.drop": ["fail_if_missing"],
+    r"graph.[filter|generate]": ["overwrite"],
+    r"graph.sample.*": ["overwrite"],
 }
 
 ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {

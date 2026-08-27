@@ -22,6 +22,7 @@ jobs:
   # the published one, so reviewers follow links into the refdocs built from this PR.
   api-reference-uri:
     name: Resolve API reference preview URI
+    if: ${{ !startsWith(github.head_ref, 'dependabot/') }}
     runs-on: ubuntu-latest
     outputs:
       gds-api-uri: ${{ steps.get-uri.outputs.gds-api-uri }}
@@ -66,6 +67,7 @@ jobs:
   # - all updated asciidoc pages
   # - all new asciidoc pages
   docs-changes-pr:
+    if: ${{ !startsWith(github.head_ref, 'dependabot/') }}
     runs-on: ubuntu-latest
     outputs:
       asciidoc-files: ${{ steps.get-file-changes.outputs.asciidoc_all_changed_files }}

@@ -27,7 +27,7 @@ ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]")
 VERSION_CELL_TAG = "verify-version"
 TEARDOWN_CELL_TAG = "teardown"
 
-SESSION_NOTEBOOKS = ["graph-analytics-serverless.ipynb"]
+SESSION_NOTEBOOKS = ["graph-analytics-serverless.ipynb", "similarity-algorithms.ipynb"]
 SESSION_SELF_MANAGED_NOTEBOOKS = [
     "graph-analytics-serverless-self-managed.ipynb",
     "graph-analytics-serverless-standalone.ipynb",

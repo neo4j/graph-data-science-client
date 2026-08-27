@@ -1,7 +1,9 @@
 import logging
+import pickle
 import re
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
+from typing import Any, cast
 
 import pytest
 from _pytest.logging import LogCaptureFixture
@@ -30,6 +32,20 @@ def mock_auth_token(requests_mock: Mocker) -> None:
         "https://api.neo4j.io/oauth/token",
         json={"access_token": "very_short_token", "expires_in": 500, "token_type": "Bearer"},
     )
+
+
+def test_requests_use_a_timeout(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+    mock_auth_token(requests_mock)
+    requests_mock.delete("https://api.neo4j.io/v1/graph-analytics/sessions/id0", status_code=202)
+
+    api.delete_session("id0")
+
+    # Every request needs a bound, so that a stalled connection cannot block indefinitely
+    assert {r.path: cast(tuple[float, float], r.timeout) for r in requests_mock.request_history} == {
+        "/oauth/token": AuraApi.DEFAULT_TIMEOUT,
+        "/v1/graph-analytics/sessions/id0": AuraApi.DEFAULT_TIMEOUT,
+    }
 
 
 def test_base_uri_from_env() -> None:
@@ -358,6 +374,54 @@ def test_get_session_state_error_forwards(requests_mock: Mocker) -> None:
         api.get_session("id0")
 
 
+def test_get_session_with_errors_returns_errors(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
+        json={
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Failed",
+                "instance_id": "dbid-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "expiry_date": "1977-01-01T00:00:00Z",
+                "project_id": "tenant-0",
+                "user_id": "user-0",
+            },
+            "errors": [
+                {
+                    "id": "id0",
+                    "message": "details here",
+                    "reason": "OutOfMemory",
+                }
+            ],
+        },
+    )
+
+    result = api.get_session_with_errors("id0")
+
+    assert result is not None
+    assert result.status == "Failed"
+    assert result.memory == SessionMemory.m_4GB.value
+    assert result.errors == [SessionErrorData(message="details here", reason="OutOfMemory")]
+
+
+def test_get_session_with_errors_of_missing_session(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+
+    mock_auth_token(requests_mock)
+
+    requests_mock.get("https://api.neo4j.io/v1/graph-analytics/sessions/id0", status_code=HTTPStatus.NOT_FOUND.value)
+
+    assert api.get_session_with_errors("id0") is None
+
+
 def test_list_sessions(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
     mock_auth_token(requests_mock)
@@ -633,6 +697,111 @@ def test_delete_session(requests_mock: Mocker) -> None:
     assert api.delete_session("id0") is True
 
 
+def _expired_token_gateway(requests_mock: Mocker) -> None:
+    # The gateway rejects `stale_token` as expired even though the token response
+    # claimed an hour of validity, and accepts any newly minted token.
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        [
+            {"json": {"access_token": "stale_token", "expires_in": 3600, "token_type": "Bearer"}},
+            {"json": {"access_token": "fresh_token", "expires_in": 3600, "token_type": "Bearer"}},
+        ],
+    )
+
+    def respond(request: _RequestObjectProxy, context: Any) -> dict[str, str]:
+        if request.headers["Authorization"] == "Bearer stale_token":
+            context.status_code = HTTPStatus.UNAUTHORIZED.value
+            return {"error": "Key not authorized: token has expired"}
+        context.status_code = HTTPStatus.ACCEPTED.value
+        return {}
+
+    requests_mock.delete("https://api.neo4j.io/v1/graph-analytics/sessions/id0", json=respond)
+
+
+def test_delete_session_refreshes_expired_token(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+    _expired_token_gateway(requests_mock)
+
+    assert api._request_session.auth._auth_token() == "stale_token"  # type: ignore
+
+    assert api.delete_session("id0") is True
+
+    delete_requests = [r for r in requests_mock.request_history if r.method == "DELETE"]
+    assert [r.headers["Authorization"] for r in delete_requests] == [
+        "Bearer stale_token",
+        "Bearer fresh_token",
+    ]
+
+
+def test_get_session_refreshes_expired_token(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+    requests_mock.post(
+        "https://api.neo4j.io/oauth/token",
+        [
+            {"json": {"access_token": "stale_token", "expires_in": 3600, "token_type": "Bearer"}},
+            {"json": {"access_token": "fresh_token", "expires_in": 3600, "token_type": "Bearer"}},
+        ],
+    )
+
+    def respond(request: _RequestObjectProxy, context: Any) -> dict[str, Any]:
+        if request.headers["Authorization"] == "Bearer stale_token":
+            context.status_code = HTTPStatus.UNAUTHORIZED.value
+            return {"error": "Key not authorized: token has expired"}
+        return {
+            "data": {
+                "id": "id0",
+                "name": "name-0",
+                "status": "Ready",
+                "instance_id": "instance-1",
+                "created_at": "1970-01-01T00:00:00Z",
+                "host": "1.2.3.4",
+                "memory": "4Gi",
+                "project_id": "some-tenant",
+                "user_id": "user-0",
+            }
+        }
+
+    requests_mock.get("https://api.neo4j.io/v1/graph-analytics/sessions/id0", json=respond)
+
+    # Prime the token cache, as any long-lived AuraApi would have done.
+    assert api._request_session.auth._auth_token() == "stale_token"  # type: ignore
+
+    session = api.get_session("id0")
+    assert session is not None
+    assert session.id == "id0"
+
+
+def test_unauthorized_is_only_retried_once(requests_mock: Mocker) -> None:
+    api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
+    mock_auth_token(requests_mock)
+    requests_mock.delete(
+        "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
+        status_code=HTTPStatus.UNAUTHORIZED.value,
+        json={"error": "Key not authorized: token has expired"},
+    )
+
+    with pytest.raises(AuraApiError, match="token has expired") as e:
+        api.delete_session("id0")
+    assert e.value.status_code == HTTPStatus.UNAUTHORIZED.value
+
+    delete_requests = [r for r in requests_mock.request_history if r.method == "DELETE"]
+    assert len(delete_requests) == 2
+
+
+def test_pickle_roundtrip() -> None:
+    api = AuraApi(client_id="client_id", client_secret="client_secret", project_id="some-tenant")
+
+    unpickled_api = pickle.loads(pickle.dumps(api))
+
+    assert unpickled_api._project_id == "some-tenant"
+    assert unpickled_api._credentials == ("client_id", "client_secret")
+    # `requests.Session` drops the attributes added by its subclasses, so the sessions are rebuilt
+    assert isinstance(unpickled_api._request_session, AuraApi.TokenRefreshSession)
+    assert unpickled_api._request_session._auth is unpickled_api._auth
+    assert unpickled_api._health_check_session._auth is unpickled_api._auth
+    assert unpickled_api._auth._request_session is not None
+
+
 def test_delete_missing_session(requests_mock: Mocker) -> None:
     api = AuraApi(client_id="", client_secret="", project_id="some-tenant")
 
@@ -754,7 +923,7 @@ def test_wait_for_session_running_until_failure(requests_mock: Mocker) -> None:
         api.wait_for_session_running("id0")
 
 
-def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
+def test_wait_for_session_running_until_deleted(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
     requests_mock.get(
         "https://api.neo4j.io/v1/graph-analytics/sessions/id0",
@@ -762,7 +931,7 @@ def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
             "data": {
                 "id": "id0",
                 "name": "name-0",
-                "status": "Expired",
+                "status": "Deleted",
                 "instance_id": "dbid-1",
                 "created_at": "1970-01-01T00:00:00Z",
                 "host": "foo.bar",
@@ -771,7 +940,7 @@ def test_wait_for_session_running_until_expired(requests_mock: Mocker) -> None:
                 "project_id": "tenant-1",
                 "user_id": "user-1",
             },
-            "errors": [{"id": "id0", "message": "Session is expired", "reason": "Inactivity"}],
+            "errors": [{"id": "id0", "message": "Session is deleted", "reason": "UserInitiated"}],
         },
     )
 
@@ -1081,7 +1250,9 @@ def test_list_instance_unknown_error(requests_mock: Mocker) -> None:
 
     with pytest.raises(
         AuraApiError,
-        match="Request for https://api.neo4j.io/v1/instances/id0 failed with status code 500 - Not Found: `my text`'",
+        match=re.escape(
+            "Request for https://api.neo4j.io/v1/instances/id0 failed with status code 500 - Not Found: `my text`"
+        ),
     ):
         api.list_instance("id0")
 
