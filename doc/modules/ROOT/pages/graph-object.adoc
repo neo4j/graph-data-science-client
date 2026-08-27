@@ -28,7 +28,7 @@ include::ROOT:partial$/gds-object.adoc[]
 
 The following query creates an example graph in the Neo4j database.
 
-[source, python ,group=graph-project]
+[source, python, group=graph-project]
 ----
 gds.run_cypher(
   """
@@ -104,7 +104,7 @@ The Cypher projection in the client is similar to its link:{gds-docs-base-uri}/m
 [.include-with-Aura-Graph-Analytics]
 =====
 
-[source, python, role=nocollapse]
+[source, python, role=nocollapse, group=graph-project]
 ----
 G, result = gds.graph.project.cypher(
     # The query has to use the .remote endpoint in AGA,
@@ -132,7 +132,7 @@ G, result = gds.graph.project.cypher(
 [.include-with-GDS-database-plugin]
 =====
 
-[source,python,group=graph-cyhpher-project,role=nocollapse]
+[source,python,group=graph-project,role=nocollapse]
 ----
 G, result = gds.graph.project.cypher(
     query="""
