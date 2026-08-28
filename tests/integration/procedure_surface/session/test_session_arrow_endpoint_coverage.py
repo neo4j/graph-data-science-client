@@ -139,7 +139,7 @@ def test_algo_coverage(endpoints: AuraGraphDataScience) -> None:
     unexpected_missing_endpoints = {e for e in missing_endpoints if e not in UNMAPPED_ENDPOINTS}
 
     # check missing endpoints against known missing algos
-    assert unexpected_missing_endpoints, f"Unexpectedly missing endpoints {len(unexpected_missing_endpoints)}"
+    assert not unexpected_missing_endpoints, f"Unexpectedly missing endpoints {len(unexpected_missing_endpoints)}"
 
 
 def test_pipeline_coverage(endpoints: AuraGraphDataScience) -> None:
