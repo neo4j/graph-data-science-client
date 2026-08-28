@@ -13,6 +13,8 @@ UNMAPPED_ENDPOINTS = [
     "pipeline.linkPrediction",
     "pipeline.linkPrediction.predict",
     "pipeline.nodeRegression.features.select",
+    "centrality.hits",
+    "centrality.hits.estimate",
 ]
 
 # mapping for arrow endpoint name parts -> endpoint callable from SessionV2Endpoints
