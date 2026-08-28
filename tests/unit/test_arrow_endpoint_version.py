@@ -16,7 +16,7 @@ def test_prefix() -> None:
 
 def test_check_version_compatibility() -> None:
     arrow_client_mock = mock.Mock(AuthenticatedArrowClient)
-    arrow_client_mock.list_actions.return_value = [
+    arrow_client_mock.list_actions_with_retry.return_value = [
         ActionType("v2/foo", ""),
         ActionType("v2/bar", ""),
         ActionType("v3/baz", ""),

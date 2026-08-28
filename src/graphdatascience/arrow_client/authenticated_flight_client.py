@@ -13,6 +13,7 @@ from pyarrow import __version__ as arrow_version
 from pyarrow.flight import (
     Action,
     ActionType,
+    FlightCallOptions,
     FlightInternalError,
     FlightStreamReader,
     FlightTimedOutError,
@@ -58,7 +59,9 @@ class AuthenticatedArrowClient:
         encrypted
             A flag that indicates whether the connection should be encrypted (default is False)
         arrow_client_options
-            Additional options to be passed to the Arrow Flight client.
+            Additional options for the Arrow Flight client. The key ``call_timeout`` sets the
+            per-call RPC timeout in seconds (default 30s); all other keys are forwarded to
+            ``pyarrow.flight.FlightClient``.
         user_agent
             The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION]`)
         retry_config
@@ -87,17 +90,22 @@ class AuthenticatedArrowClient:
                 wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
             )
 
+        options_copy = dict(arrow_client_options) if arrow_client_options else {}
+        call_timeout = options_copy.pop("call_timeout", 30.0)
+
         self._host = host
         self._port = int(port)
         self._auth = auth
         self._encrypted = encrypted
-        self._arrow_client_options = arrow_client_options
+        self._arrow_client_options = options_copy or None
         self._user_agent = user_agent
         self._logger = logging.getLogger("gds_arrow_client")
         self._retry_config = retry_config
         self._health_check = health_check
         if auth:
             self._auth_middleware = AuthMiddleware(auth)
+        self._call_timeout = call_timeout
+        self._call_options = self._build_call_options()
         self.advertised_listen_address = advertised_listen_address
         self._flight_client: flight.FlightClient = self._instantiate_flight_client()
 
@@ -143,7 +151,7 @@ class AuthenticatedArrowClient:
                 client = self._flight_client
                 if self._auth:
                     auth_pair = self._auth.auth_pair()
-                    client.authenticate_basic_token(auth_pair[0], auth_pair[1])
+                    client.authenticate_basic_token(auth_pair[0], auth_pair[1], self._call_options)
             except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
                 self._reconnect()
                 raise
@@ -160,7 +168,7 @@ class AuthenticatedArrowClient:
     def do_action(self, endpoint: str, payload: bytes | dict[str, Any]) -> Iterator[Result]:
         payload_bytes = payload if isinstance(payload, bytes) else json.dumps(payload).encode("utf-8")
 
-        return self._flight_client.do_action(Action(endpoint, payload_bytes))  # type: ignore
+        return self._flight_client.do_action(Action(endpoint, payload_bytes), self._call_options)  # type: ignore
 
     def do_action_with_retry(self, endpoint: str, payload: bytes | dict[str, Any]) -> list[Result]:
         @self._retry_config.decorator(operation_name="Send action", logger=self._logger)
@@ -176,7 +184,18 @@ class AuthenticatedArrowClient:
         return self._diagnose_connection_failure(run_with_retry)
 
     def list_actions(self) -> set[ActionType]:
-        return self._flight_client.list_actions()  # type: ignore
+        return self._flight_client.list_actions(self._call_options)  # type: ignore
+
+    def list_actions_with_retry(self) -> set[ActionType]:
+        @self._retry_config.decorator(operation_name="List actions", logger=self._logger)
+        def run_with_retry() -> set[ActionType]:
+            try:
+                return self.list_actions()
+            except (FlightTimedOutError, FlightUnavailableError, FlightInternalError):
+                self._reconnect()
+                raise
+
+        return self._diagnose_connection_failure(run_with_retry)
 
     def do_put_with_retry(
         self, descriptor: flight.FlightDescriptor, schema: Schema
@@ -218,6 +237,9 @@ class AuthenticatedArrowClient:
         if self._flight_client:
             self._flight_client.close()
 
+    def _build_call_options(self) -> FlightCallOptions | None:
+        return FlightCallOptions(timeout=self._call_timeout) if self._call_timeout is not None else None
+
     def _instantiate_flight_client(self) -> flight.FlightClient:
         location = (
             flight.Location.for_grpc_tls(self._host, self._port)
@@ -248,11 +270,16 @@ class AuthenticatedArrowClient:
         # Remove the FlightClient as it isn't serializable
         if "_flight_client" in state:
             del state["_flight_client"]
+        # FlightCallOptions is also not serializable
+        if "_call_options" in state:
+            del state["_call_options"]
         return state
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         self.__dict__.update(state)
         self.__dict__.setdefault("_health_check", None)
+        self.__dict__.setdefault("_call_timeout", 30.0)
+        self.__dict__.setdefault("_call_options", self._build_call_options())
         self._flight_client = self._instantiate_flight_client()
 
     def _reconnect(self) -> None:
