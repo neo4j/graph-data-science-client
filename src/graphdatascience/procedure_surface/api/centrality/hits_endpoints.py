@@ -41,7 +41,7 @@ class HitsEndpoints(ABC):
         G
            Graph object to use
         mutate_property
-            Prefix for the names of the node properties (auth and hub) to store the results in.
+            Postfix for the names of the node properties (auth and hub) to store the results in.
         hits_iterations
             Number of iterations to run HITS for.
         auth_property
@@ -198,7 +198,7 @@ class HitsEndpoints(ABC):
         G
            Graph object to use
         write_property
-            Prefix for the names of the node properties (auth and hub) to store the results in.
+            Postfix for the names of the node properties (auth and hub) to store the results in.
         hits_iterations
             Number of iterations to run HITS for.
         auth_property
