@@ -719,10 +719,10 @@ latent features or interaction style.
 
 [source, python, role=no-test]
 ----
-gds.delete()
+gds.run_cypher("MATCH (n) DETACH DELETE n")
 ----
 
 [source, python, role=no-test]
 ----
-gds.run_cypher("MATCH (n) DETACH DELETE n")
+gds.delete()
 ----
