@@ -136,8 +136,10 @@ def test_algo_coverage(endpoints: AuraGraphDataScience) -> None:
     print(f"Total algorithm actions found: {len(algorithm_actions)}")
     print(f"Available through gds.v2: {len(available_endpoints)}")
 
+    unexpected_missing_endpoints = {e for e in missing_endpoints if e not in UNMAPPED_ENDPOINTS}
+
     # check missing endpoints against known missing algos
-    assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)}"
+    assert unexpected_missing_endpoints, f"Unexpectedly missing endpoints {len(unexpected_missing_endpoints)}"
 
 
 def test_pipeline_coverage(endpoints: AuraGraphDataScience) -> None:
