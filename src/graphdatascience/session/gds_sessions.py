@@ -178,7 +178,7 @@ class GdsSessions:
         Returns
         -------
         list[CloudLocation]
-            Set[CloudLocation]: The list of available cloud locations.
+            list[CloudLocation]: The list of available cloud locations.
         """
         return list(self._aura_api.project_details().cloud_locations)
 
@@ -205,8 +205,12 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory | SessionMemoryValue | str): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo | None): The database connection information.
-            ttl (datetime.timedelta | None): The sessions time to live after inactivity in seconds.
-            cloud_location (CloudLocation | None): The cloud location. Required if the GDS session is for a self-managed database.
+            ttl (datetime.timedelta | None): The session's time to live after inactivity.
+            cloud_location (CloudLocation | None): The cloud location where the GDS Session will run.
+                Must be a `CloudLocation(provider, region)` with a supported provider (`"gcp"`, `"aws"`, or `"azure"`)
+                and an Aura-supported region (e.g. `"europe-west1"`).
+                Required for the Self-managed and Standalone session types; must not be provided for Attached sessions.
+                Use `available_cloud_locations()` to list all valid provider/region combinations.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client. The key ``call_timeout`` sets the per-call RPC timeout in seconds (default 30s).
