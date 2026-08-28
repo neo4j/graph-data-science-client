@@ -20,6 +20,13 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
     "hits.stats",  # plugin only; no Arrow/Session equivalent
     "hits.stream",  # plugin only; no Arrow/Session equivalent
     "hits.write",  # plugin only; no Arrow/Session equivalent
+    # (currently in draft PR)
+    "embeddings.predict.write",
+    "embeddings.encode.mutate",
+    "embeddings.predict.mutate",
+    "embeddings.encode.stream",
+    "embeddings.predict.stream",
+    "embeddings.encode.write",
 }
 
 

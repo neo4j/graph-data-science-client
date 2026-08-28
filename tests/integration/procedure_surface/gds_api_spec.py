@@ -86,7 +86,13 @@ class EndpointWithModesSpec(BaseModel, extra="forbid", populate_by_name=True):
     def _arrow_base_name(self) -> str:
         # For Arrow-only endpoints the `name` is the Arrow endpoint, e.g. "v2/embeddings.fastPath".
         # Derive a base name by dropping the `v2/` prefix and the leading category -> "fastPath".
-        return self.name.removeprefix("v2/").split(".", 1)[-1]
+        endpoint = self.name.removeprefix("v2/")
+
+        # modes directly on algo category. add special casing for now
+        if "embeddings.predict" in endpoint or "embeddings.encode" in endpoint or "embeddings.train" in endpoint:
+            return endpoint
+        else:
+            return endpoint.split(".", 1)[-1]
 
 
 def resolve_spec_from_file(file_path: Path) -> list[EndpointWithModesSpec]:
