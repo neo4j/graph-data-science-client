@@ -118,6 +118,7 @@ class Neo4jQueryRunner(QueryRunner):
         config.setdefault("keep_alive", True)
         config.setdefault("max_connection_pool_size", 50)
         config.setdefault("liveness_check_timeout", 60 * 5)  # 5 minutes
+        config.setdefault("connection_acquisition_timeout", 60 * 5)  # 5 minutes
 
     @staticmethod
     def parse_protocol(endpoint: str) -> str:
