@@ -59,6 +59,9 @@ def test_node_regression_train_and_predict_stream(
         )
         stream_result = model.predict_stream(sample_graph)
 
+        model2 = endpoints.get_model(model_name)
+        assert model2.name() == model.name()
+
         assert create_result.name == pipeline_name
         assert node_property_result.name == pipeline_name
         assert feature_result.name == pipeline_name

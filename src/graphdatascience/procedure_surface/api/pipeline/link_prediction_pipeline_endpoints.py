@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import LinkPredictionPipeline
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_results import (
     LinkPredictionPipelineInfoResult,
@@ -59,6 +60,25 @@ class LinkPredictionPipelineEndpoints(ABC):
         -------
         LinkPredictionPipeline
             The reconstructed pipeline object.
+        """
+        pass
+
+    @abstractmethod
+    def get_model(self, model_name: str) -> LinkPredictionModel:
+        """
+        Retrieve an existing link prediction model by name.
+
+        Returns the same model object as the ``train`` method of a link prediction pipeline.
+
+        Parameters
+        ----------
+        model_name
+            Name of the model.
+
+        Returns
+        -------
+        LinkPredictionModel
+            The reconstructed model object.
         """
         pass
 
