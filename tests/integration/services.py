@@ -234,6 +234,19 @@ def start_gds_api(logs_dir: Path, network: Network, request: pytest.FixtureReque
 # --------------------------------------------------------------------------- #
 
 
+def session_java_options() -> str:
+    """Cap the GDS session JVM memory so several sessions (across concurrently running tox
+    environments) fit on one agent.
+
+    The JVM picks up JAVA_TOOL_OPTIONS regardless of the image entrypoint; the small
+    initial heap keeps idle sessions light. Override the maximum with
+    GDS_SESSION_TEST_HEAP_MAX when needed. (The JVM prints a harmless
+    "Picked up JAVA_TOOL_OPTIONS" line at startup.)
+    """
+    heap_max = os.getenv("GDS_SESSION_TEST_HEAP_MAX", "1g")
+    return f"-Xms128m -Xmx{heap_max}"
+
+
 def start_session(
     logs_dir: Path,
     tmp_path_factory: pytest.TempPathFactory,
@@ -268,6 +281,7 @@ def start_session(
         .with_env("SESSION_ID", session_alias)  # using session-alias for runtime-api resolving to the right host
         .with_env("DATABASE_USERNAME", "neo4j")  # required to use remote model catalog features
         .with_env("EXTRA_FLAGS", "--disable-authentication")
+        .with_env("JAVA_TOOL_OPTIONS", session_java_options())
         .with_volume_mapping(model_dir, "/models", mode="rw")
         .with_exposed_ports(SESSION_ARROW_PORT, 8080)
         .waiting_for(HttpWaitStrategy(8080, path="/available"))
@@ -329,6 +343,19 @@ def latest_neo4j_version() -> str:
     return overrides.get(cal_ver, cal_ver)
 
 
+def neo4j_memory_envs() -> dict[str, str]:
+    """Cap Neo4j container memory so several tox environments can run in parallel on one agent.
+
+    The defaults are generous for the small graphs used in tests; override with
+    NEO4J_TEST_HEAP_INITIAL / NEO4J_TEST_HEAP_MAX / NEO4J_TEST_PAGECACHE when needed.
+    """
+    return {
+        "NEO4J_server_memory_heap_initial__size": os.getenv("NEO4J_TEST_HEAP_INITIAL", "512M"),
+        "NEO4J_server_memory_heap_max__size": os.getenv("NEO4J_TEST_HEAP_MAX", "1G"),
+        "NEO4J_server_memory_pagecache_size": os.getenv("NEO4J_TEST_PAGECACHE", "256M"),
+    }
+
+
 def start_database(
     logs_dir: Path, network: Network, request: pytest.FixtureRequest
 ) -> Generator[DbmsConnectionInfo, None, None]:
@@ -350,10 +377,19 @@ def start_database(
         .with_env("NEO4J_server_bolt_advertised__address", f"{advertise_address}:7687")
         .with_network_aliases("neo4j-db")
         .with_network(network)
-        .with_bind_ports(7687, 7687)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
+    for key, value in neo4j_memory_envs().items():
+        db_container = db_container.with_env(key, value)
+    if inside_ci():
+        # In CI the tests reach the database through its network alias, so let docker pick
+        # a random host port; a fixed binding would collide across concurrently running
+        # tox environments that share the same docker daemon.
+        db_container = db_container.with_exposed_ports(7687)
+    else:
+        # Locally, keep the well-known port so the advertised `localhost:7687` holds.
+        db_container = db_container.with_bind_ports(7687, 7687)
     with running_container(db_container, db_logs_dir / "stdout.log", "database"):
         if current_container_id() is not None:
             uri = "neo4j-db:7687"
@@ -415,6 +451,8 @@ def start_gds_plugin_database(
         .with_volume_mapping(models_dir, "/models", mode="rw")
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
+    for key, value in neo4j_memory_envs().items():
+        neo4j_container = neo4j_container.with_env(key, value)
 
     license_dir = tmp_path_factory.mktemp("gds_license")
     license_dir.chmod(0o755)
