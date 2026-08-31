@@ -45,7 +45,12 @@ logging.info(f"Running environments: {environments_to_run}")
 # Each environment spins up its own containers, so the environments of a partition are
 # safe to run concurrently;
 # Set TOX_SEQUENTIAL=1 to opt out (e.g. on memory-constrained agents).
-tox_subcommand = "run" if os.environ.get("TOX_SEQUENTIAL") == "1" else "run-parallel --parallel all"
+if os.environ.get("TOX_SEQUENTIAL") == "1":
+    tox_command = f'uvx tox run -e "{environments_to_run}"'
+else:
+    # Read by the integration tests to pick collision-free host ports (see
+    # tests/integration/services.py).
+    tox_command = f'TOX_RUNNING_PARALLEL=1 uvx tox run-parallel --parallel all -e "{environments_to_run}"'
 
-if os.system(f'uvx tox {tox_subcommand} -e "{environments_to_run}"') != 0:
+if os.system(tox_command) != 0:
     raise Exception("Failed to run tox environments")

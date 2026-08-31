@@ -54,7 +54,7 @@ def network() -> Generator[Network, None, None]:
     with Network() as network:
         self_id = current_container_id()
         if self_id is not None:
-            print(f"[v2-it] attaching {self_id[:12]} to test network {network.name}", flush=True)
+            print(f"[it] attaching {self_id[:12]} to test network {network.name}", flush=True)
             network.connect(self_id)
         elif inside_ci():
             raise RuntimeError(
@@ -72,9 +72,9 @@ def network() -> Generator[Network, None, None]:
             if self_id is not None:
                 try:
                     network._unwrap_network.disconnect(self_id)
-                    print(f"[v2-it] detached {self_id[:12]} from test network {network.name}", flush=True)
+                    print(f"[it] detached {self_id[:12]} from test network {network.name}", flush=True)
                 except Exception as e:
-                    print(f"[v2-it] failed to detach {self_id[:12]} from test network: {e}", flush=True)
+                    print(f"[it] failed to detach {self_id[:12]} from test network: {e}", flush=True)
 
 
 # --------------------------------------------------------------------------- #

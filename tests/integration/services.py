@@ -1,10 +1,3 @@
-"""Starting and stopping the Docker services (containers) used by the integration tests.
-
-The `start_*` helpers are context managers yielding a connection to their service. They
-are orchestrated — lazily locally, concurrently in CI — by `tests/integration/infra.py`
-and exposed to tests as pytest fixtures via `tests/integration/conftest.py`.
-"""
-
 import logging
 import os
 import socket
@@ -34,6 +27,10 @@ LOGGER = logging.getLogger(__name__)
 
 def inside_ci() -> bool:
     return os.environ.get("BUILD_ID") is not None
+
+
+def tox_running_parallel() -> bool:
+    return os.environ.get("TOX_RUNNING_PARALLEL") == "1"
 
 
 def write_container_logs(out_file: Path, stdout: bytes, stderr: bytes) -> None:
@@ -72,23 +69,14 @@ def running_container(container: DockerContainer, log_file: Path, name: str) -> 
 
 
 DEFAULT_SESSION_ALIAS = "gds-session"
-# Distinct from the default "gds-session" so the runtime-backed session can coexist with
-# the shared session on the same network without a DNS alias collision.
+# Distinct from the default "gds-session" for coexistance
 RUNTIME_SESSION_ALIAS = "gds-session-with-runtime"
 SESSION_ARROW_PORT = 8491
 
 
 def run_token() -> str:
-    """Per-run token making docker network aliases unique across concurrent test runs.
-
-    In CI the tox environments of a partition run concurrently inside the same agent
-    container, and each run attaches that container to its own test network. Docker's
-    embedded DNS resolves an alias ambiguously from a container attached to several
-    networks, so runs must not share alias names — with shared ones, one run's clients
-    can end up connected to another run's containers. TOX_ENV_NAME separates the
-    environments of one partition; appending BUILD_ID additionally separates builds, so
-    a network leaked by a killed build cannot collide with a later build on the same
-    agent. Both are expected to contain only docker-alias-safe characters already.
+    """
+    Per-run token making docker network aliases unique across concurrent test runs
     """
     env_name = os.getenv("TOX_ENV_NAME") or "run"
     build_id = os.getenv("BUILD_ID")
@@ -96,27 +84,22 @@ def run_token() -> str:
 
 
 def session_alias() -> str:
-    """Network alias of this run's default GDS session."""
     return f"{DEFAULT_SESSION_ALIAS}-{run_token()}"
 
 
 def runtime_session_alias() -> str:
-    """Network alias of this run's runtime-backed GDS session."""
     return f"{RUNTIME_SESSION_ALIAS}-{run_token()}"
 
 
 def db_alias() -> str:
-    """Network alias of this run's bare Neo4j database."""
     return f"neo4j-db-{run_token()}"
 
 
 def gds_api_alias() -> str:
-    """Network alias of this run's mock GDS API."""
     return f"{MOCK_GDS_API_NETWORK_ALIAS}-{run_token()}"
 
 
 def runtime_api_alias() -> str:
-    """Network alias of this run's mock python-runtime API."""
     return f"{PYTHON_RUNTIME_API_NETWORK_ALIAS}-{run_token()}"
 
 
@@ -125,32 +108,20 @@ class GdsSessionConnectionInfo:
     host: str
     arrow_port: int
     bolt_port: int
-    # Address the session advertises to the DB / python-runtime for remote projection and
-    # writeback. Defaults to the standard session alias; a second concurrent session on the
-    # same network must use a distinct alias to avoid DNS collisions.
-    advertised_address: tuple[str, int] = (DEFAULT_SESSION_ALIAS, SESSION_ARROW_PORT)
+    advertised_address: tuple[str, int]
 
 
 def current_container_id() -> Optional[str]:
-    """Detect: are we running inside a docker container that the sibling docker
-    daemon knows about? Returns its id, or None for host runs.
-
-    TeamCity is expected to set TEST_CONTAINER_ID explicitly (e.g. via
-    `--cidfile` or a fixed `--name`); we also try `socket.gethostname()` as a
-    fallback because docker sets the short container id as the hostname by
-    default. Errors are logged (not swallowed silently) so a misconfigured CI
-    environment fails loudly rather than hanging.
-    """
     candidate = os.environ.get("TEST_CONTAINER_ID") or socket.gethostname()
-    print(f"[v2-it] resolving self container id via candidate={candidate!r}", flush=True)
+    print(f"[it] resolving self container id via candidate={candidate!r}", flush=True)
     if not candidate:
         return None
     try:
         container = DockerClient().client.containers.get(candidate)
     except Exception as e:
-        print(f"[v2-it] daemon could not find container {candidate!r}: {e}", flush=True)
+        print(f"[it] daemon could not find container {candidate!r}: {e}", flush=True)
         return None
-    print(f"[v2-it] resolved current container id: {container.id}", flush=True)
+    print(f"[it] resolved current container id: {container.id}", flush=True)
     return str(container.id)
 
 
@@ -180,7 +151,7 @@ def _remove_spawned_runtime_containers(network: Network, image: str) -> None:
     for container in containers:
         try:
             container.remove(force=True)
-            LOGGER.info(f"[v2-it] removed spilled python-runtime container {container.id[:12]}")
+            LOGGER.info(f"[it] removed spilled python-runtime container {container.id[:12]}")
         except Exception as e:
             LOGGER.warning(f"Failed to remove spawned python-runtime container {container.id[:12]}: {e}")
 
@@ -188,9 +159,7 @@ def _remove_spawned_runtime_containers(network: Network, image: str) -> None:
 def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureRequest) -> Generator[str, None, None]:
     """Start the mock python-runtime API container.
 
-    The GDS session talks to this API to spawn python-runtime containers for endpoints
-    such as FastPath. The returned URI is the session-internal network address; the test
-    process itself does not talk to the API directly.
+    The GDS session talks to this API to spawn python-runtime containers for endpoints such as FastPath.
     """
     # When pointing at an externally managed session we don't manage the runtime API either.
     if (runtime_api_uri := os.environ.get("PYTHON_RUNTIME_API_URI")) is not None:
@@ -281,14 +250,8 @@ def start_gds_api(logs_dir: Path, network: Network, request: pytest.FixtureReque
 def session_java_options() -> str:
     """Cap the GDS session JVM memory so several sessions (across concurrently running tox
     environments) fit on one agent.
-
-    The JVM picks up JAVA_TOOL_OPTIONS regardless of the image entrypoint; the small
-    initial heap keeps idle sessions light. Override the maximum with
-    GDS_SESSION_TEST_HEAP_MAX when needed. (The JVM prints a harmless
-    "Picked up JAVA_TOOL_OPTIONS" line at startup.)
     """
-    heap_max = os.getenv("GDS_SESSION_TEST_HEAP_MAX", "1g")
-    return f"-Xms128m -Xmx{heap_max}"
+    return "-Xms128m -Xmx1g"
 
 
 def start_session(
@@ -302,7 +265,12 @@ def start_session(
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     if (session_uri := os.environ.get("GDS_SESSION_URI")) is not None:
         uri_parts = session_uri.split(":")
-        yield GdsSessionConnectionInfo(host=uri_parts[0], arrow_port=SESSION_ARROW_PORT, bolt_port=int(uri_parts[1]))
+        yield GdsSessionConnectionInfo(
+            host=uri_parts[0],
+            arrow_port=SESSION_ARROW_PORT,
+            bolt_port=int(uri_parts[1]),
+            advertised_address=(uri_parts[0], SESSION_ARROW_PORT),
+        )
         return
 
     session_image = os.getenv(
@@ -350,7 +318,7 @@ def start_session(
                 session_container.get_container_host_ip(),
                 int(session_container.get_exposed_port(SESSION_ARROW_PORT)),
             )
-        print(f"[v2-it] session reachable at {host}:{arrow_port}", flush=True)
+        print(f"[it] session reachable at {host}:{arrow_port}", flush=True)
         yield GdsSessionConnectionInfo(
             host=host,
             arrow_port=arrow_port,
@@ -360,8 +328,6 @@ def start_session(
 
 
 def create_arrow_client(session_uri: GdsSessionConnectionInfo) -> AuthenticatedArrowClient:
-    """Create an authenticated Arrow client connected to the session container."""
-
     return AuthenticatedArrowClient(
         (session_uri.host, session_uri.arrow_port),
         auth=UsernamePasswordAuthentication("neo4j", "password"),
@@ -388,15 +354,11 @@ def latest_neo4j_version() -> str:
 
 
 def neo4j_memory_envs() -> dict[str, str]:
-    """Cap Neo4j container memory so several tox environments can run in parallel on one agent.
-
-    The defaults are generous for the small graphs used in tests; override with
-    NEO4J_TEST_HEAP_INITIAL / NEO4J_TEST_HEAP_MAX / NEO4J_TEST_PAGECACHE when needed.
-    """
+    """Cap Neo4j container memory so several tox environments can run in parallel on one agent."""
     return {
-        "NEO4J_server_memory_heap_initial__size": os.getenv("NEO4J_TEST_HEAP_INITIAL", "512M"),
-        "NEO4J_server_memory_heap_max__size": os.getenv("NEO4J_TEST_HEAP_MAX", "1G"),
-        "NEO4J_server_memory_pagecache_size": os.getenv("NEO4J_TEST_PAGECACHE", "256M"),
+        "NEO4J_server_memory_heap_initial__size": "512M",
+        "NEO4J_server_memory_heap_max__size": "1G",
+        "NEO4J_server_memory_pagecache_size": "256M",
     }
 
 
@@ -426,20 +388,17 @@ def start_database(
     )
     for key, value in neo4j_memory_envs().items():
         db_container = db_container.with_env(key, value)
-    if inside_ci():
-        # In CI the tests reach the database through its network alias, so let docker pick
-        # a random host port; a fixed binding would collide across concurrently running
-        # tox environments that share the same docker daemon.
+    if tox_running_parallel():
         db_container = db_container.with_exposed_ports(7687)
     else:
-        # Locally, keep the well-known port so the advertised `localhost:7687` holds.
+        # Local runs (and sequential CI runs via TOX_SEQUENTIAL=1) keep the well-known port.
         db_container = db_container.with_bind_ports(7687, 7687)
     with running_container(db_container, db_logs_dir / "stdout.log", "database"):
         if current_container_id() is not None:
             uri = f"{db_alias}:7687"
         else:
             uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
-        print(f"[v2-it] neo4j reachable at {uri}", flush=True)
+        print(f"[it] neo4j reachable at {uri}", flush=True)
         yield DbmsConnectionInfo(
             uri=uri,
             username="neo4j",
@@ -518,7 +477,6 @@ def start_gds_plugin_database(
 
 
 def create_plugin_query_runner(container: Neo4jContainer) -> Generator[Neo4jQueryRunner, None, None]:
-    """Create a query runner connected to the bolt endpoint of a GDS plugin container."""
     host = container.get_container_host_ip()
     port = container.get_exposed_port(7687)
 
@@ -532,7 +490,6 @@ def create_plugin_query_runner(container: Neo4jContainer) -> Generator[Neo4jQuer
 
 
 def create_gds_arrow_client(container: Neo4jContainer) -> Generator[GdsArrowClient, None, None]:
-    """Create a v1 Arrow client connected to the arrow endpoint of a GDS plugin container."""
     arrow_port = int(container.get_exposed_port(8491))
     with GdsArrowClient(
         flight_client=AuthenticatedArrowClient(
