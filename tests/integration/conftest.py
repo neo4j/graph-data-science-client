@@ -22,7 +22,9 @@ from tests.integration.services import (
     create_arrow_client,
     create_gds_arrow_client,
     current_container_id,
+    db_alias,
     inside_ci,
+    session_alias,
     start_database,
     start_gds_api,
     start_gds_plugin_database,
@@ -93,7 +95,9 @@ def session_connection(
     gds_api_connection: str,
     request: pytest.FixtureRequest,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
-    yield from start_session(logs_dir, tmp_path_factory, network, request, gds_api_uri=gds_api_connection)
+    yield from start_session(
+        logs_dir, tmp_path_factory, network, request, gds_api_uri=gds_api_connection, session_alias=session_alias()
+    )
 
 
 @pytest.fixture(scope="package")
@@ -110,7 +114,7 @@ def neo4j_connection(
     Packages that need a Neo4j+GDS-plugin database instead override this fixture (see
     procedure_surface/plugin/conftest.py).
     """
-    yield from start_database(logs_dir, network, request)
+    yield from start_database(logs_dir, network, request, db_alias=db_alias())
 
 
 @pytest.fixture(scope="session")

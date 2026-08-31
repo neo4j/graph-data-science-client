@@ -78,6 +78,48 @@ RUNTIME_SESSION_ALIAS = "gds-session-with-runtime"
 SESSION_ARROW_PORT = 8491
 
 
+def run_token() -> str:
+    """Per-run token making docker network aliases unique across concurrent test runs.
+
+    In CI the tox environments of a partition run concurrently inside the same agent
+    container, and each run attaches that container to its own test network. Docker's
+    embedded DNS resolves an alias ambiguously from a container attached to several
+    networks, so runs must not share alias names — with shared ones, one run's clients
+    can end up connected to another run's containers. TOX_ENV_NAME separates the
+    environments of one partition; appending BUILD_ID additionally separates builds, so
+    a network leaked by a killed build cannot collide with a later build on the same
+    agent. Both are expected to contain only docker-alias-safe characters already.
+    """
+    env_name = os.getenv("TOX_ENV_NAME") or "run"
+    build_id = os.getenv("BUILD_ID")
+    return env_name if build_id is None else f"{env_name}-{build_id}"
+
+
+def session_alias() -> str:
+    """Network alias of this run's default GDS session."""
+    return f"{DEFAULT_SESSION_ALIAS}-{run_token()}"
+
+
+def runtime_session_alias() -> str:
+    """Network alias of this run's runtime-backed GDS session."""
+    return f"{RUNTIME_SESSION_ALIAS}-{run_token()}"
+
+
+def db_alias() -> str:
+    """Network alias of this run's bare Neo4j database."""
+    return f"neo4j-db-{run_token()}"
+
+
+def gds_api_alias() -> str:
+    """Network alias of this run's mock GDS API."""
+    return f"{MOCK_GDS_API_NETWORK_ALIAS}-{run_token()}"
+
+
+def runtime_api_alias() -> str:
+    """Network alias of this run's mock python-runtime API."""
+    return f"{PYTHON_RUNTIME_API_NETWORK_ALIAS}-{run_token()}"
+
+
 @dataclass
 class GdsSessionConnectionInfo:
     host: str
@@ -166,6 +208,7 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
     )
     LOGGER.info(f"Using mock runtime api image: {runtime_api_image} (python runtime image: {python_runtime_image})")
 
+    alias = runtime_api_alias()
     runtime_api_container = (
         DockerContainer(image=runtime_api_image)
         # python-runtime containers must be spawned in the same network as the GDS session.
@@ -174,7 +217,7 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
         .with_volume_mapping("/var/run/docker.sock", "/var/run/docker.sock", mode="rw")
         .with_exposed_ports(PYTHON_RUNTIME_API_PORT)
         .with_network(network)
-        .with_network_aliases(PYTHON_RUNTIME_API_NETWORK_ALIAS)
+        .with_network_aliases(alias)
         .waiting_for(LogMessageWaitStrategy("Application startup complete."))
     )
 
@@ -182,7 +225,7 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
     with running_container(runtime_api_container, log_file, "runtime api"):
         try:
             # The session reaches the runtime API over the shared network by its alias.
-            yield f"http://{PYTHON_RUNTIME_API_NETWORK_ALIAS}:{PYTHON_RUNTIME_API_PORT}"
+            yield f"http://{alias}:{PYTHON_RUNTIME_API_PORT}"
         finally:
             # The API spawns python-runtime containers via the docker socket; remove any that
             # are still around now that the API itself is stopped.
@@ -215,18 +258,19 @@ def start_gds_api(logs_dir: Path, network: Network, request: pytest.FixtureReque
     )
     LOGGER.info(f"Using mock gds api image: {gds_api_image}")
 
+    alias = gds_api_alias()
     gds_api_container = (
         DockerContainer(image=gds_api_image)
         .with_exposed_ports(MOCK_GDS_API_PORT)
         .with_network(network)
-        .with_network_aliases(MOCK_GDS_API_NETWORK_ALIAS)
+        .with_network_aliases(alias)
         .waiting_for(HttpWaitStrategy(MOCK_GDS_API_PORT, path="/health"))
     )
 
     log_file = logs_dir / request.node.name / "gds_api_container.log"
     with running_container(gds_api_container, log_file, "gds api"):
         # The session reaches the GDS API over the shared network by its alias.
-        yield f"http://{MOCK_GDS_API_NETWORK_ALIAS}:{MOCK_GDS_API_PORT}"
+        yield f"http://{alias}:{MOCK_GDS_API_PORT}"
 
 
 # --------------------------------------------------------------------------- #
@@ -357,14 +401,14 @@ def neo4j_memory_envs() -> dict[str, str]:
 
 
 def start_database(
-    logs_dir: Path, network: Network, request: pytest.FixtureRequest
+    logs_dir: Path, network: Network, request: pytest.FixtureRequest, db_alias: str = "neo4j-db"
 ) -> Generator[DbmsConnectionInfo, None, None]:
     default_neo4j_image = (
         f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
     )
     neo4j_image = os.getenv("NEO4J_AURA_DATABASE_IMAGE", default_neo4j_image)
 
-    advertise_address = "neo4j-db" if inside_ci() else "localhost"
+    advertise_address = db_alias if inside_ci() else "localhost"
 
     db_logs_dir = logs_dir / request.node.name / "neo4j_db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
@@ -375,7 +419,7 @@ def start_database(
         .with_env("NEO4J_AUTH", "neo4j/password")
         .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
         .with_env("NEO4J_server_bolt_advertised__address", f"{advertise_address}:7687")
-        .with_network_aliases("neo4j-db")
+        .with_network_aliases(db_alias)
         .with_network(network)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
         .waiting_for(LogMessageWaitStrategy("Started."))
@@ -392,7 +436,7 @@ def start_database(
         db_container = db_container.with_bind_ports(7687, 7687)
     with running_container(db_container, db_logs_dir / "stdout.log", "database"):
         if current_container_id() is not None:
-            uri = "neo4j-db:7687"
+            uri = f"{db_alias}:7687"
         else:
             uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
         print(f"[v2-it] neo4j reachable at {uri}", flush=True)

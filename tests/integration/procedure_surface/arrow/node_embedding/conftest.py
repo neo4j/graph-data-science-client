@@ -6,9 +6,9 @@ from testcontainers.core.network import Network
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from tests.integration.services import (
-    RUNTIME_SESSION_ALIAS,
     GdsSessionConnectionInfo,
     create_arrow_client,
+    runtime_session_alias,
     start_runtime_api,
     start_session,
 )
@@ -35,7 +35,7 @@ def session_connection_runtime(
         request,
         gds_api_uri=gds_api_connection,
         runtime_api_uri=runtime_api,
-        session_alias=RUNTIME_SESSION_ALIAS,
+        session_alias=runtime_session_alias(),
     )
 
 
