@@ -5,7 +5,7 @@ from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integration.conftest import create_plugin_query_runner
+from tests.integration.services import create_plugin_query_runner
 
 
 @pytest.fixture(scope="package")

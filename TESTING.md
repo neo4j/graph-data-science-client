@@ -69,6 +69,8 @@ To run the integration tests (with default options), simply call:
 uv run pytest tests/integration
 ```
 
+The required Docker containers are started automatically, as they are first needed — so a filtered run like `just it fastpath` only starts the containers that filter actually requires. The runtime-backed session and its mock API (needed only by the FastPath tests) are stopped again once those tests are done.
+
 To include tests that require the Enterprise Edition of the Neo4j Graph Data Science library, you must specify the option `--include-enterprise`.
 Naturally, this requires access to a valid Neo4j GDS license key, which can be acquired via the [Neo4j GDS product website](https://neo4j.com/product/graph-data-science/).
 
