@@ -42,5 +42,10 @@ environments_to_run = ", ".join(get_partition_environments(args.num_partitions, 
 
 logging.info(f"Running environments: {environments_to_run}")
 
-if os.system(f'uvx tox run -e "{environments_to_run}"') != 0:
-    raise Exception("Failed to run notebooks")
+# Each environment spins up its own containers, so the environments of a partition are
+# safe to run concurrently;
+# Set TOX_SEQUENTIAL=1 to opt out (e.g. on memory-constrained agents).
+tox_subcommand = "run" if os.environ.get("TOX_SEQUENTIAL") == "1" else "run-parallel --parallel all"
+
+if os.system(f'uvx tox {tox_subcommand} -e "{environments_to_run}"') != 0:
+    raise Exception("Failed to run tox environments")
