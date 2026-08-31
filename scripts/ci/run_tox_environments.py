@@ -31,15 +31,14 @@ def available_memory_gib() -> float | None:
 
 
 def can_run_parallel() -> bool:
-    """Whether this agent can afford running the partition's environments concurrently."""
     memory_gib = available_memory_gib()
     cpus = os.cpu_count() or 0
     if memory_gib is None:
-        logging.warning(f"Could not determine the agent's memory; deciding by cpu count alone ({cpus})")
+        logging.warning(f"Could not determine the available memory; deciding by cpu count alone ({cpus})")
         return cpus >= PARALLEL_CPU_THRESHOLD
     if memory_gib < PARALLEL_MEMORY_THRESHOLD_GIB or cpus < PARALLEL_CPU_THRESHOLD:
         logging.info(
-            f"Agent too small for parallel environments ({memory_gib:.1f} GiB, {cpus} cpus); running them one at a time"
+            f"Environment too small for parallel environments ({memory_gib:.1f} GiB, {cpus} cpus); running them one at a time"
         )
         return False
     return True
