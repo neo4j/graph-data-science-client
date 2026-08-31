@@ -373,6 +373,7 @@ mutate_results = gds.node_similarity.mutate(
     g_sim,
     mutate_relationship_type="SIMILAR_TO",
     mutate_property="score",
+    top_k=5,
     similarity_cutoff=0.5,
 )
 
@@ -719,7 +720,33 @@ latent features or interaction style.
 
 [source, python, role=no-test]
 ----
-gds.run_cypher("MATCH (n) DETACH DELETE n")
+# 1. Delete all relationships first, in batches
+while True:
+    deleted = gds.run_cypher(
+        """
+        MATCH ()-[r]->()
+        WITH r LIMIT $batch_size
+        DELETE r
+        RETURN count(*) AS deleted
+        """,
+        params={"batch_size": 10000},
+    )["deleted"].item()
+    if deleted == 0:
+        break
+
+# 2. Delete all nodes in batches
+while True:
+    deleted = gds.run_cypher(
+        """
+        MATCH (n)
+        WITH n LIMIT $batch_size
+        DETACH DELETE n
+        RETURN count(*) AS deleted
+        """,
+        params={"batch_size": 5000},
+    )["deleted"].item()
+    if deleted == 0:
+        break
 ----
 
 [source, python, role=no-test]
