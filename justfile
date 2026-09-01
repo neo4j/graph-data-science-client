@@ -137,11 +137,18 @@ test-tox-partition number-of-partitions partition-index: update-test-images
 update-aga-images:
     #!/usr/bin/env bash
     set -euo pipefail
+    . scripts/parallel_jobs.sh
 
-    docker pull "${GDS_SESSION_IMAGE:-europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release}"
-    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest
-    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest
-    docker pull europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest
+    images=(
+        "${GDS_SESSION_IMAGE:-europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release}"
+        "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest"
+        "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest"
+        "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest"
+    )
+    for image in "${images[@]}"; do
+        spawn docker pull "${image}"
+    done
+    wait_jobs
 
 update-neo4j-image:
     docker pull "${NEO4J_DATABASE_IMAGE:-neo4j:enterprise}"
@@ -155,16 +162,22 @@ update-neo4j-aura-image:
     if [ -n "${NEO4J_AURA_DATABASE_IMAGE:-}" ]; then
         image="${NEO4J_AURA_DATABASE_IMAGE}"
     else
-        version=$(uv run --group test python -c "from tests.integration.conftest import latest_neo4j_version; print(latest_neo4j_version())")
+        version=$(uv run --group test python -c "from tests.integration.services import latest_neo4j_version; print(latest_neo4j_version())")
         image="europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:${version}"
     fi
     echo "Pulling ${image}"
     docker pull "${image}"
 
+# Pull all test images concurrently (bounded by the largest image rather than the sum).
 update-test-images:
-    just update-aga-images
-    just update-neo4j-image
-    just update-neo4j-aura-image
+    #!/usr/bin/env bash
+    set -euo pipefail
+    . scripts/parallel_jobs.sh
+
+    spawn just update-aga-images
+    spawn just update-neo4j-image
+    spawn just update-neo4j-aura-image
+    wait_jobs
 
 
 test-docs-plugin:

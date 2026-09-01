@@ -35,7 +35,7 @@ def inside_ci() -> bool:
 
 def _current_container_id() -> Optional[str]:
     """Detect: are we running inside a docker container that the sibling docker daemon knows
-    about? Returns its id, or None for host runs. Mirrors tests/integration/conftest.py."""
+    about? Returns its id, or None for host runs. Mirrors tests/integration/services.py."""
     candidate = os.environ.get("TEST_CONTAINER_ID") or socket.gethostname()
     logger.info("resolving self container id via candidate=%r", candidate)
     if not candidate:

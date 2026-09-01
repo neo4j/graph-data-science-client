@@ -8,11 +8,11 @@ import pytest
 
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integration.conftest import create_db_query_runner
 from tests.integration.procedure_surface.gds_api_spec import (
     EndpointWithModesSpec,
     resolve_spec_from_file,
 )
+from tests.integration.services import create_db_query_runner
 
 LOGGER = logging.getLogger(__name__)
 
