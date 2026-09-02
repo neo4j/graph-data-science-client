@@ -62,11 +62,11 @@ dev = [
 ]
 
 dev-base = [
-    "ruff == 0.16.1",
-    "mypy == 2.3.0",
+    "ruff==0.16.5",
+    "mypy==2.3.1",
     "pandas-stubs == 2.3.3.260113 ; python_version < '3.11'",
     "pandas-stubs == 3.0.3.260530 ; python_version >= '3.11'",
-    "tox == 4.58.0",
+    "tox==4.61.1",
     "types-setuptools == 83.0.0.20260724",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
@@ -81,7 +81,7 @@ test = [
     "pytest-timeout",
     "requests_mock == 1.12.1",
     "pytest_mock == 3.15.1",
-    "testcontainers == 4.14.2",
+    "testcontainers==4.15.0",
     "python-dateutil >= 2.9",
 ]
 
@@ -93,7 +93,7 @@ docs-ci = [
 ]
 notebook-base = [
     "nbconvert==7.17.1",
-    "nbformat==5.10.4",
+    "nbformat==5.11.1",
     "nbclient==0.11.0",
     "ipykernel==7.3.0",
     "neo4j-viz>=1.6.0"
@@ -107,7 +107,7 @@ notebook-aura-ci = [
 notebook-ci = [
     { include-group = "notebook-base" },
     "scipy < 2",
-    "torch==2.12.1",
+    "torch==2.13.0",
     "torch-scatter==2.1.2",
     "torch-sparse==0.6.18",
     "torch-geometric>=2.8.0",
