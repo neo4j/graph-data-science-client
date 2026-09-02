@@ -5,16 +5,16 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Generator, Optional
+from typing import Generator, Optional, TypeVar
 
 import dotenv
 import pytest
 from dateutil.relativedelta import relativedelta
+from testcontainers.community.neo4j import Neo4jContainer
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.network import Network
 from testcontainers.core.wait_strategies import HttpWaitStrategy, LogMessageWaitStrategy
-from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -23,6 +23,8 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 
 LOGGER = logging.getLogger(__name__)
+
+C = TypeVar("C", bound=DockerContainer)
 
 
 def inside_ci() -> bool:
@@ -42,7 +44,7 @@ def write_container_logs(out_file: Path, stdout: bytes, stderr: bytes) -> None:
 
 
 @contextmanager
-def running_container(container: DockerContainer, log_file: Path, name: str) -> Generator[DockerContainer, None, None]:
+def running_container(container: C, log_file: Path, name: str) -> Generator[C, None, None]:
     """Start `container` and always persist its logs, including when startup fails.
 
     testcontainers only exposes logs after a successful start, so a wait-strategy timeout would otherwise drop the failure reason on the floor.

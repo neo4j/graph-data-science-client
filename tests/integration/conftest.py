@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import Any, Generator
 
 import pytest
+from testcontainers.community.neo4j import Neo4jContainer
 from testcontainers.core.network import Network
-from testcontainers.neo4j import Neo4jContainer
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v1.gds_arrow_client import GdsArrowClient

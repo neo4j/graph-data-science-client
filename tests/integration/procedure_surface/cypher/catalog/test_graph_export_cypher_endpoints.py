@@ -2,7 +2,7 @@ import uuid
 from typing import Generator
 
 import pytest
-from testcontainers.neo4j import Neo4jContainer
+from testcontainers.community.neo4j import Neo4jContainer
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.cypher.catalog.graph_export_cypher_endpoints import (
