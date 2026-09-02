@@ -1,7 +1,7 @@
 from typing import Generator
 
 import pytest
-from testcontainers.neo4j import Neo4jContainer
+from testcontainers.community.neo4j import Neo4jContainer
 
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo

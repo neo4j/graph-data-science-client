@@ -5,7 +5,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from testcontainers.neo4j import Neo4jContainer
+from testcontainers.community.neo4j import Neo4jContainer
 
 PASSWORD = "password"
 

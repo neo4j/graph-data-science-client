@@ -12,7 +12,7 @@ from typing import Generator
 import numpy as np
 import pandas as pd
 import pytest
-from testcontainers.neo4j import Neo4jContainer
+from testcontainers.community.neo4j import Neo4jContainer
 
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
