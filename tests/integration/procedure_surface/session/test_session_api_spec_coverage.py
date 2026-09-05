@@ -16,10 +16,6 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
     "debug.sys_info",  # AGA cannot spill internal runtime details
     "memory.summary",  # plugin only; no Arrow/Session equivalent
     "memory.list",  # plugin only; no Arrow/Session equivalent
-    "hits.mutate",  # plugin only; no Arrow/Session equivalent
-    "hits.stats",  # plugin only; no Arrow/Session equivalent
-    "hits.stream",  # plugin only; no Arrow/Session equivalent
-    "hits.write",  # plugin only; no Arrow/Session equivalent
     # (currently in draft PR)
     "embeddings.predict.write",
     "embeddings.encode.mutate",

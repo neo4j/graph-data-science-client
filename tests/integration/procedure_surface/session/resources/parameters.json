@@ -36,7 +36,8 @@
     "Name of the trained model."
   ],
   "mutate_property": ["Name of the node property to store the results in.",
-  "Name of the relationship property to store the predicted probability."],
+  "Name of the relationship property to store the predicted probability.",
+  "Postfix for the names of the node properties (auth and hub) to store the results in."],
   "mutate_relationship_type": "Name of the relationship type to store the results in.",
   "node_labels": "Filter the graph using the given node labels. Nodes with any of the given labels will be included.",
   "node_properties": [
@@ -72,6 +73,6 @@
   "use_wasserman_faust": "Use the improved Wasserman-Faust formula for closeness computation.",
   "username": "As an administrator, impersonate a different user for accessing their graphs.",
   "write_concurrency": "Number of concurrent threads to use for writing.",
-  "write_property": "Name of the node property to store the results in.",
+  "write_property": ["Name of the node property to store the results in.", "Postfix for the names of the node properties (auth and hub) to store the results in."],
   "write_relationship_type": "Name of the relationship type to store the results in."
 }
