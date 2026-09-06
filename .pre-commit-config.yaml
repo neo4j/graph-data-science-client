@@ -1,0 +1,22 @@
+# Checks to run before committing. 100% optional, CI should fail as well.
+# Recommended to install as precommit-hook via prek (https://prek.j178.dev/)
+# prek install
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-linter
+        name: ruff-linter
+        language: python
+        language_version: python3.12
+        entry: python -m ruff check .
+        additional_dependencies: ["ruff"]
+        files:
+          glob: "**/*.py"
+      - id: ruff-formatter
+        name: ruff-formatter
+        language: python
+        language_version: python3.12
+        entry: python -m ruff format --check .
+        additional_dependencies: ["ruff"]
+        files:
+          glob: "**/*.py"
