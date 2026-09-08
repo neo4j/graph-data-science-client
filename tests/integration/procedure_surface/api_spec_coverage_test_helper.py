@@ -116,7 +116,7 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
 
 IGNORED_ACTUAL_PARAMETERS = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
-    r".*graph.node_properties.stream": ["job_id", "db_node_properties"],
+    r".*graph.node_properties.stream": ["db_node_properties"],
     # client-only convenience parameter
     r".*graph\.node_property\.stream$": ["db_node_properties"],
     r".*graph.relationships.stream": ["relationship_properties"],

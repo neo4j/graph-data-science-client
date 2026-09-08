@@ -136,14 +136,14 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         G: Graph,
         node_properties: list[str],
         *,
-        fail_if_missing: bool | None = True,
+        fail_if_missing: bool = True,
         concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             node_properties=node_properties,
-            # fail_if_missing=fail_if_missing, TODO: Enable once this is fixed in the session
+            fail_if_missing=fail_if_missing,
             concurrency=concurrency,
             username=username,
         )

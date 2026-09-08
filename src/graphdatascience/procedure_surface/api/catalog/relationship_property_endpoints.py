@@ -22,6 +22,7 @@ class RelationshipPropertyEndpoints:
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsDataFrame:
         """
         Streams the specified relationship property for all relationships of the specified types.
@@ -29,7 +30,7 @@ class RelationshipPropertyEndpoints:
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         relationship_property
             The relationship property to stream
         relationship_types
@@ -42,6 +43,8 @@ class RelationshipPropertyEndpoints:
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        job_id
+            Identifier for the computation.
         Returns
         -------
         RelationshipsDataFrame
@@ -56,6 +59,7 @@ class RelationshipPropertyEndpoints:
             sudo=sudo,
             log_progress=log_progress,
             username=username,
+            job_id=job_id,
         )
 
         return RelationshipsDataFrame(result.rename(columns={relationship_property: "propertyValue"}))

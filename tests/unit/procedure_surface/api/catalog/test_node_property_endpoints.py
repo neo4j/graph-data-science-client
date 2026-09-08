@@ -46,6 +46,7 @@ def test_stream_forwards_all_parameters_to_the_plural_endpoint() -> None:
         sudo=True,
         log_progress=False,
         username="alice",
+        job_id="job-1",
         db_node_properties=["name"],
     )
 
@@ -58,5 +59,6 @@ def test_stream_forwards_all_parameters_to_the_plural_endpoint() -> None:
         sudo=True,
         log_progress=False,
         username="alice",
+        job_id="job-1",
         db_node_properties=["name"],
     )

@@ -36,6 +36,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsDataFrame:
         effective_rel_types = relationship_types if relationship_types is not None else ["*"]
 
@@ -62,6 +63,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
                 sudo=sudo,
                 log_progress=log_progress,
                 username=username,
+                job_id=job_id,
             )
 
             if not relationship_properties:

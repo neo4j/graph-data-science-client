@@ -46,6 +46,7 @@ def test_stream_forwards_all_parameters_to_the_relationships_endpoint() -> None:
         sudo=True,
         log_progress=False,
         username="alice",
+        job_id="job-1",
     )
 
     delegate.stream.assert_called_once_with(
@@ -56,4 +57,5 @@ def test_stream_forwards_all_parameters_to_the_relationships_endpoint() -> None:
         sudo=True,
         log_progress=False,
         username="alice",
+        job_id="job-1",
     )

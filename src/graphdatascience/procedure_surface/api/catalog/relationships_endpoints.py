@@ -24,6 +24,7 @@ class RelationshipsEndpoints(ABC):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsDataFrame:
         """
         Streams all relationships of the specified types with the specified properties.
@@ -31,7 +32,7 @@ class RelationshipsEndpoints(ABC):
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         relationship_properties: list[str] | None
@@ -44,6 +45,8 @@ class RelationshipsEndpoints(ABC):
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        job_id
+            Identifier for the computation.
         Returns
         -------
         RelationshipsDataFrame

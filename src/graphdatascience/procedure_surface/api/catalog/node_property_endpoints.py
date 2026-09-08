@@ -24,6 +24,7 @@ class NodePropertyEndpoints:
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        job_id: str | None = None,
         db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         """
@@ -32,7 +33,7 @@ class NodePropertyEndpoints:
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         node_property
             The node property to stream
         list_node_labels
@@ -47,6 +48,8 @@ class NodePropertyEndpoints:
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        job_id
+            Identifier for the computation.
         db_node_properties
             Retrieves additional node properties from the database and attaches them to the stream.
         Returns
@@ -64,6 +67,7 @@ class NodePropertyEndpoints:
             sudo=sudo,
             log_progress=log_progress,
             username=username,
+            job_id=job_id,
             db_node_properties=db_node_properties,
         )
 
