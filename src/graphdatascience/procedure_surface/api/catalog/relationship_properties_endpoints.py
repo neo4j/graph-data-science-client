@@ -25,6 +25,7 @@ class RelationshipPropertiesEndpoints:
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsDataFrame:
         """
         Streams the specified relationship properties for all relationships of the specified types.
@@ -32,7 +33,7 @@ class RelationshipPropertiesEndpoints:
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         relationship_properties
             The relationship properties to stream
         relationship_types
@@ -45,6 +46,8 @@ class RelationshipPropertiesEndpoints:
             Display progress logging.
         username
             As an administrator, impersonate a different user for accessing their graphs.
+        job_id
+            Identifier for the computation.
         Returns
         -------
         RelationshipsDataFrame
@@ -60,6 +63,7 @@ class RelationshipPropertiesEndpoints:
             sudo=sudo,
             log_progress=log_progress,
             username=username,
+            job_id=job_id,
         )
 
     def write(

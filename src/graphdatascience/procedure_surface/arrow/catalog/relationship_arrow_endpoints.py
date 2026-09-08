@@ -46,6 +46,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
+        job_id: str | None = None,
     ) -> RelationshipsDataFrame:
         config_input = {
             "graph_name": G.name(),
@@ -54,6 +55,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
             "sudo": sudo,
             "log_progress": log_progress,
             "username": username,
+            "job_id": job_id,
         }
 
         endpoint = "v2/graph.relationships.stream"

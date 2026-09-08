@@ -33,7 +33,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
-        job_id: str | None = None,  # setting the job id is not supported by the Cypher procedure
+        job_id: str | None = None,
         db_node_properties: list[str] | None = None,
     ) -> DataFrame:
         if self._gds_arrow_client is not None:
@@ -49,6 +49,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
                 sudo=sudo,
                 log_progress=log_progress,
                 username=username,
+                job_id=job_id,
             )
 
             params = CallParameters(
