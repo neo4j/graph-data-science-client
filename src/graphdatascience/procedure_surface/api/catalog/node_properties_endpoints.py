@@ -113,7 +113,7 @@ class NodePropertiesEndpoints(ABC):
         G: Graph,
         node_properties: list[str],
         *,
-        fail_if_missing: bool | None = True,
+        fail_if_missing: bool = True,
         concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:
@@ -123,11 +123,11 @@ class NodePropertiesEndpoints(ABC):
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         node_properties
             The node properties to drop
-        fail_if_missing: bool | None = None,
-            Whether to fail if any of the node properties are missing
+        fail_if_missing
+            Whether to fail if any of the node properties are missing.
         concurrency
             Number of concurrent threads to use.
         username

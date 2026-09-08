@@ -110,7 +110,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
         G: Graph,
         node_properties: list[str],
         *,
-        fail_if_missing: bool | None = True,
+        fail_if_missing: bool = True,
         concurrency: int | None = None,
         username: str | None = None,
     ) -> NodePropertiesDropResult:
@@ -126,7 +126,7 @@ class NodePropertiesCypherEndpoints(NodePropertiesEndpoints):
             endpoint="gds.graph.nodeProperties.drop",
             params=params,
             # dropping is idempotent as long as missing properties are not an error
-            retryable=fail_if_missing is False,
+            retryable=not fail_if_missing,
             mode=QueryMode.WRITE,
         ).iloc[0]
 
