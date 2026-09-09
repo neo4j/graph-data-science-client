@@ -1,8 +1,11 @@
+import pytest
 from pandas import DataFrame
 from pytest_mock import MockerFixture
 
 from graphdatascience import ServerVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.error.not_available_outside_aura import NotAvailableOutsideAura
+from graphdatascience.error.standalone_session_error import NotAvailableInStandaloneSessions
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.session_lifecycle_manager import Noop, SessionLifecycleManager
@@ -97,3 +100,59 @@ def test_delete(mocker: MockerFixture) -> None:
     gds.delete()
 
     session_lifecycle_manager.delete.assert_called_once()
+
+
+def test_topological_link_prediction_runs_db_cypher(mocker: MockerFixture) -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(
+        v, {"gds.session.dbms.protocol.version": DataFrame.from_dict({"version": ["v3"]})}
+    )
+    query_runner.add__mock_result("dbms.components", DataFrame({"hostedInAura": [True]}))
+    query_runner.add__mock_result("gds.linkprediction.adamicAdar", DataFrame({"score": [1.5]}))
+    gds = AuraGraphDataScience(
+        mocker.Mock(),
+        db_query_runner=query_runner,
+        session_lifecycle_manager=Noop(),
+    )
+
+    assert gds.topological_link_prediction.adamic_adar(1, 2) == 1.5
+    assert query_runner.last_query() == (
+        """
+        MATCH (n), (m)
+        WHERE id(n) = $node1 AND id(m) = $node2
+        RETURN gds.linkprediction.adamicAdar(n, m, $config) AS score
+        """
+    )
+    assert query_runner.last_params() == {
+        "node1": 1,
+        "node2": 2,
+        "config": {"direction": "BOTH", "relationshipQuery": None},
+    }
+    assert query_runner.last_run_args()["mode"] == QueryMode.READ
+
+
+def test_topological_link_prediction_outside_aura_raises(mocker: MockerFixture) -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(
+        v, {"gds.session.dbms.protocol.version": DataFrame.from_dict({"version": ["v3"]})}
+    )
+    query_runner.add__mock_result("dbms.components", DataFrame({"hostedInAura": [False]}))
+    gds = AuraGraphDataScience(
+        mocker.Mock(),
+        db_query_runner=query_runner,
+        session_lifecycle_manager=Noop(),
+    )
+
+    with pytest.raises(NotAvailableOutsideAura, match="not available outside Aura"):
+        gds.topological_link_prediction
+
+
+def test_topological_link_prediction_standalone_session_raises(mocker: MockerFixture) -> None:
+    gds = AuraGraphDataScience(
+        mocker.Mock(spec=AuthenticatedArrowClient),
+        None,
+        mocker.Mock(spec=SessionLifecycleManager),
+    )
+
+    with pytest.raises(NotAvailableInStandaloneSessions):
+        gds.topological_link_prediction
