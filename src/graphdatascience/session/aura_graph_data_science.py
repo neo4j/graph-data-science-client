@@ -48,6 +48,7 @@ from graphdatascience.procedure_surface.api.community.triangles_endpoints import
 from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
 from graphdatascience.procedure_surface.api.list_progress_endpoint import ListProgressEndpoint
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.embeddings_endpoints import EmbeddingsEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
@@ -129,6 +130,7 @@ from graphdatascience.procedure_surface.arrow.list_progress_arrow_endpoint impor
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import (
     ModelCatalogArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.node_embedding.embeddings_arrow_endpoints import EmbeddingsArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import FastPathArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.fastrp_arrow_endpoints import FastRPArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
@@ -450,6 +452,15 @@ class AuraGraphDataScience:
         Return endpoints for the eigenvector centrality algorithm.
         """
         return EigenvectorArrowEndpoints(
+            self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
+        )
+
+    @property
+    def embeddings(self) -> EmbeddingsEndpoints:
+        """
+        Return endpoints for embedding train, predict, and encode procedures.
+        """
+        return EmbeddingsArrowEndpoints(
             self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
         )
 
