@@ -21,6 +21,7 @@ from graphdatascience.procedure_surface.api.centrality.closeness_endpoints impor
 from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
 from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
+from graphdatascience.procedure_surface.api.centrality.hits_endpoints import HitsEndpoints
 from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
 from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
 from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
@@ -91,6 +92,7 @@ from graphdatascience.procedure_surface.arrow.centrality.closeness_harmonic_arro
 )
 from graphdatascience.procedure_surface.arrow.centrality.degree_arrow_endpoints import DegreeArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.eigenvector_arrow_endpoints import EigenvectorArrowEndpoints
+from graphdatascience.procedure_surface.arrow.centrality.hits_arrow_endpoints import HitsArrowEndpoints
 from graphdatascience.procedure_surface.arrow.centrality.pagerank_arrow_endpoints import PageRankArrowEndpoints
 from graphdatascience.procedure_surface.arrow.collapse_path_arrow_endpoints import CollapsePathArrowEndpoints
 from graphdatascience.procedure_surface.arrow.community.clique_counting_arrow_endpoints import (
@@ -355,6 +357,15 @@ class AuraGraphDataScience:
         Return endpoints for the articulation points algorithm.
         """
         return ArticulationPointsArrowEndpoints(
+            self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
+        )
+
+    @property
+    def hits(self) -> HitsEndpoints:
+        """
+        Return endpoints for the HITS algorithm.
+        """
+        return HitsArrowEndpoints(
             self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
         )
 
