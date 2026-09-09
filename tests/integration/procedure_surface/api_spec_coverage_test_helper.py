@@ -184,7 +184,7 @@ EXPECTED_IGNORED_RETURN_FIELDS = {
 
 # Return types whose fields intentionally don't map field-by-field to the spec's return fields
 # (opaque value objects, or pivoted key/value results), so they can't be verified against the spec.
-RETURN_VERIFICATION_SKIPPED_TYPES = {DebugSysInfoResult, bool}
+RETURN_VERIFICATION_SKIPPED_TYPES = {DebugSysInfoResult, bool, type(None)}
 
 # Python return types that wrap a single scalar value and should be verified against the spec's scalar
 # return type rather than structurally (e.g. ServerVersion wraps a version String).

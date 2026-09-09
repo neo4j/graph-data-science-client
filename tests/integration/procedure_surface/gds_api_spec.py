@@ -71,13 +71,14 @@ class EndpointWithModesSpec(BaseModel, extra="forbid", populate_by_name=True):
 
     def callable_modes(self) -> List[EndpointSpec]:
         base_name = self._arrow_base_name() if self.arrow_only() else self.name
+        modes_to_check = self.modes if self.modes else [Mode(mode="unknown", parameters=[], returnFields=[])]
         return [
             EndpointSpec(
                 name=f"{base_name}.{mode.mode}" if mode.mode.lower() != "unknown" else base_name,
                 parameters=self.parameters + mode.parameters,
                 returnFields=mode.returnFields,
             )
-            for mode in self.modes
+            for mode in modes_to_check
         ]
 
     def arrow_only(self) -> bool:

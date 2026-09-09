@@ -158,7 +158,9 @@ def _remove_spawned_runtime_containers(network: Network, image: str) -> None:
             LOGGER.warning(f"Failed to remove spawned python-runtime container {container.id[:12]}: {e}")
 
 
-def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureRequest) -> Generator[str, None, None]:
+def start_runtime_api(
+    logs_dir: Path, network: Network, request: pytest.FixtureRequest, models_dir: Path
+) -> Generator[str, None, None]:
     """Start the mock python-runtime API container.
 
     The GDS session talks to this API to spawn python-runtime containers for endpoints such as FastPath.
@@ -185,6 +187,7 @@ def start_runtime_api(logs_dir: Path, network: Network, request: pytest.FixtureR
         # python-runtime containers must be spawned in the same network as the GDS session.
         .with_env("DOCKER_NETWORK", network.name)
         .with_env("PYTHON_RUNTIME_IMAGE", python_runtime_image)
+        .with_env("MODELS_HOST_DIR", str(models_dir))
         .with_volume_mapping("/var/run/docker.sock", "/var/run/docker.sock", mode="rw")
         .with_exposed_ports(PYTHON_RUNTIME_API_PORT)
         .with_network(network)
@@ -258,7 +261,7 @@ def session_java_options() -> str:
 
 def start_session(
     logs_dir: Path,
-    tmp_path_factory: pytest.TempPathFactory,
+    model_dir: Path,
     network: Network,
     request: pytest.FixtureRequest,
     gds_api_uri: str,
@@ -279,9 +282,6 @@ def start_session(
         "GDS_SESSION_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release"
     )
     LOGGER.info(f"Using session image: {session_image}")
-
-    model_dir = tmp_path_factory.mktemp("models")
-    model_dir.chmod(0o777)  # allow other user inside container to write to model dir
 
     session_container = (
         DockerContainer(
