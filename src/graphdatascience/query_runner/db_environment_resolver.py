@@ -1,10 +1,10 @@
-from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 
 
 class DbEnvironmentResolver:
     @staticmethod
-    def hosted_in_aura(db_runner: Neo4jQueryRunner) -> bool:
+    def hosted_in_aura(db_runner: QueryRunner) -> bool:
         return (
             db_runner.run_retryable_cypher(
                 """
