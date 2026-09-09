@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, List, cast
 
 from pandas import DataFrame
 
@@ -23,6 +23,7 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithFilterResult,
     GraphWithGenerationStats,
     RelationshipPropertySpec,
+    normalize_graph_names,
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
@@ -125,12 +126,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
     def drop(
         self,
-        G: Graph | str,
+        G: Graph | str | List[Graph | str],
         fail_if_missing: bool = True,
         *,
         db_name: str | None = None,
         username: str | None = None,
-    ) -> GraphInfo | None:
+    ) -> GraphInfo | List[GraphInfo] | None:
         """Drop a graph from the graph catalog.
 
         Parameters
@@ -149,9 +150,9 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         GraphInfo | None
             Metadata of the dropped graph, or None if the graph did not exist.
         """
-        graph_name = G if isinstance(G, str) else G.name()
+        graph_names = normalize_graph_names(G)
 
-        params = CallParameters(graphName=graph_name, failIfMissing=fail_if_missing)
+        params = CallParameters(graphName=graph_names, failIfMissing=fail_if_missing)
 
         if db_name is not None or username is not None:
             # positional params. order has to be preserved
@@ -166,8 +167,10 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             retryable=not fail_if_missing,
             mode=QueryMode.WRITE,
         )
-        if len(result) > 0:
+        if len(result) == 1:
             return GraphInfo(**result.iloc[0])
+        elif len(result) > 1:
+            return [GraphInfo(**row) for _, row in result.iterrows()]
         else:
             return None
 

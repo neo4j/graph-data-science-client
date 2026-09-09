@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import List
 
 import pandas as pd
 import pytest
@@ -12,9 +13,9 @@ from graphdatascience.query_runner.query_mode import QueryMode
 from tests.unit.conftest import DEFAULT_SERVER_VERSION, CollectingQueryRunner
 
 
-def _drop_row() -> dict[str, object]:
+def _drop_row(graph_name: str = "g") -> dict[str, object]:
     return {
-        "graphName": "g",
+        "graphName": graph_name,
         "database": "dummy",
         "databaseLocation": "local",
         "configuration": {"jobId": "job-1"},
@@ -65,12 +66,75 @@ def test_drop_passes_graph_name_and_fail_if_missing() -> None:
     result = endpoints.drop("g")
 
     assert result is not None
+    assert not isinstance(result, List)
     assert result.graph_name == "g"
     params = runner.last_params()
-    assert params["graphName"] == "g"
+    assert params["graphName"] == ["g"]
     assert params["failIfMissing"] is True
     assert "dbName" not in params
     assert "username" not in params
+
+
+def test_drop_accepts_graph_object() -> None:
+    endpoints, runner = _endpoints()
+    G = get_graph("g", runner)
+
+    result = endpoints.drop(G)
+
+    assert result is not None
+    assert not isinstance(result, List)
+    assert result.graph_name == "g"
+    assert runner.last_params()["graphName"] == ["g"]
+
+
+def test_drop_passes_multiple_graph_names() -> None:
+    runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"gds.graph.drop": pd.DataFrame([_drop_row("g1"), _drop_row("g2")])},
+    )
+    endpoints = CatalogCypherEndpoints(runner)
+
+    result = endpoints.drop(["g1", "g2"])
+
+    assert isinstance(result, List)
+    assert [info.graph_name for info in result] == ["g1", "g2"]
+    params = runner.last_params()
+    assert params["graphName"] == ["g1", "g2"]
+    assert params["failIfMissing"] is True
+
+
+def test_drop_accepts_mixed_list_of_graphs_and_names() -> None:
+    runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"gds.graph.drop": pd.DataFrame([_drop_row("g1"), _drop_row("g2")])},
+    )
+    endpoints = CatalogCypherEndpoints(runner)
+    G = get_graph("g1", runner)
+
+    endpoints.drop([G, "g2"])
+
+    assert runner.last_params()["graphName"] == ["g1", "g2"]
+
+
+def test_drop_single_element_list_returns_single_graph_info() -> None:
+    endpoints, runner = _endpoints()
+
+    result = endpoints.drop(["g"])
+
+    assert result is not None
+    assert not isinstance(result, List)
+    assert result.graph_name == "g"
+    assert runner.last_params()["graphName"] == ["g"]
+
+
+def test_drop_returns_none_when_nothing_was_dropped() -> None:
+    runner = CollectingQueryRunner(
+        DEFAULT_SERVER_VERSION,
+        {"gds.graph.drop": pd.DataFrame(columns=list(_drop_row().keys()))},
+    )
+    endpoints = CatalogCypherEndpoints(runner)
+
+    assert endpoints.drop(["g1", "g2"], fail_if_missing=False) is None
 
 
 def test_drop_passes_db_name_and_username() -> None:

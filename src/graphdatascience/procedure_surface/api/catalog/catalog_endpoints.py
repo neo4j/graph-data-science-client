@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import Any, NamedTuple, Type
+from typing import Any, List, NamedTuple, Type
 
 from pandas import DataFrame
 from pydantic import field_validator
@@ -287,6 +287,16 @@ class CatalogEndpoints(ABC):
     def relationship_properties(self) -> RelationshipPropertiesEndpoints:
         """Endpoints for streaming several relationship properties."""
         return RelationshipPropertiesEndpoints(self.relationships)
+
+
+def normalize_graph_names(G: Graph | str | List[Graph | str]) -> List[str]:
+    match G:
+        case Graph() as graph:
+            return [graph.name()]
+        case str(name):
+            return [name]
+        case list(seq):
+            return [name for e in seq for name in normalize_graph_names(e)]
 
 
 class GraphFilterResult(BaseResult):

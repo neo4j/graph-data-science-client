@@ -1,5 +1,5 @@
 import datetime
-from typing import Generator
+from typing import Generator, List
 
 import pytest
 from pandas import DataFrame
@@ -118,6 +118,7 @@ def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sampl
     res = catalog_endpoints.drop(sample_graph)
 
     assert res is not None
+    assert not isinstance(res, List)
     assert res.graph_name == sample_graph.name()
     assert len(catalog_endpoints.list()) == 0
 
@@ -126,6 +127,7 @@ def test_drop_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, 
     res = catalog_endpoints.drop("g")
 
     assert res is not None
+    assert not isinstance(res, List)
     assert res.graph_name == "g"
     assert len(catalog_endpoints.list()) == 0
 
