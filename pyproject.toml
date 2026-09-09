@@ -62,11 +62,11 @@ dev = [
 ]
 
 dev-base = [
-    "ruff == 0.16.4",
+    "ruff==0.16.6",
     "mypy == 2.3.1",
     "pandas-stubs == 2.3.3.260113 ; python_version < '3.11'",
     "pandas-stubs == 3.0.3.260530 ; python_version >= '3.11'",
-    "tox == 4.60.0",
+    "tox==4.61.2",
     "types-setuptools == 83.0.0.20260807",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
@@ -107,7 +107,7 @@ notebook-aura-ci = [
 notebook-ci = [
     { include-group = "notebook-base" },
     "scipy < 2",
-    "torch==2.13.0",
+    "torch==2.14.0",
     "torch-scatter==2.1.2",
     "torch-sparse==0.6.18",
     "torch-geometric>=2.8.0",
