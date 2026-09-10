@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Generator, List
+from typing import Generator
 
 import pytest
 from pandas import DataFrame
@@ -75,9 +75,8 @@ def test_exists(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -
 def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
-    assert res is not None
-    assert not isinstance(res, List)
-    assert res.graph_name == sample_graph.name()
+    assert len(res) == 1
+    assert res[0].graph_name == sample_graph.name()
     assert len(catalog_endpoints.list()) == 0
 
 
@@ -87,7 +86,6 @@ def test_drop_multiple_graphs(
     with create_graph(arrow_client, "g2", "(a :Node)") as second_graph:
         res = catalog_endpoints.drop([sample_graph, second_graph.name()])
 
-        assert isinstance(res, List)
         assert sorted(info.graph_name for info in res) == sorted([sample_graph.name(), second_graph.name()])
         assert len(catalog_endpoints.list()) == 0
 

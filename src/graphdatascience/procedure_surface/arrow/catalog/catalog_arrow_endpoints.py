@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import typing
-from typing import Any
+from typing import Any, List
 
 from pandas import DataFrame
 
@@ -111,9 +111,7 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         constructor.run(nodes, relationships)
         return get_graph(graph_name, self._arrow_client)
 
-    def drop(
-        self, G: Graph | str | list[Graph | str], fail_if_missing: bool = True
-    ) -> GraphInfo | list[GraphInfo] | None:
+    def drop(self, G: Graph | str | List[Graph | str], fail_if_missing: bool = True) -> List[GraphInfo]:
         """Drop graphs from the graph catalog.
 
         Parameters
@@ -125,18 +123,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         Returns
         -------
-        GraphInfo | list[GraphInfo] | None
-            Metadata of the dropped graphs, or None if the graph did not exist.
+        List[GraphInfo]
+            Metadata of the dropped graphs.
         """
 
         graph_infos = [self._graph_ops.drop(graph_name, fail_if_missing) for graph_name in normalize_graph_names(G)]
-
-        if len(graph_infos) == 1:
-            return graph_infos[0]
-        elif len(graph_infos) > 1:
-            return [i for i in graph_infos if i is not None]
-        else:
-            return None
+        return [i for i in graph_infos if i is not None]
 
     def filter(
         self,

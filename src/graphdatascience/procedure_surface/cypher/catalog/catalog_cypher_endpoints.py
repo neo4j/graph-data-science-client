@@ -131,13 +131,13 @@ class CatalogCypherEndpoints(CatalogEndpoints):
         *,
         db_name: str | None = None,
         username: str | None = None,
-    ) -> GraphInfo | List[GraphInfo] | None:
+    ) -> List[GraphInfo]:
         """Drop a graph from the graph catalog.
 
         Parameters
         ----------
         G
-            Graph to drop by name or object.
+            Graphs to drop by name or object.
         fail_if_missing
             Whether to fail if the graph is missing.
         db_name
@@ -147,8 +147,8 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         Returns
         -------
-        GraphInfo | None
-            Metadata of the dropped graph, or None if the graph did not exist.
+        List[GraphInfo]
+            Metadata of the dropped graphs.
         """
         graph_names = normalize_graph_names(G)
 
@@ -167,12 +167,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             retryable=not fail_if_missing,
             mode=QueryMode.WRITE,
         )
-        if len(result) == 1:
-            return GraphInfo(**result.iloc[0])
-        elif len(result) > 1:
-            return [GraphInfo(**row) for _, row in result.iterrows()]
-        else:
-            return None
+        return [GraphInfo(**row) for _, row in result.iterrows()]
 
     @property
     def project(self) -> ProjectCypherEndpoints:
