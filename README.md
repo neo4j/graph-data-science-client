@@ -32,8 +32,46 @@ pip install graphdatascience
 
 ## Getting started
 
-To use the GDS Python Client, we need to instantiate a GraphDataScience object.
-Then, we can project graphs, create pipelines, train models, and run algorithms.
+To use the GDS Python Client, we first need a `gds` object connected to a GDS deployment.
+How to get one depends on where GDS runs.
+
+
+### GDS Sessions (Aura Graph Analytics)
+
+To run GDS via [Aura Graph Analytics](https://neo4j.com/docs/aura/graph-analytics/), use `GdsSessions` with an Aura API key pair and your AuraDB connection information:
+
+```python
+from graphdatascience.session import AuraAPICredentials, DbmsConnectionInfo, GdsSessions, SessionMemory
+
+sessions = GdsSessions(api_credentials=AuraAPICredentials("my-client-id", "my-client-secret"))
+
+# Optional: estimate the session memory needed for your workload
+memory = sessions.estimate(node_count=2_000, relationship_count=5_000, algorithms=["pageRank"])
+
+gds = sessions.get_or_create(
+    session_name="my-session",
+    memory=memory,  # or a fixed size, e.g. SessionMemory.m_4GB
+    db_connection=DbmsConnectionInfo(
+        "neo4j+s://my-aura-db.databases.neo4j.io",
+        "neo4j",
+        "my-password",
+    ),
+)
+
+# ... project graphs, run algorithms, train models, see the usage example below ...
+
+# When you are done, tear down the session
+gds.delete()
+# or: sessions.delete(session_name="my-session")
+```
+
+Sessions can also run standalone, without an attached AuraDB, by passing a `cloud_location` instead of a `db_connection`.
+See the [GDS Python Client Manual](https://neo4j.com/docs/graph-data-science-client/current/) for details.
+
+
+### Self-managed Neo4j or GDS plugin
+
+If you connect to a self-managed Neo4j database with the [GDS plugin](https://neo4j.com/docs/graph-data-science/current/installation/neo4j-server/) installed, instantiate a `GraphDataScience` object directly:
 
 ```python
 from graphdatascience import GraphDataScience
@@ -41,39 +79,38 @@ from graphdatascience import GraphDataScience
 # When connecting to an AuraDS instance, the client automatically applies the AuraDS-recommended driver settings
 gds = GraphDataScience("neo4j+s://my-aura-ds.databases.neo4j.io:7687", auth=("neo4j", "my-password"))
 
-# Import the Cora common dataset to GDS
-G = gds.graph.load_cora()
-assert G.node_count() == 2708
+# Import the Cora dataset to GDS
+G = gds.graph.datasets.load_cora()
+assert G.node_count() == 2_708
 
 # Run PageRank in mutate mode on G
-pagerank_result = gds.pageRank.mutate(G, tolerance=0.5, mutateProperty="pagerank")
-assert pagerank_result["nodePropertiesWritten"] == G.node_count()
+pagerank_result = gds.page_rank.mutate(G, tolerance=0.5, mutate_property="pagerank")
+assert pagerank_result["node_properties_written"] == G.node_count()
 
 # Create a Node Classification pipeline
-pipeline = gds.nc_pipe("myPipe")
-assert pipeline.type() == "Node classification training pipeline"
+pipeline, _ = gds.pipeline.node_classification.create("my-pipe")
 
 # Add a Degree Centrality feature to the pipeline
-pipeline.addNodeProperty("degree", mutateProperty="rank")
-pipeline.selectFeatures("rank")
-features = pipeline.feature_properties()
-assert len(features) == 1
-assert features[0]["feature"] == "rank"
+pipeline.add_node_property("degree", mutate_property="rank")
+pipeline.select_features("rank")
+details = pipeline.details()
+assert details.feature_properties == [{"feature": "rank"}]
 
 # Add a training method
-pipeline.addLogisticRegression(penalty=(0.1, 2))
+pipeline.add_logistic_regression(penalty=(0.1, 2))
 
 # Train a model on G
-model, train_result = pipeline.train(G, modelName="myModel", targetProperty="myClass", metrics=["ACCURACY"])
+model, train_result = pipeline.train(
+    G, model_name="my-model", target_property="subject", metrics=["ACCURACY"]
+)
 assert model.metrics()["ACCURACY"]["test"] > 0
-assert train_result["trainMillis"] >= 0
+assert train_result.train_millis >= 0
 
 # Compute predictions in stream mode
 predictions = model.predict_stream(G)
 assert len(predictions) == G.node_count()
 ```
 
-The example here assumes using an AuraDS instance.
 For additional examples and extensive documentation of all capabilities, please refer to the [GDS Python Client Manual](https://neo4j.com/docs/graph-data-science-client/current/).
 
 Full end-to-end examples in Jupyter ready-to-run notebooks can be found in the [`examples` source directory](https://github.com/neo4j/graph-data-science-client/tree/main/examples):
