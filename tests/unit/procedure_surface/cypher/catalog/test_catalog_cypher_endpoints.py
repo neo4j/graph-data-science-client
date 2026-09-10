@@ -65,9 +65,8 @@ def test_drop_passes_graph_name_and_fail_if_missing() -> None:
 
     result = endpoints.drop("g")
 
-    assert result is not None
-    assert not isinstance(result, List)
-    assert result.graph_name == "g"
+    assert len(result)
+    assert result[0].graph_name == "g"
     params = runner.last_params()
     assert params["graphName"] == ["g"]
     assert params["failIfMissing"] is True
@@ -81,9 +80,8 @@ def test_drop_accepts_graph_object() -> None:
 
     result = endpoints.drop(G)
 
-    assert result is not None
-    assert not isinstance(result, List)
-    assert result.graph_name == "g"
+    assert len(result)
+    assert result[0].graph_name == "g"
     assert runner.last_params()["graphName"] == ["g"]
 
 
@@ -121,20 +119,19 @@ def test_drop_single_element_list_returns_single_graph_info() -> None:
 
     result = endpoints.drop(["g"])
 
-    assert result is not None
-    assert not isinstance(result, List)
-    assert result.graph_name == "g"
+    assert len(result)
+    assert result[0].graph_name == "g"
     assert runner.last_params()["graphName"] == ["g"]
 
 
-def test_drop_returns_none_when_nothing_was_dropped() -> None:
+def test_drop_returns_empty_list_when_nothing_was_dropped() -> None:
     runner = CollectingQueryRunner(
         DEFAULT_SERVER_VERSION,
         {"gds.graph.drop": pd.DataFrame(columns=list(_drop_row().keys()))},
     )
     endpoints = CatalogCypherEndpoints(runner)
 
-    assert endpoints.drop(["g1", "g2"], fail_if_missing=False) is None
+    assert endpoints.drop(["g1", "g2"], fail_if_missing=False) == []
 
 
 def test_drop_passes_db_name_and_username() -> None:
