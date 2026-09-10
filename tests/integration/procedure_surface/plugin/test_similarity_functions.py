@@ -1,12 +1,3 @@
-"""
-Integration test: compare the Python SimilarityFunctions implementation against
-the GDS plugin running in a real Neo4j container.
-
-100 000 random float vector pairs are generated once, all six GDS similarity
-functions are evaluated in a single batched Cypher UNWIND query, and the
-results are compared element-by-element against the pure-Python implementation.
-"""
-
 from typing import Generator
 
 import numpy as np
@@ -17,10 +8,6 @@ from testcontainers.community.neo4j import Neo4jContainer
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-
-VECTOR_DIM = 10
-NUM_PAIRS = 100_000
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -47,10 +34,10 @@ def vector_pairs() -> list[tuple[list[float], list[float]]]:
     # the generated numpy integer arrays to float lists.
     return [
         (
-            rng.integers(-100, 100, size=VECTOR_DIM).astype(float).tolist(),
-            rng.integers(-100, 100, size=VECTOR_DIM).astype(float).tolist(),
+            rng.integers(-100, 100, size=10).astype(float).tolist(),
+            rng.integers(-100, 100, size=10).astype(float).tolist(),
         )
-        for _ in range(NUM_PAIRS)
+        for _ in range(1_000)
     ]
 
 
