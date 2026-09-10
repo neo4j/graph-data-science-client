@@ -90,7 +90,7 @@ class GraphSageTrainEndpoints(ABC):
         model_name
             Name of the trained model.
         feature_properties
-            The names of the node properties to use as input features
+            Names of the node properties to use as input features
         activation_function
             The activation function to apply after each layer
         negative_sample_weight

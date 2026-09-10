@@ -90,13 +90,13 @@ def gds_api_connection(network: Network, logs_dir: Path, request: pytest.Fixture
 @pytest.fixture(scope="session")
 def session_connection(
     network: Network,
-    tmp_path_factory: pytest.TempPathFactory,
+    models_dir: Path,
     logs_dir: Path,
     gds_api_connection: str,
     request: pytest.FixtureRequest,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     yield from start_session(
-        logs_dir, tmp_path_factory, network, request, gds_api_uri=gds_api_connection, session_alias=session_alias()
+        logs_dir, models_dir, network, request, gds_api_uri=gds_api_connection, session_alias=session_alias()
     )
 
 
@@ -127,3 +127,11 @@ def gds_plugin_container(
 @pytest.fixture(scope="package")
 def gds_arrow_client(gds_plugin_container: Neo4jContainer) -> Generator[GdsArrowClient, None, None]:
     yield from create_gds_arrow_client(gds_plugin_container)
+
+
+@pytest.fixture(scope="session")
+def models_dir(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path, None, None]:
+    """Create a temporary file and return its path."""
+    tmp_dir = tmp_path_factory.mktemp("models")
+    tmp_dir.chmod(0o777)  # allow other user inside container to write to model dir
+    yield tmp_dir

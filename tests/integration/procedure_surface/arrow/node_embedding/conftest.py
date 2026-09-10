@@ -13,24 +13,28 @@ from tests.integration.services import (
     start_session,
 )
 
+ignore_preview_warning = pytest.mark.filterwarnings("ignore:.*is a preview feature:UserWarning")
+
 
 @pytest.fixture(scope="package")
-def runtime_api(network: Network, logs_dir: Path, request: pytest.FixtureRequest) -> Generator[str, None, None]:
-    yield from start_runtime_api(logs_dir, network, request)
+def runtime_api(
+    network: Network, logs_dir: Path, request: pytest.FixtureRequest, models_dir: Path
+) -> Generator[str, None, None]:
+    yield from start_runtime_api(logs_dir, network, request, models_dir)
 
 
 @pytest.fixture(scope="package")
 def session_connection_runtime(
     network: Network,
-    tmp_path_factory: pytest.TempPathFactory,
     logs_dir: Path,
+    models_dir: Path,
     runtime_api: str,
     gds_api_connection: str,
     request: pytest.FixtureRequest,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     yield from start_session(
         logs_dir,
-        tmp_path_factory,
+        models_dir,
         network,
         request,
         gds_api_uri=gds_api_connection,
