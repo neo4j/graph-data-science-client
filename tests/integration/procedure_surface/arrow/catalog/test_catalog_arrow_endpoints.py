@@ -75,9 +75,19 @@ def test_exists(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -
 def test_drop(catalog_endpoints: CatalogArrowEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
-    assert res is not None
-    assert res.graph_name == sample_graph.name()
+    assert len(res) == 1
+    assert res[0].graph_name == sample_graph.name()
     assert len(catalog_endpoints.list()) == 0
+
+
+def test_drop_multiple_graphs(
+    catalog_endpoints: CatalogArrowEndpoints, arrow_client: AuthenticatedArrowClient, sample_graph: Graph
+) -> None:
+    with create_graph(arrow_client, "g2", "(a :Node)") as second_graph:
+        res = catalog_endpoints.drop([sample_graph, second_graph.name()])
+
+        assert sorted(info.graph_name for info in res) == sorted([sample_graph.name(), second_graph.name()])
+        assert len(catalog_endpoints.list()) == 0
 
 
 def test_drop_nonexistent(catalog_endpoints: CatalogArrowEndpoints) -> None:

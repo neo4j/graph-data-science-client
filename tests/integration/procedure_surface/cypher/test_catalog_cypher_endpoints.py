@@ -117,16 +117,16 @@ def test_exists(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) 
 def test_drop_with_graph_object(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop(sample_graph)
 
-    assert res is not None
-    assert res.graph_name == sample_graph.name()
+    assert len(res) == 1
+    assert res[0].graph_name == sample_graph.name()
     assert len(catalog_endpoints.list()) == 0
 
 
 def test_drop_with_graph_name_string(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:
     res = catalog_endpoints.drop("g")
 
-    assert res is not None
-    assert res.graph_name == "g"
+    assert len(res) == 1
+    assert res[0].graph_name == "g"
     assert len(catalog_endpoints.list()) == 0
 
 
@@ -137,7 +137,7 @@ def test_drop_nonexistent_fail_if_missing_true(catalog_endpoints: CatalogCypherE
 
 def test_drop_nonexistent_fail_if_missing_false(catalog_endpoints: CatalogCypherEndpoints) -> None:
     res = catalog_endpoints.drop("nonexistent", fail_if_missing=False)
-    assert res is None
+    assert res == []
 
 
 def test_graph_filter(catalog_endpoints: CatalogCypherEndpoints, sample_graph: Graph) -> None:

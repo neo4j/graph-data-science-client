@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import typing
-from typing import Any
+from typing import Any, List
 
 from pandas import DataFrame
 
@@ -22,6 +22,7 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithFilterResult,
     GraphWithGenerationStats,
     RelationshipPropertySpec,
+    normalize_graph_names,
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
@@ -110,24 +111,24 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         constructor.run(nodes, relationships)
         return get_graph(graph_name, self._arrow_client)
 
-    def drop(self, G: Graph | str, fail_if_missing: bool = True) -> GraphInfo | None:
-        """Drop a graph from the graph catalog.
+    def drop(self, G: Graph | str | List[Graph | str], fail_if_missing: bool = True) -> List[GraphInfo]:
+        """Drop graphs from the graph catalog.
 
         Parameters
         ----------
         G
-            Graph to drop by name or object.
+            Graphs to drop by name or object.
         fail_if_missing
             Whether to fail if the graph is missing.
 
         Returns
         -------
-        GraphInfo | None
-            Metadata of the dropped graph, or None if the graph did not exist.
+        List[GraphInfo]
+            Metadata of the dropped graphs.
         """
-        graph_name = G.name() if isinstance(G, Graph) else G
 
-        return self._graph_ops.drop(graph_name, fail_if_missing)
+        graph_infos = [self._graph_ops.drop(graph_name, fail_if_missing) for graph_name in normalize_graph_names(G)]
+        return [i for i in graph_infos if i is not None]
 
     def filter(
         self,

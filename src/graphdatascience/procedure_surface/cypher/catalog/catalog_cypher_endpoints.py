@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, List, cast
 
 from pandas import DataFrame
 
@@ -23,6 +23,7 @@ from graphdatascience.procedure_surface.api.catalog.catalog_endpoints import (
     GraphWithFilterResult,
     GraphWithGenerationStats,
     RelationshipPropertySpec,
+    normalize_graph_names,
 )
 from graphdatascience.procedure_surface.api.catalog.graph_export_endpoints import GraphExportEndpoints
 from graphdatascience.procedure_surface.api.catalog.graph_sampling_endpoints import GraphSamplingEndpoints
@@ -125,18 +126,18 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
     def drop(
         self,
-        G: Graph | str,
+        G: Graph | str | List[Graph | str],
         fail_if_missing: bool = True,
         *,
         db_name: str | None = None,
         username: str | None = None,
-    ) -> GraphInfo | None:
+    ) -> List[GraphInfo]:
         """Drop a graph from the graph catalog.
 
         Parameters
         ----------
         G
-            Graph to drop by name or object.
+            Graphs to drop by name or object.
         fail_if_missing
             Whether to fail if the graph is missing.
         db_name
@@ -146,12 +147,12 @@ class CatalogCypherEndpoints(CatalogEndpoints):
 
         Returns
         -------
-        GraphInfo | None
-            Metadata of the dropped graph, or None if the graph did not exist.
+        List[GraphInfo]
+            Metadata of the dropped graphs.
         """
-        graph_name = G if isinstance(G, str) else G.name()
+        graph_names = normalize_graph_names(G)
 
-        params = CallParameters(graphName=graph_name, failIfMissing=fail_if_missing)
+        params = CallParameters(graphName=graph_names, failIfMissing=fail_if_missing)
 
         if db_name is not None or username is not None:
             # positional params. order has to be preserved
@@ -166,10 +167,7 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             retryable=not fail_if_missing,
             mode=QueryMode.WRITE,
         )
-        if len(result) > 0:
-            return GraphInfo(**result.iloc[0])
-        else:
-            return None
+        return [GraphInfo(**row) for _, row in result.iterrows()]
 
     @property
     def project(self) -> ProjectCypherEndpoints:
