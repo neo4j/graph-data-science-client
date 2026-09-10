@@ -47,7 +47,7 @@ class EncodeEndpoints(ABC):
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         feature_properties
-            List of features to include in the job configuration.
+            Names of the node properties to use as input features
 
         Returns
         -------
@@ -82,7 +82,7 @@ class EncodeEndpoints(ABC):
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         feature_properties
-            List of features to include in the job configuration.
+            Names of the node properties to use as input features
 
         Returns
         -------
@@ -120,7 +120,7 @@ class EncodeEndpoints(ABC):
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         feature_properties
-            List of features to include in the job configuration.
+            Names of the node properties to use as input features
 
         Returns
         -------
@@ -155,7 +155,7 @@ class EncodeEndpoints(ABC):
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         feature_properties
-            List of features to include in the job configuration.
+            Names of the node properties to use as input features
 
         Returns
         -------
@@ -196,7 +196,7 @@ class EncodeEndpoints(ABC):
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         feature_properties
-            List of features to include in the job configuration.
+            Names of the node properties to use as input features
 
         Returns
         -------

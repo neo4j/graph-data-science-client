@@ -58,7 +58,7 @@ class HashGNNEndpoints(ABC):
         heterogeneous
             Whether to use heterogeneous node processing for different node types
         feature_properties
-            The names of the node properties to use as input features.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -112,7 +112,7 @@ class HashGNNEndpoints(ABC):
         heterogeneous
             Whether to use heterogeneous node processing for different node types
         feature_properties
-            The names of the node properties to use as input features.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         random_seed
             Seed for random number generation to ensure reproducible results.
@@ -170,7 +170,7 @@ class HashGNNEndpoints(ABC):
         heterogeneous
             Whether to use heterogeneous node processing for different node types
         feature_properties
-            The names of the node properties to use as input features.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -233,7 +233,7 @@ class HashGNNEndpoints(ABC):
         heterogeneous
             Whether to use heterogeneous node processing for different node types
         feature_properties
-            The names of the node properties to use as input features.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         random_seed
             Seed for random number generation to ensure reproducible results.
