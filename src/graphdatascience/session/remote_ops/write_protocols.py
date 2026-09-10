@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
 from pandas import Series
+from tenacity import Retrying, retry_if_exception, stop_after_attempt, wait_fixed
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
+from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
+from graphdatascience.retry_utils.retry_utils import before_log
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
@@ -158,23 +162,48 @@ class RemoteWriteBackV4(WriteProtocol):
         relationship_type_overwrite: str | None = None,
         log_progress: bool = True,
     ) -> None:
-        self._query_runner.call_procedure(
-            ProtocolVersion.V4.versioned_procedure_name("gds.arrow.write"),
-            params=self._build_call_parameters(
-                graph_name, job_id, concurrency, property_overwrites, relationship_type_overwrite
-            ),
-            retryable=False,
-            logging=False,
-            mode=QueryMode.WRITE,
-            custom_error=False,
-        )
+        logger = logging.getLogger(__name__)
+
+        for attempt in Retrying(
+            stop=stop_after_attempt(3),
+            wait=wait_fixed(2),
+            retry=retry_if_exception(is_retryable_neo4j_exception),
+            before=before_log(f"start_job (write-back '{job_id}')", logger, logging.DEBUG),
+            reraise=True,
+        ):
+            with attempt:
+                try:
+                    self._query_runner.call_procedure(
+                        ProtocolVersion.V4.versioned_procedure_name("gds.arrow.write"),
+                        params=self._build_call_parameters(
+                            graph_name, job_id, concurrency, property_overwrites, relationship_type_overwrite
+                        ),
+                        retryable=False,
+                        logging=False,
+                        mode=QueryMode.WRITE,
+                        custom_error=False,
+                    )
+                    return
+                except Exception as e:
+                    try:
+                        status = self.get_status(job_id)
+                        logger.debug(
+                            f"Write-back job '{job_id}' already started (status: {status.status}). No retry needed."
+                        )
+                        return
+                    except Exception:
+                        logger.debug(f"Could not confirm state of write-back job '{job_id}', will retry start_job.")
+                        raise e
 
     def get_status(self, job_id: str) -> JobStatus:
-        row: Series[Any] = self._query_runner.run_retryable_cypher(
+        result = self._query_runner.run_retryable_cypher(
             "CALL gds.arrow.job.status.v4($job_id)",
             QueryType.USER_TRANSPILED,
             params={"job_id": job_id},
-        ).iloc[0]
+        )
+        if result.empty:
+            raise ValueError(f"Write-back job '{job_id}' not found")
+        row: Series[Any] = result.iloc[0]
 
         if row.get("error") is not None:
             raise Exception(row["error"])
