@@ -141,6 +141,7 @@ update-aga-images:
 
     images=(
         "${GDS_SESSION_IMAGE:-europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:aura-release}"
+        "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest"
         "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-runtime-api:latest"
         "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest"
         "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/mock-gds-api:latest"
