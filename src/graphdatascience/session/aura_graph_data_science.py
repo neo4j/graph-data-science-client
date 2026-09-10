@@ -9,6 +9,7 @@ from graphdatascience.arrow_client.arrow_authentication import ArrowAuthenticati
 from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
+from graphdatascience.error.not_available_outside_aura import NotAvailableOutsideAura
 from graphdatascience.error.standalone_session_error import NotAvailableInStandaloneSessions
 from graphdatascience.procedure_surface.api import ConfigEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
@@ -174,11 +175,12 @@ from graphdatascience.procedure_surface.arrow.similarity.knn_arrow_endpoints imp
 from graphdatascience.procedure_surface.arrow.similarity.node_similarity_arrow_endpoints import (
     NodeSimilarityArrowEndpoints,
 )
-from graphdatascience.procedure_surface.arrow.topological_link_prediction_arrow_endpoints import (
-    TopologicalLinkPredictionArrowEndpoints,
-)
 from graphdatascience.procedure_surface.arrow.util_arrow_endpoints import UtilArrowEndpoints
+from graphdatascience.procedure_surface.cypher.topological_link_prediction_cypher_endpoints import (
+    TopologicalLinkPredictionCypherEndpoints,
+)
 from graphdatascience.query_runner import QueryRunner
+from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
@@ -252,6 +254,7 @@ class AuraGraphDataScience:
             self._write_protocol = WriteProtocol.select(authenticated_arrow_client, db_query_runner)
         self._session_lifecycle_manager = session_lifecycle_manager
         self._show_progress = show_progress
+        self._db_in_aura: bool | None = None
 
     @property
     def graph(self) -> CatalogArrowEndpoints:
@@ -310,8 +313,21 @@ class AuraGraphDataScience:
     def topological_link_prediction(self) -> TopologicalLinkPredictionEndpoints:
         """
         Return endpoints for topological link prediction functions.
+
+        The functions are evaluated via the Cypher surface of the AuraDB the
+        session is attached to. They are not available in standalone sessions,
+        or when the session is not attached to an AuraDB.
         """
-        return TopologicalLinkPredictionArrowEndpoints()
+        if self._db_query_runner is None:
+            raise NotAvailableInStandaloneSessions("Topological link prediction")
+
+        if self._db_in_aura is None:
+            self._db_in_aura = DbEnvironmentResolver.hosted_in_aura(self._db_query_runner)
+
+        if not self._db_in_aura:
+            raise NotAvailableOutsideAura("Topological link prediction")
+
+        return TopologicalLinkPredictionCypherEndpoints(self._db_query_runner)
 
     ## Algorithms
 
