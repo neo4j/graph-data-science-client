@@ -59,6 +59,25 @@ class NodeRegressionPipelineEndpoints(ABC):
         pass
 
     @abstractmethod
+    def get_model(self, model_name: str) -> NodeRegressionModel:
+        """
+        Retrieve an existing node regression model by name.
+
+        Returns the same model object as the ``train`` method of a node regression pipeline.
+
+        Parameters
+        ----------
+        model_name
+            Name of the model.
+
+        Returns
+        -------
+        NodeRegressionModel
+            The reconstructed model object.
+        """
+        pass
+
+    @abstractmethod
     def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         """
         Add a node property step to the pipeline.

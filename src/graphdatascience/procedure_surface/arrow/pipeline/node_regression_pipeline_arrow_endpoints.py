@@ -73,6 +73,16 @@ class NodeRegressionPipelineArrowEndpoints(NodeRegressionPipelineEndpoints):
             self._pipeline_catalog,
         )
 
+    def get_model(self, model_name: str) -> NodeRegressionModel:
+        details = self._model_catalog.get(model_name)
+        if details.model_type != "NodeRegression":
+            raise ValueError(f"Model '{model_name}' is not a node regression model")
+        return NodeRegressionModel(
+            details.model_name,
+            self._model_catalog,
+            predict_endpoints=self._predict,
+        )
+
     def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
         result = deserialize_single(
             self._arrow_client.do_action_with_retry(

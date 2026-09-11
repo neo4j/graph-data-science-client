@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import LinkPredictionPipeline
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
     LinkPredictionPipelineEndpoints,
@@ -18,6 +19,7 @@ from graphdatascience.procedure_surface.api.pipeline.link_prediction_train_endpo
 )
 from graphdatascience.procedure_surface.api.pipeline.parameter_space_config import convert_to_parameter_space_config
 from graphdatascience.procedure_surface.api.pipeline.pipeline_catalog_protocol import PipelineCatalogProtocol
+from graphdatascience.procedure_surface.cypher.model.model_catalog_cypher_endpoints import ModelCatalogCypherEndpoints
 from graphdatascience.procedure_surface.cypher.pipeline.link_prediction_predict_cypher_endpoints import (
     LinkPredictionPredictCypherEndpoints,
 )
@@ -35,6 +37,7 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
         self._pipeline_catalog: PipelineCatalogProtocol = PipelineCatalogCypherEndpoints(query_runner)
+        self._model_catalog = ModelCatalogCypherEndpoints(query_runner)
         self._predict = LinkPredictionPredictCypherEndpoints(query_runner)
         self._train = LinkPredictionTrainCypherEndpoints(query_runner, self._predict)
 
@@ -65,6 +68,16 @@ class LinkPredictionPipelineCypherEndpoints(LinkPredictionPipelineEndpoints):
             self,
             self,
             self._pipeline_catalog,
+        )
+
+    def get_model(self, model_name: str) -> LinkPredictionModel:
+        details = self._model_catalog.get(model_name)
+        if details.model_type != "LinkPrediction":
+            raise ValueError(f"Model '{model_name}' is not a link prediction model")
+        return LinkPredictionModel(
+            details.model_name,
+            self._model_catalog,
+            predict_endpoints=self._predict,
         )
 
     def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> LinkPredictionPipelineInfoResult:

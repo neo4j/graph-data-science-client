@@ -4,6 +4,7 @@ from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import (
     NodeClassificationPipeline,
 )
@@ -86,6 +87,16 @@ class NodeClassificationPipelineArrowEndpoints(NodeClassificationPipelineEndpoin
             self,
             self,
             self._pipeline_catalog,
+        )
+
+    def get_model(self, model_name: str) -> NodeClassificationModel:
+        details = self._model_catalog.get(model_name)
+        if details.model_type != "NodeClassification":
+            raise ValueError(f"Model '{model_name}' is not a node classification model")
+        return NodeClassificationModel(
+            details.model_name,
+            self._model_catalog,
+            predict_endpoints=self._predict,
         )
 
     def add_node_property(
