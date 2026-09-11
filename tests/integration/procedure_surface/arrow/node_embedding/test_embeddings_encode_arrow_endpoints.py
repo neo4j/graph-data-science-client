@@ -69,7 +69,6 @@ def test_embeddings_encode_stream(encode_endpoints: EncodeArrowEndpoints, sample
     """Test FastPath stream operation."""
     result_df = encode_endpoints.stream(
         G=sample_graph,
-        feature_properties=["x"],
         graph_encoder=FastRPConfig(),
     )
 
@@ -82,7 +81,6 @@ def test_embeddings_encode_mutate(encode_endpoints: EncodeArrowEndpoints, sample
     """Test FastPath mutate operation."""
     result = encode_endpoints.mutate(
         G=sample_graph,
-        feature_properties=["x"],
         graph_encoder=FastRPConfig(),
         mutate_property="embedding123",
     )
@@ -101,7 +99,6 @@ def test_embeddings_encode_write(
     endpoints = EncodeArrowEndpoints(arrow_client_runtime, WriteProtocol.select(arrow_client_runtime, query_runner))
     result = endpoints.write(
         G=db_graph,
-        feature_properties=["x"],
         graph_encoder=FastRPConfig(),
         write_property="embedding123",
     )

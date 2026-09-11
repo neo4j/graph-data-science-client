@@ -41,7 +41,7 @@ class PredictArrowEndpoints(PredictEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> JobHandle:
         config = self._build_config(
             G,
@@ -63,7 +63,7 @@ class PredictArrowEndpoints(PredictEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> DataFrame:
         config = self._build_config(
             G,
@@ -76,18 +76,9 @@ class PredictArrowEndpoints(PredictEndpoints):
         )
         return self._endpoints_helper.run_job_and_stream("v2/embeddings.predict", G, config)
 
-    def mutate(
-        self,
-        G: Graph,
-        *,
-        model_name: str,
-        random_seed: int | None = None,
-        mutate_property: str,
-        job_id: str | None = None,
-        node_labels: list[str] = ["*"],
-        relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
-    ) -> PredictMutateResult:
+    def mutate(self, G: Graph, *, model_name: str, random_seed: int | None = None, mutate_property: str,
+               job_id: str | None = None, node_labels: list[str] = ["*"], relationship_types: list[str] = ["*"],
+               feature_properties: list[str] = []) -> PredictMutateResult:
         config = self._build_config(
             G,
             model_name=model_name,
@@ -100,17 +91,9 @@ class PredictArrowEndpoints(PredictEndpoints):
         result = self._endpoints_helper.run_job_and_mutate("v2/embeddings.predict", config, mutate_property)
         return PredictMutateResult(**result)
 
-    def stats(
-        self,
-        G: Graph,
-        *,
-        model_name: str,
-        random_seed: int | None = None,
-        job_id: str | None = None,
-        node_labels: list[str] = ["*"],
-        relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
-    ) -> PredictStatsResult:
+    def stats(self, G: Graph, *, model_name: str, random_seed: int | None = None, job_id: str | None = None,
+              node_labels: list[str] = ["*"], relationship_types: list[str] = ["*"],
+              feature_properties: list[str] = []) -> PredictStatsResult:
         config = self._build_config(
             G,
             model_name=model_name,
@@ -134,7 +117,7 @@ class PredictArrowEndpoints(PredictEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> PredictWriteResult:
         config = self._build_config(
             G,
@@ -159,7 +142,7 @@ class PredictArrowEndpoints(PredictEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> dict[str, Any]:
         extra_kwargs: dict[str, Any] = {}
         if random_seed is not None:

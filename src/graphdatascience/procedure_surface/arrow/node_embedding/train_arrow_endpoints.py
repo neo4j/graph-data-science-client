@@ -51,7 +51,7 @@ class TrainArrowEndpoints(TrainEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> JobHandle:
         config = self._build_config(
             G,
@@ -87,7 +87,7 @@ class TrainArrowEndpoints(TrainEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> TrainResult:
         config = self._build_config(
             G,
@@ -124,7 +124,7 @@ class TrainArrowEndpoints(TrainEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> dict[str, Any]:
         extra_kwargs: dict[str, Any] = {}
         if random_seed is not None:

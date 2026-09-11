@@ -24,7 +24,7 @@ class PredictEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> JobHandle:
         """
         Parameters
@@ -59,7 +59,7 @@ class PredictEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> DataFrame:
         """
         Parameters
@@ -95,7 +95,7 @@ class PredictEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> PredictMutateResult:
         """
         Parameters
@@ -132,7 +132,7 @@ class PredictEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> PredictStatsResult:
         """
         Parameters
@@ -169,7 +169,7 @@ class PredictEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> PredictWriteResult:
         """
         Parameters
