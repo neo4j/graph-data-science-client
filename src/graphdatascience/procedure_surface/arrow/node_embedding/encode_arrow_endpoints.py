@@ -64,7 +64,7 @@ class EncodeArrowEndpoints(EncodeEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> DataFrame:
         config = self._build_config(
             G,
@@ -87,7 +87,7 @@ class EncodeArrowEndpoints(EncodeEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> EncodeMutateResults:
         config = self._build_config(
             G,
@@ -110,7 +110,7 @@ class EncodeArrowEndpoints(EncodeEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> EncodeStatsResult:
         config = self._build_config(
             G,
@@ -135,7 +135,7 @@ class EncodeArrowEndpoints(EncodeEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> EncodeWriteResult:
         config = self._build_config(
             G,
@@ -160,7 +160,7 @@ class EncodeArrowEndpoints(EncodeEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> dict[str, Any]:
         extra_kwargs: dict[str, Any] = {}
         if random_seed is not None:

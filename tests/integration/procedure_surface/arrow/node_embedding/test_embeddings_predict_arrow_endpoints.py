@@ -70,7 +70,6 @@ def model_name(arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Gra
     model_save_name = "my_model_123"
     _ = TrainArrowEndpoints(arrow_client_runtime)(
         G=sample_graph,
-        feature_properties=["x"],
         graph_encoder=FastRPConfig(),
         decoder=GBClassifierConfig(),
         target_label="A",
@@ -86,7 +85,6 @@ def db_model_name(arrow_client_runtime: AuthenticatedArrowClient, db_graph: Grap
     model_save_name = "my_model_456"
     _ = TrainArrowEndpoints(arrow_client_runtime)(
         G=db_graph,
-        feature_properties=["x"],
         graph_encoder=FastRPConfig(),
         decoder=GBClassifierConfig(),
         target_label="A",
@@ -104,7 +102,6 @@ def test_embeddings_predict_stream(
     """Test FastPath stream operation."""
     result_df = predict_endpoints.stream(
         G=sample_graph,
-        feature_properties=["x"],
         model_name=model_name,
     )
 
@@ -119,7 +116,6 @@ def test_embeddings_predict_mutate(
     """Test FastPath mutate operation."""
     result = predict_endpoints.mutate(
         G=sample_graph,
-        feature_properties=["x"],
         model_name=model_name,
         mutate_property="prediction123",
     )
@@ -138,7 +134,6 @@ def test_embeddings_predict_write(
     endpoints = PredictArrowEndpoints(arrow_client_runtime, WriteProtocol.select(arrow_client_runtime, query_runner))
     result = endpoints.write(
         G=db_graph,
-        feature_properties=["x"],
         model_name=db_model_name,
         write_property="prediction123",
     )

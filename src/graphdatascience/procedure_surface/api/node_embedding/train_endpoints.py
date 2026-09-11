@@ -39,7 +39,7 @@ class TrainEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> JobHandle:
         """
         embeddings.train is a preview feature and may change or be removed in future releases.
@@ -97,7 +97,7 @@ class TrainEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> TrainResult:
         """
         embeddings.train is a preview feature and may change or be removed in future releases.

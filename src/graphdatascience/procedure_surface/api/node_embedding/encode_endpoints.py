@@ -64,7 +64,7 @@ class EncodeEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> DataFrame:
         """
         Parameters
@@ -100,7 +100,7 @@ class EncodeEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> EncodeMutateResults:
         """
         Parameters
@@ -137,7 +137,7 @@ class EncodeEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> EncodeStatsResult:
         """
         Parameters
@@ -174,7 +174,7 @@ class EncodeEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
+        feature_properties: list[str] = [],
     ) -> EncodeWriteResult:
         """
         Parameters
