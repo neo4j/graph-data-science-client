@@ -5,12 +5,10 @@ from graphdatascience.procedure_surface.api.node_embedding.config import (
     IdentityConfig,
     MLPClassifierConfig,
 )
-from graphdatascience.procedure_surface.api.node_embedding.embeddings_endpoints import EmbeddingsEndpoints
-from graphdatascience.procedure_surface.api.node_embedding.encode_endpoints import (
-    EncodeEndpoints,
-    EncodeMutateResults,
-    EncodeStatsResult,
-    EncodeWriteResult,
+from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import (
+    EmbeddingCreateResult,
+    EmbeddingEndpoints,
+    EmbeddingTrainResult,
 )
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import (
     FastPathEndpoints,
@@ -43,23 +41,11 @@ from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints im
     Node2VecMutateResult,
     Node2VecWriteResult,
 )
-from graphdatascience.procedure_surface.api.node_embedding.predict_endpoints import (
-    PredictEndpoints,
-    PredictMutateResult,
-    PredictStatsResult,
-    PredictWriteResult,
-)
-from graphdatascience.procedure_surface.api.node_embedding.train_endpoints import (
-    TrainEndpoints,
-    TrainResult,
-)
 
 __all__ = [
-    "EmbeddingsEndpoints",
-    "EncodeEndpoints",
-    "EncodeMutateResults",
-    "EncodeStatsResult",
-    "EncodeWriteResult",
+    "EmbeddingEndpoints",
+    "EmbeddingCreateResult",
+    "EmbeddingTrainResult",
     "FastRPConfig",
     "FastRPEndpoints",
     "FastRPMutateResult",
@@ -84,10 +70,4 @@ __all__ = [
     "Node2VecEndpoints",
     "Node2VecMutateResult",
     "Node2VecWriteResult",
-    "PredictEndpoints",
-    "PredictMutateResult",
-    "PredictStatsResult",
-    "PredictWriteResult",
-    "TrainEndpoints",
-    "TrainResult",
 ]

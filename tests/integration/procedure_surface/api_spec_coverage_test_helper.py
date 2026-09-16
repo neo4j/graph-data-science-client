@@ -41,6 +41,13 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "util.is_finite",  # built-in in python
     "util.is_infinite",  # built-in in python
     "util.na_n",  # built-in in python
+    "embeddings.encode.stream",
+    "embeddings.encode.write",
+    "embeddings.train",
+    "embeddings.encode.mutate",
+    "embeddings.predict.mutate",
+    "embeddings.predict.write",
+    "embeddings.predict.stream",
 }
 
 IGNORED_PARAMETERS = {

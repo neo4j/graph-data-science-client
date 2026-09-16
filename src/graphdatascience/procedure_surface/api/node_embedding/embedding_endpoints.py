@@ -7,9 +7,8 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field, PositiveInt
 
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.base_result import StatsResult
+from graphdatascience.procedure_surface.api.base_result import MutateResult, NodeResult, StatsResult
 from graphdatascience.procedure_surface.api.descriptions import RANDOM_SEED_DESCRIPTION, TASK_NAME_DESCRIPTION
-from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.config import (
     DecoderConfig,
     FastRPConfig,
@@ -18,58 +17,35 @@ from graphdatascience.procedure_surface.api.node_embedding.config import (
     GraphSAGEConfig,
     IdentityConfig,
     MLPClassifierConfig,
+    NoTrainGraphEncoderConfig,
 )
 
 
-class TrainEndpoints(ABC):
-    """Endpoints for training an embedding model, consisting of a graph encoder and a decoder."""
-
+class EmbeddingEndpoints(ABC):
     @abstractmethod
-    def compute(
+    def create(
         self,
         G: Graph,
         *,
-        graph_encoder: FastRPConfig | GraphSAGEConfig | IdentityConfig,
-        decoder: GBClassifierConfig | MLPClassifierConfig,
-        model_save_name: str,
-        target_label: str,
-        target_property: str,
-        num_epochs: int | None = None,
-        batch_size: int | None = None,
-        num_trials: int = 1,
+        graph_encoder: str | (FastRPConfig | IdentityConfig),
         random_seed: int | None = None,
+        mutate_property: str,
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
-    ) -> JobHandle:
+        feature_properties: list[str] = [],
+    ) -> EmbeddingCreateResult:
         """
-        Trains a graph encoder and decoder model on the given graph, returning a job handle instead of blocking on completion.
-
-        embeddings.train is a preview feature and may change or be removed in future releases.
-
         Parameters
         ----------
         G
             Graph object to use
         graph_encoder
-            Configuration for the graph encoder to train (e.g. FastRP, GraphSAGE, or Identity).
-        decoder
-            Configuration for the decoder to train on top of the graph encoder's embeddings.
-        model_save_name
-            Name to save the trained graph encoder + decoder model under.
-        target_label
-            Node label to train on.
-        target_property
-            Node property to train on.
-        num_epochs
-            Maximum number of training epochs.
-        batch_size
-            Number of examples per training batch.
-        num_trials
-            Number of hyperparameter tuning trials to run.
+            Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder (e.g. FastRP or Identity).
         random_seed
             Seed for random number generation to ensure reproducible results.
+        mutate_property
+            Name of the node property to store the results in.
         job_id
             Identifier for the computation.
         node_labels
@@ -81,11 +57,11 @@ class TrainEndpoints(ABC):
 
         Returns
         -------
-        JobHandle
+        EmbeddingCreateResult
         """
 
     @abstractmethod
-    def __call__(
+    def train(
         self,
         G: Graph,
         *,
@@ -101,11 +77,9 @@ class TrainEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str],
-    ) -> TrainResult:
+        feature_properties: list[str] = [],
+    ) -> EmbeddingTrainResult:
         """
-        Trains a graph encoder and decoder model on the given graph and blocks until training completes.
-
         embeddings.train is a preview feature and may change or be removed in future releases.
 
         Parameters
@@ -141,7 +115,17 @@ class TrainEndpoints(ABC):
         """
 
 
-class TrainConfig(BaseModel):
+class EncodeConfig(BaseModel):
+    task_name: Literal["GML_ENCODE"] = Field(
+        "GML_ENCODE", validation_alias="taskName", description=TASK_NAME_DESCRIPTION
+    )
+    graph_encoder: str | Annotated[NoTrainGraphEncoderConfig, Field(discriminator="graph_encoder_type")] = Field(
+        description="Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder (e.g. FastRP or Identity)."
+    )
+    random_seed: int = Field(default_factory=lambda: random.randint(0, 2**32 - 1), description=RANDOM_SEED_DESCRIPTION)
+
+
+class EmbeddingTrainConfig(BaseModel):
     task_name: Literal["GML_TRAIN"] = Field("GML_TRAIN", validation_alias="taskName", description=TASK_NAME_DESCRIPTION)
     graph_encoder: Annotated[GraphEncoderConfig, Field(discriminator="graph_encoder_type")] = Field(
         description="Configuration for the graph encoder to train (e.g. FastRP, GraphSAGE, or Identity)."
@@ -158,5 +142,9 @@ class TrainConfig(BaseModel):
     random_seed: int = Field(default_factory=lambda: random.randint(0, 2**32 - 1), description=RANDOM_SEED_DESCRIPTION)
 
 
-class TrainResult(StatsResult):
+class EmbeddingCreateResult(MutateResult, NodeResult):
+    pass
+
+
+class EmbeddingTrainResult(StatsResult):
     pass
