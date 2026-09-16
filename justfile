@@ -187,7 +187,14 @@ update-test-images:
 
 
 test-docs-plugin:
-    uv run --group dev scripts/ci/run_doc_tests_plugin.py
+    uv run --group dev python -m scripts.ci.run_doc_tests_plugin
+
+# Run the Aura Graph Analytics (GDS session) parts of the manual docs against a local
+# gds-session image (same stack as the integration tests). Images via
+# GDS_SESSION_IMAGE / NEO4J_AURA_DATABASE_IMAGE / MOCK_GDS_API_IMAGE; page filter via
+# DOC_TEST_FILE=<substring>.
+test-docs-aga:
+    uv run --group dev python -m scripts.ci.run_doc_tests_aga
 
 prs:
     gh pr list --author "@me"

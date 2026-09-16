@@ -53,18 +53,27 @@ We seem to use `.svg` so maybe stick to that.
 Selected parts of the source code examples in the documentation are run as tests.
 [Asciidoctor](https://github.com/asciidoctor/asciidoctor) is used to parse the documentation and extract the Python code that should be tested (see `tests/test_docs.rb`).
 
-
 ### Running (the easy way)
 
-The `just doc-tests` target spins up a local Neo4j + GDS plugin via `docker compose` (from `scripts/test_envs/`), runs the snippet tests against it, and tears the container down afterwards:
+The `just test-docs-plugin` target spins up a local Neo4j with the GDS plugin via testcontainers, runs the plugin-target snippet tests against it, and tears the container down afterwards:
 
 ```bash
-# Community edition: runs only the community-safe snippets (no license required)
-just doc-tests enterprise=false
+# Community + networkx scopes (no license required)
+just test-docs-plugin
 
-# Enterprise edition: runs all scopes; requires a license at ${HOME}/.gds_license
-just doc-tests enterprise=true
+# All scopes (adds enterprise); requires a GDS license key in the environment
+GDS_LICENSE_KEY=... just test-docs-plugin
 ```
+
+The `just test-docs-aga` target runs the Aura Graph Analytics parts of the manual against a local GDS session, started from the same Docker images and stack as the integration tests (see `scripts/ci/run_doc_tests_aga.py`):
+
+```bash
+just test-docs-aga
+```
+
+Both targets require Docker and the test images; pull them via `just update-test-images`.
+Image overrides: `NEO4J_IMAGE` (plugin target), and `GDS_SESSION_IMAGE` / `NEO4J_AURA_DATABASE_IMAGE` / `MOCK_GDS_API_IMAGE` (AGA target).
+To iterate on a single page, set `DOC_TEST_FILE=<substring>`.
 
 
 ### Running (manually)
@@ -91,8 +100,14 @@ Passing `-n test_community` runs only the snippets that don't rely on GDS Enterp
 
 ### Deployment tabs
 
-The manual documents each deployment mode as an Antora tabbed example (`[.include-with-Neo4j-server]` for the self-managed plugin, `[.include-with-Aura-Graph-Analytics]` for GDS Sessions, and `[.include-with-AuraDS]` for AuraDS).
-The doc tests target the plugin/self-managed deployment only: `test_docs.rb` runs untabbed snippets and those in the `[.include-with-Neo4j-server]` tab, and skips snippets nested inside the Aura Graph Analytics and AuraDS tabs.
+The manual documents each deployment mode as an Antora tabbed example (`[.include-with-GDS-database-plugin]` for the self-managed plugin, `[.include-with-Aura-Graph-Analytics]` for GDS Sessions, and `[.include-with-AuraDS]` for AuraDS).
+The doc tests run per deployment target:
+
+* The plugin target (`test_community` / `test_enterprise` / `test_networkx` of `test_docs.rb`) runs untabbed snippets and those in the `[.include-with-GDS-database-plugin]` tab.
+* The AGA target (`test_aga`) runs snippets in the `[.include-with-Aura-Graph-Analytics]` tab, snippets with the `session` attribute, and untabbed snippets in files that contain any of those.
+
+Untabbed snippets are deployment-neutral and run in both targets.
+Snippets in the remaining tabs (AuraDS, and the session-type tabs of the Aura Graph Analytics page) are not tested; neither are the notebook-generated tutorials, which are covered by the notebook CI scripts instead.
 
 
 ### Adding new tests
@@ -100,8 +115,9 @@ The doc tests target the plugin/self-managed deployment only: `test_docs.rb` run
 The example code snippets of the documentation that will be tested are those AsciiDoc blocks with style `source`, language `python` and without role `no-test`.
 Further, if a block has a group attribute, then it will be concatenated with all other snippets of the same group into one script.
 If a block has the enterprise attribute, it will only be run when the test `test_enterprise` is not filtered out.
+If a block has the session attribute, it will only be run in the AGA target (`just test-docs-aga`) and skipped in the plugin target.
 If a block has the min-server-version attribute, it will only be run when the docs are tested against a GDS version >= min-server-version.
-Snippets inside a deployment tab are only run in the matching deployment lane (see [Deployment tabs](#deployment-tabs)); to iterate on a single page, set `DOC_TEST_FILE=<substring>`.
+Snippets inside a deployment tab are only run in the matching deployment target (see [Deployment tabs](#deployment-tabs)); to iterate on a single page, set `DOC_TEST_FILE=<substring>`.
 The harness logs per-file progress to stderr as it runs; set `DOC_TEST_LOGLEVEL=DEBUG` for per-script logging (with timings).
 
 Additionally, before a code snippet from the documentation is run, it is:

@@ -195,8 +195,7 @@ On exiting the `with` block, the graph projection will be automatically dropped 
 with gds.graph.project.native(
     "tmp_offices",              #  Graph name
     ["City"],                   #  Node projection
-    "FLY_TO",                   #  Relationship projection
-    read_concurrency=4          #  Configuration parameters
+    ["FLY_TO"],                 #  Relationship projection
 )[0] as G_tmp:
     assert G_tmp.exists()
 

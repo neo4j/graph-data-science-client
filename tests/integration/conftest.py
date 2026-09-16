@@ -84,7 +84,7 @@ def network() -> Generator[Network, None, None]:
 
 @pytest.fixture(scope="session")
 def gds_api_connection(network: Network, logs_dir: Path, request: pytest.FixtureRequest) -> Generator[str, None, None]:
-    yield from start_gds_api(logs_dir, network, request)
+    yield from start_gds_api(logs_dir, network, request.node.name)
 
 
 @pytest.fixture(scope="session")
@@ -96,7 +96,7 @@ def session_connection(
     request: pytest.FixtureRequest,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     yield from start_session(
-        logs_dir, models_dir, network, request, gds_api_uri=gds_api_connection, session_alias=session_alias()
+        logs_dir, models_dir, network, request.node.name, gds_api_uri=gds_api_connection, session_alias=session_alias()
     )
 
 
@@ -114,14 +114,14 @@ def neo4j_connection(
     Packages that need a Neo4j+GDS-plugin database instead override this fixture (see
     procedure_surface/plugin/conftest.py).
     """
-    yield from start_database(logs_dir, network, request, db_alias=db_alias())
+    yield from start_database(logs_dir, network, request.node.name, db_alias=db_alias())
 
 
 @pytest.fixture(scope="session")
 def gds_plugin_container(
     logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
 ) -> Generator[Neo4jContainer, None, None]:
-    yield from start_gds_plugin_database(logs_dir, tmp_path_factory, request)
+    yield from start_gds_plugin_database(logs_dir, tmp_path_factory, request.node.name)
 
 
 @pytest.fixture(scope="package")

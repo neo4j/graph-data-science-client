@@ -16,6 +16,9 @@ end
 
 # Boilerplate prepended to every doc snippet: connect a GraphDataScience object to the
 # plugin/self-managed Neo4j database configured via the NEO4J_* env vars.
+# NEO4J_ARROW_URI (optional) points the client at a specific GDS Arrow server; when unset,
+# the client auto-discovers the Arrow endpoint from the server (see the `arrow` parameter
+# of GraphDataScience).
 INIT_GDS = '
 import os
 
@@ -32,7 +35,9 @@ if os.environ.get("NEO4J_USERNAME"):
     NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME", "DUMMY")
     NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "neo4j")
 
-gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
+NEO4J_ARROW = os.environ.get("NEO4J_ARROW_URI", True)
+
+gds = GraphDataScience(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD), arrow=NEO4J_ARROW)
 gds.set_database("neo4j")
 '
 
@@ -51,8 +56,67 @@ finally:
     gds.run_cypher("MATCH (n) DETACH DELETE (n)")
 '
 
-# The doc tests target the plugin/self-managed deployment. Snippets nested inside an Aura Graph
-# Analytics or AuraDS tab are skipped, since they use session/Aura-specific setup.
+# Boilerplate prepended to every AGA doc snippet: connect an AuraGraphDataScience object to
+# the local GDS session and its Neo4j database (both started via testcontainers from the same
+# images as the integration tests; see scripts/ci/run_doc_tests_aga.py). The `sessions.get_or_create`
+# flow of the docs needs the Aura API, so the harness connects to the session directly instead.
+INIT_AGA = '
+import os
+from unittest import mock
+
+import pandas
+
+from graphdatascience.arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
+from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
+
+SESSION_ARROW_URI = os.environ.get("GDS_SESSION_ARROW_URI", "localhost:8491")
+SESSION_HOST, SESSION_PORT = SESSION_ARROW_URI.rsplit(":", 1)
+# The in-network address the session advertises; see tests/integration/services.py.
+ADVERTISED_URI = os.environ.get("GDS_SESSION_ADVERTISED_ADDRESS", SESSION_ARROW_URI)
+ADVERTISED_HOST, ADVERTISED_PORT = ADVERTISED_URI.rsplit(":", 1)
+
+NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME", "neo4j")
+NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "password")
+
+arrow_client = AuthenticatedArrowClient(
+    (SESSION_HOST, int(SESSION_PORT)),
+    auth=UsernamePasswordAuthentication(NEO4J_USERNAME, NEO4J_PASSWORD),
+    encrypted=False,
+    advertised_listen_address=(ADVERTISED_HOST, int(ADVERTISED_PORT)),
+)
+db_query_runner = Neo4jQueryRunner.create_for_db(NEO4J_URI, (NEO4J_USERNAME, NEO4J_PASSWORD))
+gds = AuraGraphDataScience(
+    arrow_client,
+    db_query_runner,
+    session_lifecycle_manager=mock.Mock(spec=SessionLifecycleManager),
+)
+gds.set_database("neo4j")
+'
+
+# Reset the session catalog and the database after each AGA snippet so tests stay
+# independent. Same shape as the plugin cleanup; session model-catalog operations
+# route through the (mock) GDS API of the local test stack.
+CLEAN_UP_AGA = '
+finally:
+    for graph_info in gds.graph.list():
+        gds.graph.drop(graph_info.graph_name, fail_if_missing=False)
+    for pipeline_entry in gds.pipeline.list():
+        gds.pipeline.drop(pipeline_entry.pipeline_name, fail_if_missing=False)
+    for model_details in gds.model.list():
+        if model_details.stored:
+            gds.model.delete(model_details.model_name)
+        gds.model.drop(model_details.model_name, fail_if_missing=False)
+    gds.run_cypher("MATCH (n) DETACH DELETE (n)")
+'
+
+# The doc tests run per deployment lane: the plugin lane targets a Neo4j with the GDS
+# plugin (self-managed/AuraDS-like), the AGA lane targets a local GDS session.
+# Snippets nested inside a deployment tab only run in the matching lane; untabbed
+# snippets are deployment-neutral and run in every lane that visits their file.
 NON_PLUGIN_TAB_ROLES = %w[
   include-with-Aura-Graph-Analytics
   include-with-attached
@@ -61,17 +125,39 @@ NON_PLUGIN_TAB_ROLES = %w[
   include-with-AuraDS
 ].freeze
 
-# A block is eligible when it is not nested inside a non-plugin deployment tab
-# (i.e. it is an untabbed snippet or lives in the `include-with-GDS-database-plugin` tab).
-def plugin_eligible?(block)
+# All deployment tab roles used in the manual.
+DEPLOYMENT_TAB_ROLES = (%w[include-with-GDS-database-plugin] + NON_PLUGIN_TAB_ROLES).freeze
+
+# The tab role marking Aura Graph Analytics (GDS session) snippets.
+AGA_TAB_ROLES = %w[include-with-Aura-Graph-Analytics].freeze
+
+def ancestor_roles(block)
+  roles = []
   node = block
   while node
-    roles = node.respond_to?(:roles) ? node.roles : []
-    return false if (roles & NON_PLUGIN_TAB_ROLES).any?
-
+    roles += node.respond_to?(:roles) ? node.roles : []
     node = node.parent
   end
-  true
+  roles
+end
+
+# A block is eligible for the plugin lane when it is not nested inside a non-plugin
+# deployment tab (i.e. it is an untabbed snippet or lives in the
+# `include-with-GDS-database-plugin` tab).
+def plugin_eligible?(block)
+  (ancestor_roles(block) & NON_PLUGIN_TAB_ROLES).empty?
+end
+
+# A block belongs to the AGA lane if it is nested inside an Aura Graph Analytics tab,
+# or carries the `session` attribute (session-only content such as async execution).
+def aga_marked?(block)
+  block.attr?('session') || !(ancestor_roles(block) & AGA_TAB_ROLES).empty?
+end
+
+# A block is untabbed when none of its ancestors carries a deployment tab role, making
+# it deployment-neutral (it runs in both lanes).
+def untabbed?(block)
+  (ancestor_roles(block) & DEPLOYMENT_TAB_ROLES).empty?
 end
 
 def doc_files
@@ -91,34 +177,41 @@ def add_to_group(scripts_by_group, block)
   end
 end
 
-def complete_raw_scripts(raw_scripts)
+def complete_raw_scripts(raw_scripts, lane)
+  init = lane == :aga ? INIT_AGA : INIT_GDS
+  clean_up = lane == :aga ? CLEAN_UP_AGA : CLEAN_UP
   raw_scripts.map do |s|
     indented_s = "try:\n"
     s.each_line do |line|
       indented_s += "    #{line}"
     end
-    INIT_GDS + indented_s + CLEAN_UP
+    init + indented_s + clean_up
   end
 end
 
-def block_to_raw_code(block)
-  if block.attr?('min-server-version')
-    min_gds_version = block.attr('min-server-version')
-    raw_code = "if ServerVersion.from_string(\"#{min_gds_version}\") <= gds.server_version():\n"
-    block.source.each_line { |line| raw_code += "    #{line}" }
-    raw_code
+def block_to_raw_code(block, lane)
+  # Sessions have no server_version to gate on; min-server-version applies to the plugin lane only.
+  return block.source if lane == :aga || !block.attr?('min-server-version')
+
+  min_gds_version = block.attr('min-server-version')
+  raw_code = "if ServerVersion.from_string(\"#{min_gds_version}\") <= gds.server_version():\n"
+  block.source.each_line { |line| raw_code += "    #{line}" }
+  raw_code
+end
+
+# A block is testable if it is a runnable python source block for the given deployment
+# lane and is not opted out via the `no-test` role.
+def testable?(block, lane, file_has_aga)
+  return false if block.has_role?('no-test') || block.attr('language') != 'python'
+
+  if lane == :aga
+    # AGA lane: AGA-marked snippets, plus untabbed (deployment-neutral) snippets
+    # in files that document AGA at all.
+    aga_marked?(block) || (file_has_aga && untabbed?(block))
   else
-    block.source
+    # Plugin lane: excludes session-only snippets (via the `session` attribute).
+    plugin_eligible?(block) && !block.attr?('session')
   end
-end
-
-# A block is testable if it is a runnable python source block for the current deployment
-# lane and is not opted out via the `no-test` role or the `session` attribute.
-def testable?(block)
-  !block.has_role?('no-test') &&
-    block.attr('language') == 'python' &&
-    plugin_eligible?(block) &&
-    !block.attr?('session')
 end
 
 # networkx-tagged blocks are run exclusively in the :networkx scope, and excluded elsewhere.
@@ -130,43 +223,55 @@ def filter_by_networkx(blocks, scope)
   end
 end
 
-def filter_source_blocks(source_blocks, scope)
-  blocks = source_blocks.select { |b| testable?(b) }
+def filter_source_blocks(source_blocks, scope, lane, file_has_aga)
+  blocks = source_blocks.select { |b| testable?(b, lane, file_has_aga) }
+  # The AGA lane has no enterprise/community split (sessions are always licensed).
+  # networkx-tagged blocks keep running exclusively in the plugin-lane :networkx scope
+  # (see filter_by_networkx), even though sessions support networkx loading as well.
+  return blocks.reject { |b| b.attr? 'networkx' } if scope == :aga
+
   blocks = blocks.reject { |b| b.attr? 'enterprise' } unless scope == :enterprise
   filter_by_networkx(blocks, scope)
 end
 
-def scripts_of_file(path, scope)
-  doc = Asciidoctor.load_file path, safe: :safe
-
-  source_blocks = doc.find_by style: 'source'
-  testable_source_blocks = filter_source_blocks(source_blocks, scope)
-  skipped = source_blocks.count { |b| b.attr('language') == 'python' && b.has_role?('no-test') }
-
+# Collect the raw script of each block; blocks sharing a `group` attribute are
+# concatenated into one script (in document order).
+def raw_scripts_of_blocks(blocks, lane)
   raw_scripts = []
   raw_scripts_by_group = Hash.new { |h, k| h[k] = "# #{k}" }
 
-  testable_source_blocks.each do |b|
+  blocks.each do |b|
     if b.attr? 'group'
       group = b.attr 'group'
-      raw_scripts_by_group[group] += "\n#{block_to_raw_code(b)}"
+      raw_scripts_by_group[group] += "\n#{block_to_raw_code(b, lane)}"
     else
-      raw_scripts.push(block_to_raw_code(b))
+      raw_scripts.push(block_to_raw_code(b, lane))
     end
   end
 
-  raw_scripts_by_group.each_value do |s|
-    raw_scripts.push(s)
-  end
+  raw_scripts_by_group.each_value { |s| raw_scripts.push(s) }
+  raw_scripts
+end
 
-  [complete_raw_scripts(raw_scripts), skipped]
+def scripts_of_file(path, scope, lane)
+  doc = Asciidoctor.load_file path, safe: :safe
+
+  source_blocks = doc.find_by style: 'source'
+  file_has_aga = source_blocks.any? { |b| b.attr('language') == 'python' && aga_marked?(b) }
+  # The AGA lane only visits files that document AGA at all.
+  return [[], 0] if lane == :aga && !file_has_aga
+
+  testable_source_blocks = filter_source_blocks(source_blocks, scope, lane, file_has_aga)
+  skipped = source_blocks.count { |b| b.attr('language') == 'python' && b.has_role?('no-test') }
+
+  [complete_raw_scripts(raw_scripts_of_blocks(testable_source_blocks, lane), lane), skipped]
 end
 
 class DocTest < Minitest::Test
-  def run_doc_scripts(scope)
+  def run_doc_scripts(scope, lane = :plugin)
     failures = []
 
-    all_files = doc_files.map { |f| [f, *scripts_of_file(f, scope)] }
+    all_files = doc_files.map { |f| [f, *scripts_of_file(f, scope, lane)] }
     total_skipped = all_files.sum { |entry| entry[2] }
 
     # Only files that actually contain testable snippets, so the progress numbering is contiguous.
@@ -175,7 +280,7 @@ class DocTest < Minitest::Test
 
     log_fully_skipped_files(all_files)
     LOGGER.info(
-      "Running doc tests (scope=#{scope}): #{total} script(s) across #{testable.size} file(s); " \
+      "Running doc tests (scope=#{scope}, lane=#{lane}): #{total} script(s) across #{testable.size} file(s); " \
       "#{total_skipped} code cell(s) skipped"
     )
 
@@ -242,5 +347,12 @@ class DocTest < Minitest::Test
 
   def test_networkx
     run_doc_scripts(:networkx)
+  end
+
+  # Runs the Aura Graph Analytics parts of the manual (AGA tabs, `session` snippets, and
+  # untabbed snippets in AGA files) against a local GDS session started by
+  # scripts/ci/run_doc_tests_aga.py; see doc/README.md for how to run it.
+  def test_aga
+    run_doc_scripts(:aga, :aga)
   end
 end

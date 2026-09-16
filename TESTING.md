@@ -7,7 +7,7 @@ Tests can be found in `graphdatascience/tests`. In each of the folders there, `u
 Please see the section [Specifically for this project](CONTRIBUTING.md#specifically-for-this-project) of our [contribution guidelines](CONTRIBUTING.md) for how to set up an environment for testing and style checking.
 
 > **_NOTE:_** This document does not cover documentation testing.
-> The Python code snippets in the AsciiDoc manual are extracted and executed against a live Neo4j+GDS database via `just test-docs-plugin` (plugin deployment
+> The Python code snippets in the AsciiDoc manual are extracted and executed against a live database via `just test-docs-plugin` (self-managed GDS plugin) and `just test-docs-aga` (local GDS session).
 > See the [documentation README](doc/README.md#testing) for details.
 
 ## Unit testing
