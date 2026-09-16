@@ -100,6 +100,7 @@ class JobsArrowEndpoints:
             "v2/graph.sample.rwr",
             "v2/graph.sample.cnarw",
             "v2/graph.generate",
+            "v2/graph.create.fromTriplets",
         ]
 
         return job_name in projection_endpoints or job_name == graph_name
