@@ -81,7 +81,7 @@ class PredictEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
         """
 
     @abstractmethod

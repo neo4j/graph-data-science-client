@@ -86,7 +86,7 @@ class EncodeEndpoints(ABC):
 
         Returns
         -------
-        DataFrame
+        pandas.DataFrame
         """
 
     @abstractmethod
