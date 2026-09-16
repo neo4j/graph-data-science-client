@@ -15,9 +15,4 @@ Job Handles
 
 .. autoclass:: graphdatascience.procedure_surface.api.write_job_handle.WriteBackResult
 
-.. autoclass:: graphdatascience.procedure_surface.api.write_protocol.WriteProtocol
-    :members:
-
 .. autoclass:: graphdatascience.procedure_surface.api.write_protocol.JobStatus
-
-.. autoclass:: graphdatascience.session.remote_ops.write_protocols.WriteProtocol

@@ -22,6 +22,8 @@ from graphdatascience.procedure_surface.api.node_embedding.config import (
 
 
 class TrainEndpoints(ABC):
+    """Endpoints for training an embedding model, consisting of a graph encoder and a decoder."""
+
     @abstractmethod
     def compute(
         self,
@@ -42,6 +44,8 @@ class TrainEndpoints(ABC):
         feature_properties: list[str],
     ) -> JobHandle:
         """
+        Trains a graph encoder and decoder model on the given graph, returning a job handle instead of blocking on completion.
+
         embeddings.train is a preview feature and may change or be removed in future releases.
 
         Parameters
@@ -100,6 +104,8 @@ class TrainEndpoints(ABC):
         feature_properties: list[str],
     ) -> TrainResult:
         """
+        Trains a graph encoder and decoder model on the given graph and blocks until training completes.
+
         embeddings.train is a preview feature and may change or be removed in future releases.
 
         Parameters

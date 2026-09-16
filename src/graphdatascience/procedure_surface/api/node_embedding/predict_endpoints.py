@@ -14,6 +14,8 @@ from graphdatascience.procedure_surface.api.job_handle import JobHandle
 
 
 class PredictEndpoints(ABC):
+    """Endpoints for running a previously trained model to compute predictions on a graph."""
+
     @abstractmethod
     def compute(
         self,
@@ -27,6 +29,8 @@ class PredictEndpoints(ABC):
         feature_properties: list[str],
     ) -> JobHandle:
         """
+        Runs a previously trained model on the given graph, returning a job handle instead of blocking on completion.
+
         Parameters
         ----------
         G
@@ -62,6 +66,8 @@ class PredictEndpoints(ABC):
         feature_properties: list[str],
     ) -> DataFrame:
         """
+        Runs a previously trained model on the given graph and streams the results as a DataFrame.
+
         Parameters
         ----------
         G
@@ -98,6 +104,8 @@ class PredictEndpoints(ABC):
         feature_properties: list[str],
     ) -> PredictMutateResult:
         """
+        Runs a previously trained model on the given graph and writes the results back to the graph as a node property.
+
         Parameters
         ----------
         G
@@ -135,6 +143,8 @@ class PredictEndpoints(ABC):
         feature_properties: list[str],
     ) -> PredictStatsResult:
         """
+        Runs a previously trained model on the given graph and returns summary statistics of the computation.
+
         Parameters
         ----------
         G
@@ -172,6 +182,8 @@ class PredictEndpoints(ABC):
         feature_properties: list[str],
     ) -> PredictWriteResult:
         """
+        Runs a previously trained model on the given graph and writes the results back to the Neo4j database.
+
         Parameters
         ----------
         G

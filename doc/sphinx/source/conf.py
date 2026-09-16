@@ -51,8 +51,8 @@ autodoc_pydantic_field_show_required = False
 autodoc_pydantic_field_show_optional = False
 autodoc_pydantic_field_show_default = False
 
-# Internal pydantic validator methods are not user-facing API; don't warn when
-# autodoc_pydantic links fields to their (undocumented) validators.
+# Internal plumbing (pydantic validators, the write protocol) is not user-facing
+# API; don't warn when rendered signatures reference it.
 nitpick_ignore = [
     (
         "py:obj",
@@ -66,6 +66,7 @@ nitpick_ignore = [
         "py:obj",
         "graphdatascience.procedure_surface.api.node_embedding.config.GraphSAGEConfig.depth_validator",
     ),
+    ("py:class", "graphdatascience.procedure_surface.api.write_protocol.WriteProtocol"),
 ]
 
 # Remaining nitpicky warnings are bare builtins, pydantic/annotated-types field

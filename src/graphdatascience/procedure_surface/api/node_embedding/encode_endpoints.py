@@ -19,6 +19,8 @@ from graphdatascience.procedure_surface.api.node_embedding.config import (
 
 
 class EncodeEndpoints(ABC):
+    """Endpoints for computing node embeddings using a trained or non-trainable encoder."""
+
     @abstractmethod
     def compute(
         self,
@@ -32,6 +34,8 @@ class EncodeEndpoints(ABC):
         feature_properties: list[str],
     ) -> JobHandle:
         """
+        Computes node embeddings on the given graph, returning a job handle instead of blocking on completion.
+
         Parameters
         ----------
         G
@@ -67,6 +71,8 @@ class EncodeEndpoints(ABC):
         feature_properties: list[str],
     ) -> DataFrame:
         """
+        Computes node embeddings on the given graph and streams them as a DataFrame.
+
         Parameters
         ----------
         G
@@ -103,6 +109,8 @@ class EncodeEndpoints(ABC):
         feature_properties: list[str],
     ) -> EncodeMutateResults:
         """
+        Computes node embeddings on the given graph and writes them back to the graph as a node property.
+
         Parameters
         ----------
         G
@@ -140,6 +148,8 @@ class EncodeEndpoints(ABC):
         feature_properties: list[str],
     ) -> EncodeStatsResult:
         """
+        Computes node embeddings on the given graph and returns summary statistics of the computation.
+
         Parameters
         ----------
         G
@@ -177,6 +187,8 @@ class EncodeEndpoints(ABC):
         feature_properties: list[str],
     ) -> EncodeWriteResult:
         """
+        Computes node embeddings on the given graph and writes them back to the Neo4j database.
+
         Parameters
         ----------
         G
