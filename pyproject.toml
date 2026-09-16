@@ -113,8 +113,6 @@ notebook-ci = [
     "torch-geometric>=2.8.0",
 ]
 
-publish = ["build", "twine"]
-
 # torch-scatter/torch-sparse have no sdist-friendly install: building from source
 # requires a working C++/torch toolchain and fails on many local machines (notably
 # macOS arm64). Instead we pull prebuilt wheels from the PyG wheel index, which ships

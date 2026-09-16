@@ -68,6 +68,11 @@ pre-release:
 post-release-main version="":
     uv run scripts/release_helper/post_release_main.py {{version}}
 
+# Requires UV_PUBLISH_TOKEN (or UV_PUBLISH_USERNAME/PASSWORD) to be set.
+release:
+    uv build
+    uv publish
+
 unit-tests extra_options="":
     uv run --group test pytest tests/unit {{extra_options}}
 
