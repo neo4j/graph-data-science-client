@@ -182,7 +182,6 @@ from graphdatascience.procedure_surface.cypher.topological_link_prediction_cyphe
     TopologicalLinkPredictionCypherEndpoints,
 )
 from graphdatascience.query_runner import QueryRunner
-from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
@@ -256,7 +255,6 @@ class AuraGraphDataScience:
             self._write_protocol = WriteProtocol.select(authenticated_arrow_client, db_query_runner)
         self._session_lifecycle_manager = session_lifecycle_manager
         self._show_progress = show_progress
-        self._db_in_aura: bool | None = None
 
     @property
     def graph(self) -> CatalogArrowEndpoints:
@@ -323,10 +321,7 @@ class AuraGraphDataScience:
         if self._db_query_runner is None:
             raise NotAvailableInStandaloneSessions("Topological link prediction")
 
-        if self._db_in_aura is None:
-            self._db_in_aura = DbEnvironmentResolver.hosted_in_aura(self._db_query_runner)
-
-        if not self._db_in_aura:
+        if not self._db_query_runner.hosted_in_aura:
             raise NotAvailableOutsideAura("Topological link prediction")
 
         return TopologicalLinkPredictionCypherEndpoints(self._db_query_runner)

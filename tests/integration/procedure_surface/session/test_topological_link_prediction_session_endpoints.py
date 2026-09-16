@@ -20,15 +20,12 @@ def gds(
 ) -> Generator[AuraGraphDataScience, None, None]:
     # The aura-dev test image provides the Cypher surface but its kernel version
     # does not end in "aura", so it is not detected as hosted in Aura.
-    with mock.patch(
-        "graphdatascience.query_runner.db_environment_resolver.DbEnvironmentResolver.hosted_in_aura",
-        return_value=True,
-    ):
-        yield AuraGraphDataScience(
-            arrow_client,
-            db_query_runner,
-            session_lifecycle_manager=mock.Mock(spec=SessionLifecycleManager),
-        )
+    db_query_runner.hosted_in_aura = True
+    yield AuraGraphDataScience(
+        arrow_client,
+        db_query_runner,
+        session_lifecycle_manager=mock.Mock(spec=SessionLifecycleManager),
+    )
 
 
 @pytest.fixture

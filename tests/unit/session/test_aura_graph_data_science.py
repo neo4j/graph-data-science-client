@@ -107,8 +107,8 @@ def test_topological_link_prediction_runs_db_cypher(mocker: MockerFixture) -> No
     query_runner = CollectingQueryRunner(
         v, {"gds.session.dbms.protocol.version": DataFrame.from_dict({"version": ["v3"]})}
     )
-    query_runner.add__mock_result("dbms.components", DataFrame({"hostedInAura": [True]}))
     query_runner.add__mock_result("gds.linkprediction.adamicAdar", DataFrame({"score": [1.5]}))
+    query_runner.hosted_in_aura = True
     gds = AuraGraphDataScience(
         mocker.Mock(),
         db_query_runner=query_runner,
@@ -136,7 +136,6 @@ def test_topological_link_prediction_outside_aura_raises(mocker: MockerFixture) 
     query_runner = CollectingQueryRunner(
         v, {"gds.session.dbms.protocol.version": DataFrame.from_dict({"version": ["v3"]})}
     )
-    query_runner.add__mock_result("dbms.components", DataFrame({"hostedInAura": [False]}))
     gds = AuraGraphDataScience(
         mocker.Mock(),
         db_query_runner=query_runner,

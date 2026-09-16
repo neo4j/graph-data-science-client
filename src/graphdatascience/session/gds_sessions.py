@@ -9,7 +9,6 @@ from typing import Any
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
-from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
@@ -239,10 +238,11 @@ class GdsSessions:
                 db_connection.set_uri(aura_db_instance.connection_url)
 
                 db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
+                db_runner.hosted_in_aura = True
             else:
                 db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
 
-                if self._check_hosted_in_aura(db_runner):
+                if db_runner.resolve_hosted_in_aura():
                     warnings.warn(
                         DeprecationWarning(
                             "Deriving the Aura instance from the database URI is deprecated and will be removed in a future release. "
@@ -386,9 +386,6 @@ class GdsSessions:
             )
 
         return matched_sessions[0]
-
-    def _check_hosted_in_aura(self, db_runner: Neo4jQueryRunner) -> bool:
-        return DbEnvironmentResolver.hosted_in_aura(db_runner)
 
     @staticmethod
     def _validate_db_connection(db_runner: Neo4jQueryRunner) -> None:
