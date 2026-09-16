@@ -489,7 +489,7 @@ class GraphDataScience:
         return DegreeCypherEndpoints(self._query_runner)
 
     @property
-    def degree_degree(self) -> DegreeEndpoints:
+    def degree(self) -> DegreeEndpoints:
         """
         Return endpoints for the degree centrality algorithm.
         """

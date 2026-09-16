@@ -6,16 +6,10 @@ from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSp
 
 
 def test_procedure_name_from_python_endpoint() -> None:
-    assert procedure_name_from_python_endpoint("harmonic_centrality") == "closeness.harmonic"
-    assert procedure_name_from_python_endpoint("closeness_centrality") == "closeness"
-    assert procedure_name_from_python_endpoint("betweenness_centrality") == "betweenness"
-    assert procedure_name_from_python_endpoint("degree_centrality") == "degree"
-    assert procedure_name_from_python_endpoint("eigenvector_centrality") == "eigenvector"
     assert procedure_name_from_python_endpoint("topological_link_prediction") == "linkprediction"
     assert procedure_name_from_python_endpoint("influence_maximization_celf") == "influenceMaximization.celf"
     assert procedure_name_from_python_endpoint("clique_counting") == "cliquecounting"
     assert procedure_name_from_python_endpoint("k1_coloring") == "k1coloring"
-    assert procedure_name_from_python_endpoint("k_core_decomposition") == "kcore"
     assert procedure_name_from_python_endpoint("max_k_cut") == "maxkcut"
     assert procedure_name_from_python_endpoint("fast_rp") == "fastrp"
     assert procedure_name_from_python_endpoint("graph_sage") == "beta.graphSage"

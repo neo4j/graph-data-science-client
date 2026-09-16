@@ -461,7 +461,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def degree_degree(self) -> DegreeEndpoints:
+    def degree(self) -> DegreeEndpoints:
         """
         Return endpoints for the degree centrality algorithm.
         """
