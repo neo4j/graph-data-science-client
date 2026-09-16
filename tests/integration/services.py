@@ -430,12 +430,16 @@ def start_plugin_database(
     image: str,
     gds_license_key: Optional[str] = None,
     arrow_enabled: bool = True,
+    arrow_host_port: Optional[int] = None,
 ) -> Generator[Neo4jContainer, None, None]:
     """Start a Neo4j container with the GDS plugin (self-managed/AuraDS-like).
 
-    With a `license_key`, the GDS enterprise license is mounted so enterprise features
+    With a `gds_license_key`, the GDS enterprise license is mounted so enterprise features
     are available; without one, the plugin runs in community mode. With `arrow_enabled`,
-    the server-side GDS Arrow Flight endpoint is enabled and exposed on port 8491.
+    the server-side GDS Arrow Flight endpoint is enabled, listening on 8491 in the
+    container and published on an ephemeral host port — or on `arrow_host_port`, so that
+    the address the server advertises (`0.0.0.0:8491`) is dialable from the Docker host
+    via localhost (clients connect to `0.0.0.0` as if it were loopback).
     """
     db_logs_dir = logs_dir / log_name / "gds_plugin_db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
@@ -454,11 +458,13 @@ def start_plugin_database(
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
     if arrow_enabled:
-        neo4j_container = (
-            neo4j_container.with_env("NEO4J_gds_arrow_enabled", "true")
-            .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
-            .with_exposed_ports(8491)
+        neo4j_container = neo4j_container.with_env("NEO4J_gds_arrow_enabled", "true").with_env(
+            "NEO4J_gds_arrow_listen__address", "0.0.0.0:8491"
         )
+        if arrow_host_port is not None:
+            neo4j_container = neo4j_container.with_bind_ports(8491, arrow_host_port)
+        else:
+            neo4j_container = neo4j_container.with_exposed_ports(8491)
     for key, value in neo4j_memory_envs().items():
         neo4j_container = neo4j_container.with_env(key, value)
 
