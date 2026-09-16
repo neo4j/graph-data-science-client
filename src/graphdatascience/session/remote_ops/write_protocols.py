@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import logging
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import Any
 
 from pandas import Series
@@ -10,6 +8,8 @@ from tenacity import Retrying, retry_if_exception, stop_after_attempt, wait_fixe
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.call_parameters import CallParameters
+from graphdatascience.procedure_surface.api.write_protocol import JobStatus as JobStatus
+from graphdatascience.procedure_surface.api.write_protocol import WriteProtocol as WriteProtocolBase
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
@@ -21,19 +21,7 @@ from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
 from graphdatascience.session.remote_ops.status import Status
 
 
-@dataclass(frozen=True)
-class JobStatus:
-    """Protocol-agnostic snapshot of a write-back job's state."""
-
-    done: bool
-    status: str
-    progress: float
-    written_node_properties: int
-    written_node_labels: int
-    written_relationships: int
-
-
-class WriteProtocol(ABC):
+class WriteProtocol(WriteProtocolBase):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
@@ -41,22 +29,6 @@ class WriteProtocol(ABC):
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-
-    @abstractmethod
-    def start_job(
-        self,
-        graph_name: str,
-        job_id: str,
-        concurrency: int | None = None,
-        property_overwrites: dict[str, str] | None = None,
-        relationship_type_overwrite: str | None = None,
-        log_progress: bool = True,
-    ) -> None:
-        """Initial call to start the write-back job. No-op for protocols that combine start+poll."""
-
-    @abstractmethod
-    def get_status(self, job_id: str) -> JobStatus:
-        """Fetch the current state of the write-back job and normalize it."""
 
     @staticmethod
     def select(

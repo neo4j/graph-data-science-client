@@ -10,6 +10,12 @@ __all__ = ["EmbeddingsEndpoints"]
 
 
 class EmbeddingsEndpoints(ABC):
+    """
+    Endpoints for training, predicting, and encoding node embeddings.
+
+    The embeddings API is a preview feature and may change or be removed in future releases.
+    """
+
     @property
     @abstractmethod
     def train(self) -> TrainEndpoints:

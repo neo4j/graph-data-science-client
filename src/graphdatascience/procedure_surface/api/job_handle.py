@@ -11,10 +11,10 @@ from graphdatascience.arrow_client.v2.job_client import JobClient
 from graphdatascience.graph import Graph
 from graphdatascience.procedure_surface.api.job_not_finished_error import JobNotFinishedError
 from graphdatascience.procedure_surface.api.write_job_handle import WriteJobHandle
+from graphdatascience.procedure_surface.api.write_protocol import WriteProtocol
 from graphdatascience.procedure_surface.arrow.mutation_runner import MutationRunner
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import apply_stream_mapper
 from graphdatascience.query_runner.termination_flag import TerminationFlag
-from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
 class JobHandle:
