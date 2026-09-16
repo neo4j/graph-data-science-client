@@ -426,6 +426,13 @@ class GraphDataScience:
         return BetweennessCypherEndpoints(self._query_runner)
 
     @property
+    def betweenness(self) -> BetweennessEndpoints:
+        """
+        Return endpoints for the betweenness centrality algorithm.
+        """
+        return self.betweenness_centrality
+
+    @property
     def bridges(self) -> BridgesEndpoints:
         """
         Return endpoints for the bridges algorithm.
@@ -461,6 +468,13 @@ class GraphDataScience:
         return ClosenessCypherEndpoints(self._query_runner)
 
     @property
+    def closeness(self) -> ClosenessEndpoints:
+        """
+        Return endpoints for the closeness centrality algorithm.
+        """
+        return self.closeness_centrality
+
+    @property
     def dag(self) -> DagCypherEndpoints:
         """
         Return endpoints for Directed Acyclic Graph (DAG) algorithms.
@@ -475,11 +489,25 @@ class GraphDataScience:
         return DegreeCypherEndpoints(self._query_runner)
 
     @property
+    def degree_degree(self) -> DegreeEndpoints:
+        """
+        Return endpoints for the degree centrality algorithm.
+        """
+        return self.degree_centrality
+
+    @property
     def eigenvector_centrality(self) -> EigenvectorEndpoints:
         """
         Return endpoints for the eigenvector centrality algorithm.
         """
         return EigenvectorCypherEndpoints(self._query_runner)
+
+    @property
+    def eigenvector(self) -> EigenvectorEndpoints:
+        """
+        Return endpoints for the eigenvector centrality algorithm.
+        """
+        return self.eigenvector_centrality
 
     @property
     def fast_rp(self) -> FastRPEndpoints:
@@ -512,6 +540,13 @@ class GraphDataScience:
         Return endpoints for the harmonic centrality algorithm.
         """
         return ClosenessHarmonicCypherEndpoints(self._query_runner)
+
+    @property
+    def harmonic(self) -> ClosenessHarmonicEndpoints:
+        """
+        Return endpoints for the harmonic centrality algorithm.
+        """
+        return self.harmonic_centrality
 
     @property
     def hash_gnn(self) -> HashGNNEndpoints:
@@ -547,6 +582,13 @@ class GraphDataScience:
         Return endpoints for the K-core decomposition algorithm.
         """
         return KCoreCypherEndpoints(self._query_runner)
+
+    @property
+    def kcore(self) -> KCoreEndpoints:
+        """
+        Return endpoints for the K-core decomposition algorithm.
+        """
+        return self.k_core_decomposition
 
     @property
     def kmeans(self) -> KMeansEndpoints:
