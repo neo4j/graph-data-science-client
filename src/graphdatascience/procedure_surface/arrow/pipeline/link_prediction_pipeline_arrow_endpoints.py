@@ -4,7 +4,7 @@ from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize_single
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
+from graphdatascience.procedure_surface.api.pipeline import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import (
     LinkPredictionPipeline,
 )

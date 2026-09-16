@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.procedure_surface.api.model.link_prediction_model import LinkPredictionModel
+from graphdatascience.procedure_surface.api.pipeline import LinkPredictionModel
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline import LinkPredictionPipeline
 from graphdatascience.procedure_surface.api.pipeline.link_prediction_pipeline_endpoints import (
     LinkPredictionPipelineEndpoints,
