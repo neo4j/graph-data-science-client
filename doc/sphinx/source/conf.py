@@ -53,6 +53,8 @@ autodoc_pydantic_field_show_default = False
 
 # Internal pydantic validator methods are not user-facing API; don't warn when
 # autodoc_pydantic links fields to their (undocumented) validators.
+# `DataFrame` is a bare external type annotation that autodoc renders unqualified
+# and thus cannot cross-reference against the pandas intersphinx inventory.
 nitpick_ignore = [
     (
         "py:obj",
@@ -62,12 +64,20 @@ nitpick_ignore = [
         "py:obj",
         "graphdatascience.procedure_surface.api.catalog.relationships_endpoints.RelationshipsWriteResult.coerce_relationship_properties",
     ),
+    (
+        "py:obj",
+        "graphdatascience.procedure_surface.api.node_embedding.config.GraphSAGEConfig.depth_validator",
+    ),
+    ("py:class", "DataFrame"),
 ]
 
-# Remaining nitpicky warnings are bare builtins / prose tokens that napoleon
-# mis-reads as type cross-references
+# Remaining nitpicky warnings are bare builtins, pydantic/annotated-types field
+# metadata, and prose tokens that napoleon mis-reads as type cross-references
 nitpick_ignore_regex = [
-    ("py:class", r"^(1\.0|0\.0|=|bool|None|datetime|timedelta|None = None|bool = False)$"),
+    (
+        "py:class",
+        r"^(1\.0|0\.0|=|bool|None|datetime|timedelta|None = None|bool = False|(annotated_types\.)?(Gt|Ge|Lt|Len)|FieldInfo|NoneType)$",
+    ),
 ]
 
 # -- Options for HTML output -------------------------------------------------
