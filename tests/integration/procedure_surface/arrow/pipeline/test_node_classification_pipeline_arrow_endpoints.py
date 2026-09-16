@@ -105,6 +105,9 @@ def test_node_classification_train_and_predict_write(
             target_property="target",
         )
 
+        model2 = endpoints.get_model(model_name)
+        assert model2.name() == model.name()
+
         assert train_result.train_millis is not None
         assert train_result.train_millis >= 0
         assert model.exists()

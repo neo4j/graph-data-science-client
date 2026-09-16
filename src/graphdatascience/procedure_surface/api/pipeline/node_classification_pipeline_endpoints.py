@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
+from graphdatascience.procedure_surface.api.model.node_classification_model import NodeClassificationModel
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline import NodeClassificationPipeline
 from graphdatascience.procedure_surface.api.pipeline.node_classification_pipeline_results import (
     NodeClassificationPipelineInfoResult,
@@ -59,6 +60,25 @@ class NodeClassificationPipelineEndpoints(ABC):
         -------
         NodeClassificationPipeline
             The reconstructed pipeline object.
+        """
+        pass
+
+    @abstractmethod
+    def get_model(self, model_name: str) -> NodeClassificationModel:
+        """
+        Retrieve an existing node classification model by name.
+
+        Returns the same model object as the ``train`` method of a node classification pipeline.
+
+        Parameters
+        ----------
+        model_name
+            Name of the model.
+
+        Returns
+        -------
+        NodeClassificationModel
+            The reconstructed model object.
         """
         pass
 

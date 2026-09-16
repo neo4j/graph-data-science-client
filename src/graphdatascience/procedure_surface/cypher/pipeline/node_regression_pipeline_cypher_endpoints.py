@@ -35,6 +35,7 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
         self._pipeline_catalog: PipelineCatalogProtocol = PipelineCatalogCypherEndpoints(query_runner)
+        self._model_catalog = ModelCatalogCypherEndpoints(query_runner)
         self._predict = NodeRegressionPredictCypherEndpoints(query_runner)
 
     @property
@@ -59,6 +60,16 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
             self,
             self,
             self._pipeline_catalog,
+        )
+
+    def get_model(self, model_name: str) -> NodeRegressionModel:
+        details = self._model_catalog.get(model_name)
+        if details.model_type != "NodeRegression":
+            raise ValueError(f"Model '{model_name}' is not a node regression model")
+        return NodeRegressionModel(
+            details.model_name,
+            self._model_catalog,
+            predict_endpoints=self._predict,
         )
 
     def add_node_property(self, pipeline_name: str, task_name: str, **config: Any) -> NodeRegressionPipelineInfoResult:
@@ -215,7 +226,7 @@ class NodeRegressionPipelineCypherEndpoints(NodeRegressionPipelineEndpoints):
         return (
             NodeRegressionModel(
                 name=model_name,
-                catalog=ModelCatalogCypherEndpoints(self._query_runner),
+                catalog=self._model_catalog,
                 predict_endpoints=self._predict,
             ),
             NodeRegressionPipelineTrainResult(**result),

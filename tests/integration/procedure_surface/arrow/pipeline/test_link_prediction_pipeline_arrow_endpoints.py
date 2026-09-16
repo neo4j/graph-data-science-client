@@ -97,6 +97,10 @@ def test_link_prediction_train_and_predict_stream(
             target_node_label="Node",
             target_relationship_type="REL_UNDIRECTED",
         )
+
+        model2 = endpoints.get_model(model_name)
+        assert model2.name() == model.name()
+
         stream_result = model.predict_stream(
             sample_graph,
             source_node_label="Node",
