@@ -381,6 +381,13 @@ class AuraGraphDataScience:
         )
 
     @property
+    def betweenness(self) -> BetweennessEndpoints:
+        """
+        Return endpoints for the betweenness centrality algorithm.
+        """
+        return self.betweenness_centrality
+
+    @property
     def bridges(self) -> BridgesEndpoints:
         """
         Return endpoints for the bridges algorithm.
@@ -431,6 +438,13 @@ class AuraGraphDataScience:
         )
 
     @property
+    def closeness(self) -> ClosenessEndpoints:
+        """
+        Return endpoints for the closeness centrality algorithm.
+        """
+        return self.closeness_centrality
+
+    @property
     def dag(self) -> DagEndpoints:
         """
         Return endpoints for Directed Acyclic Graph (DAG) algorithms.
@@ -447,6 +461,13 @@ class AuraGraphDataScience:
         )
 
     @property
+    def degree(self) -> DegreeEndpoints:
+        """
+        Return endpoints for the degree centrality algorithm.
+        """
+        return self.degree_centrality
+
+    @property
     def eigenvector_centrality(self) -> EigenvectorEndpoints:
         """
         Return endpoints for the eigenvector centrality algorithm.
@@ -454,6 +475,13 @@ class AuraGraphDataScience:
         return EigenvectorArrowEndpoints(
             self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
         )
+
+    @property
+    def eigenvector(self) -> EigenvectorEndpoints:
+        """
+        Return endpoints for the eigenvector centrality algorithm.
+        """
+        return self.eigenvector_centrality
 
     @property
     def embeddings(self) -> EmbeddingsEndpoints:
@@ -507,6 +535,13 @@ class AuraGraphDataScience:
         )
 
     @property
+    def harmonic(self) -> ClosenessHarmonicEndpoints:
+        """
+        Return endpoints for the harmonic centrality algorithm.
+        """
+        return self.harmonic_centrality
+
+    @property
     def hash_gnn(self) -> HashGNNEndpoints:
         """
         Return endpoints for the HashGNN algorithm.
@@ -550,6 +585,13 @@ class AuraGraphDataScience:
         return KCoreArrowEndpoints(
             self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
         )
+
+    @property
+    def kcore(self) -> KCoreEndpoints:
+        """
+        Return endpoints for the K-core decomposition algorithm.
+        """
+        return self.k_core_decomposition
 
     @property
     def kmeans(self) -> KMeansEndpoints:

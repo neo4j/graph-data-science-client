@@ -2,15 +2,9 @@ from typing import OrderedDict
 
 PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS = OrderedDict(
     [
-        ("closeness.harmonic", "harmonic_centrality"),
-        ("closeness", "closeness_centrality"),
-        ("betweenness", "betweenness_centrality"),
-        ("degree", "degree_centrality"),
-        ("eigenvector", "eigenvector_centrality"),
         ("linkprediction", "topological_link_prediction"),
         ("influenceMaximization.celf", "influence_maximization_celf"),
         ("k1coloring", "k1_coloring"),
-        ("kcore", "k_core_decomposition"),
         ("maxkcut", "max_k_cut"),
         ("beta.graphSage", "graph_sage"),
         ("ml.kge.predict", "kge.predict"),

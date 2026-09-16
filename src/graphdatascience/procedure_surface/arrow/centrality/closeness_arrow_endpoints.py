@@ -10,9 +10,13 @@ from graphdatascience.procedure_surface.api.centrality.closeness_endpoints impor
     ClosenessStatsResult,
     ClosenessWriteResult,
 )
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
+from graphdatascience.procedure_surface.arrow.centrality.closeness_harmonic_arrow_endpoints import (
+    ClosenessHarmonicArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
@@ -26,9 +30,16 @@ class ClosenessArrowEndpoints(ClosenessEndpoints):
         write_protocol: WriteProtocol | None = None,
         show_progress: bool = True,
     ):
+        self._arrow_client = arrow_client
+        self._write_protocol = write_protocol
+        self._show_progress = show_progress
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol, show_progress=show_progress
         )
+
+    @property
+    def harmonic(self) -> ClosenessHarmonicEndpoints:
+        return ClosenessHarmonicArrowEndpoints(self._arrow_client, self._write_protocol, self._show_progress)
 
     def compute(
         self,

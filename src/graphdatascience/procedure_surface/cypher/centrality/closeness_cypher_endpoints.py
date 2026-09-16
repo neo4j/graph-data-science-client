@@ -10,8 +10,12 @@ from graphdatascience.procedure_surface.api.centrality.closeness_endpoints impor
     ClosenessStatsResult,
     ClosenessWriteResult,
 )
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
+from graphdatascience.procedure_surface.cypher.centrality.closeness_harmonic_cypher_endpoints import (
+    ClosenessHarmonicCypherEndpoints,
+)
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
@@ -22,6 +26,10 @@ class ClosenessCypherEndpoints(ClosenessEndpoints):
 
     def __init__(self, query_runner: QueryRunner):
         self._query_runner = query_runner
+
+    @property
+    def harmonic(self) -> ClosenessHarmonicEndpoints:
+        return ClosenessHarmonicCypherEndpoints(self._query_runner)
 
     def mutate(
         self,

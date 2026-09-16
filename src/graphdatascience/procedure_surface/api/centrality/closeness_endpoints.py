@@ -7,11 +7,20 @@ from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 
 
 class ClosenessEndpoints(ABC):
+    @property
+    @abstractmethod
+    def harmonic(self) -> ClosenessHarmonicEndpoints:
+        """
+        Return endpoints for the harmonic centrality algorithm, a variant of closeness centrality.
+        """
+        pass
+
     @abstractmethod
     def mutate(
         self,
