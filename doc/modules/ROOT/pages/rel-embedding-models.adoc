@@ -154,7 +154,7 @@ Part of this will be having a `Graph` which represents a projection containing K
 
 So we start by introducing a small road-network graph with some inhabitants:
 
-[source,python,group=transe-model,min-server-version=2.5.0]
+[source,python,group=transe-model,min-server-version=2.5.0,plugin=true]
 ----
 gds.run_cypher(
   """
@@ -202,7 +202,7 @@ The `"emb"` node property here contains the TransE node embeddings we will use i
 
 Using our graph `G` and our precomputed relationship type embeddings we can now construct a TransE relationship embedding model.
 
-[source,python,group=transe-model,min-server-version=2.5.0]
+[source,python,group=transe-model,min-server-version=2.5.0,plugin=true]
 ----
 transe_model = gds.kge.transe(
     G,
@@ -224,7 +224,7 @@ With our model created we can start predicting new relationships of our graphs.
 
 Let's have our model predict where our three inhabitants of interest might be likely to move in the future, and mutate our GDS projection represented by `G` with these new relationships.
 
-[source,python,group=transe-model,min-server-version=2.5.0]
+[source,python,group=transe-model,min-server-version=2.5.0,plugin=true]
 ----
 result = transe_model.predict_mutate(
     source_node_filter="Person",

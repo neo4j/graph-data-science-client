@@ -178,7 +178,7 @@ gds = sessions.get_or_create(
 
 To check the connection setup between the client and the Aura Graph Analytics session, you can use:
 
-[source, python, role=no-test]
+[source, python, session=true]
 ----
 gds.verify_connectivity()
 ----
@@ -316,6 +316,30 @@ Once you have a GDS Session, you can project a graph into it.
 Aura Graph Analytics offers two projection methods when connected to a Neo4j databases: `Native projections` and `Cypher projections`.
 For more detailed information about projections see xref:graph-object.adoc#projection[Graph Projection].
 
+[NOTE]
+Only numeric node properties can be projected into a GDS Session.
+String properties such as `name` can instead be included when streaming results back, via the `db_node_properties` parameter (see xref:read-graph.adoc#graph-object-streaming-db-properties[Include node properties from Neo4j]).
+
+The following query creates an example graph in the Neo4j database, used by the examples on this page.
+
+[source, python, session=true, group=aga-examples]
+----
+gds.run_cypher(
+    """
+    CREATE
+      (anne: User {name: "Anne"}),
+      (bill: User {name: "Bill"}),
+      (catie: User {name: "Catie"}),
+      (phone: Product {cost: 549}),
+      (laptop: Product {cost: 1299}),
+      (anne)-[:KNOWS]->(bill),
+      (bill)-[:KNOWS]->(catie),
+      (anne)-[:BOUGHT]->(phone),
+      (bill)-[:BOUGHT]->(laptop)
+    """
+)
+----
+
 
 === Native projections
 
@@ -345,13 +369,13 @@ You can use the wildcard +*+ in the `node_label_filter` or `relationship_type_fi
 
 
 .Example:
-[source, python, role=no-test]
+[source, python, session=true, group=aga-examples]
 ----
 G, result = gds.graph.project.native(
     graph_name="my_native_graph",
-    node_label_filter=["Person", "Movie"],
-    relationship_type_filter=["ACTED_IN", "DIRECTED"],
-    node_properties=["age", "rating"]
+    node_label_filter=["User", "Product"],
+    relationship_type_filter=["KNOWS", "BOUGHT"],
+    node_properties=["cost"]
 )
 ----
 
@@ -375,8 +399,9 @@ gds.graph.project.cypher(
 ): GraphWithProjectResult
 ----
 
+
 .Example:
-[source, python, role=no-test]
+[source, python, session=true, group=aga-examples]
 ----
 G, result = gds.graph.project.cypher(
     graph_name="my-graph",
@@ -409,13 +434,13 @@ You can run algorithms on a remotely projected graph in the same way you would o
 For instance, you can run the PageRank and FastRP algorithms on the projected graph from the previous example as follows:
 
 .Run algorithms and stream back results:
-[source,python,role=no-test]
+[source,python,session=true,group=aga-examples]
 ----
-gds.pageRank.mutate(G, mutate_property="pr")
-gds.fastRP.mutate(G, feature_properties=["pr"], embedding_dimension=2, node_self_influence=0.1, mutate_property="embedding")
+gds.page_rank.mutate(G, mutate_property="pr")
+gds.fast_rp.mutate(G, feature_properties=["pr"], embedding_dimension=2, node_self_influence=0.1, mutate_property="embedding")
 
 # Stream the results back together with the `name` property fetched from the database
-gds.graph.nodeProperties.stream(G, node_properties=["pr", "embedding"], db_node_properties=["name"])
+gds.graph.node_properties.stream(G, node_properties=["pr", "embedding"], db_node_properties=["name"])
 ----
 
 For a full list of the available algorithms, see the link:{neo4j-docs-base-uri}/graph-data-science-client/{page-version}/api/plugin/algorithms[API reference].
@@ -473,16 +498,16 @@ gds.<algo>.write(
 Extending the previous example, we can write back the FastRP embeddings to the Neo4j DB as follows:
 
 .Write mutated FastRP embeddings back to the database:
-[source,python,role=no-test]
+[source,python,session=true,group=aga-examples]
 ----
-gds.graph.nodeProperties.write(G, "embedding")
+gds.graph.node_properties.write(G, "embedding")
 ----
 
 If we want to tune the performance of the write-back, we can configure `batchSize` and `concurrency`.
 In this example we show how to do this with an algorithm `.write` mode:
 
 .Compute WCC and write the component ids back as node properties, with custom concurrency configuration:
-[source,python,role=no-test]
+[source,python,session=true,group=aga-examples]
 ----
 gds.wcc.write(
   G,
@@ -501,7 +526,7 @@ NOTE: If you want to use Cypher to operate Aura Graph Analytics use the {neo4j-d
 
 
 .Run a Cypher query to find our written-back embeddings:
-[source,python,role=no-test]
+[source,python,session=true,group=aga-examples]
 ----
 gds.run_cypher("MATCH (n:User) RETURN n.name, n.embedding")
 ----

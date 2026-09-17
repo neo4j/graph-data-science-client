@@ -85,10 +85,62 @@ gds.run_cypher(
     (e)-[:KNOWS]->(f)
   """
 )
-G, project_result = gds.graph.project.native("person_graph", {"Person": {"properties": ["fraudster"]}}, "KNOWS")
+----
+
+[.tabbed-example]
+====
+[.include-with-GDS-database-plugin]
+=====
+[source,python,group=nc-pipe]
+-----
+G, project_result = gds.graph.project.cypher(
+    query="""
+    MATCH (p:Person)-[r:KNOWS]->(q:Person)
+    RETURN gds.graph.project(
+        'person_graph',
+        p,
+        q,
+        {
+            sourceNodeProperties: { fraudster: p.fraudster },
+            targetNodeProperties: { fraudster: q.fraudster },
+            sourceNodeLabels: labels(p),
+            targetNodeLabels: labels(q),
+            relationshipType: type(r)
+        }
+    )
+    """
+)
 
 assert G.node_labels() == ["Person"]
-----
+-----
+=====
+
+[.include-with-Aura-Graph-Analytics]
+=====
+[source,python,group=nc-pipe]
+-----
+G, project_result = gds.graph.project.cypher(
+    graph_name="person_graph",
+    query="""
+    MATCH (p:Person)-[r:KNOWS]->(q:Person)
+    RETURN gds.graph.project.remote(
+        p,
+        q,
+        {
+            sourceNodeProperties: { fraudster: p.fraudster },
+            targetNodeProperties: { fraudster: q.fraudster },
+            sourceNodeLabels: labels(p),
+            targetNodeLabels: labels(q),
+            relationshipType: type(r)
+        }
+    )
+    """
+)
+
+assert G.node_labels() == ["Person"]
+-----
+=====
+====
 
 [source,python,group=nc-pipe]
 ----
@@ -152,7 +204,7 @@ We now continue the xref:pipelines.adoc#pipelines-nodeclassification-pipe-exampl
 metrics = fraud_model.metrics()
 assert "ACCURACY" in metrics
 
-H, project_result = gds.graph.project.native("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
+H, project_result = gds.graph.project.native("full_person_graph", ["Person", "UnknownPerson"], ["KNOWS"])
 
 # Predict on `H` and stream the results with a specific concurrency of 2
 predictions = fraud_model.predict_stream(H, concurrency=2)
@@ -233,10 +285,60 @@ gds.run_cypher(
     (e)-[:KNOWS]->(f)
   """
 )
-G, project_result = gds.graph.project.native("person_graph", "Person", {"KNOWS": {"orientation":"UNDIRECTED"}})
+----
+
+[.tabbed-example]
+====
+[.include-with-GDS-database-plugin]
+=====
+[source,python,group=lp-pipe]
+-----
+G, project_result = gds.graph.project.cypher(
+    query="""
+    MATCH (p:Person)-[r:KNOWS]->(q:Person)
+    RETURN gds.graph.project(
+        'person_graph',
+        p,
+        q,
+        {
+            sourceNodeLabels: labels(p),
+            targetNodeLabels: labels(q),
+            relationshipType: type(r)
+        },
+        { undirectedRelationshipTypes: ["KNOWS"] }
+    )
+    """
+)
 
 assert G.relationship_types() == ["KNOWS"]
-----
+-----
+=====
+
+[.include-with-Aura-Graph-Analytics]
+=====
+[source,python,group=lp-pipe]
+-----
+G, project_result = gds.graph.project.cypher(
+    graph_name="person_graph",
+    query="""
+    MATCH (p:Person)-[r:KNOWS]->(q:Person)
+    RETURN gds.graph.project.remote(
+        p,
+        q,
+        {
+            sourceNodeLabels: labels(p),
+            targetNodeLabels: labels(q),
+            relationshipType: type(r)
+        }
+    )
+    """,
+    undirected_relationship_types=["KNOWS"]
+)
+
+assert G.relationship_types() == ["KNOWS"]
+-----
+=====
+====
 
 
 [source,python,group=lp-pipe]
@@ -379,10 +481,62 @@ gds.run_cypher(
     (e)-[:KNOWS]->(f)
   """
 )
-G, project_result = gds.graph.project.native("person_graph", {"Person": {"properties": ["age"]}}, "KNOWS")
+----
+
+[.tabbed-example]
+====
+[.include-with-GDS-database-plugin]
+=====
+[source,python,group=nr-pipe]
+-----
+G, project_result = gds.graph.project.cypher(
+    query="""
+    MATCH (p:Person)-[r:KNOWS]->(q:Person)
+    RETURN gds.graph.project(
+        'person_graph',
+        p,
+        q,
+        {
+            sourceNodeProperties: { age: p.age },
+            targetNodeProperties: { age: q.age },
+            sourceNodeLabels: labels(p),
+            targetNodeLabels: labels(q),
+            relationshipType: type(r)
+        }
+    )
+    """
+)
 
 assert G.relationship_types() == ["KNOWS"]
-----
+-----
+=====
+
+[.include-with-Aura-Graph-Analytics]
+=====
+[source,python,group=nr-pipe]
+-----
+G, project_result = gds.graph.project.cypher(
+    graph_name="person_graph",
+    query="""
+    MATCH (p:Person)-[r:KNOWS]->(q:Person)
+    RETURN gds.graph.project.remote(
+        p,
+        q,
+        {
+            sourceNodeProperties: { age: p.age },
+            targetNodeProperties: { age: q.age },
+            sourceNodeLabels: labels(p),
+            targetNodeLabels: labels(q),
+            relationshipType: type(r)
+        }
+    )
+    """
+)
+
+assert G.relationship_types() == ["KNOWS"]
+-----
+=====
+====
 
 [source,python,group=nr-pipe]
 ----
@@ -447,7 +601,7 @@ Suppose that we have a new graph `H` that we want to run predictions on.
 metrics = age_predictor.metrics()
 assert "MEAN_SQUARED_ERROR" in metrics
 
-H, project_result = gds.graph.project.native("full_person_graph", ["Person", "UnknownPerson"], "KNOWS")
+H, project_result = gds.graph.project.native("full_person_graph", ["Person", "UnknownPerson"], ["KNOWS"])
 
 # Predict on `H` and stream the results with a specific concurrency of 2
 predictions = age_predictor.predict_stream(H, concurrency=2)

@@ -1,6 +1,8 @@
 import logging
 import os
+import shutil
 import socket
+import tempfile
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
@@ -158,9 +160,7 @@ def _remove_spawned_runtime_containers(network: Network, image: str) -> None:
             LOGGER.warning(f"Failed to remove spawned python-runtime container {container.id[:12]}: {e}")
 
 
-def start_runtime_api(
-    logs_dir: Path, network: Network, request: pytest.FixtureRequest, models_dir: Path
-) -> Generator[str, None, None]:
+def start_runtime_api(logs_dir: Path, network: Network, log_name: str, models_dir: Path) -> Generator[str, None, None]:
     """Start the mock python-runtime API container.
 
     The GDS session talks to this API to spawn python-runtime containers for endpoints such as FastPath.
@@ -195,7 +195,7 @@ def start_runtime_api(
         .waiting_for(LogMessageWaitStrategy("Application startup complete."))
     )
 
-    log_file = logs_dir / request.node.name / "runtime_api_container.log"
+    log_file = logs_dir / log_name / "runtime_api_container.log"
     with running_container(runtime_api_container, log_file, "runtime api"):
         try:
             # The session reaches the runtime API over the shared network by its alias.
@@ -214,7 +214,7 @@ MOCK_GDS_API_NETWORK_ALIAS = "mock-gds-api"
 MOCK_GDS_API_PORT = 8000
 
 
-def start_gds_api(logs_dir: Path, network: Network, request: pytest.FixtureRequest) -> Generator[str, None, None]:
+def start_gds_api(logs_dir: Path, network: Network, log_name: str) -> Generator[str, None, None]:
     """Start the mock GDS API container.
     The session routes model-catalog operations (createModel / listModels / deleteModel /
     publish) to this API
@@ -241,7 +241,7 @@ def start_gds_api(logs_dir: Path, network: Network, request: pytest.FixtureReque
         .waiting_for(HttpWaitStrategy(MOCK_GDS_API_PORT, path="/health"))
     )
 
-    log_file = logs_dir / request.node.name / "gds_api_container.log"
+    log_file = logs_dir / log_name / "gds_api_container.log"
     with running_container(gds_api_container, log_file, "gds api"):
         # The session reaches the GDS API over the shared network by its alias.
         yield f"http://{alias}:{MOCK_GDS_API_PORT}"
@@ -263,7 +263,7 @@ def start_session(
     logs_dir: Path,
     model_dir: Path,
     network: Network,
-    request: pytest.FixtureRequest,
+    log_name: str,
     gds_api_uri: str,
     runtime_api_uri: Optional[str] = None,
     session_alias: str = DEFAULT_SESSION_ALIAS,
@@ -308,7 +308,7 @@ def start_session(
     # (store / load / delete / publish) route there instead of the Aura app-ingress.
     session_container = session_container.with_env("GDS_API_URL", gds_api_uri)
     session_container = session_container.with_network(network).with_network_aliases(session_alias)
-    log_file = logs_dir / request.node.name / f"session_container_{session_alias}.log"
+    log_file = logs_dir / log_name / f"session_container_{session_alias}.log"
     with running_container(session_container, log_file, "session"):
         # When the test process itself is attached to the test network (CI),
         # reach the session by its alias + internal port. Otherwise we are
@@ -365,7 +365,7 @@ def neo4j_memory_envs() -> dict[str, str]:
 
 
 def start_database(
-    logs_dir: Path, network: Network, request: pytest.FixtureRequest, db_alias: str = "neo4j-db"
+    logs_dir: Path, network: Network, log_name: str, db_alias: str = "neo4j-db"
 ) -> Generator[DbmsConnectionInfo, None, None]:
     default_neo4j_image = (
         f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
@@ -374,7 +374,7 @@ def start_database(
 
     advertise_address = db_alias if inside_ci() else "localhost"
 
-    db_logs_dir = logs_dir / request.node.name / "neo4j_db_logs"
+    db_logs_dir = logs_dir / log_name / "neo4j_db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
     db_container = (
@@ -423,59 +423,87 @@ def create_db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Ne
 # --------------------------------------------------------------------------- #
 
 
-def start_gds_plugin_database(
-    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
+def start_plugin_database(
+    logs_dir: Path,
+    log_name: str,
+    models_dir: Path,
+    image: str,
+    gds_license_key: Optional[str] = None,
+    arrow_enabled: bool = True,
 ) -> Generator[Neo4jContainer, None, None]:
-    neo4j_image = os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise")
+    """Start a Neo4j container with the GDS plugin (self-managed/AuraDS-like).
 
-    dotenv.load_dotenv(Path(__file__).parent.parent / "test.env", override=True)
-    GDS_LICENSE_KEY = os.getenv("GDS_LICENSE_KEY")
-
-    if GDS_LICENSE_KEY is None:
-        raise ValueError("Trying to start a Plugin database, but no GDS_LICENSE_KEY environment variable was set")
-
-    db_logs_dir = logs_dir / request.node.name / "gds_plugin_db_logs"
+    With a `gds_license_key`, the GDS enterprise license is mounted so enterprise features
+    are available; without one, the plugin runs in community mode. With `arrow_enabled`,
+    the server-side GDS Arrow Flight endpoint is enabled, listening on 8491 in the
+    container and published on an ephemeral host port. Note that the address the server
+    advertises (`0.0.0.0:8491`) is only reachable from inside the container; clients
+    outside need the mapped host port (`get_exposed_port(8491)`) explicitly.
+    """
+    db_logs_dir = logs_dir / log_name / "gds_plugin_db_logs"
     db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
 
-    models_dir = tmp_path_factory.mktemp("models")
-    models_dir.chmod(0o777)
-
     neo4j_container = (
         Neo4jContainer(
-            image=neo4j_image,
+            image=image,
         )
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_PLUGINS", '["graph-data-science"]')
-        .with_env("NEO4J_gds_arrow_enabled", "true")
-        .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
         .with_env("NEO4J_gds_model_store__location", "/models")
         .with_env("NEO4J_gds_export_location", "/exports")
-        .with_exposed_ports(8491)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
         .with_volume_mapping(models_dir, "/models", mode="rw")
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
+    if arrow_enabled:
+        neo4j_container = (
+            neo4j_container.with_env("NEO4J_gds_arrow_enabled", "true")
+            .with_env("NEO4J_gds_arrow_listen__address", "0.0.0.0:8491")
+            .with_exposed_ports(8491)
+        )
     for key, value in neo4j_memory_envs().items():
         neo4j_container = neo4j_container.with_env(key, value)
 
-    license_dir = tmp_path_factory.mktemp("gds_license")
-    license_dir.chmod(0o755)
-    license_file = os.path.join(license_dir, "license_key")
-    with open(license_file, "w") as f:
-        f.write(GDS_LICENSE_KEY)
+    license_dir: Optional[Path] = None
+    if gds_license_key is not None:
+        license_dir = Path(tempfile.mkdtemp(prefix="gds_license_"))
+        license_dir.chmod(0o755)
+        (license_dir / "license_key").write_text(gds_license_key)
+        neo4j_container = neo4j_container.with_volume_mapping(license_dir, "/licenses")
+        neo4j_container = neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
 
-    neo4j_container.with_volume_mapping(
-        license_dir,
-        "/licenses",
+    try:
+        with running_container(neo4j_container, db_logs_dir / "stdout.log", "Neo4j plugin") as neo4j_db:
+            # target of `gds.export.location`; kept inside the container so the files
+            # written by the neo4j user do not outlive the container on the host
+            neo4j_db.exec(["mkdir", "-p", "-m", "0777", "/exports"])
+            yield neo4j_db
+    finally:
+        if license_dir is not None:
+            shutil.rmtree(license_dir, ignore_errors=True)
+
+
+def start_gds_plugin_database(
+    logs_dir: Path, tmp_path_factory: pytest.TempPathFactory, log_name: str
+) -> Generator[Neo4jContainer, None, None]:
+    """Start the licensed Neo4j+GDS-plugin database for the integration tests."""
+    dotenv.load_dotenv(Path(__file__).parent.parent / "test.env", override=True)
+    gds_license_key = os.getenv("GDS_LICENSE_KEY")
+
+    if gds_license_key is None:
+        raise ValueError("Trying to start a Plugin database, but no GDS_LICENSE_KEY environment variable was set")
+
+    models_dir = tmp_path_factory.mktemp("models")
+    models_dir.chmod(0o777)  # allow other user inside container to write to model dir
+
+    yield from start_plugin_database(
+        logs_dir,
+        log_name,
+        models_dir,
+        os.getenv("NEO4J_DATABASE_IMAGE", "neo4j:enterprise"),
+        gds_license_key,
     )
-    neo4j_container.with_env("NEO4J_gds_enterprise_license__file", "/licenses/license_key")
-
-    with running_container(neo4j_container, db_logs_dir / "stdout.log", "Neo4j plugin") as neo4j_db:
-        # target of `gds.export.location`; kept inside the container so the files
-        # written by the neo4j user do not outlive the container on the host
-        neo4j_db.exec(["mkdir", "-p", "-m", "0777", "/exports"])
-        yield neo4j_db
 
 
 def create_plugin_query_runner(container: Neo4jContainer) -> Generator[Neo4jQueryRunner, None, None]:

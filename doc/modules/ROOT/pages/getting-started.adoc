@@ -74,7 +74,7 @@ Check the version of GDS library running on the server:
 There is no server version in an Aura Graph Analytics session.
 You can check the network connection instead.
 
-[source, python, role=no-test]
+[source, python]
 ----
 gds.verify_connectivity()
 ----
@@ -150,8 +150,8 @@ gds.run_cypher(
 # a `G_office` object representing the projected graph.
 G_office, project_result = gds.graph.project.native(
     graph_name="my-graph",
-    node_label_filter="City",
-    relationship_type_filter="FLY_TO"
+    node_label_filter=["City"],
+    relationship_type_filter=["FLY_TO"]
 )
 
 # Run the `mutate` mode of the PageRank algorithm.

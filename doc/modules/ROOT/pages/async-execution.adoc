@@ -21,14 +21,30 @@ All handles share the same shape:
 
 == Example: project, compute, and write asynchronously
 
+The following query creates an example graph in the Neo4j database, used by the examples on this page.
+
+[source, python, session=true, group=async-example]
+----
+gds.run_cypher(
+    """
+    CREATE
+      (anne: Person {name: "Anne"}),
+      (bill: Person {name: "Bill"}),
+      (catie: Person {name: "Catie"}),
+      (anne)-[:KNOWS]->(bill),
+      (bill)-[:KNOWS]->(catie)
+    """
+)
+----
+
 The following snippet kicks off a remote projection, runs PageRank on the result without blocking, streams the scores, and writes them back — all using handles.
 
-[source, python, session=true]
+[source, python, session=true, group=async-example]
 ----
 projection_handle = gds.graph.project.native_async(
     "people",
-    "*",
-    "*"
+    ["*"],
+    ["*"]
 )
 projection_handle.wait()  # waits for projection to finish
 G, _ = projection_handle.result()
@@ -39,6 +55,10 @@ compute_handle = gds.page_rank.compute(G, damping_factor=0.85)
 scores = compute_handle.stream()         # blocks on completion, returns a DataFrame
 write_handle = compute_handle.write(write_properties="pagerank")
 write_result = write_handle.result()     # WriteBackResult once the write-back is done
+
+# Keep the job ids around so the handles can be recovered later (see below)
+known_projection_job_id = projection_handle.job_id()
+known_write_job_id = write_handle.job_id()
 ----
 
 == Recovering a handle via the jobs endpoint
@@ -46,7 +66,7 @@ write_result = write_handle.result()     # WriteBackResult once the write-back i
 If you lose the original handle — for example, after restarting your client — you can look find jobs via `gds.jobs.list()` and get the job handle by its id via `gds.jobs.get(G, job_id)`.
 The returned handle has the correct concrete type for the underlying job: a `ProjectionJobHandle` for projection jobs, a `WriteJobHandle` for write-back jobs, and a plain `JobHandle` for everything else.
 
-[source, python, session=true]
+[source, python, session=true, group=async-example]
 ----
 # List all known jobs
 handles = gds.jobs.list()

@@ -20,7 +20,7 @@ ignore_preview_warning = pytest.mark.filterwarnings("ignore:.*is a preview featu
 def runtime_api(
     network: Network, logs_dir: Path, request: pytest.FixtureRequest, models_dir: Path
 ) -> Generator[str, None, None]:
-    yield from start_runtime_api(logs_dir, network, request, models_dir)
+    yield from start_runtime_api(logs_dir, network, request.node.name, models_dir)
 
 
 @pytest.fixture(scope="package")
@@ -36,7 +36,7 @@ def session_connection_runtime(
         logs_dir,
         models_dir,
         network,
-        request,
+        request.node.name,
         gds_api_uri=gds_api_connection,
         runtime_api_uri=runtime_api,
         session_alias=runtime_session_alias(),
