@@ -323,9 +323,9 @@ The following query creates an example graph in the Neo4j database, used by the 
 gds.run_cypher(
     """
     CREATE
-      (anne: User {name: "Anne", age: 30}),
-      (bill: User {name: "Bill", age: 26}),
-      (catie: User {name: "Catie", age: 24}),
+      (anne: User {name: "Anne"}),
+      (bill: User {name: "Bill"}),
+      (catie: User {name: "Catie"}),
       (phone: Product {cost: 549}),
       (laptop: Product {cost: 1299}),
       (anne)-[:KNOWS]->(bill),
@@ -371,9 +371,13 @@ G, result = gds.graph.project.native(
     graph_name="my_native_graph",
     node_label_filter=["User", "Product"],
     relationship_type_filter=["KNOWS", "BOUGHT"],
-    node_properties=["age", "cost"]
+    node_properties=["cost"]
 )
 ----
+
+[NOTE]
+Native projections support only numeric node properties.
+String properties such as `name` can instead be included when streaming results back, via the `db_node_properties` parameter (see xref:read-graph.adoc#graph-object-streaming-db-properties[Include node properties from Neo4j]).
 
 === Cypher projections
 
