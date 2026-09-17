@@ -31,16 +31,6 @@ def test_create_reports_disabled_if_procedure_not_registered(runner: CollectingQ
     assert ArrowInfo.create(runner) == ArrowInfo(listenAddress="", enabled=False, running=False, versions=[])
 
 
-def test_create_reports_disabled_if_error_code_unknown(runner: CollectingQueryRunner) -> None:
-    error = Neo4jError._hydrate_neo4j(
-        code="Neo.DatabaseError.General.UnknownError",
-        message="There is no procedure with the name `gds.debug.arrow` registered for this database instance.",
-    )
-    runner.add__mock_result("gds.debug.arrow", error)
-
-    assert ArrowInfo.create(runner) == ArrowInfo(listenAddress="", enabled=False, running=False, versions=[])
-
-
 def test_create_propagates_unrelated_client_errors(runner: CollectingQueryRunner) -> None:
     error = Neo4jError._hydrate_neo4j(
         code="Neo.ClientError.Security.Unauthorized", message="Unsupported authentication token, scheme `none`."

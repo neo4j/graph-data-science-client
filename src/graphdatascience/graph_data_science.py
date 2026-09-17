@@ -272,18 +272,15 @@ class GraphDataScience:
 
         self._arrow_client: GdsArrowClient | None = None
 
-        # If the `gds.debug.arrow` procedure is not registered, e.g. because a restricted procedure
-        # allowlist is configured on the server, the arrow discovery reports arrow as disabled and
-        # the client falls back to Cypher for all operations. An explicit arrow URL bypasses the discovery.
-        arrow_info = ArrowInfo.create(self._query_runner)
         if isinstance(arrow, str):
             listen_address: str | None = arrow
-        elif arrow_info.enabled:
-            listen_address = arrow_info.listenAddress
+        elif arrow:
+            arrow_info = ArrowInfo.create(self._query_runner)
+            listen_address = arrow_info.listenAddress if arrow_info.enabled else None
         else:
             listen_address = None
 
-        if arrow and listen_address is not None:
+        if listen_address is not None:
             arrow_auth = None
             if auth is not None:
                 username, password = auth

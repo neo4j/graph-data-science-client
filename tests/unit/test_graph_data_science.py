@@ -37,7 +37,6 @@ def test_falls_back_to_cypher_if_arrow_procedure_not_registered(supported_runner
 def test_explicit_arrow_url_bypasses_arrow_discovery(
     supported_runner: CollectingQueryRunner, mocker: MockerFixture
 ) -> None:
-    supported_runner.add__mock_result("gds.debug.arrow", procedure_not_found())
     mocker.patch(
         "graphdatascience.arrow_client.authenticated_flight_client.AuthenticatedArrowClient.list_actions_with_retry",
         return_value={ActionType("v1/admin", "GDS Admin")},
@@ -47,5 +46,16 @@ def test_explicit_arrow_url_bypasses_arrow_discovery(
 
     try:
         assert gds._arrow_client is not None
+        assert all("gds.debug.arrow" not in query for query in supported_runner.queries)
+    finally:
+        gds.close()
+
+
+def test_no_arrow_discovery_when_arrow_disabled(supported_runner: CollectingQueryRunner) -> None:
+    gds = GraphDataScience(supported_runner, arrow=False)
+
+    try:
+        assert gds._arrow_client is None
+        assert all("gds.debug.arrow" not in query for query in supported_runner.queries)
     finally:
         gds.close()
