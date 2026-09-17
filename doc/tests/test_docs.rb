@@ -113,10 +113,27 @@ finally:
     gds.run_cypher("MATCH (n) DETACH DELETE (n)")
 '
 
-# The doc tests run per deployment lane: the plugin lane targets a Neo4j with the GDS
-# plugin (self-managed/AuraDS-like), the AGA lane targets a local GDS session.
-# Snippets nested inside a deployment tab only run in the matching lane; untabbed
-# snippets are deployment-neutral and run in every lane that visits their file.
+# The doc tests run per deployment option, each selecting the snippets of one deployment
+# of the manual together with the boilerplate client it needs:
+#
+# - plugin_community: Neo4j with the GDS plugin, unlicensed (community-safe snippets)
+# - plugin_enterprise: Neo4j with the GDS plugin, licensed (also the enterprise snippets)
+# - aga: local GDS session (sessions are always licensed)
+#
+# A deployment maps to a lane: snippets nested inside a deployment tab only run in the
+# matching lane, untabbed snippets are deployment-neutral and run in every lane that
+# visits their file.
+DEPLOYMENTS = {
+  plugin_community: { lane: :plugin, enterprise: false },
+  plugin_enterprise: { lane: :plugin, enterprise: true },
+  aga: { lane: :aga, enterprise: true }
+}.freeze
+
+# networkx-tagged blocks require the NetworkX extra (`graphdatascience[networkx]`) and
+# run in every deployment; opt out via DOC_TEST_NETWORKX=no, e.g. when running the
+# harness against an interpreter without the extra installed.
+NETWORKX = ENV.fetch('DOC_TEST_NETWORKX', 'yes') == 'yes'
+
 NON_PLUGIN_TAB_ROLES = %w[
   include-with-Aura-Graph-Analytics
   include-with-attached
@@ -167,19 +184,9 @@ def doc_files
   filter ? files.select { |f| f.include?(filter) } : files
 end
 
-def add_to_group(scripts_by_group, block)
-  group = block.attr 'group'
-  source = block.source
-  if scripts_by_group[group].nil?
-    scripts_by_group[group] = source
-  else
-    scripts_by_group[group] += "\n#{source}"
-  end
-end
-
-def complete_raw_scripts(raw_scripts, lane)
-  init = lane == :aga ? INIT_AGA : INIT_GDS
-  clean_up = lane == :aga ? CLEAN_UP_AGA : CLEAN_UP
+def complete_raw_scripts(raw_scripts, deployment)
+  init = deployment == :aga ? INIT_AGA : INIT_GDS
+  clean_up = deployment == :aga ? CLEAN_UP_AGA : CLEAN_UP
   raw_scripts.map do |s|
     indented_s = "try:\n"
     s.each_line do |line|
@@ -189,9 +196,10 @@ def complete_raw_scripts(raw_scripts, lane)
   end
 end
 
-def block_to_raw_code(block, lane)
-  # Sessions have no server_version to gate on; min-server-version applies to the plugin lane only.
-  return block.source if lane == :aga || !block.attr?('min-server-version')
+def block_to_raw_code(block, deployment)
+  # Sessions have no server_version to gate on; min-server-version applies to the
+  # plugin deployments only.
+  return block.source if deployment == :aga || !block.attr?('min-server-version')
 
   min_gds_version = block.attr('min-server-version')
   raw_code = "if ServerVersion.from_string(\"#{min_gds_version}\") <= gds.server_version():\n"
@@ -200,52 +208,40 @@ def block_to_raw_code(block, lane)
 end
 
 # A block is testable if it is a runnable python source block for the given deployment
-# lane and is not opted out via the `no-test` role.
-def testable?(block, lane, file_has_aga)
+# and is not opted out via the `no-test` role.
+def testable?(block, deployment, file_has_aga)
   return false if block.has_role?('no-test') || block.attr('language') != 'python'
 
-  if lane == :aga
-    # AGA lane: AGA-marked snippets, plus untabbed (deployment-neutral) snippets
-    # in files that document AGA at all.
+  if DEPLOYMENTS[deployment][:lane] == :aga
+    # AGA: AGA-marked snippets, plus untabbed (deployment-neutral) snippets in files
+    # that document AGA at all.
     aga_marked?(block) || (file_has_aga && untabbed?(block))
   else
-    # Plugin lane: excludes session-only snippets (via the `session` attribute).
+    # Plugin: excludes session-only snippets (via the `session` attribute).
     plugin_eligible?(block) && !block.attr?('session')
   end
 end
 
-# networkx-tagged blocks are run exclusively in the :networkx scope, and excluded elsewhere.
-def filter_by_networkx(blocks, scope)
-  if scope == :networkx
-    blocks.select { |b| b.attr? 'networkx' }
-  else
-    blocks.reject { |b| b.attr? 'networkx' }
-  end
-end
+def filter_source_blocks(source_blocks, deployment, file_has_aga)
+  blocks = source_blocks.select { |b| testable?(b, deployment, file_has_aga) }
+  blocks = blocks.reject { |b| b.attr? 'enterprise' } unless DEPLOYMENTS[deployment][:enterprise]
+  return blocks if NETWORKX
 
-def filter_source_blocks(source_blocks, scope, lane, file_has_aga)
-  blocks = source_blocks.select { |b| testable?(b, lane, file_has_aga) }
-  # The AGA lane has no enterprise/community split (sessions are always licensed).
-  # networkx-tagged blocks keep running exclusively in the plugin-lane :networkx scope
-  # (see filter_by_networkx), even though sessions support networkx loading as well.
-  return blocks.reject { |b| b.attr? 'networkx' } if scope == :aga
-
-  blocks = blocks.reject { |b| b.attr? 'enterprise' } unless scope == :enterprise
-  filter_by_networkx(blocks, scope)
+  blocks.reject { |b| b.attr? 'networkx' }
 end
 
 # Collect the raw script of each block; blocks sharing a `group` attribute are
 # concatenated into one script (in document order).
-def raw_scripts_of_blocks(blocks, lane)
+def raw_scripts_of_blocks(blocks, deployment)
   raw_scripts = []
   raw_scripts_by_group = Hash.new { |h, k| h[k] = "# #{k}" }
 
   blocks.each do |b|
     if b.attr? 'group'
       group = b.attr 'group'
-      raw_scripts_by_group[group] += "\n#{block_to_raw_code(b, lane)}"
+      raw_scripts_by_group[group] += "\n#{block_to_raw_code(b, deployment)}"
     else
-      raw_scripts.push(block_to_raw_code(b, lane))
+      raw_scripts.push(block_to_raw_code(b, deployment))
     end
   end
 
@@ -253,25 +249,25 @@ def raw_scripts_of_blocks(blocks, lane)
   raw_scripts
 end
 
-def scripts_of_file(path, scope, lane)
+def scripts_of_file(path, deployment)
   doc = Asciidoctor.load_file path, safe: :safe
 
   source_blocks = doc.find_by style: 'source'
   file_has_aga = source_blocks.any? { |b| b.attr('language') == 'python' && aga_marked?(b) }
-  # The AGA lane only visits files that document AGA at all.
-  return [[], 0] if lane == :aga && !file_has_aga
+  # The AGA deployment only visits files that document AGA at all.
+  return [[], 0] if DEPLOYMENTS[deployment][:lane] == :aga && !file_has_aga
 
-  testable_source_blocks = filter_source_blocks(source_blocks, scope, lane, file_has_aga)
+  testable_source_blocks = filter_source_blocks(source_blocks, deployment, file_has_aga)
   skipped = source_blocks.count { |b| b.attr('language') == 'python' && b.has_role?('no-test') }
 
-  [complete_raw_scripts(raw_scripts_of_blocks(testable_source_blocks, lane), lane), skipped]
+  [complete_raw_scripts(raw_scripts_of_blocks(testable_source_blocks, deployment), deployment), skipped]
 end
 
 class DocTest < Minitest::Test
-  def run_doc_scripts(scope, lane = :plugin)
+  def run_doc_scripts(deployment)
     failures = []
 
-    all_files = doc_files.map { |f| [f, *scripts_of_file(f, scope, lane)] }
+    all_files = doc_files.map { |f| [f, *scripts_of_file(f, deployment)] }
     total_skipped = all_files.sum { |entry| entry[2] }
 
     # Only files that actually contain testable snippets, so the progress numbering is contiguous.
@@ -280,7 +276,7 @@ class DocTest < Minitest::Test
 
     log_fully_skipped_files(all_files)
     LOGGER.info(
-      "Running doc tests (scope=#{scope}, lane=#{lane}): #{total} script(s) across #{testable.size} file(s); " \
+      "Running doc tests (deployment=#{deployment}): #{total} script(s) across #{testable.size} file(s); " \
       "#{total_skipped} code cell(s) skipped"
     )
 
@@ -337,22 +333,18 @@ class DocTest < Minitest::Test
     end
   end
 
-  def test_community
-    run_doc_scripts(:community)
+  def test_plugin_community
+    run_doc_scripts(:plugin_community)
   end
 
-  def test_enterprise
-    run_doc_scripts(:enterprise)
-  end
-
-  def test_networkx
-    run_doc_scripts(:networkx)
+  def test_plugin_enterprise
+    run_doc_scripts(:plugin_enterprise)
   end
 
   # Runs the Aura Graph Analytics parts of the manual (AGA tabs, `session` snippets, and
   # untabbed snippets in AGA files) against a local GDS session started by
   # scripts/ci/run_doc_tests_aga.py; see doc/README.md for how to run it.
   def test_aga
-    run_doc_scripts(:aga, :aga)
+    run_doc_scripts(:aga)
   end
 end

@@ -58,10 +58,10 @@ Selected parts of the source code examples in the documentation are run as tests
 The `just test-docs-plugin` target spins up a local Neo4j with the GDS plugin via testcontainers, runs the plugin-target snippet tests against it, and tears the container down afterwards:
 
 ```bash
-# Community + networkx scopes (no license required)
+# Community-safe snippets, incl. the networkx-tagged ones (no license required)
 just test-docs-plugin
 
-# All scopes (adds enterprise); requires a GDS license key in the environment
+# Adds the enterprise snippets; requires a GDS license key in the environment
 GDS_LICENSE_KEY=... just test-docs-plugin
 ```
 
@@ -91,11 +91,13 @@ If `NEO4J_USERNAME` is not set the tests try to connect without authentication.
 Then, from the `doc/tests` directory:
 
 ```bash
-bundle exec ruby test_docs.rb $(uv run which python) [-n test_community]
+bundle exec ruby test_docs.rb $(uv run which python) -n test_plugin_community
 ```
 
 where the argument is the Python interpreter used to run the example code.
-Passing `-n test_community` runs only the snippets that don't rely on GDS Enterprise Edition.
+The `-n` filter selects the deployment to run: `test_plugin_community` or `test_plugin_enterprise` for the plugin (the latter requires your database to be licensed for GDS Enterprise Edition), or `test_aga` for AGA (requires a local GDS session, e.g. via `just test-docs-aga`).
+Snippets tagged with the `networkx` attribute need the NetworkX extra and run in every deployment; skip them with `DOC_TEST_NETWORKX=no`.
+Running without a filter executes all deployments.
 
 
 ### Deployment tabs
@@ -103,8 +105,8 @@ Passing `-n test_community` runs only the snippets that don't rely on GDS Enterp
 The manual documents each deployment mode as an Antora tabbed example (`[.include-with-GDS-database-plugin]` for the self-managed plugin, `[.include-with-Aura-Graph-Analytics]` for GDS Sessions, and `[.include-with-AuraDS]` for AuraDS).
 The doc tests run per deployment target:
 
-* The plugin target (`test_community` / `test_enterprise` / `test_networkx` of `test_docs.rb`) runs untabbed snippets and those in the `[.include-with-GDS-database-plugin]` tab.
-* The AGA target (`test_aga`) runs snippets in the `[.include-with-Aura-Graph-Analytics]` tab, snippets with the `session` attribute, and untabbed snippets in files that contain any of those.
+* The plugin deployments (`test_plugin_community` / `test_plugin_enterprise` of `test_docs.rb`) run untabbed snippets and those in the `[.include-with-GDS-database-plugin]` tab; the enterprise deployment additionally runs the `enterprise`-tagged snippets.
+* The AGA deployment (`test_aga`) runs snippets in the `[.include-with-Aura-Graph-Analytics]` tab, snippets with the `session` attribute, and untabbed snippets in files that contain any of those.
 
 Untabbed snippets are deployment-neutral and run in both targets.
 Snippets in the remaining tabs (AuraDS, and the session-type tabs of the Aura Graph Analytics page) are not tested; neither are the notebook-generated tutorials, which are covered by the notebook CI scripts instead.
@@ -114,10 +116,11 @@ Snippets in the remaining tabs (AuraDS, and the session-type tabs of the Aura Gr
 
 The example code snippets of the documentation that will be tested are those AsciiDoc blocks with style `source`, language `python` and without role `no-test`.
 Further, if a block has a group attribute, then it will be concatenated with all other snippets of the same group into one script.
-If a block has the enterprise attribute, it will only be run when the test `test_enterprise` is not filtered out.
-If a block has the session attribute, it will only be run in the AGA target (`just test-docs-aga`) and skipped in the plugin target.
-If a block has the min-server-version attribute, it will only be run when the docs are tested against a GDS version >= min-server-version.
-Snippets inside a deployment tab are only run in the matching deployment target (see [Deployment tabs](#deployment-tabs)); to iterate on a single page, set `DOC_TEST_FILE=<substring>`.
+If a block has the enterprise attribute, it will only be run in the `test_plugin_enterprise` deployment.
+If a block has the networkx attribute, it requires the NetworkX extra (`graphdatascience[networkx]`) and runs in every deployment (skip via `DOC_TEST_NETWORKX=no`).
+If a block has the session attribute, it will only be run in the AGA deployment (`just test-docs-aga`) and skipped in the plugin deployments.
+If a block has the min-server-version attribute, it will only be run when the docs are tested against a GDS version >= min-server-version (plugin deployments only; sessions have no server version).
+Snippets inside a deployment tab are only run in the matching deployment (see [Deployment tabs](#deployment-tabs)); to iterate on a single page, set `DOC_TEST_FILE=<substring>`.
 The harness logs per-file progress to stderr as it runs; set `DOC_TEST_LOGLEVEL=DEBUG` for per-script logging (with timings).
 
 Additionally, before a code snippet from the documentation is run, it is:

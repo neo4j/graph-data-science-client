@@ -2,11 +2,12 @@
 
 Starts a Neo4j+GDS-plugin container via tests/integration/services.py (the same setup as
 the integration tests), then invokes the Ruby doc-test harness (doc/tests/test_docs.rb)
-with its plugin lane. Without a GDS license only the community and networkx scopes run;
-with GDS_LICENSE_KEY in the environment, the enterprise scope is included and the GDS
-Arrow Flight server is enabled (it requires the license), its host port pinned to 8491
-and its address passed to the harness via NEO4J_ARROW_URI. Image override via
-NEO4J_IMAGE. Use DOC_TEST_FILE=<substring> to iterate on a single page.
+with its plugin deployments. Without a GDS license only the community-safe snippets run
+(test_plugin_community); with GDS_LICENSE_KEY in the environment the enterprise snippets
+are included (test_plugin_enterprise) and the GDS Arrow Flight server is enabled (it
+requires the license), its host port pinned to 8491 and its address passed to the
+harness via NEO4J_ARROW_URI. Image override via NEO4J_IMAGE. Use
+DOC_TEST_FILE=<substring> to iterate on a single page.
 """
 
 import os
@@ -88,10 +89,12 @@ def main() -> None:
                 env["NEO4J_ARROW_URI"] = f"{neo4j.get_container_host_ip()}:{neo4j.get_exposed_port(8491)}"
 
             # The doc-test harness runs each snippet with this Python interpreter
-            # (has graphdatascience + networkx).
-            cmd = ["bundle", "exec", "ruby", "test_docs.rb", sys.executable]
-            if not enterprise:
-                cmd += ["-n", "/community|networkx/"]
+            # (has graphdatascience + networkx). Only the plugin deployments are
+            # selected (`/plugin/` matches test_plugin_community and
+            # test_plugin_enterprise); the AGA deployment has its own runner and
+            # Docker stack. Without a license only the community-safe snippets run.
+            deployment_test = "/plugin/" if enterprise else "test_plugin_community"
+            cmd = ["bundle", "exec", "ruby", "test_docs.rb", sys.executable, "-n", deployment_test]
 
             subprocess.run(["bundle", "install"], cwd=DOC_TESTS_DIR, check=True, env=env)
             subprocess.run(cmd, cwd=DOC_TESTS_DIR, check=True, env=env)
