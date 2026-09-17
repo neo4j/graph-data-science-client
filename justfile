@@ -196,5 +196,7 @@ test-docs-plugin:
 test-docs-aga:
     uv run --group dev python -m scripts.ci.run_doc_tests_aga
 
+test-docs: test-docs-aga test-docs-plugin
+
 prs:
     gh pr list --author "@me"

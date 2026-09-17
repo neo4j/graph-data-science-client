@@ -1,4 +1,4 @@
-"""Run the plugin-lane doc tests against a local Neo4j with the GDS plugin.
+"""Run the plugin doc tests against a local Neo4j with the GDS plugin.
 
 Starts a Neo4j+GDS-plugin container via tests/integration/services.py (the same setup as
 the integration tests), then invokes the Ruby doc-test harness (doc/tests/test_docs.rb)
