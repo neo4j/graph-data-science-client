@@ -37,7 +37,8 @@ def _plugin_database(
 
 def main() -> None:
     # A GDS license enables the enterprise scope; without one we fall back to community only.
-    gds_license_key = os.environ.get("GDS_LICENSE_KEY")
+    # `or None` treats a blank value (e.g. an unset CI secret interpolating to "") as no license.
+    gds_license_key = os.environ.get("GDS_LICENSE_KEY") or None
     enterprise = gds_license_key is not None
     # The GDS Arrow Flight server requires the license: without one it never starts, so the
     # doc snippets (plain `GraphDataScience(NEO4J_URI, auth=...)`) must fall back to Bolt.
@@ -72,6 +73,11 @@ def main() -> None:
                 # which is unreachable from outside the container, so the harness `gds`
                 # client is pointed at the mapped host port explicitly.
                 env["NEO4J_ARROW_URI"] = f"{neo4j.get_container_host_ip()}:{neo4j.get_exposed_port(8491)}"
+            else:
+                # The runner owns the connection env: without arrow there is no server to
+                # point at, so a stale NEO4J_ARROW_URI from the environment must not
+                # override the harness' Bolt fallback.
+                env.pop("NEO4J_ARROW_URI", None)
 
             # The doc-test harness runs each snippet with this Python interpreter
             # (has graphdatascience + networkx). Only the plugin deployments are

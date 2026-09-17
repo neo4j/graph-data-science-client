@@ -89,6 +89,10 @@ arrow_client = AuthenticatedArrowClient(
     advertised_listen_address=(ADVERTISED_HOST, int(ADVERTISED_PORT)),
 )
 db_query_runner = Neo4jQueryRunner.create_for_db(NEO4J_URI, (NEO4J_USERNAME, NEO4J_PASSWORD))
+# The local `neo4j-aura-database` docker image does not advertise an "aura" kernel
+# version, so claim Aura hosting explicitly (as the real session client does) to keep
+# Aura-only features such as topological link prediction testable.
+db_query_runner.hosted_in_aura = True
 gds = AuraGraphDataScience(
     arrow_client,
     db_query_runner,
@@ -121,8 +125,8 @@ finally:
 # - aga: local GDS session (sessions are always licensed)
 #
 # A deployment maps to a lane: snippets nested inside a deployment tab only run in the
-# matching lane, untabbed snippets are deployment-neutral and run in every lane that
-# visits their file.
+# matching lane, untabbed snippets are deployment-neutral and run in every lane, unless
+# they carry the `session` (AGA-only) or `plugin` (plugin-only) attribute.
 DEPLOYMENTS = {
   plugin_community: { lane: :plugin, enterprise: false },
   plugin_enterprise: { lane: :plugin, enterprise: true },
@@ -209,21 +213,21 @@ end
 
 # A block is testable if it is a runnable python source block for the given deployment
 # and is not opted out via the `no-test` role.
-def testable?(block, deployment, file_has_aga)
+def testable?(block, deployment)
   return false if block.has_role?('no-test') || block.attr('language') != 'python'
 
   if DEPLOYMENTS[deployment][:lane] == :aga
-    # AGA: AGA-marked snippets, plus untabbed (deployment-neutral) snippets in files
-    # that document AGA at all.
-    aga_marked?(block) || (file_has_aga && untabbed?(block))
+    # AGA: AGA-marked snippets, plus untabbed (deployment-neutral) snippets; the
+    # `plugin` attribute marks plugin-only snippets (mirroring `session`).
+    !block.attr?('plugin') && (aga_marked?(block) || untabbed?(block))
   else
     # Plugin: excludes session-only snippets (via the `session` attribute).
     plugin_eligible?(block) && !block.attr?('session')
   end
 end
 
-def filter_source_blocks(source_blocks, deployment, file_has_aga)
-  blocks = source_blocks.select { |b| testable?(b, deployment, file_has_aga) }
+def filter_source_blocks(source_blocks, deployment)
+  blocks = source_blocks.select { |b| testable?(b, deployment) }
   blocks = blocks.reject { |b| b.attr? 'enterprise' } unless DEPLOYMENTS[deployment][:enterprise]
   return blocks if NETWORKX
 
@@ -253,11 +257,7 @@ def scripts_of_file(path, deployment)
   doc = Asciidoctor.load_file path, safe: :safe
 
   source_blocks = doc.find_by style: 'source'
-  file_has_aga = source_blocks.any? { |b| b.attr('language') == 'python' && aga_marked?(b) }
-  # The AGA deployment only visits files that document AGA at all.
-  return [[], 0] if DEPLOYMENTS[deployment][:lane] == :aga && !file_has_aga
-
-  testable_source_blocks = filter_source_blocks(source_blocks, deployment, file_has_aga)
+  testable_source_blocks = filter_source_blocks(source_blocks, deployment)
   skipped = source_blocks.count { |b| b.attr('language') == 'python' && b.has_role?('no-test') }
 
   [complete_raw_scripts(raw_scripts_of_blocks(testable_source_blocks, deployment), deployment), skipped]

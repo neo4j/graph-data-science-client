@@ -45,8 +45,8 @@ gds.run_cypher(
 )
 G, project_result = gds.graph.project.native(
     "road_graph",
-    "City",
-    "ROAD",
+    ["City"],
+    ["ROAD"],
     node_properties=["settled"],
     relationship_properties=["cost"]
 )

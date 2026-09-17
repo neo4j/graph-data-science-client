@@ -106,9 +106,9 @@ The manual documents each deployment mode as an Antora tabbed example (`[.includ
 The doc tests run per deployment target:
 
 * The plugin deployments (`test_plugin_community` / `test_plugin_enterprise` of `test_docs.rb`) run untabbed snippets and those in the `[.include-with-GDS-database-plugin]` tab; the enterprise deployment additionally runs the `enterprise`-tagged snippets.
-* The AGA deployment (`test_aga`) runs snippets in the `[.include-with-Aura-Graph-Analytics]` tab, snippets with the `session` attribute, and untabbed snippets in files that contain any of those.
+* The AGA deployment (`test_aga`) runs snippets in the `[.include-with-Aura-Graph-Analytics]` tab, snippets with the `session` attribute, and untabbed snippets, except those with the `plugin` attribute.
 
-Untabbed snippets are deployment-neutral and run in both targets.
+Untabbed snippets are deployment-neutral and run in both targets, unless they carry the `session` or `plugin` attribute, which restricts them to a single deployment.
 Snippets in the remaining tabs (AuraDS, and the session-type tabs of the Aura Graph Analytics page) are not tested; neither are the notebook-generated tutorials, which are covered by the notebook CI scripts instead.
 
 
@@ -119,6 +119,7 @@ Further, if a block has a group attribute, then it will be concatenated with all
 If a block has the enterprise attribute, it will only be run in the `test_plugin_enterprise` deployment.
 If a block has the networkx attribute, it requires the NetworkX extra (`graphdatascience[networkx]`) and runs in every deployment (skip via `DOC_TEST_NETWORKX=no`).
 If a block has the session attribute, it will only be run in the AGA deployment (`just test-docs-aga`) and skipped in the plugin deployments.
+If a block has the plugin attribute, it will only be run in the plugin deployments (`just test-docs-plugin`) and skipped in the AGA deployment, e.g. because the feature it shows does not exist for GDS Sessions (such as KGE models).
 If a block has the min-server-version attribute, it will only be run when the docs are tested against a GDS version >= min-server-version (plugin deployments only; sessions have no server version).
 Snippets inside a deployment tab are only run in the matching deployment (see [Deployment tabs](#deployment-tabs)); to iterate on a single page, set `DOC_TEST_FILE=<substring>`.
 The harness logs per-file progress to stderr as it runs; set `DOC_TEST_LOGLEVEL=DEBUG` for per-script logging (with timings).

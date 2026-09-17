@@ -21,15 +21,40 @@ gds.run_cypher(
     (s)-[:FLY_TO {cost: 1000}]->(l)
   """
 )
-
-G, result = gds.graph.project.native(
-    graph_name="offices",         # Graph name
-    node_projection=["City"],           # Node projection
-    relationship_projection=["FLY_TO"], # Relationship projection
-    node_properties=["population"],     # Node properties
-    relationship_properties=["cost"]    # Relationship properties
-)
 ----
+====
+
+It can be projected into the graph catalog as follows:
+
+[.tabbed-example]
+====
+[.include-with-GDS-database-plugin]
+=====
+[source,python,group=graph-project]
+-----
+G, result = gds.graph.project.native(
+    graph_name="offices",                 # Graph name
+    node_projection=["City"],             # Node projection
+    relationship_projection=["FLY_TO"],   # Relationship projection
+    node_properties=["population"],       # Node properties
+    relationship_properties=["cost"]      # Relationship properties
+)
+-----
+=====
+
+[.include-with-Aura-Graph-Analytics]
+=====
+[source,python,group=graph-project]
+-----
+G, result = gds.graph.project.native(
+    graph_name="offices",                 # Graph name
+    node_label_filter=["City"],           # Node labels to include
+    relationship_type_filter=["FLY_TO"],  # Relationship types to include
+    node_properties=["population"],       # Node properties
+    relationship_properties=["cost"]      # Relationship properties
+)
+-----
+=====
 ====
 
 [[graph-object-streaming-properties]]
