@@ -5,9 +5,8 @@ the integration tests), then invokes the Ruby doc-test harness (doc/tests/test_d
 with its plugin deployments. Without a GDS license only the community-safe snippets run
 (test_plugin_community); with GDS_LICENSE_KEY in the environment the enterprise snippets
 are included (test_plugin_enterprise) and the GDS Arrow Flight server is enabled (it
-requires the license), its host port pinned to 8491 and its address passed to the
-harness via NEO4J_ARROW_URI. Image override via NEO4J_IMAGE. Use
-DOC_TEST_FILE=<substring> to iterate on a single page.
+requires the license), its mapped address passed to the harness via NEO4J_ARROW_URI.
+Image override via NEO4J_IMAGE. Use DOC_TEST_FILE=<substring> to iterate on a single page.
 """
 
 import os
@@ -31,16 +30,9 @@ PASSWORD = "password"
 
 @contextmanager
 def _plugin_database(
-    logs_dir: Path,
-    models_dir: Path,
-    image: str,
-    gds_license_key: str | None,
-    arrow_enabled: bool,
-    arrow_host_port: int | None,
+    logs_dir: Path, models_dir: Path, image: str, gds_license_key: str | None, arrow_enabled: bool
 ) -> Generator[Neo4jContainer, None, None]:
-    yield from start_plugin_database(
-        logs_dir, LOG_NAME, models_dir, image, gds_license_key, arrow_enabled, arrow_host_port
-    )
+    yield from start_plugin_database(logs_dir, LOG_NAME, models_dir, image, gds_license_key, arrow_enabled)
 
 
 def main() -> None:
@@ -50,13 +42,6 @@ def main() -> None:
     # The GDS Arrow Flight server requires the license: without one it never starts, so the
     # doc snippets (plain `GraphDataScience(NEO4J_URI, auth=...)`) must fall back to Bolt.
     arrow_enabled = enterprise
-    # Pin the Arrow host port (instead of an ephemeral one) so that the address the server
-    # advertises (`0.0.0.0:8491`) resolves to localhost:8491 on the Docker host. Doc
-    # snippets such as the bookmarks example construct their own `GraphDataScience`
-    # without an explicit arrow address and thus rely on that auto-discovered address.
-    # Caveat: a pinned port conflicts with anything else binding 8491 on the host (e.g. a
-    # concurrent arrow-enabled doc-test run, or the gds_session compose test env).
-    arrow_host_port = 8491 if arrow_enabled else None
 
     image = os.environ.get("NEO4J_IMAGE", "neo4j:enterprise" if enterprise else "neo4j:latest")
 
@@ -75,7 +60,7 @@ def main() -> None:
     models_dir.chmod(0o777)  # the container writes stored models here as a different user
 
     try:
-        with _plugin_database(logs_dir, models_dir, image, gds_license_key, arrow_enabled, arrow_host_port) as neo4j:
+        with _plugin_database(logs_dir, models_dir, image, gds_license_key, arrow_enabled) as neo4j:
             env = {
                 **os.environ,
                 "NEO4J_URI": f"bolt://{neo4j.get_container_host_ip()}:{neo4j.get_exposed_port(7687)}",
@@ -83,9 +68,9 @@ def main() -> None:
                 "NEO4J_PASSWORD": PASSWORD,
             }
             if arrow_enabled:
-                # The harness INIT connects the shared `gds` client via this explicit
-                # address; snippet-level clients fall back to the advertised (pinned)
-                # localhost:8491. Both routes reach the same endpoint.
+                # The server advertises its in-container listen address (`0.0.0.0:8491`),
+                # which is unreachable from outside the container, so the harness `gds`
+                # client is pointed at the mapped host port explicitly.
                 env["NEO4J_ARROW_URI"] = f"{neo4j.get_container_host_ip()}:{neo4j.get_exposed_port(8491)}"
 
             # The doc-test harness runs each snippet with this Python interpreter
