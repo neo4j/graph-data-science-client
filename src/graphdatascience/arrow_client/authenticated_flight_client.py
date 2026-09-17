@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import platform
 from dataclasses import dataclass
 from types import TracebackType
@@ -39,6 +40,25 @@ FLIGHT_TRANSIENT_EXCEPTIONS = (
     FlightInternalError,
 )
 
+DEFAULT_MAX_ATTEMPTS = 5
+DEFAULT_CALL_TIMEOUT = 30.0
+# Sum of the backoff waits between DEFAULT_MAX_ATTEMPTS attempts under the default
+# wait config `ExponentialWaitConfig(multiplier=1, min=1, max=10)`: 1 + 2 + 4 + 8.
+DEFAULT_BACKOFF_TOTAL = 15
+
+
+def _default_retry_config(call_timeout: float | None) -> RetryConfigV2:
+    # The delay budget must fit all attempts even when every single one runs into the
+    # per-call deadline, plus the backoff waits in between. Otherwise one
+    # `Deadline Exceeded` exhausts the budget and no retry ever happens.
+    budget_timeout = call_timeout if call_timeout is not None else DEFAULT_CALL_TIMEOUT
+    after_delay = math.ceil(DEFAULT_MAX_ATTEMPTS * budget_timeout + DEFAULT_BACKOFF_TOTAL)
+    return RetryConfigV2(
+        retryable_exceptions=list(FLIGHT_TRANSIENT_EXCEPTIONS),
+        stop_config=StopConfig(after_delay=after_delay, after_attempt=DEFAULT_MAX_ATTEMPTS),
+        wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
+    )
+
 
 class AuthenticatedArrowClient:
     """Arrow Flight client used to communicate with the GDS Arrow server."""
@@ -72,6 +92,8 @@ class AuthenticatedArrowClient:
             The user agent string to use for the connection. (default is `neo4j-graphdatascience-v[VERSION] pyarrow-v[PYARROW_VERSION]`)
         retry_config
             The retry configuration to use for the Arrow requests send by the client.
+            (default: up to 5 attempts with a total delay budget derived from the
+            per-call ``call_timeout`` so that timed-out calls are actually retried)
         advertised_listen_address
             The advertised listen address of the GDS Arrow server. This will be used by remote projection and writeback operations.
         health_check
@@ -85,15 +107,11 @@ class AuthenticatedArrowClient:
         else:
             host, port = connection_info
 
-        if retry_config is None:
-            retry_config = RetryConfigV2(
-                retryable_exceptions=list(FLIGHT_TRANSIENT_EXCEPTIONS),
-                stop_config=StopConfig(after_delay=10, after_attempt=5),
-                wait_config=ExponentialWaitConfig(multiplier=1, min=1, max=10),
-            )
-
         options_copy = dict(arrow_client_options) if arrow_client_options else {}
-        call_timeout = options_copy.pop("call_timeout", 30.0)
+        call_timeout = options_copy.pop("call_timeout", DEFAULT_CALL_TIMEOUT)
+
+        if retry_config is None:
+            retry_config = _default_retry_config(call_timeout)
 
         self._host = host
         self._port = int(port)
@@ -280,7 +298,7 @@ class AuthenticatedArrowClient:
     def __setstate__(self, state: dict[str, Any]) -> None:
         self.__dict__.update(state)
         self.__dict__.setdefault("_health_check", None)
-        self.__dict__.setdefault("_call_timeout", 30.0)
+        self.__dict__.setdefault("_call_timeout", DEFAULT_CALL_TIMEOUT)
         self.__dict__.setdefault("_call_options", self._build_call_options())
         self._flight_client = self._instantiate_flight_client()
 
