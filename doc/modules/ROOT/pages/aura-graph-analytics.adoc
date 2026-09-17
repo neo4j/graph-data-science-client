@@ -316,6 +316,10 @@ Once you have a GDS Session, you can project a graph into it.
 Aura Graph Analytics offers two projection methods when connected to a Neo4j databases: `Native projections` and `Cypher projections`.
 For more detailed information about projections see xref:graph-object.adoc#projection[Graph Projection].
 
+[NOTE]
+Only numeric node properties can be projected into a GDS Session.
+String properties such as `name` can instead be included when streaming results back, via the `db_node_properties` parameter (see xref:read-graph.adoc#graph-object-streaming-db-properties[Include node properties from Neo4j]).
+
 The following query creates an example graph in the Neo4j database, used by the examples on this page.
 
 [source, python, session=true, group=aga-examples]
@@ -374,10 +378,6 @@ G, result = gds.graph.project.native(
     node_properties=["cost"]
 )
 ----
-
-[NOTE]
-Native projections support only numeric node properties.
-String properties such as `name` can instead be included when streaming results back, via the `db_node_properties` parameter (see xref:read-graph.adoc#graph-object-streaming-db-properties[Include node properties from Neo4j]).
 
 === Cypher projections
 
