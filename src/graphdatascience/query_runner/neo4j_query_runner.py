@@ -14,6 +14,7 @@ from graphdatascience.call_parameters import CallParameters
 from graphdatascience.error.gds_not_installed import GdsNotFound
 from graphdatascience.error.unable_to_connect import UnableToConnectError
 from graphdatascience.progress.query_progress_logger import QueryProgressLogger
+from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
@@ -168,6 +169,10 @@ class Neo4jQueryRunner(QueryRunner):
             return self._auth.principal, self._auth.credentials
         else:
             return self._auth
+
+    def resolve_hosted_in_aura(self) -> bool:
+        self.hosted_in_aura = DbEnvironmentResolver.hosted_in_aura(self)
+        return self.hosted_in_aura
 
     # only use for user defined queries, and queries changing the GDS in-memory state
     def run_cypher(

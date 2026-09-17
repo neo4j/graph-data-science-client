@@ -11,6 +11,8 @@ from graphdatascience.versions import ServerVersion
 
 
 class QueryRunner(ABC):
+    hosted_in_aura: bool = False
+
     @abstractmethod
     def call_procedure(
         self,

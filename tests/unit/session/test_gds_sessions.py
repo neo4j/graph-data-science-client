@@ -273,7 +273,8 @@ class FakeGdsSessions(GdsSessions):
     """
     Test double for GdsSessions that avoids real database connections.
 
-    Overrides _create_db_runner to store its arguments and return a mock runner,
+    Overrides _create_db_runner to store its arguments and return a mock runner
+    whose `resolve_hosted_in_aura` reports the `hosted_in_aura` constructor arg,
     and _construct_client to store its arguments and return a mock client.
     """
 
@@ -288,10 +289,15 @@ class FakeGdsSessions(GdsSessions):
         self, db_connection: DbmsConnectionInfo, config: dict[str, Any] | None = None
     ) -> Neo4jQueryRunner:
         self.create_db_runner_calls.append({"db_connection": db_connection, "config": config})
-        return mock.MagicMock(spec=Neo4jQueryRunner)
+        db_runner = mock.MagicMock(spec=Neo4jQueryRunner)
+        hosted_in_aura = self._hosted_in_aura
 
-    def _check_hosted_in_aura(self, db_runner: Neo4jQueryRunner) -> bool:
-        return self._hosted_in_aura
+        def resolve_hosted_in_aura() -> bool:
+            db_runner.hosted_in_aura = hosted_in_aura
+            return hosted_in_aura
+
+        db_runner.resolve_hosted_in_aura.side_effect = resolve_hosted_in_aura
+        return db_runner
 
     def _construct_client(
         self,
@@ -470,6 +476,7 @@ def test_create_attached_session(aura_api: AuraApi) -> None:
     assert construct_call["session_id"] == "ffff0-ffff1"
     assert construct_call["session_host"] == "foo.bar"
     assert construct_call["arrow_client_options"] is None
+    assert construct_call["db_runner"].hosted_in_aura is True
 
     assert len(sessions.list()) == 1
     actual_session = sessions.list()[0]
@@ -508,6 +515,7 @@ def test_create_attached_session_with_only_uri(aura_api: AuraApi) -> None:
     assert construct_call["session_id"] == "ffff0-ffff1"
     assert construct_call["session_host"] == "foo.bar"
     assert construct_call["arrow_client_options"] is None
+    assert construct_call["db_runner"].hosted_in_aura is True
 
     assert len(sessions.list()) == 1
     actual_session = sessions.list()[0]
@@ -543,6 +551,7 @@ def test_create_attached_session_passthrough_arrow_settings(aura_api: AuraApi) -
     assert construct_call["session_id"] == "ffff0-ffff1"
     assert construct_call["session_host"] == "foo.bar"
     assert construct_call["arrow_client_options"] == {"foo": "bar"}
+    assert construct_call["db_runner"].hosted_in_aura is True
 
     assert len(sessions.list()) == 1
     actual_session = sessions.list()[0]
@@ -576,6 +585,7 @@ def test_create_standalone_session(aura_api: AuraApi) -> None:
     assert construct_call["session_id"] == "selfmanaged-ffff0"
     assert construct_call["session_host"] == "foo.bar"
     assert construct_call["arrow_client_options"] is None
+    assert construct_call["db_runner"].hosted_in_aura is False
 
     assert len(sessions.list()) == 1
     actual_session = sessions.list()[0]
@@ -606,6 +616,7 @@ def test_get_or_create_existing_session(aura_api: AuraApi) -> None:
         assert construct_call["session_id"] == "ffff0-ffff1"
         assert construct_call["session_host"] == "foo.bar"
         assert construct_call["arrow_client_options"] is None
+        assert construct_call["db_runner"].hosted_in_aura is True
 
     for db_call in sessions.create_db_runner_calls:
         auth = db_call["db_connection"].get_auth()
