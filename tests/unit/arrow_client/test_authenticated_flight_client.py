@@ -1,13 +1,13 @@
 import certifi
 import pytest
-from pyarrow.flight import FlightUnavailableError
+from pyarrow.flight import ActionType, FlightTimedOutError, FlightUnavailableError
 from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.arrow_client.server_health_check import ServerHealthCheck
-from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2
+from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2, StopConfig
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 
@@ -30,8 +30,18 @@ def test_create_authenticated_arrow_client(arrow_info: ArrowInfo, mock_auth: Arr
     client = AuthenticatedArrowClient(arrow_info.listenAddress, auth=mock_auth, encrypted=True)
 
     assert client._retry_config.wait_config == ExponentialWaitConfig(multiplier=1, min=1, max=10)
+    # the delay budget must cover all attempts hitting the 30s per-call deadline plus backoff
+    assert client._retry_config.stop_config == StopConfig(after_delay=165, after_attempt=5)
     assert isinstance(client, AuthenticatedArrowClient)
     assert client.connection_info() == ConnectionInfo("localhost", 8491, encrypted=True)
+
+
+def test_default_retry_budget_scales_with_call_timeout(arrow_info: ArrowInfo, mock_auth: ArrowAuthentication) -> None:
+    client = AuthenticatedArrowClient(
+        arrow_info.listenAddress, auth=mock_auth, arrow_client_options={"call_timeout": 60}
+    )
+
+    assert client._retry_config.stop_config == StopConfig(after_delay=315, after_attempt=5)
 
 
 def test_connection_info(arrow_info: ArrowInfo, retry_config_v2: RetryConfigV2) -> None:
@@ -85,6 +95,34 @@ def test_do_action_with_retry_reconnects_on_retryable_error(
     result = client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
 
     assert result == [expected_result]
+    assert instantiate.call_count == 2
+    first_client.close.assert_called_once()
+
+
+def test_list_actions_with_retry_reconnects_on_timeout(mocker: MockerFixture) -> None:
+    first_client = mocker.Mock()
+    first_client.list_actions.side_effect = FlightTimedOutError("Deadline Exceeded")
+
+    second_client = mocker.Mock()
+    expected_actions = {ActionType("v2/test.action", "description")}
+    second_client.list_actions.return_value = expected_actions
+
+    instantiate = mocker.patch.object(
+        AuthenticatedArrowClient,
+        "_instantiate_flight_client",
+        side_effect=[first_client, second_client],
+    )
+
+    retry_config = RetryConfigV2(
+        retryable_exceptions=[FlightTimedOutError],
+        stop_config=StopConfig(after_delay=165, after_attempt=5),
+        wait_config=None,  # No wait for tests. Makes them faster
+    )
+    client = AuthenticatedArrowClient(("localhost", 8491), retry_config=retry_config)
+
+    result = client.list_actions_with_retry()
+
+    assert result == expected_actions
     assert instantiate.call_count == 2
     first_client.close.assert_called_once()
 
