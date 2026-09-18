@@ -437,10 +437,17 @@ class AuraApi:
         # The `v1/tenants` endpoint is not organization-aware and may return an incomplete
         # list of projects for accounts with access to multiple organizations (GDSA-1599),
         # which would silently default to a single project. Projects are therefore
-        # enumerated across all organizations via the v2beta1 API.
-        projects: dict[str, str] = {}
-        for organization in self._list_organizations():
-            projects.update({d["id"]: d["name"] for d in self._list_organization_projects(organization["id"])})
+        # enumerated across all organizations via the v2beta1 API. Project ids are globally
+        # unique, so collecting them in one dict cannot merge distinct projects.
+        try:
+            projects: dict[str, str] = {}
+            for organization in self._list_organizations():
+                projects.update({d["id"]: d["name"] for d in self._list_organization_projects(organization["id"])})
+        except AuraApiError as e:
+            raise AuraApiError(
+                f"{e.message} Could not derive a default project; specify `project_id` explicitly.",
+                status_code=e.status_code,
+            ) from e
 
         if len(projects) > 1:
             raise RuntimeError(

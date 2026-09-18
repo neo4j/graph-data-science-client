@@ -814,7 +814,7 @@ def test_delete_missing_session(requests_mock: Mocker) -> None:
     assert api.delete_session("id0") is False
 
 
-def test_multiple_tenants(requests_mock: Mocker) -> None:
+def test_multiple_projects(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
@@ -838,7 +838,7 @@ def test_multiple_tenants(requests_mock: Mocker) -> None:
         AuraApi(client_id="", client_secret="")
 
 
-def test_multiple_tenants_across_organizations(requests_mock: Mocker) -> None:
+def test_multiple_projects_across_organizations(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
@@ -1168,7 +1168,7 @@ def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
     assert api._request_session.auth._auth_token() == "one_token"  # type: ignore
 
 
-def test_derive_tenant(requests_mock: Mocker) -> None:
+def test_derive_project(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
@@ -1185,19 +1185,78 @@ def test_derive_tenant(requests_mock: Mocker) -> None:
     assert api._project_id == "6981ace7-efe8-4f5c-b7c5-267b5162ce91"
 
 
-def test_raise_on_missing_tenant(requests_mock: Mocker) -> None:
+def test_derive_project_across_organizations(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
     requests_mock.get(
         "https://api.neo4j.io/v2beta1/organizations",
-        json={"data": [{"id": "org1", "name": "MetaCortex"}]},
+        json={
+            "data": [
+                {"id": "org1", "name": "MetaCortex"},
+                {"id": "org2", "name": "Zion"},
+            ]
+        },
     )
     requests_mock.get(
         "https://api.neo4j.io/v2beta1/organizations/org1/projects",
         json={"data": []},
     )
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations/org2/projects",
+        json={"data": [{"id": "6981ace7-efe8-4f5c-b7c5-267b5162ce91", "name": "Production"}]},
+    )
+
+    api = AuraApi(client_id="", client_secret="")
+
+    assert api._project_id == "6981ace7-efe8-4f5c-b7c5-267b5162ce91"
+
+
+@pytest.mark.parametrize(
+    "organizations,projects_by_org",
+    [([], {}), ([{"id": "org1", "name": "MetaCortex"}], {"org1": []})],
+    ids=["no organizations", "organization without projects"],
+)
+def test_raise_on_no_projects(
+    requests_mock: Mocker, organizations: list[dict[str, str]], projects_by_org: dict[str, list[dict[str, str]]]
+) -> None:
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations",
+        json={"data": organizations},
+    )
+    for organization_id, projects in projects_by_org.items():
+        requests_mock.get(
+            f"https://api.neo4j.io/v2beta1/organizations/{organization_id}/projects",
+            json={"data": projects},
+        )
 
     with pytest.raises(RuntimeError, match="This account has access to no projects"):
+        AuraApi(client_id="", client_secret="")
+
+
+def test_no_default_on_discovery_failure(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations",
+        json={
+            "data": [
+                {"id": "org1", "name": "MetaCortex"},
+                {"id": "org2", "name": "Zion"},
+            ]
+        },
+    )
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations/org1/projects",
+        json={"data": [{"id": "tenant1", "name": "Production"}]},
+    )
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations/org2/projects",
+        status_code=403,
+    )
+
+    with pytest.raises(AuraApiError, match="Could not derive a default project; specify `project_id` explicitly"):
         AuraApi(client_id="", client_secret="")
 
 
