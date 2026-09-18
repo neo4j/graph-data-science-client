@@ -434,18 +434,35 @@ class AuraApi:
         return EstimationDetails.from_json(response.json()["data"])
 
     def _get_project_id(self) -> str:
-        response = self._request_session.get(f"{self._base_uri}/v1/tenants")
-        self._check_resp(response)
+        # The `v1/tenants` endpoint is not organization-aware and may return an incomplete
+        # list of projects for accounts with access to multiple organizations (GDSA-1599),
+        # which would silently default to a single project. Projects are therefore
+        # enumerated across all organizations via the v2beta1 API.
+        projects: dict[str, str] = {}
+        for organization in self._list_organizations():
+            projects.update({d["id"]: d["name"] for d in self._list_organization_projects(organization["id"])})
 
-        raw_data = response.json()["data"]
-
-        if len(raw_data) != 1:
-            projects_dict = {d["id"]: d["name"] for d in raw_data}
+        if len(projects) > 1:
             raise RuntimeError(
-                f"This account has access to multiple projects: `{projects_dict}`. Please specify which one to use."
+                f"This account has access to multiple projects: `{projects}`. Please specify which one to use."
             )
 
-        return raw_data[0]["id"]  # type: ignore
+        if not projects:
+            raise RuntimeError("This account has access to no projects. Please check your credentials.")
+
+        return next(iter(projects))
+
+    def _list_organizations(self) -> list[dict[str, str]]:
+        response = self._request_session.get(f"{self._base_uri}/v2beta1/organizations")
+        self._check_resp(response)
+
+        return response.json()["data"]
+
+    def _list_organization_projects(self, organization_id: str) -> list[dict[str, str]]:
+        response = self._request_session.get(f"{self._base_uri}/v2beta1/organizations/{organization_id}/projects")
+        self._check_resp(response)
+
+        return response.json()["data"]
 
     def project_details(self) -> ProjectDetails:
         if not self._project_details:
