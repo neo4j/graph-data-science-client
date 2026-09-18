@@ -19,7 +19,22 @@ rm doc/publish.yml
 
 git add doc/antora.yml doc/package.json doc/preview.yml doc/publish.yml
 git commit -m "Prepare release branch"
-git push --set-upstream origin "$VERSION"
+
+git show --stat --oneline HEAD
+
+read -r -p "Push release branch '${VERSION}' to origin? [y/N] " reply || reply=""
+case "$reply" in
+  [yY] | [yY][eE][sS])
+    git push --set-upstream origin "$VERSION"
+    ;;
+  *)
+    echo "Not pushing. The release branch remains local." >&2
+    echo "Inspect it with 'git show', then push manually with:" >&2
+    echo "    git push --set-upstream origin ${VERSION}" >&2
+    echo "Or discard it with 'git checkout - && git branch -D ${VERSION}'." >&2
+    exit 1
+    ;;
+esac
 
 echo "Published branch"
 
