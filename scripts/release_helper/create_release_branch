@@ -13,12 +13,14 @@ else
 fi
 
 git switch -c "$VERSION"
+
+uv run scripts/release_helper/prepare_release_branch.py "$VERSION"
 rm doc/publish.yml
-git add doc/publish.yml
+
+git add doc/antora.yml doc/package.json doc/preview.yml doc/publish.yml
 git commit -m "Prepare release branch"
 git push --set-upstream origin "$VERSION"
 
- echo "Published branch"
+echo "Published branch"
 
- git checkout -
-
+git checkout -

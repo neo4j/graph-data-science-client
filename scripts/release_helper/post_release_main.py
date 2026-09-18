@@ -122,10 +122,15 @@ def update_publish_yml(released_version: PythonLibraryVersion, next_version: Pyt
     new_branch = f"{released_version.major_minor()}"
 
     def update_branches(branches: str) -> str:
-        if new_branch in branches:
+        entries = [entry.strip() for entry in branches.split(",")]
+        if f"'{new_branch}'" in entries:
             return branches
-        else:
-            return f"{branches}, '{new_branch}'"
+        if branches.strip() == "":
+            return f"'{new_branch}'"
+        # Keep 'HEAD' (main) last so released branches stay in ascending order
+        if "'HEAD'" in entries:
+            return branches.replace("'HEAD'", f"'{new_branch}', 'HEAD'", 1)
+        return f"{branches}, '{new_branch}'"
 
     # Update branches list
     updated = re.sub(r"(branches:\s*\[)([^\]]*)", lambda m: f"{m.group(1)}{update_branches(m.group(2))}", content)
@@ -160,15 +165,21 @@ def update_antora_yml(next_version: PythonLibraryVersion) -> None:
     antora_file = REPO_ROOT / "doc" / "antora.yml"
     content = antora_file.read_text()
 
-    updated = re.sub(r"version: '[^']*'", f"version: '{next_version}'", content)
-    updated = re.sub(r"docs-version: '[^']*'", f"docs-version: '{next_version}'", updated)
+    preview_version = f"{next_version.major_minor()}-preview"
+    updated = re.sub(r"(?m)^version:\s*'[^']*'\s*$", f"version: '{preview_version}'", content)
+    updated = re.sub(r"docs-version:\s*'[^']*'", f"docs-version: '{next_version.major_minor()}'", updated)
+    # Main holds the unreleased next version, so mark it as a prerelease
+    if re.search(r"(?m)^prerelease:", updated):
+        updated = re.sub(r"(?m)^prerelease:.*$", "prerelease: true", updated)
+    else:
+        updated = re.sub(r"(?m)^(version: '[^']*')$", r"\1\nprerelease: true", updated, count=1)
 
     if updated == content:
         print(f"☑️ No changes needed for {antora_file.relative_to(REPO_ROOT)}")
         return
 
     antora_file.write_text(updated)
-    print(f"✅ Updated {antora_file.relative_to(REPO_ROOT)} to version {next_version}")
+    print(f"✅ Updated {antora_file.relative_to(REPO_ROOT)} to version {preview_version}")
 
 
 def update_package_json(new_version: PythonLibraryVersion) -> None:
