@@ -133,6 +133,17 @@ from the root. See `mypy.ini` for our custom mypy settings.
 
 The notebooks under `/examples` can be run using `scripts/run_notebooks`.
 
+### Notebook classification
+
+Notebooks are classified by their code cells rather than by file name:
+constructing a `GdsSessions` client (or calling `get_or_create`) makes a notebook a _session_ notebook,
+constructing a `GraphDataScience` client directly makes it a _plugin_ notebook.
+Session notebooks that reference `AURA_INSTANCEID` attach to an AuraDB instance and only run in the
+`sessions-attached` CI job; all other session notebooks run in the `sessions-self-managed-db` job.
+A notebook matching neither pattern is rejected with an error — it must use one of the standard client construction patterns.
+
+Use `./scripts/run_notebooks.py --dry-run` to print the classification and selection without executing anything.
+
 ### Cell Tags
 
 _Verify version_

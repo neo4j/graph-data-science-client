@@ -5,9 +5,10 @@ import os
 import re
 import signal
 import sys
+from enum import Enum
 from pathlib import Path
 from types import FrameType
-from typing import Callable, NamedTuple
+from typing import NamedTuple
 
 import nbformat
 from nbclient.exceptions import CellExecutionError
@@ -27,15 +28,52 @@ ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]")
 VERSION_CELL_TAG = "verify-version"
 TEARDOWN_CELL_TAG = "teardown"
 
-SESSION_NOTEBOOKS = ["graph-analytics-serverless.ipynb", "similarity-algorithms.ipynb"]
-SESSION_SELF_MANAGED_NOTEBOOKS = [
-    "embedding-api.ipynb",
-    "graph-analytics-serverless-self-managed.ipynb",
-    "graph-analytics-serverless-standalone.ipynb",
-    "graph-analytics-serverless-spark.ipynb",
-    "graph-analytics-serverless-standalone-fastpath.ipynb",
-]
-ALL_SESSION_NOTEBOOKS = SESSION_NOTEBOOKS + SESSION_SELF_MANAGED_NOTEBOOKS
+# A notebook is classified by how it creates its GDS client: constructing a
+# `GdsSessions` instance (or calling `get_or_create`) makes it a session notebook,
+# constructing a `GraphDataScience` client directly makes it a plugin notebook.
+SESSION_CONSTRUCTOR_RE = re.compile(r"\bGdsSessions\s*\(")
+GET_OR_CREATE_RE = re.compile(r"\.get_or_create\s*\(")
+GDS_CONSTRUCTOR_RE = re.compile(r"\bGraphDataScience\s*\(")
+AURA_ATTACHED_RE = re.compile(r"\baura_instance_id\s*=|\bAURA_INSTANCEID\b")
+
+
+class NotebookKind(Enum):
+    PLUGIN = "plugin"
+    SESSION = "session"
+    SESSION_AURA_ATTACHED = "session-aura-attached"
+
+
+SESSION_KINDS = (NotebookKind.SESSION, NotebookKind.SESSION_AURA_ATTACHED)
+
+
+def _code_source(nb: NotebookNode) -> str:
+    return "\n".join(cell["source"] for cell in nb["cells"] if cell["cell_type"] == "code")
+
+
+def classify_notebook(nb: NotebookNode, notebook_name: str) -> NotebookKind:
+    """Classify a notebook by how it creates its GDS client.
+
+    Session notebooks construct a `GdsSessions` instance or call `get_or_create`;
+    plugin notebooks construct a `GraphDataScience` client directly. Notebooks doing
+    neither are rejected so that they are not silently run in the wrong CI job.
+    """
+    code = _code_source(nb)
+
+    if SESSION_CONSTRUCTOR_RE.search(code) or GET_OR_CREATE_RE.search(code):
+        # a session marker wins: a plugin constructor in the same notebook might just be
+        # a commented-out alternative
+        if AURA_ATTACHED_RE.search(code):
+            return NotebookKind.SESSION_AURA_ATTACHED
+        return NotebookKind.SESSION
+
+    if GDS_CONSTRUCTOR_RE.search(code):
+        return NotebookKind.PLUGIN
+
+    raise RuntimeError(
+        f"Cannot classify notebook '{notebook_name}': found neither a `GdsSessions(...)`, "
+        "`.get_or_create(...)`, nor `GraphDataScience(...)` client construction in its code cells."
+    )
+
 
 # The `resources` dict nbconvert threads through the preprocessor chain. We only pass it along.
 Resources = dict[str, object]
@@ -167,94 +205,114 @@ class GdsTearDownCollector(ExecutePreprocessor):
         return self._tear_down_cells
 
 
-def main(filter_func: Callable[[str], bool]) -> None:
+class LoadedNotebook(NamedTuple):
+    path: Path
+    nb: NotebookNode
+    kind: NotebookKind
+
+
+def load_notebooks() -> list[LoadedNotebook]:
     examples_path = Path("examples")
 
-    notebook_files = [
-        f for f in examples_path.iterdir() if f.is_file() and f.suffix == ".ipynb" and filter_func(f.name)
-    ]
+    loaded: list[LoadedNotebook] = []
+    for path in sorted(examples_path.iterdir()):
+        if not (path.is_file() and path.suffix == ".ipynb"):
+            continue
 
+        with open(path) as f:
+            nb = nbformat.read(f, as_version=4)  # type: ignore
+
+        kind = classify_notebook(nb, path.name)
+        logger.info("Classified %s as %s", path.name, kind.value)
+        loaded.append(LoadedNotebook(path, nb, kind))
+
+    return loaded
+
+
+def main(notebooks: list[LoadedNotebook]) -> None:
     ep = GdsExecutePreprocessor(kernel_name="python3")
     td_collector = GdsTearDownCollector(kernel_name="python3")
     failures: list[tuple[str, CellExecutionError, int | None]] = []
 
-    logger.info("Found notebooks to execute: %s", [f.name for f in notebook_files])
+    logger.info("Found notebooks to execute: %s", [n.path.name for n in notebooks])
 
     session_name_suffix = _session_name_suffix()
 
-    for notebook_filename in notebook_files:
-        logger.info("Executing notebook %s", notebook_filename)
+    for notebook in notebooks:
+        logger.info("Executing notebook %s", notebook.path)
 
-        with open(notebook_filename) as f:
-            nb = nbformat.read(f, as_version=4)  # type: ignore
+        nb = notebook.nb
 
-            if session_name_suffix and notebook_filename.name in ALL_SESSION_NOTEBOOKS:
-                _apply_session_name_suffix(nb, session_name_suffix, notebook_filename.name)
+        if session_name_suffix and notebook.kind in SESSION_KINDS:
+            _apply_session_name_suffix(nb, session_name_suffix, notebook.path.name)
 
-            # Collect tear down cells
-            td_collector.init_notebook()
-            td_collector.preprocess(nb)
+        # Collect tear down cells
+        td_collector.init_notebook()
+        td_collector.preprocess(nb)
 
-            # Check if the GDS version matches
-            # ep.execute_cell
-            verify_version_cell_index = [
-                idx for idx, cell in enumerate(nb["cells"]) if VERSION_CELL_TAG in cell["metadata"].get("tags", [])
-            ]
+        # Check if the GDS version matches
+        # ep.execute_cell
+        verify_version_cell_index = [
+            idx for idx, cell in enumerate(nb["cells"]) if VERSION_CELL_TAG in cell["metadata"].get("tags", [])
+        ]
 
-            ep.init_notebook(
-                notebook_name=notebook_filename.name,
-                total_code_cells=sum(1 for cell in nb["cells"] if cell["cell_type"] == "code"),
-                version_cell_index=verify_version_cell_index[0] if verify_version_cell_index else None,
-                tear_down_cells=td_collector.tear_down_cells(),
+        ep.init_notebook(
+            notebook_name=notebook.path.name,
+            total_code_cells=sum(1 for cell in nb["cells"] if cell["cell_type"] == "code"),
+            version_cell_index=verify_version_cell_index[0] if verify_version_cell_index else None,
+            tear_down_cells=td_collector.tear_down_cells(),
+        )
+
+        # run the notebook
+        try:
+            ep.preprocess(nb)
+        except CellExecutionError as e:
+            failures.append((notebook.path.name, e, ep.failed_cell_number))
+            # Concise summary pointing at the failing cell; full (ANSI-stripped) traceback at DEBUG.
+            logger.error(
+                "Failed notebook %s at code cell %s -- %s: %s",
+                notebook.path.name,
+                ep.failed_cell_number,
+                e.ename,
+                e.evalue,
             )
-
-            # run the notebook
-            try:
-                ep.preprocess(nb)
-            except CellExecutionError as e:
-                failures.append((notebook_filename.name, e, ep.failed_cell_number))
-                # Concise summary pointing at the failing cell; full (ANSI-stripped) traceback at DEBUG.
-                logger.error(
-                    "Failed notebook %s at code cell %s -- %s: %s",
-                    notebook_filename.name,
-                    ep.failed_cell_number,
-                    e.ename,
-                    e.evalue,
-                )
-                logger.error("Failing cell content:\n%s", _indent(ep.failed_cell_source))
-                logger.debug("Traceback for %s:\n%s", notebook_filename.name, ANSI_ESCAPE.sub("", str(e)))
-                continue
+            logger.error("Failing cell content:\n%s", _indent(ep.failed_cell_source))
+            logger.debug("Traceback for %s:\n%s", notebook.path.name, ANSI_ESCAPE.sub("", str(e)))
+            continue
 
     if failures:
-        logger.error("%d of %d notebooks failed:", len(failures), len(notebook_files))
+        logger.error("%d of %d notebooks failed:", len(failures), len(notebooks))
         for nb_name, err, cell_number in failures:
             logger.error("  - %s (code cell %s): %s: %s", nb_name, cell_number, err.ename, err.evalue)
         raise SystemExit(1)
     else:
-        logger.info("Successfully executed %d notebook(s)", len(notebook_files))
+        logger.info("Successfully executed %d notebook(s)", len(notebooks))
 
 
 if __name__ == "__main__":
-    notebook_filter = sys.argv[1] if len(sys.argv) >= 2 else ""
+    dry_run = "--dry-run" in sys.argv[1:]
+    positional = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
+    notebook_filter = positional[0] if positional else ""
 
     logger.info("Notebook filter: %s", notebook_filter)
 
-    notebooks: list[str] | None = None
+    all_notebooks = load_notebooks()
+
     if notebook_filter == "sessions-attached":
-
-        def filter_func(notebook: str) -> bool:
-            return notebook in SESSION_NOTEBOOKS
+        selected = [n for n in all_notebooks if n.kind is NotebookKind.SESSION_AURA_ATTACHED]
     elif notebook_filter == "sessions-self-managed-db":
-
-        def filter_func(notebook: str) -> bool:
-            return notebook in SESSION_SELF_MANAGED_NOTEBOOKS
+        selected = [n for n in all_notebooks if n.kind is NotebookKind.SESSION]
     elif notebook_filter:
-
-        def filter_func(notebook: str) -> bool:
-            return notebook_filter in notebook
+        selected = [n for n in all_notebooks if notebook_filter in n.path.name]
     else:
+        selected = [n for n in all_notebooks if n.kind is NotebookKind.PLUGIN]
 
-        def filter_func(notebook: str) -> bool:
-            return notebook not in ALL_SESSION_NOTEBOOKS
+    if dry_run:
+        selected_paths = {n.path for n in selected}
+        for n in all_notebooks:
+            state = "selected" if n.path in selected_paths else "skipped"
+            logger.info("[dry-run] %-55s %-23s %s", n.path.name, n.kind.value, state)
+        logger.info("[dry-run] %d of %d notebook(s) selected", len(selected), len(all_notebooks))
+        raise SystemExit(0)
 
-    main(filter_func)
+    main(selected)

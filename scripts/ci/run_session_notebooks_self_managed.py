@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 # Run the self-managed family of session notebooks against a local Neo4j started via
 # testcontainers (instead of provisioning an AuraDB). The GDS session itself is still a real
 # cloud (staging) session created through the Aura API, so AURA_API_CLIENT_ID/SECRET are
-# required. Only `graph-analytics-serverless-self-managed.ipynb` uses the database; the
-# `standalone` and `spark` notebooks ignore the NEO4J_* env vars.
+# required. The `graph-analytics-serverless-self-managed` and `similarity-algorithms`
+# notebooks use the database; the remaining session notebooks ignore the NEO4J_* env vars.
 #
 # This script is invoked via plain `uv run` (default `dev` group), which includes the `test`
 # group where `testcontainers` lives.
