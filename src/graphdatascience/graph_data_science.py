@@ -272,8 +272,15 @@ class GraphDataScience:
 
         self._arrow_client: GdsArrowClient | None = None
 
-        arrow_info = ArrowInfo.create(self._query_runner)
-        if arrow and arrow_info.enabled:
+        if isinstance(arrow, str):
+            listen_address: str | None = arrow
+        elif arrow:
+            arrow_info = ArrowInfo.create(self._query_runner)
+            listen_address = arrow_info.listenAddress if arrow_info.enabled else None
+        else:
+            listen_address = None
+
+        if listen_address is not None:
             arrow_auth = None
             if auth is not None:
                 username, password = auth
@@ -287,8 +294,6 @@ class GraphDataScience:
                     "Falling back to use Cypher for GDS. To use Arrow, you must explicitly provide the `auth` parameter."
                 )
             else:
-                listen_address = arrow if isinstance(arrow, str) else arrow_info.listenAddress
-
                 self._arrow_client = GdsArrowClient(
                     AuthenticatedArrowClient(
                         listen_address,
