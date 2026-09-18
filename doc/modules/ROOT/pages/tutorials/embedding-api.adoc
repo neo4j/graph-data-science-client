@@ -1,0 +1,140 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+= Embedding API (preview)
+
+
+
+This Jupyter notebook is hosted
+https://github.com/neo4j/graph-data-science-client/blob/main/examples/embedding-api.ipynb[here]
+in the Neo4j Graph Data Science Client Github repository.
+
+The notebook shows how to use the `graphdatascience` Python library to
+compute node embeddings with the Embedding API, a unified interface for
+creating and training embedding models in a GDS Session.
+
+The Embedding API is a preview feature and may change or be removed in
+future releases.
+
+We consider the Cora citation network, loaded with the built-in dataset
+tooling. We first compute FastRP embeddings without any training, and
+then train a GraphSAGE encoder with an MLP classifier decoder and apply
+the trained model to generate embeddings.
+
+== Prerequisites
+
+This notebook requires having the Aura Graph Analytics
+https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[feature]
+enabled for your Neo4j Aura project, as well as
+https://neo4j.com/docs/aura/api/authentication[Aura API credentials].
+The credentials are read from environment variables, optionally loaded
+from a `sessions.env` file (see `sessions.env.template`).
+
+You also need to have the `graphdatascience` Python library installed,
+version `2.0a7` or later.
+
+[source, python, role=no-test]
+----
+%pip install "graphdatascience>=2.0a7" python-dotenv
+----
+
+[source, python, role=no-test]
+----
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv("sessions.env")
+----
+
+== Creating a GDS Session
+
+The entry point for managing GDS Sessions is the `GdsSessions` object,
+which requires https://neo4j.com/docs/aura/api/authentication[Aura API
+credentials]. Since this notebook works purely on in-memory graphs, the
+session does not need to be connected to a database.
+
+[source, python, role=no-test]
+----
+from graphdatascience.session import AuraAPICredentials, CloudLocation, GdsSessions, SessionMemory
+
+# Create a new GdsSessions object
+sessions = GdsSessions(
+    api_credentials=AuraAPICredentials(
+        os.environ.get("CLIENT_ID"),
+        os.environ.get("CLIENT_SECRET"),
+        os.environ.get("PROJECT_ID"),
+    )
+)
+
+gds = sessions.get_or_create(
+    session_name="my_session",
+    memory=SessionMemory.m_2GB,
+    cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
+)
+----
+
+== FastRP embeddings
+
+The simplest way to compute node embeddings is `gds.embedding.create`
+together with a built-in graph encoder such as `FastRPConfig`, which
+requires no training. The resulting embeddings are added to the
+in-memory graph and streamed back as a DataFrame.
+
+[source, python, role=no-test]
+----
+from graphdatascience.procedure_surface.api.node_embedding.config import FastRPConfig
+
+with gds.graph.datasets.load_cora() as G:
+    create_result = gds.embedding.create(
+        G=G,
+        graph_encoder=FastRPConfig(),
+        mutate_property="fastrp_embeddings",
+    )
+
+    fastrp_embeddings = gds.graph.node_properties.stream(G, node_properties="fastrp_embeddings")
+    fastrp_embeddings.head()
+----
+
+== Training a GraphSAGE model
+
+`gds.embedding.train` trains a graph encoder together with a decoder
+that predicts a target property of the graph. The trained model is saved
+under a name, and can then be used as the graph encoder of
+`gds.embedding.create`.
+
+[source, python, role=no-test]
+----
+from graphdatascience.procedure_surface.api.node_embedding.config import GraphSAGEConfig, MLPClassifierConfig
+
+with gds.graph.datasets.load_cora() as G:
+    train_result = gds.embedding.train(
+        G=G,
+        graph_encoder=GraphSAGEConfig(target_type="Paper", out_dim=1),
+        decoder=MLPClassifierConfig(),
+        model_save_name="cora_model_1",
+        target_label="Paper",
+        target_property="subject",
+        feature_properties=["features"],
+    )
+    create_result = gds.embedding.create(
+        G=G,
+        graph_encoder="cora_model_1",
+        feature_properties=["features"],
+        mutate_property="graphsage_embeddings",
+    )
+
+    graphsage_embeddings = gds.graph.node_properties.stream(G, node_properties="graphsage_embeddings")
+    graphsage_embeddings.head()
+----
+
+== Deleting the session
+
+After the analysis is done, you can delete the session. As this example
+is not connected to a Neo4j DB, make sure to persist any results you
+want to keep beforehand. Deleting the session releases all resources
+associated with it, and stops incurring costs.
+
+[source, python, role=no-test]
+----
+sessions.delete(session_name="my_session")
+----

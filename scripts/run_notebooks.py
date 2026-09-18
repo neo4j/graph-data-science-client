@@ -29,6 +29,7 @@ TEARDOWN_CELL_TAG = "teardown"
 
 SESSION_NOTEBOOKS = ["graph-analytics-serverless.ipynb", "similarity-algorithms.ipynb"]
 SESSION_SELF_MANAGED_NOTEBOOKS = [
+    "embedding-api.ipynb",
     "graph-analytics-serverless-self-managed.ipynb",
     "graph-analytics-serverless-standalone.ipynb",
     "graph-analytics-serverless-spark.ipynb",
