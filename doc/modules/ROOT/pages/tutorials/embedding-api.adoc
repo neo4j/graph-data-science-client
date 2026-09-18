@@ -88,6 +88,7 @@ with gds.graph.datasets.load_cora() as G:
     create_result = gds.embedding.create(
         G=G,
         graph_encoder=FastRPConfig(),
+        feature_properties=["features"],
         mutate_property="fastrp_embeddings",
     )
 
@@ -109,7 +110,7 @@ from graphdatascience.procedure_surface.api.node_embedding.config import GraphSA
 with gds.graph.datasets.load_cora() as G:
     train_result = gds.embedding.train(
         G=G,
-        graph_encoder=GraphSAGEConfig(target_type="Paper", out_dim=1),
+        graph_encoder=GraphSAGEConfig(target_type="Paper"),
         decoder=MLPClassifierConfig(),
         model_save_name="cora_model_1",
         target_label="Paper",
