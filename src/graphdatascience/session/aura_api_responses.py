@@ -248,6 +248,32 @@ class WaitResult(NamedTuple):
 
 
 @dataclass(repr=True, frozen=True)
+class OrganizationDetails:
+    id: str
+    name: str
+
+    @classmethod
+    def from_json(cls, json: dict[str, Any]) -> OrganizationDetails:
+        return cls(
+            id=json["id"],
+            name=json["name"],
+        )
+
+
+@dataclass(repr=True, frozen=True)
+class ProjectSummary:
+    id: str
+    name: str
+
+    @classmethod
+    def from_json(cls, json: dict[str, Any]) -> ProjectSummary:
+        return cls(
+            id=json["id"],
+            name=json["name"],
+        )
+
+
+@dataclass(repr=True, frozen=True)
 class ProjectDetails:
     id: str
     cloud_locations: set[CloudLocation]
