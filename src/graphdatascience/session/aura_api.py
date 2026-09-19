@@ -21,7 +21,9 @@ from graphdatascience.session.aura_api_responses import (
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
+    OrganizationDetails,
     ProjectDetails,
+    ProjectSummary,
     SessionDetails,
     SessionDetailsWithErrors,
     SessionErrorData,
@@ -442,7 +444,7 @@ class AuraApi:
         try:
             projects: dict[str, str] = {}
             for organization in self._list_organizations():
-                projects.update({d["id"]: d["name"] for d in self._list_organization_projects(organization["id"])})
+                projects.update({p.id: p.name for p in self._list_organization_projects(organization.id)})
         except AuraApiError as e:
             raise AuraApiError(
                 f"{e.message} Could not derive a default project; specify `project_id` explicitly.",
@@ -459,17 +461,17 @@ class AuraApi:
 
         return next(iter(projects))
 
-    def _list_organizations(self) -> list[dict[str, str]]:
+    def _list_organizations(self) -> list[OrganizationDetails]:
         response = self._request_session.get(f"{self._base_uri}/v2beta1/organizations")
         self._check_resp(response)
 
-        return response.json()["data"]
+        return [OrganizationDetails.from_json(d) for d in response.json()["data"]]
 
-    def _list_organization_projects(self, organization_id: str) -> list[dict[str, str]]:
+    def _list_organization_projects(self, organization_id: str) -> list[ProjectSummary]:
         response = self._request_session.get(f"{self._base_uri}/v2beta1/organizations/{organization_id}/projects")
         self._check_resp(response)
 
-        return response.json()["data"]
+        return [ProjectSummary.from_json(d) for d in response.json()["data"]]
 
     def project_details(self) -> ProjectDetails:
         if not self._project_details:
