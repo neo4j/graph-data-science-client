@@ -1,0 +1,2127 @@
+// DO NOT EDIT - AsciiDoc file generated automatically
+
+= Trade Network Pathfinding with Neo4j GDS
+
+This notebook uses
+https://www.kaggle.com/datasets/mateuscco/toy-network-datasets[Kaggle]'s
+*Real and Toy Network Datasets* collection, specifically
+`imports++_++manufactures.net`. That file represents a trade network
+between countries: countries become graph nodes, and trade links become
+directed relationships.
+
+The goal is to move from a raw Pajek `.net` file to practical graph
+questions:
+
+* Which route from one country to another is cheapest?
+* What alternative routes exist if the best path is not enough?
+* How do traversal, flow, and tree algorithms describe the same trade
+network differently?
+
+== Setup
+
+=== Install dependencies
+
+This first cell installs the Python packages used later: the Neo4j
+driver for database access, the Graph Data Science client for
+algorithms, and notebook visualization tools for drawing the results.
+
+*Next code block:* installs the required packages in the notebook
+runtime.
+
+*Why it matters:* Without these packages, Python cannot connect to
+Neo4j, call GDS algorithms, or render graph visuals.
+
+[source, python, role=no-test]
+----
+!pip install neo4j
+!pip install graphdatascience==2.0a5
+!pip install --upgrade traitlets
+!pip install neo4j-viz[notebook]
+----
+
+=== Import libraries and set fixed paths
+
+This cell gathers the imports and names used throughout the notebook.
+
+The important beginner idea: keep file paths, dataset names, graph
+names, and relationship names in one place. If the dataset or graph name
+changes later, you only need to update these constants instead of
+hunting through every cell.
+
+*Next code block:* imports Python modules and defines names such as
+`DATA++_++FILE`, `DATASET++_++ID`, `GRAPH++_++NAME`, and `REL++_++TYPE`.
+
+*Why it matters:* These constants keep the notebook easy to adjust when
+you change the dataset, graph name, or relationship type.
+
+[source, python, role=no-test]
+----
+from __future__ import annotations
+
+import csv
+import json
+import os
+import shlex
+from datetime import datetime, timedelta, timezone
+from numbers import Number
+from pathlib import Path
+from typing import Any
+
+from graphdatascience.session import AuraAPICredentials, DbmsConnectionInfo, GdsSessions, SessionMemory
+from IPython.display import display
+
+ROOT_DIR = '/content/'
+DATA_FILE = '/content/imports_manufactures.net'
+DATASET_ID = 'imports_manufactures'
+GRAPH_NAME = 'imports_manufactures_remote'
+REL_TYPE = 'TRADE_FLOW'
+----
+
+[source, python, role=no-test]
+----
+import os
+
+from dotenv import load_dotenv
+
+# This allows to load required secrets from `.env` file in local directory
+# This can include Aura API Credentials and Database Credentials.
+# If file does not exist this is a noop.
+load_dotenv(".env")
+----
+
+=== Set inputs and run options
+
+Here you choose the experiment.
+
+`SOURCE` and `TARGET` are the countries you want to compare. `K`
+controls how many alternative paths Yen's algorithm returns. `DELTA`,
+`BATCH++_++SIZE`, and session settings control performance and loading
+behavior, while `CLEAR++_++EXISTING` decides whether old rows for this
+dataset should be removed before loading again.
+
+*Next code block:* sets the source country, target country, path counts,
+batch size, session options, and reload behavior.
+
+*Why it matters:* This is the control panel for the experiment. Change
+these values when you want to compare different countries or tune how
+the notebook runs.
+
+[source, python, role=no-test]
+----
+SOURCE = 'United States'
+TARGET = 'Norway'
+K = 5
+DELTA = 3.0
+BATCH_SIZE = 1000
+SESSION_NAME = 'PathFImportsManufactures'
+SESSION_MEMORY = 'm_2GB'
+TTL_MINUTES = 60
+CLEAR_EXISTING = True
+----
+
+=== Define utility helpers
+
+These helper functions keep the rest of the notebook cleaner.
+
+They handle repeated chores such as creating timestamps, checking
+environment values, saving JSON/CSV files, and converting algorithm
+results into plain Python dictionaries. Nothing graph-specific happens
+here yet; this is just the toolbox.
+
+*Next code block:* defines helper functions for timestamps, environment
+checks, JSON output, result conversion, and CSV export.
+
+*Why it matters:* These helpers remove repeated code from the main
+workflow, so later cells can focus on graph loading and algorithms.
+
+[source, python, role=no-test]
+----
+def now_utc() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec='seconds')
+
+
+def env_value(name: str) -> str:
+    value = os.getenv(name)
+    if not value:
+        raise RuntimeError(f'Missing environment variable: {name}')
+    return value
+
+
+def write_json(path: Path, data: Any) -> None:
+    path.write_text(json.dumps(data, indent=2, default=str) + '\n', encoding='utf-8')
+
+
+def plain_dict(value: Any) -> dict[str, Any]:
+    if hasattr(value, 'model_dump'):
+        return value.model_dump(by_alias=True)
+    if hasattr(value, 'dict'):
+        return value.dict()
+    return dict(value)
+
+
+def write_paths_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+    with path.open('w', newline='', encoding='utf-8') as handle:
+        writer = csv.DictWriter(handle, fieldnames=['index', 'source', 'target', 'totalCost', 'path', 'costs'])
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({
+                'index': row['index'],
+                'source': row['source'],
+                'target': row['target'],
+                'totalCost': row['totalCost'],
+                'path': ' -> '.join(row['path']),
+                'costs': json.dumps(row['costs']),
+            })
+----
+
+= 1. Extract
+
+=== Read the Pajek network file
+
+The Kaggle file is in Pajek `.net` format, a common text format for
+graph data.
+
+This parser reads the file line by line. It first finds the
+`++*++Vertices` section, where each country is listed, and then the
+`++*++Arcs` or `++*++Edges` section, where the connections between
+countries are listed. In simple terms: this step turns a text file into
+raw nodes and links that Python can work with.
+
+*Next code block:* parses the Pajek `.net` file into two Python lists:
+`nodes` for countries and `relationships` for trade links.
+
+*Why it matters:* Neo4j cannot use the raw text file directly. This step
+converts the Kaggle file into structured data and prints counts so you
+can confirm the file was read correctly.
+
+[source, python, role=no-test]
+----
+def parse_net_file(path: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    nodes = []
+    relationships = []
+    section = ''
+
+    with path.open('r', encoding='utf-8', errors='replace') as handle:
+        for line_number, raw_line in enumerate(handle, start=1):
+            line = raw_line.strip()
+            if not line:
+                continue
+
+            lower = line.lower()
+            if lower.startswith('*vertices'):
+                section = 'vertices'
+                continue
+            if lower.startswith('*arcs') or lower.startswith('*edges'):
+                section = 'relationships'
+                continue
+            if line.startswith('*'):
+                section = ''
+                continue
+
+            if section == 'vertices':
+                parts = shlex.split(line)
+                country_id = int(parts[0])
+                nodes.append({
+                    'countryId': country_id,
+                    'nodeKey': f'{DATASET_ID}:{country_id}',
+                    'name': parts[1],
+                    'x': float(parts[2]) if len(parts) > 2 else None,
+                    'y': float(parts[3]) if len(parts) > 3 else None,
+                    'z': float(parts[4]) if len(parts) > 4 else None,
+                })
+
+            if section == 'relationships':
+                parts = line.split()
+                weight = float(parts[2]) if len(parts) > 2 else 1.0
+                if weight <= 0:
+                    continue
+                source_id = int(parts[0])
+                target_id = int(parts[1])
+                relationships.append({
+                    'relKey': f'{DATASET_ID}:{source_id}:{target_id}:{line_number}',
+                    'sourceKey': f'{DATASET_ID}:{source_id}',
+                    'targetKey': f'{DATASET_ID}:{target_id}',
+                    'sourceId': source_id,
+                    'targetId': target_id,
+                    'weight': weight,
+                    'strength': weight,
+                    'cost': 1.0 / weight,
+                })
+
+    return nodes, relationships
+
+
+nodes, relationships = parse_net_file(Path(DATA_FILE))
+print(f'parsed nodes: {len(nodes):,}')
+print(f'parsed relationships: {len(relationships):,}')
+----
+
+= 2. Transform
+
+The same parser also cleans the extracted data into the shape Neo4j
+needs.
+
+Each country gets a stable `nodeKey`, each trade connection gets a
+stable `relKey`, and numeric values are converted from text into
+numbers. The notebook stores the original trade `weight` as `strength`,
+then creates `cost = 1 / weight`. That means stronger trade
+relationships become cheaper paths, which makes sense for shortest-path
+analysis.
+
+*Next code block:* there is no separate transform code block after this
+note; the parser above already performed the transform while reading the
+file.
+
+*Why it matters:* The notebook separates Extract and Transform in the
+explanation, but keeps them in one parser function so beginners can
+follow the data conversion in one place.
+
+= 3. Load
+
+=== Connect to Neo4j and create a GDS Session
+
+Now the notebook moves from local Python data into Neo4j.
+
+This cell connects to the Neo4j database, creates or reuses a Graph Data
+Science Session, and checks that the connection works. Think of Neo4j as
+the place where the graph is stored, and the GDS Session as the engine
+that runs graph algorithms on that stored data.
+
+*Next code block:* connects to Neo4j, creates or reuses a GDS Session,
+and verifies connectivity.
+
+*Why it matters:* The remaining steps need both the database and the GDS
+engine to be available before any graph data can be loaded or analyzed.
+
+[source, python, role=no-test]
+----
+uri = env_value("NEO4J_URI")
+username = env_value("NEO4J_USERNAME")
+password = env_value("NEO4J_PASSWORD")
+client_id = env_value("CLIENT_ID")
+client_secret = env_value("CLIENT_SECRET")
+project_id = os.getenv("PROJECT_ID") or None
+
+session_memory = SessionMemory.m_2GB
+sessions = GdsSessions(api_credentials=AuraAPICredentials (client_id, client_secret, project_id))
+db_connection = DbmsConnectionInfo(uri=uri, username=username, password=password)
+
+gds = sessions.get_or_create(
+      session_name='PathF',
+      memory=SessionMemory.m_2GB,
+      db_connection=db_connection,
+      ttl=timedelta(minutes=30),
+      )
+
+gds.verify_connectivity()
+print('GDS Session is ready')
+----
+
+=== Prepare schema and import tracking
+
+Before loading data, the notebook creates guardrails in the database.
+
+Constraints prevent duplicate import sessions and duplicate country
+nodes. The index helps country-name lookups run faster. The
+import-session node is a simple audit record, so you can later see when
+the dataset was loaded and how many nodes and relationships were parsed.
+
+*Next code block:* creates constraints, creates an index, and records an
+import-session node.
+
+*Why it matters:* Constraints avoid duplicate data, the index helps
+country lookups, and the import record makes the load easier to audit
+later.
+
+[source, python, role=no-test]
+----
+constraints = [
+    '''
+    CREATE CONSTRAINT trade_import_session_id IF NOT EXISTS
+    FOR (s:TradeImportSession) REQUIRE s.id IS UNIQUE
+    ''',
+    '''
+    CREATE CONSTRAINT trade_country_node_key IF NOT EXISTS
+    FOR (c:TradeCountry) REQUIRE c.nodeKey IS UNIQUE
+    ''',
+    '''
+    CREATE INDEX trade_country_name IF NOT EXISTS
+    FOR (c:TradeCountry) ON (c.datasetId, c.name)
+    ''',
+]
+
+for query in constraints:
+    gds.run_cypher(query.strip())
+
+import_session_id = f'{DATASET_ID}-{datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")}'
+gds.run_cypher(
+    '''
+    MERGE (s:TradeImportSession {id: $sessionId})
+    SET s.datasetId = $datasetId,
+        s.sourceFile = $sourceFile,
+        s.status = 'STARTED',
+        s.startedAt = datetime($startedAt),
+        s.parsedNodes = $parsedNodes,
+        s.parsedRelationships = $parsedRelationships
+    ''',
+    params={
+        'sessionId': import_session_id,
+        'datasetId': DATASET_ID,
+        'sourceFile': str(DATA_FILE),
+        'startedAt': now_utc(),
+        'parsedNodes': len(nodes),
+        'parsedRelationships': len(relationships),
+    },
+)
+print(f'import session: {import_session_id}')
+----
+
+=== Clear earlier dataset rows
+
+This step keeps reruns tidy.
+
+When `CLEAR++_++EXISTING` is `True`, the notebook deletes only the
+countries and relationships for this dataset before loading the fresh
+version. It does not clear unrelated database data. When it is `False`,
+the notebook keeps existing rows and merges new values into them.
+
+*Next code block:* deletes old rows for this dataset when
+`CLEAR++_++EXISTING` is enabled.
+
+*Why it matters:* Rerunning notebooks can create confusing duplicates.
+This keeps the reload clean while leaving unrelated database data alone.
+
+[source, python, role=no-test]
+----
+if CLEAR_EXISTING:
+    gds.run_cypher(
+        '''
+        MATCH (c:TradeCountry {datasetId: $datasetId})
+        DETACH DELETE c
+        ''',
+        params={'datasetId': DATASET_ID},
+    )
+    print('old graph data cleared')
+else:
+    print('old graph data kept')
+----
+
+=== Load country nodes
+
+This cell writes one `TradeCountry` node per country.
+
+`UNWIND` sends the list of parsed countries into Cypher, and `MERGE`
+creates each country if it does not exist yet. If the country already
+exists for this dataset, the properties are updated. The result is a
+clean country-node layer in Neo4j.
+
+*Next code block:* writes all parsed countries as `TradeCountry` nodes.
+
+*Why it matters:* Pathfinding needs countries to exist as graph nodes
+before relationships can connect them.
+
+[source, python, role=no-test]
+----
+gds.run_cypher(
+    '''
+    UNWIND $rows AS row
+    MERGE (c:TradeCountry {nodeKey: row.nodeKey})
+    SET c.datasetId = $datasetId,
+        c.countryId = row.countryId,
+        c.name = row.name,
+        c.x = row.x,
+        c.y = row.y,
+        c.z = row.z
+    ''',
+    params={'datasetId': DATASET_ID, 'rows': nodes},
+)
+print(f'loaded nodes: {len(nodes):,}')
+----
+
+=== Load trade relationships
+
+This cell writes the directed trade links between countries.
+
+The notebook loads relationships in batches so the database is not asked
+to process everything in one huge request. Each `TRADE++_++FLOW`
+relationship stores the original weight, the renamed `strength`, and the
+derived `cost` used by weighted path algorithms.
+
+*Next code block:* writes the directed `TRADE++_++FLOW` relationships in
+batches.
+
+*Why it matters:* Relationships are the routes algorithms will travel.
+Batching keeps the database work manageable and stores both trade
+strength and path cost.
+
+[source, python, role=no-test]
+----
+for start in range(0, len(relationships), BATCH_SIZE):
+    batch = relationships[start : start + BATCH_SIZE]
+    gds.run_cypher(
+        f'''
+        UNWIND $rows AS row
+        MATCH (source:TradeCountry {{nodeKey: row.sourceKey}})
+        MATCH (target:TradeCountry {{nodeKey: row.targetKey}})
+        MERGE (source)-[r:{REL_TYPE} {{datasetId: $datasetId, relKey: row.relKey}}]->(target)
+        SET r.sourceId = row.sourceId,
+            r.targetId = row.targetId,
+            r.weight = row.weight,
+            r.strength = row.strength,
+            r.cost = row.cost
+        ''',
+        params={'datasetId': DATASET_ID, 'rows': batch},
+    )
+    print(f'loaded relationships: {min(start + BATCH_SIZE, len(relationships)):,}/{len(relationships):,}')
+----
+
+=== Validate the load
+
+This is the quick "did the load work?" checkpoint.
+
+The cell counts the countries and trade relationships stored in Neo4j,
+then updates the import-session record from `STARTED` to `IMPORTED`. If
+these counts look wrong, it is better to stop here and inspect the file
+or load steps before running algorithms.
+
+*Next code block:* counts the loaded graph data and marks the import
+session as completed.
+
+*Why it matters:* This is a checkpoint before analysis. If the counts
+look wrong, fix the load before projecting the graph into GDS.
+
+[source, python, role=no-test]
+----
+OUT_DIR = Path(ROOT_DIR)
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+count_result = gds.run_cypher(
+    f'''
+    MATCH (c:TradeCountry {{datasetId: $datasetId}})
+    WITH count(c) AS nodeCount
+    MATCH (:TradeCountry {{datasetId: $datasetId}})-[r:{REL_TYPE} {{datasetId: $datasetId}}]->(:TradeCountry {{datasetId: $datasetId}})
+    RETURN nodeCount, count(r) AS relationshipCount
+    ''',
+    params={'datasetId': DATASET_ID},
+)
+
+count_row = count_result.iloc[0].to_dict()
+import_counts = {'nodeCount': int(count_row['nodeCount']), 'relationshipCount': int(count_row['relationshipCount'])}
+
+gds.run_cypher(
+    '''
+    MATCH (s:TradeImportSession {id: $sessionId})
+    SET s.status = 'IMPORTED',
+        s.importedAt = datetime($importedAt),
+        s.nodeCount = $nodeCount,
+        s.relationshipCount = $relationshipCount
+    ''',
+    params={
+        'sessionId': import_session_id,
+
+        'importedAt': now_utc(),
+        'nodeCount': import_counts['nodeCount'],
+        'relationshipCount': import_counts['relationshipCount'],
+    },
+)
+
+# write_json(OUT_DIR / 'import_counts.json', import_counts)
+print(import_counts)
+----
+
+= 4. Prepare the GDS Graph
+
+=== Define the remote projection
+
+Neo4j stores the graph, but GDS algorithms run on an in-memory
+projection.
+
+This cell defines the projection query: it selects `TradeCountry` nodes
+and `TRADE++_++FLOW` relationships, then tells GDS which node and
+relationship properties to carry into memory. The key pathfinding
+property is `cost`; `weight` and `strength` are kept for comparison and
+flow algorithms.
+
+*Next code block:* builds the Cypher projection query and stores it as
+`REMOTE++_++PROJECT++_++CYPHER`.
+
+*Why it matters:* This prepares the recipe for the in-memory GDS graph.
+The query is defined first, then executed later when the projection is
+created.
+
+[source, python, role=no-test]
+----
+REMOTE_PROJECT_CYPHER = f'''
+MATCH (source:TradeCountry {{datasetId: $datasetId}})-[r:{REL_TYPE}]->(target:TradeCountry {{datasetId: $datasetId}})
+RETURN gds.graph.project.remote(
+  source,
+  target,
+  {{
+    sourceNodeLabels: labels(source),
+    sourceNodeProperties: source {{ .x, .y }},
+    targetNodeLabels: labels(target),
+    targetNodeProperties: target {{ .x, .y }},
+    relationshipType: type(r),
+    relationshipProperties: r {{ .cost, .weight, .strength }}
+  }}
+)
+'''.strip()
+
+
+----
+
+[source, python, role=no-test]
+----
+
+----
+
+=== Remove an older projection
+
+Projected graphs are snapshots.
+
+If a projection with the same name already exists, this cell drops it so
+the next cell can create a fresh one from the latest Neo4j data. This
+avoids accidentally running algorithms on an older version of the trade
+network.
+
+*Next code block:* checks whether a projected graph with the same name
+already exists and drops it if needed.
+
+*Why it matters:* GDS projections are snapshots. Dropping the old one
+ensures the next projection uses the latest imported data.
+
+[source, python, role=no-test]
+----
+existing_graphs = gds.graph.list(GRAPH_NAME)
+if existing_graphs:
+    gds.graph.drop(GRAPH_NAME)
+    print(f'dropped projection: {GRAPH_NAME}')
+else:
+    print(f'projection not found: {GRAPH_NAME}')
+----
+
+=== Create the in-memory graph
+
+This is where the analysis graph is actually created.
+
+The notebook sends the projection query to the GDS Session and receives
+a `graph` object back. The printed node and relationship counts are
+another useful checkpoint: they should line up with what was loaded into
+Neo4j.
+
+*Next code block:* creates the directed in-memory graph projection used
+by most algorithms.
+
+*Why it matters:* GDS algorithms run on this projected graph object, not
+directly on every stored Neo4j row.
+
+[source, python, role=no-test]
+----
+graph, projection_result = gds.graph.project.cypher(
+    GRAPH_NAME,
+    REMOTE_PROJECT_CYPHER,
+    query_parameters={'datasetId': DATASET_ID},
+    inverse_indexed_relationship_types=[REL_TYPE],
+)
+
+projection_summary = plain_dict(projection_result)
+# write_json(OUT_DIR / 'projection_summary.json', projection_summary)
+print({'graphName': GRAPH_NAME, 'nodeCount': graph.node_count(), 'relationshipCount': graph.relationship_count()})
+----
+
+=== Resolve source and target IDs
+
+Humans choose countries by name, but GDS algorithms use internal node
+IDs.
+
+This step looks up the selected `SOURCE` and `TARGET` countries and
+converts them into the IDs needed by the algorithms. If a country name
+is misspelled or missing from the dataset, this is where the notebook
+will tell you.
+
+*Next code block:* defines a lookup helper and resolves `SOURCE` and
+`TARGET` into node IDs.
+
+*Why it matters:* Algorithm calls use numeric node IDs, while people
+prefer country names. This cell bridges those two views.
+
+[source, python, role=no-test]
+----
+def node_id_by_name(country_name: str) -> int:
+    result = gds.run_cypher(
+        '''
+        MATCH (c:TradeCountry {datasetId: $datasetId})
+        WHERE toLower(c.name) = toLower($name)
+        RETURN id(c) AS nodeId
+        ''',
+        params={'datasetId': DATASET_ID, 'name': country_name},
+    )
+    if result.empty:
+        raise ValueError(f'Could not find country: {country_name}')
+    return int(result.iloc[0]['nodeId'])
+
+source_node_id = node_id_by_name(SOURCE)
+target_node_id = node_id_by_name(TARGET)
+print({'source': SOURCE, 'sourceNodeId': source_node_id, 'target': TARGET, 'targetNodeId': target_node_id})
+----
+
+=== Define path result helpers
+
+Algorithm results often contain node IDs, which are not very friendly to
+read.
+
+These helpers collect returned paths, look up the matching country
+names, and format each result with readable fields like source, target,
+total cost, country path, and edge costs. This makes later outputs
+easier to compare without changing the algorithms themselves.
+
+*Next code block:* defines result-formatting helpers that convert IDs
+and raw rows into readable path dictionaries.
+
+*Why it matters:* Later outputs become easier to inspect because paths
+can be shown as country names instead of only internal IDs.
+
+[source, python, role=no-test]
+----
+NODE_ID_KEYS = (
+    'source', 'sourceNode', 'sourceNodeId', 'source_node',
+    'target', 'targetNode', 'targetNodeId', 'target_node',
+    'nodeId', 'node_id', 'parentId', 'parent_id',
+)
+
+
+def result_records(result):
+    if result is None:
+        return []
+    if isinstance(result, list):
+        return result
+    if hasattr(result, 'to_dict'):
+        return result.to_dict('records')
+    return list(result)
+
+
+def first_value(row: dict[str, Any], *keys: str):
+    for key in keys:
+        if key in row and row[key] is not None:
+            return row[key]
+    return None
+
+
+def as_node_id(value) -> int | None:
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, Number):
+        return int(value)
+    if isinstance(value, str) and value.strip().lstrip('-').isdigit():
+        return int(value.strip())
+    node_id = getattr(value, 'id', None)
+    if callable(node_id):
+        node_id = node_id()
+    return int(node_id) if node_id is not None else None
+
+
+def path_node_ids(row: dict[str, Any]) -> list[int]:
+    raw_ids = first_value(row, 'nodeIds', 'node_ids')
+    if raw_ids is not None:
+        return [int(node_id) for node_id in raw_ids]
+
+    path_value = first_value(row, 'path', 'route')
+    if path_value is None:
+        return []
+    raw_nodes = path_value.nodes if hasattr(path_value, 'nodes') else path_value
+    return [node_id for node_id in (as_node_id(node) for node in raw_nodes) if node_id is not None]
+
+
+def _row_node_id(row: dict[str, Any], *keys: str) -> int | None:
+    return as_node_id(first_value(row, *keys))
+
+
+def node_ids_from_record(row: dict[str, Any]) -> set[int]:
+    node_ids = {node_id for node_id in path_node_ids(row) if node_id >= 0}
+    for key in NODE_ID_KEYS:
+        node_id = as_node_id(row.get(key))
+        if node_id is not None and node_id >= 0:
+            node_ids.add(node_id)
+    return node_ids
+
+
+def names_for_node_ids(node_ids: list[int]) -> dict[int, str]:
+    node_ids = sorted({int(node_id) for node_id in node_ids if node_id is not None and int(node_id) >= 0})
+    if not node_ids:
+        return {}
+
+    result = gds.run_cypher(
+        '''
+        MATCH (c:TradeCountry {datasetId: $datasetId})
+        WHERE id(c) IN $nodeIds
+        RETURN id(c) AS nodeId, c.name AS name
+        ''',
+        params={'datasetId': DATASET_ID, 'nodeIds': node_ids},
+    )
+
+    return {
+        int(row['nodeId']): row['name']
+        for row in result.to_dict('records')
+    }
+
+
+def node_name(node_id: int | None, name_by_id: dict[int, str]) -> str | None:
+    if node_id is None:
+        return None
+    return name_by_id.get(int(node_id), str(node_id))
+
+
+def country_named_records(
+    result,
+    source_keys=('source', 'sourceNode', 'sourceNodeId', 'source_node'),
+    target_keys=('target', 'targetNode', 'targetNodeId', 'target_node'),
+    node_keys=('nodeId', 'node_id'),
+    parent_keys=('parentId', 'parent_id'),
+) -> list[dict[str, Any]]:
+    rows = result_records(result)
+    all_node_ids = set()
+    for row in rows:
+        all_node_ids.update(node_ids_from_record(row))
+
+    name_by_id = names_for_node_ids(sorted(all_node_ids))
+    readable_rows = []
+    for row in rows:
+        readable_row = dict(row)
+        source_id = _row_node_id(row, *source_keys)
+        target_id = _row_node_id(row, *target_keys)
+        node_id = _row_node_id(row, *node_keys)
+        parent_id = _row_node_id(row, *parent_keys)
+        node_ids = path_node_ids(row)
+
+        if source_id is not None:
+            readable_row['sourceCountry'] = node_name(source_id, name_by_id)
+        if target_id is not None:
+            readable_row['targetCountry'] = node_name(target_id, name_by_id)
+        if parent_id is not None:
+            readable_row['parentCountry'] = node_name(parent_id, name_by_id)
+        if node_id is not None:
+            readable_row['nodeCountry'] = node_name(node_id, name_by_id)
+        if node_ids:
+            readable_row['pathCountries'] = ' -> '.join(node_name(node_id, name_by_id) for node_id in node_ids)
+
+        readable_rows.append(readable_row)
+    return readable_rows
+
+
+def display_country_named_result(result, **kwargs) -> list[dict[str, Any]]:
+    rows = country_named_records(result, **kwargs)
+    try:
+        import pandas as pd
+        display(pd.DataFrame(rows))
+    except Exception:
+        display(rows)
+    return rows
+
+
+def paths_from_gds_result(
+    result,
+    default_source: str | None = None,
+    default_target: str | None = None,
+) -> tuple[list[dict[str, Any]], dict[int, str]]:
+    raw_paths = result_records(result)
+    all_node_ids = set()
+
+    for row in raw_paths:
+        all_node_ids.update(node_ids_from_record(row))
+
+    name_by_id = names_for_node_ids(sorted(all_node_ids))
+    rows = []
+
+    for position, row in enumerate(raw_paths):
+        node_ids = path_node_ids(row)
+        source_id = _row_node_id(row, 'sourceNode', 'sourceNodeId')
+        target_id = _row_node_id(row, 'targetNode', 'targetNodeId')
+        total_cost = first_value(row, 'totalCost', 'total_cost', 'cost')
+        costs = first_value(row, 'costs', 'relationshipCosts', 'relationship_costs')
+
+        readable_row = {
+            'index': int(row.get('index', position)),
+            'source': default_source or node_name(source_id, name_by_id),
+            'target': default_target or node_name(target_id, name_by_id),
+            'nodeIds': node_ids,
+            'path': [node_name(node_id, name_by_id) for node_id in node_ids],
+            'costs': [float(cost) for cost in costs] if costs is not None else [],
+        }
+        if total_cost is not None:
+            readable_row['totalCost'] = float(total_cost)
+        rows.append(readable_row)
+
+    return rows, name_by_id
+----
+
+= 5. Path Algorithms
+
+This section compares several ways to ask questions about the same trade
+network.
+
+For this notebook, a lower `cost` means a stronger trade link because
+`cost = 1 / weight`. So "shortest" or "cheapest" usually means "uses
+stronger trade connections," not necessarily shortest distance on a map.
+
+The algorithms are grouped by the kind of question they answer:
+
+[arabic]
+. *Weighted shortest paths:* cheapest routes using `cost`.
+. *Traversal and sampling:* structural exploration that may ignore cost.
+. *Flow:* how much trade strength can move from source to target.
+. *Trees:* compact backbones that connect many countries.
+. *Optional/prepared algorithms:* useful, but they need extra
+assumptions, properties, or memory.
+
+[width="100%",cols="25%,25%,25%,25%",options="header",]
+|===
+|Order |Algorithm |Beginner question it answers |Uses
+|1
+|https://neo4j.com/docs/graph-data-science/current/algorithms/delta-single-source/[Delta-Stepping]
+|What are the cheapest routes from one country to all reachable
+countries? |`cost`
+
+|2
+|https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/[Dijkstra
+Source-Target] |What is the single cheapest route between two countries?
+|`cost`
+
+|3
+|https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-single-source/[Dijkstra
+Single-Source] |What are all cheapest routes starting from one country?
+|`cost`
+
+|4
+|https://neo4j.com/docs/graph-data-science/current/algorithms/yens/[Yen's
+k-Shortest Paths] |What are the top alternative routes, not just the
+best one? |`cost`, `K`
+
+|5
+|https://neo4j.com/docs/graph-data-science/current/algorithms/bellman-ford-single-source/[Bellman-Ford]
+|How would shortest paths work if negative costs were possible? |`cost`
+
+|6
+|https://neo4j.com/docs/graph-data-science/current/algorithms/bfs/[Breadth
+First Search] |Can I reach the target in the fewest hops? |Unweighted
+
+|7
+|https://neo4j.com/docs/graph-data-science/current/algorithms/dfs/[Depth
+First Search] |What path appears when the graph is explored deeply
+first? |Unweighted
+
+|8
+|https://neo4j.com/docs/graph-data-science/current/algorithms/random-walk/[Random
+Walk] |What sample trade journeys appear from repeated walks?
+|`strength`
+
+|9
+|https://neo4j.com/docs/graph-data-science/current/algorithms/max-flow/[Maximum
+Flow] |What is the largest total capacity from source to target?
+|`strength`
+
+|10
+|https://neo4j.com/docs/graph-data-science/current/algorithms/min-cost-max-flow/[Minimum
+Cost Maximum Flow] |What is the largest flow with the lowest cost?
+|`strength`, `cost`
+
+|11
+|https://neo4j.com/docs/graph-data-science/current/algorithms/minimum-weight-spanning-tree/[Minimum
+Weight Spanning Tree] |What low-cost backbone can connect the network?
+|Undirected graph
+
+|12
+|https://neo4j.com/docs/graph-data-science/current/algorithms/directed-steiner-tree/[Minimum
+Directed Steiner Tree] |What low-cost directed tree connects selected
+targets? |Directed graph
+
+|13
+|https://neo4j.com/docs/graph-data-science/current/algorithms/astar/[A++*++]
+|Can coordinates guide a shortest-path search? |Coordinates plus `cost`
+
+|14
+|https://neo4j.com/docs/graph-data-science/current/algorithms/prize-collecting-steiner-tree/[Prize-Collecting
+Steiner Tree] |Which valuable countries are worth connecting? |`prize`,
+undirected graph
+
+|15
+|https://neo4j.com/docs/graph-data-science/current/algorithms/k-minimum-weight-spanning-tree/[Minimum
+Weight k-Spanning Tree] |What low-cost tree can connect exactly `K`
+countries? |Undirected graph, write mode
+
+|16
+|https://neo4j.com/docs/graph-data-science/current/algorithms/all-pairs-shortest-path/[All
+Pairs Shortest Path] |What is the cheapest path between every pair of
+countries? |`cost`, more memory
+
+|17
+|https://neo4j.com/docs/graph-data-science/current/algorithms/dag/longest-path/[Longest
+Path for DAG] |What is the longest chain in an acyclic graph? |DAG only
+|===
+
+*Why the notebook is not fully serial-wise after this table:* the table
+is a reference list of algorithms, but the executable notebook is
+arranged around dependencies and caution. Algorithms 1-12 run first
+because they work with the prepared graph projections. Then the notebook
+saves and visualizes those stable outputs. Algorithms 13-17 stay at the
+end because they need extra assumptions, extra properties, write
+permission, memory review, or a special DAG projection.
+
+== Shared path settings
+
+This small setup cell defines the target list for Steiner-style
+algorithms.
+
+Right now it includes only the selected `TARGET`. You can add more
+target node IDs later if you want the tree algorithms to connect several
+destination countries from the same source.
+
+*Next code block:* sets `STEINER++_++TARGET++_++NODE++_++IDS` to the
+selected target country.
+
+*Why it matters:* Steiner algorithms can connect one source to several
+targets. This keeps the simple beginner case to one target, with room to
+expand later.
+
+[source, python, role=no-test]
+----
+STEINER_TARGET_NODE_IDS = [target_node_id]
+
+----
+
+== A. Weighted shortest paths
+
+These algorithms use `cost`, where stronger trade links are cheaper.
+
+Use this group when your question sounds like: "What is the best route?"
+or "What are the best alternatives?" The outputs are usually paths with
+total costs, so smaller totals are better under this notebook's scoring
+rule.
+
+*Next code blocks:* run the weighted shortest-path algorithms numbered 1
+through 5.
+
+*Why it matters:* This group is the best starting point for route
+questions because all five algorithms use the same `cost` idea.
+
+=== 1. Delta-Stepping Single-Source Shortest Path
+
+Delta-Stepping finds low-cost paths from `SOURCE` to every reachable
+country.
+
+It is useful when you want a broad view from one starting country, not
+only one destination. The `delta` value controls how the algorithm
+groups distance ranges for parallel work. In the output, focus on the
+row that ends at `TARGET` and its `totalCost`.
+
+*Next code block:* runs Delta-Stepping from `SOURCE`, converts the
+output into readable paths, filters the path that reaches `TARGET`, and
+selects the cheapest one.
+
+*Why it matters:* This gives a broad single-source result while still
+extracting the source-to-target route you care about.
+
+[source, python, role=no-test]
+----
+delta_result = gds.all_shortest_paths.delta.stream(
+    graph,
+    source_node=source_node_id,
+    relationship_weight_property='cost',
+    delta=DELTA,
+)
+
+delta_paths, delta_name_by_id = paths_from_gds_result(
+    delta_result,
+    default_source=SOURCE,
+)
+
+delta_target_paths = [
+    row for row in delta_paths
+    if row['nodeIds'] and int(row['nodeIds'][-1]) == int(target_node_id)
+]
+if not delta_target_paths:
+    raise ValueError(f'Delta-Stepping did not return a path from {SOURCE} to {TARGET}')
+
+delta_best_path = min(delta_target_paths, key=lambda row: row['totalCost'])
+delta_best_path
+----
+
+=== 2. Dijkstra Source-Target Shortest Path
+
+Dijkstra source-target answers the most direct beginner question here:
+"What is the cheapest path from `SOURCE` to `TARGET`?"
+
+Because all costs are positive, Dijkstra is a natural fit. It returns
+the best route for this one pair of countries, so it is easy to compare
+with Delta-Stepping and Yen's results.
+
+*Next code block:* runs Dijkstra for the selected source-target pair and
+formats the returned path.
+
+*Why it matters:* This is the clean baseline for the single cheapest
+weighted route between two countries.
+
+[source, python, role=no-test]
+----
+dijkstra_source_target_result = gds.shortest_path.dijkstra.stream(
+    graph,
+    source_node=source_node_id,
+    target_nodes=target_node_id,
+    relationship_weight_property='cost',
+)
+
+dijkstra_source_target_paths, _ = paths_from_gds_result(
+    dijkstra_source_target_result,
+    default_source=SOURCE,
+    default_target=TARGET,
+)
+dijkstra_source_target_paths
+----
+
+=== 3. Dijkstra Single-Source Shortest Path
+
+This version of Dijkstra starts at `SOURCE` and calculates cheapest
+paths to every reachable country.
+
+It is similar in goal to Delta-Stepping, but easier to think about: it
+repeatedly expands the currently cheapest known option. The displayed
+rows show the first few reachable destinations and their path costs.
+
+*Next code block:* runs Dijkstra from the source to all reachable
+countries and displays the first few formatted paths.
+
+*Why it matters:* It shows how the source connects to the wider network,
+not only to the target country.
+
+[source, python, role=no-test]
+----
+dijkstra_single_source_result = gds.all_shortest_paths.dijkstra.stream(
+    graph,
+    source_node=source_node_id,
+    relationship_weight_property='cost',
+)
+
+dijkstra_single_source_paths, _ = paths_from_gds_result(
+    dijkstra_single_source_result,
+    default_source=SOURCE,
+)
+dijkstra_single_source_paths[:10]
+----
+
+=== 4. Yen's k-Shortest Paths
+
+Yen's algorithm finds several strong alternatives between `SOURCE` and
+`TARGET`.
+
+That is helpful in trade-network analysis because the single cheapest
+route may not be the only useful route. `K` controls how many options
+are returned, and each printed line shows the rank, total cost, and
+country sequence.
+
+*Next code block:* runs Yen's algorithm, formats the top `K` paths,
+saves the best one, and prints each route.
+
+*Why it matters:* Alternative paths are useful when you want backup
+routes or want to compare several strong trade chains.
+
+[source, python, role=no-test]
+----
+yens_result = gds.shortest_path.yens.stream(
+    graph,
+    source_node=source_node_id,
+    target_node=target_node_id,
+    k=K,
+    relationship_weight_property='cost',
+)
+
+paths, name_by_id = paths_from_gds_result(
+    yens_result,
+    default_source=SOURCE,
+    default_target=TARGET,
+)
+yens_best_path = min(paths, key=lambda row: row['totalCost'])
+
+for row in paths:
+    print(f"{row['index']}: {row['totalCost']:.10f} | {' -> '.join(row['path'])}")
+----
+
+=== 5. Bellman-Ford Single-Source Shortest Path
+
+Bellman-Ford is another single-source shortest-path algorithm.
+
+Its special strength is handling negative relationship weights, although
+this notebook's derived `cost` values are positive. Here it acts as a
+comparison point: if the results align with Dijkstra, that builds
+confidence in the path setup.
+
+*Next code block:* runs Bellman-Ford from the source and displays the
+first rows.
+
+*Why it matters:* It provides a comparison to Dijkstra-style results and
+is the algorithm you would consider if negative weights existed.
+
+[source, python, role=no-test]
+----
+bellman_ford_result = gds.bellman_ford.stream(
+    graph,
+    source_node=source_node_id,
+    relationship_weight_property='cost',
+)
+bellman_ford_paths, _ = paths_from_gds_result(
+    bellman_ford_result,
+    default_source=SOURCE,
+)
+bellman_ford_paths[:10]
+----
+
+== B. Traversal and sampling
+
+This group explores the shape of the graph rather than the cheapest
+weighted route.
+
+BFS and DFS ignore the `cost` property. Random Walk uses `strength` to
+sample possible journeys. These are good for learning how the network is
+connected, but their results should not be read as best trade routes.
+
+*Next code blocks:* run BFS, DFS, and Random Walk.
+
+*Why it matters:* These cells teach graph structure and reachability,
+but they should not be confused with weighted best-route algorithms.
+
+=== 6. Breadth First Search
+
+BFS looks for a path using the fewest number of relationships.
+
+It explores nearby nodes first, then moves outward one hop at a time. In
+this notebook, BFS can show a simple reachability route from `SOURCE` to
+`TARGET`, but it does not care whether those hops are strong or weak
+trade links.
+
+*Next code block:* runs BFS from `SOURCE` to `TARGET`.
+
+*Why it matters:* BFS finds a fewest-hop route, which can be different
+from the cheapest route by trade strength.
+
+[source, python, role=no-test]
+----
+bfs_result = gds.bfs.stream(
+    graph,
+    source_node=source_node_id,
+    target_nodes=[target_node_id],
+)
+bfs_paths, _ = paths_from_gds_result(
+    bfs_result,
+    default_source=SOURCE,
+    default_target=TARGET,
+)
+bfs_paths
+
+----
+
+=== 7. Depth First Search
+
+DFS explores deeply before backing up.
+
+It is useful for checking whether a destination can be reached and for
+seeing one possible route through the graph. It is not designed to find
+the cheapest path or even the fewest-hop path, so compare it carefully
+with BFS and Dijkstra.
+
+*Next code block:* runs DFS from `SOURCE` to `TARGET`.
+
+*Why it matters:* DFS shows one deep traversal route and helps
+demonstrate reachability, without optimizing cost or hop count.
+
+[source, python, role=no-test]
+----
+dfs_result = gds.dfs.stream(
+    graph,
+    source_node=source_node_id,
+    target_nodes=[target_node_id],
+)
+dfs_paths, _ = paths_from_gds_result(
+    dfs_result,
+    default_source=SOURCE,
+    default_target=TARGET,
+)
+dfs_paths
+
+----
+
+=== 8. Random Walk
+
+Random Walk creates sample journeys through the trade network.
+
+Instead of promising an optimal answer, it repeatedly takes steps from
+the source and records where it goes. Because this cell uses `strength`,
+stronger relationships are more likely to influence the walk. Use it as
+a pattern-finding tool, not a final route recommendation.
+
+*Next code block:* runs several random walks from the source using
+`strength` as the relationship weight.
+
+*Why it matters:* Random walks can reveal common sampled journeys, but
+they are exploratory rather than optimal.
+
+[source, python, role=no-test]
+----
+random_walk_result = gds.random_walk.stream(
+    graph,
+    source_nodes=[source_node_id],
+    walk_length=10,
+    walks_per_node=5,
+    random_seed=42,
+    relationship_weight_property='strength',
+)
+random_walk_paths, _ = paths_from_gds_result(
+    random_walk_result,
+    default_source=SOURCE,
+)
+random_walk_paths
+
+----
+
+== C. Flow algorithms
+
+Flow algorithms ask a different question from shortest paths.
+
+Instead of choosing one route, they can spread flow across multiple
+routes. In this notebook, `strength` acts like capacity, meaning
+stronger trade links can carry more flow. These cells run on the
+original directed graph before the notebook creates a separate
+undirected projection for tree algorithms.
+
+*Next code blocks:* run flow algorithms numbered 9 and 10 on the
+directed graph.
+
+*Why it matters:* Flow analysis models capacity across possibly many
+routes, which is different from choosing a single path.
+
+=== 9. Maximum Flow
+
+Maximum Flow estimates the largest amount of capacity that can move from
+`SOURCE` to `TARGET`.
+
+The result may use several relationships at once, so do not read it like
+a single path. Look for the returned flow values to understand which
+directed trade links are carrying the modeled capacity.
+
+*Next code block:* runs Maximum Flow using `strength` as capacity.
+
+*Why it matters:* It estimates how much modeled trade capacity can move
+from source to target through the network.
+
+[source, python, role=no-test]
+----
+max_flow_result = gds.max_flow.stream(
+        graph,
+        source_nodes=[source_node_id],
+        target_nodes=[target_node_id],
+        capacity_property='strength',
+    )
+
+display_country_named_result(
+    max_flow_result,
+    source_keys=('source', 'sourceNode', 'source_node'),
+    target_keys=('target', 'targetNode', 'target_node'),
+)
+
+----
+
+=== 10. Minimum Cost Maximum Flow
+
+Minimum Cost Maximum Flow adds a cost preference to the flow question.
+
+It still tries to send as much capacity as possible, but when there are
+choices, it prefers lower-cost routes. This is useful when you care
+about both volume (`strength`) and efficiency (`cost`).
+
+*Next code block:* runs Minimum Cost Maximum Flow using both `strength`
+and `cost`.
+
+*Why it matters:* It balances two goals: send as much flow as possible,
+and prefer lower-cost routes when choices exist.
+
+[source, python, role=no-test]
+----
+min_cost_max_flow_result = gds.max_flow.min_cost.stream(
+        graph,
+        source_nodes=[source_node_id],
+        target_nodes=[target_node_id],
+        capacity_property='strength',
+        cost_property='cost',
+)
+
+display_country_named_result(
+    min_cost_max_flow_result,
+    source_keys=('source', 'sourceNode', 'source_node'),
+    target_keys=('target', 'targetNode', 'target_node'),
+)
+
+----
+
+== D. Tree algorithms and the undirected projection
+
+Tree algorithms summarize the network as a connected backbone.
+
+Some tree algorithms need undirected relationships, so the notebook
+creates a second projection for them. The original directed graph is
+kept for algorithms where direction matters, such as directed paths,
+Directed Steiner Tree, and flow.
+
+*Next code blocks:* create an undirected projection, then run tree
+algorithms numbered 11 and 12.
+
+*Why it matters:* Some tree algorithms require undirected relationships,
+so the notebook prepares that view only when it is needed.
+
+=== Create an undirected projection for tree algorithms
+
+This cell creates a second in-memory graph with undirected
+relationships.
+
+The underlying Neo4j data is the same; only the way GDS views each
+relationship changes. This is useful because a tree backbone often cares
+about connection cost more than import/export direction.
+
+*Next code block:* creates `undirected++_++graph` from the same Neo4j
+data.
+
+*Why it matters:* Minimum spanning tree needs an undirected graph, while
+the original directed graph remains available for direction-sensitive
+algorithms.
+
+[source, python, role=no-test]
+----
+UNDIRECTED_GRAPH_NAME = f'{GRAPH_NAME}_undirected'
+
+existing_undirected_graphs = gds.graph.list(UNDIRECTED_GRAPH_NAME)
+if existing_undirected_graphs:
+    gds.graph.drop(UNDIRECTED_GRAPH_NAME)
+    print(f'dropped projection: {UNDIRECTED_GRAPH_NAME}')
+
+undirected_graph, undirected_projection_result = gds.graph.project.cypher(
+    UNDIRECTED_GRAPH_NAME,
+    REMOTE_PROJECT_CYPHER,
+    query_parameters={'datasetId': DATASET_ID},
+    undirected_relationship_types=[REL_TYPE],
+)
+
+print({
+    'graphName': UNDIRECTED_GRAPH_NAME,
+    'orientation': 'UNDIRECTED',
+    'nodeCount': undirected_graph.node_count(),
+    'relationshipCount': undirected_graph.relationship_count(),
+})
+
+----
+
+=== 11. Minimum Weight Spanning Tree
+
+Minimum Weight Spanning Tree builds a low-cost backbone starting from
+the source.
+
+It tries to connect reachable countries while keeping the total
+relationship cost small. Unlike a source-target shortest path, the
+output is a tree structure across the graph, so it is better for
+understanding a network skeleton than one route.
+
+*Next code block:* runs Minimum Weight Spanning Tree on
+`undirected++_++graph`.
+
+*Why it matters:* It produces a low-cost backbone of connections instead
+of one source-to-target path.
+
+[source, python, role=no-test]
+----
+spanning_tree_result = gds.spanning_tree.stream(
+    undirected_graph,
+    source_node=source_node_id,
+    relationship_weight_property='cost',
+    objective='minimum',
+)
+display_country_named_result(
+    spanning_tree_result.head(10),
+    source_keys=('parentId', 'parent_id'),
+    target_keys=('nodeId', 'node_id'),
+)
+
+----
+
+=== 12. Minimum Directed Steiner Tree
+
+Directed Steiner Tree connects the source to selected target countries
+with low total cost.
+
+It can include intermediate countries when they help make the connection
+cheaper. This is useful when you care about connecting a chosen set of
+destinations, not necessarily every country in the graph.
+
+*Next code block:* runs Directed Steiner Tree from the source to the
+selected target list.
+
+*Why it matters:* It finds a compact directed structure that connects
+selected destinations and can include helpful intermediate countries.
+
+[source, python, role=no-test]
+----
+steiner_tree_result = gds.steiner_tree.stream(
+    graph,
+    source_node=source_node_id,
+    target_nodes=STEINER_TARGET_NODE_IDS,
+    relationship_weight_property='cost',
+    apply_rerouting=True,
+)
+display_country_named_result(
+    steiner_tree_result,
+    source_keys=('parentId', 'parent_id'),
+    target_keys=('nodeId', 'node_id'),
+)
+
+----
+
+== Save selected path outputs
+
+This cell saves the most reusable route results.
+
+Yen's paths and Delta-Stepping paths are written to JSON and CSV so you
+can inspect them outside the notebook, share them, or use them in a
+report. JSON preserves nested path details; CSV is easier to open in
+spreadsheet tools.
+
+*Next code block:* writes selected path outputs to JSON and CSV files.
+
+*Why it matters:* This makes the results reusable outside the notebook
+for inspection, reporting, or later analysis.
+
+[source, python, role=no-test]
+----
+write_json(OUT_DIR / 'yens_paths.json', paths)
+write_paths_csv(OUT_DIR / 'yens_paths.csv', paths)
+write_json(OUT_DIR / 'yens_best_path.json', yens_best_path)
+
+write_json(OUT_DIR / 'delta_paths.json', delta_paths)
+write_paths_csv(OUT_DIR / 'delta_paths.csv', delta_paths)
+write_json(OUT_DIR / 'delta_best_path.json', delta_best_path)
+
+print(f"Yen paths written to: {OUT_DIR / 'yens_paths.csv'}")
+print(f"Delta-Stepping paths written to: {OUT_DIR / 'delta_paths.csv'}")
+
+----
+
+== Visualize algorithm results
+
+The next cells turn selected algorithm outputs into interactive network
+views.
+
+Visualization is not just decoration here. It helps you see whether
+different algorithms reuse the same trade links, branch into different
+routes, or highlight different parts of the network. Treat the pictures
+as a quick sanity check beside the tables.
+
+*Next code blocks:* define visualization helpers and then render
+weighted paths, traversal outputs, tree outputs, and flow outputs.
+
+*Why it matters:* The visual checks help you see route overlap and
+structural differences that can be hard to spot in tables.
+
+=== Define reusable visualization helpers
+
+These helpers translate algorithm results into Neo4j visualization
+objects.
+
+They normalize different result formats, choose node labels, assign
+colors, and create relationship layers. Source and target countries are
+highlighted differently from intermediate countries so the important
+route endpoints are easy to spot.
+
+*Next code block:* imports visualization classes and defines reusable
+rendering helpers.
+
+*Why it matters:* Different algorithms return different result shapes,
+so these helpers normalize them before drawing.
+
+[source, python, role=no-test]
+----
+from neo4j_viz import Layout, Node, Relationship, VisualizationGraph
+from IPython.display import HTML, display
+
+ALGORITHM_COLORS = {
+    'Delta-Stepping': '#2E8B57',
+    'Dijkstra Source-Target': '#D62728',
+    'Dijkstra Single-Source': '#1F77B4',
+    "Yen's": '#F59E0B',
+    'Bellman-Ford': '#9467BD',
+    'BFS': '#17BECF',
+    'DFS': '#E377C2',
+    'Random Walk': '#7F7F7F',
+    'Minimum Spanning Tree': '#2CA02C',
+    'Directed Steiner Tree': '#BCBD22',
+    'Maximum Flow': '#0F766E',
+    'Minimum Cost Maximum Flow': '#C2410C',
+    'A*': '#8C564B',
+    'Prize Steiner Tree': '#6B7280',
+    'DAG Longest Path': '#4F46E5',
+}
+def render_graph(title, edge_layers):
+    node_ids = {
+        node_id
+        for layer in edge_layers
+        for source_id, target_id, _ in layer['edges']
+        for node_id in (source_id, target_id)
+    }
+    if not node_ids:
+        print(f'{title}: no graph-shaped rows were returned.')
+        return
+
+    labels = names_for_node_ids(sorted(node_ids))
+    viz_nodes = []
+    for node_id in sorted(node_ids):
+        is_endpoint = node_id in {source_node_id, target_node_id}
+        viz_nodes.append(Node(
+            id=node_id,
+            caption=labels.get(node_id, str(node_id)),
+            size=25 if is_endpoint else 15,
+            color='#FF5733' if is_endpoint else '#337DFF',
+        ))
+
+    viz_relationships = []
+    for layer in edge_layers:
+        for source_id, target_id, detail in layer['edges']:
+            caption = layer['name'] if detail is None else f"{layer['name']}: {detail}"
+            viz_relationships.append(Relationship(
+                source=source_id,
+                target=target_id,
+                color=layer['color'],
+                width=3,
+                caption=caption,
+            ))
+
+    legend = ' &nbsp; '.join(
+        f"<span style='color:{layer['color']}; font-weight:600'>{layer['name']}</span>"
+        for layer in edge_layers
+    )
+    display(HTML(f'<h4>{title}</h4><div>{legend}</div>'))
+
+    graph_view = VisualizationGraph(nodes=viz_nodes, relationships=viz_relationships)
+    graph_view.set_node_captions(field='caption')
+    display(graph_view.render_widget(initial_zoom=0.8, layout=Layout.FORCE_DIRECTED))
+
+
+def path_layer(name, result, color):
+    edges = []
+    for row in result_records(result):
+        node_ids = path_node_ids(row)
+        for index in range(len(node_ids) - 1):
+            edges.append((node_ids[index], node_ids[index + 1], None))
+    return {'name': name, 'color': color, 'edges': edges}
+
+
+def result_edge_layer(name, result, source_keys, target_keys, detail_keys, color):
+    edges = []
+    for row in result_records(result):
+        source_id = as_node_id(first_value(row, *source_keys))
+        target_id = as_node_id(first_value(row, *target_keys))
+        if source_id is None or target_id is None or source_id < 0 or target_id < 0:
+            continue
+        detail = first_value(row, *detail_keys)
+        edges.append((source_id, target_id, detail))
+    return {'name': name, 'color': color, 'edges': edges}
+
+----
+
+== Combined weighted-path comparison
+
+This view overlays the weighted shortest-path results.
+
+Delta-Stepping, both Dijkstra variants, Yen's alternatives, and
+Bellman-Ford each get their own color. When colors overlap, that usually
+means multiple algorithms agree on the same trade link. When they split,
+you can inspect why alternative routes appear.
+
+*Next code block:* builds color-coded layers for weighted path
+algorithms and renders them together.
+
+*Why it matters:* A combined view makes agreement and disagreement
+between shortest-path algorithms easy to see.
+
+[source, python, role=no-test]
+----
+dijkstra_single_target_paths = [
+    row for row in dijkstra_single_source_paths
+    if row['nodeIds'] and int(row['nodeIds'][-1]) == int(target_node_id)
+]
+bellman_target_rows = [
+    row for row in bellman_ford_paths
+    if row['nodeIds'] and int(row['nodeIds'][-1]) == int(target_node_id)
+]
+
+weighted_layers = [
+    path_layer('Delta-Stepping', delta_target_paths, ALGORITHM_COLORS['Delta-Stepping']),
+    path_layer('Dijkstra Source-Target', dijkstra_source_target_paths, ALGORITHM_COLORS['Dijkstra Source-Target']),
+    path_layer('Dijkstra Single-Source', dijkstra_single_target_paths, ALGORITHM_COLORS['Dijkstra Single-Source']),
+    path_layer("Yen's", paths, ALGORITHM_COLORS["Yen's"]),
+    path_layer('Bellman-Ford', bellman_target_rows, ALGORITHM_COLORS['Bellman-Ford']),
+]
+render_graph('Weighted path comparison', weighted_layers)
+
+----
+
+== Traversal and sampling visualizations
+
+These visualizations show BFS, DFS, and Random Walk separately.
+
+Keeping them separate makes the results easier to read because each
+algorithm has a different meaning. BFS is about hops, DFS is about deep
+exploration, and Random Walk is about sampled journeys.
+
+*Next code block:* renders BFS, DFS, and Random Walk outputs in separate
+widgets.
+
+*Why it matters:* Separate views avoid mixing algorithms that answer
+different structural questions.
+
+[source, python, role=no-test]
+----
+for algorithm_name, result in [
+    ('BFS', bfs_paths),
+    ('DFS', dfs_paths),
+    ('Random Walk', random_walk_paths),
+]:
+    render_graph(
+        algorithm_name,
+        [path_layer(algorithm_name, result, ALGORITHM_COLORS[algorithm_name])],
+    )
+
+----
+
+== Tree visualizations
+
+These views show the tree-shaped results.
+
+The Minimum Weight Spanning Tree gives a low-cost backbone, while the
+Directed Steiner Tree focuses on connecting selected targets. Edge
+captions show returned weights so you can compare structure and cost
+together.
+
+*Next code block:* renders the spanning-tree and directed-Steiner-tree
+results.
+
+*Why it matters:* Tree outputs represent network backbones, so they are
+easier to inspect as their own visual group.
+
+[source, python, role=no-test]
+----
+tree_results = [
+    ('Minimum Spanning Tree', spanning_tree_result),
+    ('Directed Steiner Tree', steiner_tree_result),
+]
+
+for algorithm_name, result in tree_results:
+    layer = result_edge_layer(
+        algorithm_name,
+        result,
+        source_keys=('parentId', 'parent_id'),
+        target_keys=('nodeId', 'node_id'),
+        detail_keys=('weight',),
+        color=ALGORITHM_COLORS[algorithm_name],
+    )
+    render_graph(algorithm_name, [layer])
+
+----
+
+== Flow visualizations
+
+These views show the flow-based results.
+
+Maximum Flow and Minimum Cost Maximum Flow can use multiple routes at
+the same time. Edge captions show flow values, which helps you see where
+the modeled capacity is moving through the trade network.
+
+*Next code block:* renders Maximum Flow and Minimum Cost Maximum Flow
+outputs.
+
+*Why it matters:* Flow relationships represent carried capacity, not
+just a path, so they deserve a separate view.
+
+[source, python, role=no-test]
+----
+flow_results = [
+    ('Maximum Flow', max_flow_result),
+    ('Minimum Cost Maximum Flow', min_cost_max_flow_result),
+]
+
+for algorithm_name, result in flow_results:
+    layer = result_edge_layer(
+        algorithm_name,
+        result,
+        source_keys=('source', 'sourceNode', 'source_node'),
+        target_keys=('target', 'targetNode', 'target_node'),
+        detail_keys=('flow',),
+        color=ALGORITHM_COLORS[algorithm_name],
+    )
+    render_graph(algorithm_name, [layer])
+
+----
+
+== E. Optional algorithms requiring preparation
+
+These algorithms need extra care before you treat their results as
+final.
+
+These sections now run directly when their cells are executed. Review
+each note below before running, because some algorithms require prepared
+properties, extra assumptions, or database writes.
+
+*Next code block:* initializes optional algorithm settings.
+
+*Why it matters:* These algorithms need extra checks, so review each
+section before running downward.
+
+=== 13. A++*++ Shortest Path
+
+A++*++ is a shortest-path algorithm that uses coordinates as a guide.
+
+Before trusting it here, confirm that the Pajek `x` and `y` values
+really behave like longitude and latitude. If they are just layout
+positions, A++*++ may still run but the geographic shortcut idea is not
+meaningful. The next code cells run A++*++ using `y` as latitude and `x`
+as longitude.
+
+*Next code blocks:* configure A++*++, then run it and render the result.
+
+*Why it matters:* A++*++ depends on coordinate properties. If the
+coordinates are not meaningful latitude/longitude values, the result may
+be a technical demo rather than a valid geographic path.
+
+[source, python, role=no-test]
+----
+ASTAR_LATITUDE_PROPERTY = 'y'
+ASTAR_LONGITUDE_PROPERTY = 'x'
+
+----
+
+[source, python, role=no-test]
+----
+astar_result = gds.shortest_path.a_star.stream(
+    graph,
+    source_node=source_node_id,
+    target_node=target_node_id,
+    latitude_property=ASTAR_LATITUDE_PROPERTY,
+    longitude_property=ASTAR_LONGITUDE_PROPERTY,
+    relationship_weight_property='cost',
+)
+astar_paths, _ = paths_from_gds_result(
+    astar_result,
+    default_source=SOURCE,
+    default_target=TARGET,
+)
+display(astar_paths)
+render_graph('A*', [path_layer('A*', astar_paths, ALGORITHM_COLORS['A*'])])
+----
+
+=== 14. Prize-Collecting Steiner Tree
+
+Prize-Collecting Steiner Tree connects nodes only when their value is
+worth the cost.
+
+This notebook does not naturally have a `prize` property from the Kaggle
+trade file. You would need to define one, such as market importance or
+strategic value, then project it into the GDS graph. The next code cells
+create the default `prize` property and run the algorithm.
+
+*Next code blocks:* create the prize property, project it, then run and
+render Prize-Collecting Steiner Tree.
+
+*Why it matters:* This algorithm requires a projected `prize` node
+property. Without that property, the run can fail or produce an invalid
+learning example.
+
+Add prize property to nodes (if not already present)
+
+[source, python, role=no-test]
+----
+gds.run_cypher("""
+    MATCH (c:TradeCountry {datasetId: $datasetId})
+    SET c.prize = 1.0
+""", params={'datasetId': DATASET_ID})
+print("Prize property set (default=1.0)")
+
+
+----
+
+Drop any old prize++_++graph projection
+
+[source, python, role=no-test]
+----
+PRIZE_GRAPH_NAME = 'prize_graph'
+existing = gds.graph.list(PRIZE_GRAPH_NAME)
+if existing:
+    gds.graph.drop(PRIZE_GRAPH_NAME)
+    print(f"Dropped old {PRIZE_GRAPH_NAME}")
+----
+
+Recreate the graph with prize included
+
+[source, python, role=no-test]
+----
+
+
+PRIZE_PROJECTION_CYPHER = f'''
+MATCH (source:TradeCountry {{datasetId: $datasetId}})-[r:{REL_TYPE}]->(target:TradeCountry {{datasetId: $datasetId}})
+RETURN gds.graph.project.remote(
+  source,
+  target,
+  {{
+    sourceNodeLabels: labels(source),
+    sourceNodeProperties: source {{ .x, .y, .prize }},
+    targetNodeLabels: labels(target),
+    targetNodeProperties: target {{ .x, .y, .prize }},
+    relationshipType: type(r),
+    relationshipProperties: r {{ .cost, .weight, .strength }}
+  }}
+)
+'''
+prize_graph, _ = gds.graph.project.cypher(
+    PRIZE_GRAPH_NAME,
+    PRIZE_PROJECTION_CYPHER,
+    query_parameters={'datasetId': DATASET_ID},
+    undirected_relationship_types=[REL_TYPE],
+)
+print(f"Prize graph created: {prize_graph.node_count()} nodes, {prize_graph.relationship_count()} relationships")
+----
+
+[source, python, role=no-test]
+----
+PRIZE_PROPERTY = 'prize'
+
+----
+
+[source, python, role=no-test]
+----
+prize_steiner_result = gds.prize_steiner_tree.stream(
+    prize_graph,
+    prize_property=PRIZE_PROPERTY,
+    relationship_weight_property='cost',
+)
+display_country_named_result(
+    prize_steiner_result,
+    source_keys=('parentId', 'parent_id'),
+    target_keys=('nodeId', 'node_id'),
+)
+prize_layer = result_edge_layer(
+    'Prize Steiner Tree',
+    prize_steiner_result,
+    source_keys=('parentId', 'parent_id'),
+    target_keys=('nodeId', 'node_id'),
+    detail_keys=('weight',),
+    color=ALGORITHM_COLORS['Prize Steiner Tree'],
+)
+render_graph('Prize Steiner Tree', [prize_layer])
+
+----
+
+=== 15. Minimum Weight k-Spanning Tree
+
+Minimum Weight k-Spanning Tree builds a low-cost tree with exactly `K`
+nodes.
+
+This is useful when you want a small representative backbone instead of
+a tree over the whole network. Neo4j runs this one in write mode,
+meaning it writes results back to the database. Confirm the chosen
+`K++_++SPANNING++_++WRITE++_++PROPERTY` before running.
+
+*Next code blocks:* configure Minimum Weight k-Spanning Tree, then run
+it in write mode.
+
+*Why it matters:* Write mode changes the database by storing results, so
+this section is intentionally documented as preparation-heavy.
+
+[source, python, role=no-test]
+----
+K_SPANNING_NODE_COUNT = 5
+K_SPANNING_WRITE_PROPERTY = 'kSpanningTree'
+
+----
+
+[source, python, role=no-test]
+----
+k_spanning_result = gds.k_spanning_tree.write(
+    undirected_graph,
+    k=K_SPANNING_NODE_COUNT,
+    source_node=source_node_id,
+    relationship_weight_property='cost',
+    write_property=K_SPANNING_WRITE_PROPERTY,
+    objective='minimum',
+)
+display({
+    'sourceCountry': SOURCE,
+    'sourceNodeId': source_node_id,
+    'effectiveNodeCount': getattr(k_spanning_result, 'effective_node_count', None),
+    'writeProperty': K_SPANNING_WRITE_PROPERTY,
+})
+
+----
+
+=== 16. All Pairs Shortest Path
+
+All Pairs Shortest Path calculates cheapest paths between every pair of
+countries.
+
+That can be powerful, but it can also produce a lot of output. Always
+review the memory estimate first, especially on larger graphs. The next
+code cell displays the first rows after the estimate.
+
+*Next code blocks:* estimate memory, run All Pairs Shortest Path, and
+display the first rows.
+
+*Why it matters:* All-pairs results can grow quickly because every
+country pair is considered.
+
+[source, python, role=no-test]
+----
+all_pairs_estimate = gds.all_shortest_paths.estimate(
+    graph,
+    relationship_weight_property='cost',
+)
+display(all_pairs_estimate)
+
+all_pairs_result = gds.all_shortest_paths.stream(
+    graph,
+    relationship_weight_property='cost',
+)
+display_country_named_result(
+    all_pairs_result.head(20),
+    source_keys=('sourceNodeId', 'source_node_id'),
+    target_keys=('targetNodeId', 'target_node_id'),
+)
+
+----
+
+=== 17. Longest Path for DAG
+
+The DAG longest-path algorithm only works on a directed acyclic graph.
+
+Real trade networks usually contain cycles, so the notebook creates a
+separate DAG-style projection before running this. The current code uses
+`source.countryId ++<++ target.countryId` as an artificial acyclic rule.
+That can demonstrate the algorithm, but it should not be treated as a
+real trade assumption unless you can justify that ordering.
+
+*Next code blocks:* create a DAG-style projection, print longest paths,
+and render them.
+
+*Why it matters:* The current DAG rule is artificial, so this section
+demonstrates the algorithm but should not be treated as a real trade
+conclusion without a justified ordering rule.
+
+[source, python, role=no-test]
+----
+DAG_GRAPH = GRAPH_NAME
+----
+
+[source, python, role=no-test]
+----
+# Create a DAG projection by keeping only edges where source.countryId < target.countryId
+DAG_GRAPH_NAME = f'{GRAPH_NAME}_dag'
+
+# Drop if exists
+existing_dag = gds.graph.list(DAG_GRAPH_NAME)
+if existing_dag:
+    gds.graph.drop(DAG_GRAPH_NAME)
+    print(f'dropped projection: {DAG_GRAPH_NAME}')
+
+DAG_PROJECTION_CYPHER = f'''
+MATCH (source:TradeCountry {{datasetId: $datasetId}})-[r:{REL_TYPE}]->(target:TradeCountry {{datasetId: $datasetId}})
+WHERE source.countryId < target.countryId   // artificial acyclic rule
+RETURN gds.graph.project.remote(
+  source,
+  target,
+  {{
+    sourceNodeLabels: labels(source),
+    sourceNodeProperties: source {{ .x, .y }},
+    targetNodeLabels: labels(target),
+    targetNodeProperties: target {{ .x, .y }},
+    relationshipType: type(r),
+    relationshipProperties: r {{ .cost, .weight, .strength }}
+  }}
+)
+'''
+
+dag_graph, dag_proj_result = gds.graph.project.cypher(
+    DAG_GRAPH_NAME,
+    DAG_PROJECTION_CYPHER,
+    query_parameters={'datasetId': DATASET_ID},
+    inverse_indexed_relationship_types=[REL_TYPE],
+)
+
+print({
+    'graphName': DAG_GRAPH_NAME,
+    'nodeCount': dag_graph.node_count(),
+    'relationshipCount': dag_graph.relationship_count(),
+})
+
+# Now assign this graph to DAG_GRAPH
+DAG_GRAPH = dag_graph
+----
+
+[source, python, role=no-test]
+----
+dag_longest_result = gds.dag.longest_path.stream(
+    DAG_GRAPH,
+    relationship_weight_property='cost',
+)
+
+# Convert raw result to readable paths using the notebook's helper
+dag_paths, name_by_id = paths_from_gds_result(dag_longest_result)
+
+if dag_paths:
+    print("\n=== Longest Path in DAG ===\n")
+    for idx, row in enumerate(dag_paths):
+        print(f"Path #{idx+1}:")
+        print(f"  Total cost: {row['totalCost']:.6f}")
+        print(f"  Nodes:      {' -> '.join(row['path'])}")
+        if 'costs' in row and row['costs']:
+            print(f"  Edge costs: {', '.join(f'{c:.4f}' for c in row['costs'])}")
+        print()
+else:
+    print("No path found (graph may be empty or disconnected).")
+----
+
+[source, python, role=no-test]
+----
+dag_longest_result = gds.dag.longest_path.stream(
+    DAG_GRAPH,
+    relationship_weight_property='cost',
+)
+
+dag_paths, _ = paths_from_gds_result(dag_longest_result)
+
+if dag_paths:
+    # Display the table (optional, but matches A* and other sections)
+    # display(dag_paths)
+    render_graph(
+        'DAG Longest Path',
+        [path_layer('DAG Longest Path', dag_paths, ALGORITHM_COLORS['DAG Longest Path'])]
+    )
+else:
+    print("No paths found in the DAG (graph may be empty or disconnected).")
+----
+
+== Summary
+
+* *Data setup:* Parses the `imports++_++manufactures.net` Pajek file
+into country nodes and directed trade relationships, then loads them
+into Neo4j as `TradeCountry` nodes and `TRADE++_++FLOW` relationships.
+* *Graph preparation:* Creates GDS in-memory graph projections for
+directed pathfinding, undirected tree algorithms, prize-based Steiner
+Tree, and DAG longest-path analysis.
+* *Readable results:* Resolves `SOURCE` and `TARGET` countries into node
+IDs, then maps algorithm outputs back to country names such as
+`United States` and `Norway`.
+* *Algorithms covered:* Runs shortest-path, traversal, sampling, flow,
+tree, all-pairs, and DAG algorithms, including Dijkstra, Yen’s,
+Bellman-Ford, BFS, DFS, Random Walk, Maximum Flow, Steiner Tree, A++*++,
+and DAG Longest Path.
+* *Outputs and visuals:* Saves selected path results and renders
+color-coded graph visualizations to compare routes, alternatives, flows,
+backbones, and longest DAG chains.
