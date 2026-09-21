@@ -78,7 +78,7 @@ for root, dirs, files in os.walk("act-mooc_data"):
 
 [source, python, role=no-test]
 ----
-%pip install "graphdatascience>2.0a5" python-dotenv
+%pip install "graphdatascience>2.0" python-dotenv
 ----
 
 [source, python, role=no-test]
@@ -122,7 +122,7 @@ to map TSV files to a graph schema consisting of `MoocUser`,
 
 [source, python, role=no-test]
 ----
-from graphdatascience.session import DbmsConnectionInfo, SessionMemory
+from graphdatascience.session import CloudLocation, DbmsConnectionInfo, SessionMemory
 
 db_connection = DbmsConnectionInfo(
     uri=os.environ["NEO4J_URI"],
@@ -134,6 +134,7 @@ gds = sessions.get_or_create(
     session_name="Similarity",
     memory=SessionMemory.m_2GB,
     db_connection=db_connection,
+    cloud_location=CloudLocation("gcp", "europe-west1"),
 )
 
 gds.verify_connectivity()

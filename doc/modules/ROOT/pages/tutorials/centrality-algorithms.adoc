@@ -60,7 +60,7 @@ gds = GraphDataScience(NEO4J_URI, auth=NEO4J_AUTH)
 ----
 from graphdatascience import ServerVersion
 
-assert gds.server_version() >= ServerVersion(1, 8, 0)
+assert gds.server_version() >= ServerVersion(2, 0, 0)
 ----
 
 == Importing the dataset
