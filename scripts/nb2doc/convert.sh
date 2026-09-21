@@ -1,5 +1,11 @@
 #!/bin/bash
 
+set -o errexit
+set -o nounset
+set -o pipefail
+
+. scripts/parallel_jobs.sh
+
 DOC_DIR=doc/modules/ROOT/pages/tutorials
 NB_DIR=examples
 
@@ -9,14 +15,14 @@ do
   echo "${notebook} -> ${DOC_DIR}/${docfile}.adoc"
 
   # --noprompt
-  #   Skips the "In/Out" lines before each cell
+  #   Skips the "In/Out" lines before each cell
   # --ClearMetadataPreprocessor.enabled=True
-  #   Cleans the "ipython3" language replacing it with "Python"
-  #   (for Asciidoc code cells)
+  #   Cleans the "ipython3" language replacing it with "Python"
+  #    (for Asciidoc code cells)
   # --ASCIIDocExporter.file_extension=.adoc
   #   If not set, the extension is .asciidoc
 
-  uv run jupyter nbconvert \
+  spawn uv run jupyter nbconvert \
     --to asciidoc \
     --template=scripts/nb2doc/asciidoc-template \
     --output-dir ${DOC_DIR} \
@@ -25,4 +31,6 @@ do
     --ClearMetadataPreprocessor.enabled=True \
     ${notebook}
 done
+
+wait_jobs
 
