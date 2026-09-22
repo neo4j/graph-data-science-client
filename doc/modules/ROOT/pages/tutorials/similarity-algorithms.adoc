@@ -232,7 +232,7 @@ approach ensures high throughput while preventing the transaction log
 from growing too large.
 
 After the import, we use
-https://neo4j.com/docs/graph-data-science-client/current/bookmarks/[bookmarks]
+https://neo4j.com/docs/graph-data-science-client/current/transactions/#coordinate-parallel-transactions[bookmarks]
 to ensure that the remote graph projections only execute once all
 imported data is fully propagated across the database cluster.
 
