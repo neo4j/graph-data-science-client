@@ -2,7 +2,6 @@
 
 ## Breaking changes
 
-* `QueryMode` enum values are now upper case (`"READ"`/`"WRITE"`), aligning with the Neo4j driver's access mode values. This affects uses of `QueryMode.READ.value` and comparisons of `QueryMode` members against the previous lower case strings.
 
 ## New features
 
