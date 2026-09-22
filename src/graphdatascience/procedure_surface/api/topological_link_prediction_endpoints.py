@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Literal
 
 from neo4j.graph import Node
 
@@ -19,7 +18,7 @@ class Direction(str, Enum):
     BOTH = "BOTH"
 
     @classmethod
-    def of(cls, direction: "Direction | str") -> "Direction":
+    def of(cls, direction: Direction | str) -> Direction:
         """
         Normalize a `Direction` or a plain string into a `Direction`.
         """
@@ -33,9 +32,6 @@ class Direction(str, Enum):
         return cls(direction)
 
 
-DirectionLike = Direction | Literal["OUTGOING", "INCOMING", "BOTH"]
-
-
 class TopologicalLinkPredictionEndpoints(ABC):
     @abstractmethod
     def adamic_adar(
@@ -43,7 +39,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         """
         Compute the Adamic-Adar index for two nodes.
@@ -56,7 +52,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction | str
+        direction
             The relationship direction used to compute similarity between node1 and node2.
             Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
@@ -73,7 +69,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         """
         Compute the number of common neighbors for two nodes.
@@ -86,7 +82,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2The relationship type used to compute similarity between node1 and node2
-        direction: Direction | str
+        direction
             The relationship direction used to compute similarity between node1 and node2.
             Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
@@ -103,7 +99,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         """
         Compute the preferential attachment score for two nodes.
@@ -116,7 +112,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction | str
+        direction
             The relationship direction used to compute similarity between node1 and node2.
             Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
@@ -133,7 +129,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         """
         Compute the resource allocation index for two nodes.
@@ -146,7 +142,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction | str
+        direction
             The relationship direction used to compute similarity between node1 and node2.
             Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
@@ -189,7 +185,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         """
         Compute the total number of neighbors for two nodes.
@@ -202,7 +198,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction | str
+        direction
             The relationship direction used to compute similarity between node1 and node2.
             Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 

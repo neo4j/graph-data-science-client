@@ -4,7 +4,6 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
-    AggregationLike,
     CollapsePathResult,
     RelationshipsDropResult,
     RelationshipsEndpoints,
@@ -205,7 +204,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: AggregationLike | dict[str, AggregationLike] | None = None,
+        aggregation: Aggregation | str | dict[str, Aggregation | str] | None = None,
         concurrency: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,

@@ -60,7 +60,7 @@ def test_to_undirected_aggregation_invalid(query_runner: CollectingQueryRunner, 
     endpoints = RelationshipCypherEndpoints(query_runner)
 
     with pytest.raises(ValueError, match="Invalid aggregation: 'MEAN'"):
-        endpoints.to_undirected(graph, "REL", "NEW_REL", aggregation="MEAN")  # type: ignore[arg-type]
+        endpoints.to_undirected(graph, "REL", "NEW_REL", aggregation="MEAN")
 
 
 def test_aggregation_of() -> None:

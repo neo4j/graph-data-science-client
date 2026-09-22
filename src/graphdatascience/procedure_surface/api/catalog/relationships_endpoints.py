@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Literal
+from typing import Any
 
 from pydantic import AliasChoices, Field, field_validator
 
@@ -170,7 +170,7 @@ class RelationshipsEndpoints(ABC):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: AggregationLike | dict[str, AggregationLike] | None = None,
+        aggregation: Aggregation | str | dict[str, Aggregation | str] | None = None,
         concurrency: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,
@@ -189,7 +189,7 @@ class RelationshipsEndpoints(ABC):
             The input relationship type
         mutate_relationship_type: str,
             Name of the relationship type to store the results in.
-        aggregation: Aggregation | str | dict[str, Aggregation | str] | None
+        aggregation
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
             A dictionary can be provided to specify property specific aggregations.
@@ -328,7 +328,7 @@ class Aggregation(str, Enum):
     COUNT = "COUNT"
 
     @classmethod
-    def of(cls, aggregation: "Aggregation | str") -> "Aggregation":
+    def of(cls, aggregation: Aggregation | str) -> Aggregation:
         """
         Normalize an `Aggregation` or a plain string into an `Aggregation`.
         """
@@ -340,6 +340,3 @@ class Aggregation(str, Enum):
             raise ValueError(f"Invalid aggregation: '{aggregation}'. Valid values are: {valid}.")
 
         return cls(aggregation)
-
-
-AggregationLike = Aggregation | Literal["NONE", "SINGLE", "SUM", "MIN", "MAX", "COUNT"]

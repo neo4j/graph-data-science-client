@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 from typing import Literal
 
@@ -15,7 +17,7 @@ class QueryMode(str, Enum):
     WRITE = "write"
 
     @classmethod
-    def of(cls, mode: "QueryMode | str") -> "QueryMode":
+    def of(cls, mode: QueryMode | str) -> QueryMode:
         """
         Normalize a `QueryMode` or a plain string into a `QueryMode`.
         """
@@ -28,7 +30,7 @@ class QueryMode(str, Enum):
 
         return cls(mode)
 
-    def neo4j_routing(self) -> "neo4j.RoutingControl":
+    def neo4j_routing(self) -> neo4j.RoutingControl:
         if self == QueryMode.READ:
             return neo4j.RoutingControl.READ
         elif self == QueryMode.WRITE:

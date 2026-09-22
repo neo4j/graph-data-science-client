@@ -875,7 +875,7 @@ class AuraGraphDataScience:
             parameters to the query
         database: str
             the database on which to run the query
-        mode: QueryMode | str
+        mode
             the query mode to use (read or write). Set based on the operation performed in the query.
             Plain strings ("read"/"write") and QueryMode values are both accepted.
 

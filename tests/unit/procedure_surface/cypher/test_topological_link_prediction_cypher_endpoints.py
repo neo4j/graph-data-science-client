@@ -101,7 +101,7 @@ def test_direction_invalid_str(query_runner: CollectingQueryRunner) -> None:
     endpoints = TopologicalLinkPredictionCypherEndpoints(query_runner)
 
     with pytest.raises(ValueError, match="Invalid direction: 'outgoing'"):
-        endpoints.adamic_adar(1, 2, direction="outgoing")  # type: ignore[arg-type]
+        endpoints.adamic_adar(1, 2, direction="outgoing")
 
 
 def test_resource_allocation(query_runner: CollectingQueryRunner) -> None:

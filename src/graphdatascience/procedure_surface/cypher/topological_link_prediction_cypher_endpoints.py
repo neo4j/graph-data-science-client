@@ -7,7 +7,6 @@ from neo4j.graph import Node
 from graphdatascience.error.cypher_warning_handler import filter_id_func_deprecation_warning
 from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import (
     Direction,
-    DirectionLike,
     TopologicalLinkPredictionEndpoints,
 )
 from graphdatascience.query_runner.query_mode import QueryMode
@@ -25,7 +24,7 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         return self._run_similarity_function(
             "gds.linkprediction.adamicAdar", node1, node2, relationship_query, direction
@@ -37,7 +36,7 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         return self._run_similarity_function(
             "gds.linkprediction.commonNeighbors", node1, node2, relationship_query, direction
@@ -49,7 +48,7 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         return self._run_similarity_function(
             "gds.linkprediction.preferentialAttachment", node1, node2, relationship_query, direction
@@ -61,7 +60,7 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         return self._run_similarity_function(
             "gds.linkprediction.resourceAllocation", node1, node2, relationship_query, direction
@@ -93,7 +92,7 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: DirectionLike = Direction.BOTH,
+        direction: Direction | str = Direction.BOTH,
     ) -> float:
         return self._run_similarity_function(
             "gds.linkprediction.totalNeighbors", node1, node2, relationship_query, direction
@@ -105,7 +104,7 @@ class TopologicalLinkPredictionCypherEndpoints(TopologicalLinkPredictionEndpoint
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None,
-        direction: DirectionLike,
+        direction: Direction | str,
     ) -> float:
         query = f"""
         MATCH (n), (m)
