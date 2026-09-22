@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Tuple
+from typing import Any, Literal, Tuple
 
 import neo4j
 from pandas import DataFrame
@@ -189,7 +189,7 @@ from graphdatascience.procedure_surface.cypher.topological_link_prediction_cyphe
 )
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.query_runner.query_mode import QueryMode, QueryModeLike
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
@@ -862,7 +862,7 @@ class AuraGraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryModeLike = QueryMode.WRITE,
+        mode: QueryMode | Literal["read", "write"] = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query against the Neo4j database.

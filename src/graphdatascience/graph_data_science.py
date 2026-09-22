@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from types import TracebackType
-from typing import Any, Type
+from typing import Any, Literal, Type
 
 import neo4j
 from neo4j import Driver
@@ -179,7 +179,7 @@ from graphdatascience.procedure_surface.cypher.topological_link_prediction_cyphe
     TopologicalLinkPredictionCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
-from graphdatascience.query_runner.query_mode import QueryMode, QueryModeLike
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.versions import ServerVersion
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
@@ -858,7 +858,7 @@ class GraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryModeLike = QueryMode.WRITE,
+        mode: QueryMode | Literal["read", "write"] = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query

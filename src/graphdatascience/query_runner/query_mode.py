@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Literal
 
 import neo4j
 
@@ -45,6 +44,3 @@ class QueryMode(str, Enum):
             return neo4j.WRITE_ACCESS
         else:
             raise ValueError(f"Unknown query mode: {self}")
-
-
-QueryModeLike = QueryMode | Literal["read", "write"]

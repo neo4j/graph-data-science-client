@@ -4,7 +4,7 @@ import logging
 import re
 import time
 import warnings
-from typing import Any, NamedTuple
+from typing import Any, Literal, NamedTuple
 
 import neo4j
 from pandas import DataFrame
@@ -15,7 +15,7 @@ from graphdatascience.error.gds_not_installed import GdsNotFound
 from graphdatascience.error.unable_to_connect import UnableToConnectError
 from graphdatascience.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
-from graphdatascience.query_runner.query_mode import QueryMode, QueryModeLike
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
@@ -181,7 +181,7 @@ class Neo4jQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryModeLike | None = None,
+        mode: QueryMode | Literal["read", "write"] | None = None,
         custom_error: bool = True,
         connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
@@ -228,7 +228,7 @@ class Neo4jQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryModeLike | None = None,
+        mode: QueryMode | Literal["read", "write"] | None = None,
         custom_error: bool = True,
         connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
@@ -281,7 +281,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
-        mode: QueryModeLike = QueryMode.READ,
+        mode: QueryMode | Literal["read", "write"] = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,

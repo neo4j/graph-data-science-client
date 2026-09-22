@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Literal
 
 import neo4j
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
-from graphdatascience.query_runner.query_mode import QueryMode, QueryModeLike
+from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.versions import ServerVersion
 
@@ -21,7 +21,7 @@ class QueryRunner(ABC):
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
-        mode: QueryModeLike = QueryMode.READ,
+        mode: QueryMode | Literal["read", "write"] = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
@@ -42,7 +42,7 @@ class QueryRunner(ABC):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryModeLike | None = None,
+        mode: QueryMode | Literal["read", "write"] | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
@@ -54,7 +54,7 @@ class QueryRunner(ABC):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryModeLike | None = None,
+        mode: QueryMode | Literal["read", "write"] | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
