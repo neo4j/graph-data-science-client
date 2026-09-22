@@ -59,3 +59,31 @@ def test_no_arrow_discovery_when_arrow_disabled(supported_runner: CollectingQuer
         assert all("gds.debug.arrow" not in query for query in supported_runner.queries)
     finally:
         gds.close()
+
+
+@pytest.mark.parametrize("endpoint", ["bolt+ssc://localhost:7687", "neo4j+ssc://localhost:7687", "NEO4J+SSC://host"])
+def test_derives_disable_server_verification_from_ssc_uri(endpoint: str) -> None:
+    assert GraphDataScience._derive_arrow_client_options(endpoint, None) == {"disable_server_verification": True}
+
+
+def test_keeps_other_arrow_client_options_for_ssc_uri() -> None:
+    options = {"call_timeout": 10}
+    derived = GraphDataScience._derive_arrow_client_options("bolt+ssc://localhost:7687", options)
+
+    assert derived == {"call_timeout": 10, "disable_server_verification": True}
+    assert options == {"call_timeout": 10}
+
+
+def test_does_not_override_explicit_server_verification_for_ssc_uri() -> None:
+    options = {"disable_server_verification": False}
+    assert GraphDataScience._derive_arrow_client_options("bolt+ssc://localhost:7687", options) == options
+
+
+@pytest.mark.parametrize("endpoint", ["bolt://localhost:7687", "bolt+s://localhost:7687", "neo4j+s://localhost:7687"])
+def test_does_not_derive_disable_server_verification_for_non_ssc_uri(endpoint: str) -> None:
+    assert GraphDataScience._derive_arrow_client_options(endpoint, None) is None
+    assert GraphDataScience._derive_arrow_client_options(endpoint, {"call_timeout": 10}) == {"call_timeout": 10}
+
+
+def test_does_not_derive_disable_server_verification_for_query_runner(supported_runner: CollectingQueryRunner) -> None:
+    assert GraphDataScience._derive_arrow_client_options(supported_runner, None) is None
