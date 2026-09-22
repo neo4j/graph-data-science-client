@@ -9,8 +9,6 @@ from neo4j.graph import Node
 class Direction(str, Enum):
     """
     The direction of relationships to consider when computing a topological link prediction.
-
-    Plain strings are accepted wherever a `Direction` is expected.
     """
 
     OUTGOING = "OUTGOING"
@@ -54,7 +52,6 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The relationship type used to compute similarity between node1 and node2
         direction
             The relationship direction used to compute similarity between node1 and node2.
-            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -84,7 +81,6 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The relationship type used to compute similarity between node1 and node2The relationship type used to compute similarity between node1 and node2
         direction
             The relationship direction used to compute similarity between node1 and node2.
-            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -114,7 +110,6 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The relationship type used to compute similarity between node1 and node2
         direction
             The relationship direction used to compute similarity between node1 and node2.
-            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -144,7 +139,6 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The relationship type used to compute similarity between node1 and node2
         direction
             The relationship direction used to compute similarity between node1 and node2.
-            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -200,7 +194,6 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The relationship type used to compute similarity between node1 and node2
         direction
             The relationship direction used to compute similarity between node1 and node2.
-            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------

@@ -193,7 +193,6 @@ class RelationshipsEndpoints(ABC):
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
             A dictionary can be provided to specify property specific aggregations.
-            Plain strings and Aggregation values are both accepted, also as per-property dictionary values.
         concurrency
             Number of concurrent threads to use.
         sudo
@@ -316,8 +315,6 @@ class CollapsePathResult(BaseResult):
 class Aggregation(str, Enum):
     """
     Specifies how to aggregate parallel relationships in a graph.
-
-    Plain strings are accepted wherever an `Aggregation` is expected.
     """
 
     NONE = "NONE"

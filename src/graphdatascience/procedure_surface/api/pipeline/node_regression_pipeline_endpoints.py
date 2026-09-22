@@ -271,7 +271,7 @@ class NodeRegressionPipelineEndpoints(ABC):
         pipeline_name
             Name of the pipeline.
         metrics
-            Metrics to optimize for. Plain strings and ``NodeRegressionMetric`` values are both accepted.
+            Metrics to optimize for.
         model_name
             Name of the trained model.
         target_property

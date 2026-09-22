@@ -8,8 +8,6 @@ import neo4j
 class QueryMode(str, Enum):
     """
     The mode in which a Cypher query is run.
-
-    Plain strings ("READ"/"WRITE", case-insensitive) are accepted wherever a `QueryMode` is expected.
     """
 
     READ = "READ"
