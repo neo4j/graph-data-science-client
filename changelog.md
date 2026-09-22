@@ -5,11 +5,11 @@
 
 ## New features
 
-* `gds.run_cypher()` now supports queries using `CALL { ... } IN TRANSACTIONS` via the new `auto_commit` parameter
 * `GraphDataScience` now disables Arrow server certificate verification when the Bolt URI uses a `+ssc` scheme (`bolt+ssc`, `neo4j+ssc`), unless `disable_server_verification` is set explicitly in `arrow_client_options`. This restores the 1.x behaviour for self-signed certificates, where `arrow_disable_server_verification` defaulted to `True`.
 
 ## Bug fixes
 
+* `gds.run_cypher()` can run queries using `CALL { ... } IN TRANSACTIONS` again via the new `auto_commit` parameter. Such queries stopped working in 2.0 when `run_cypher` switched to always-retryable, driver-managed transactions.
 * Deriving the default project for GDS Sessions now first checks the users organizations. Users with access to multiple organizations must specify `project_id` explicitly to have a single project and avoid silently create sessions in the wrong one.
 
 ## Improvements
