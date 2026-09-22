@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Literal
+from typing import Any
 
 import neo4j
 from pandas import DataFrame
@@ -21,7 +21,7 @@ class QueryRunner(ABC):
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] = QueryMode.READ,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
@@ -42,7 +42,7 @@ class QueryRunner(ABC):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass
@@ -54,7 +54,7 @@ class QueryRunner(ABC):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         pass

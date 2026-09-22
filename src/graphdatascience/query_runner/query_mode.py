@@ -9,11 +9,11 @@ class QueryMode(str, Enum):
     """
     The mode in which a Cypher query is run.
 
-    Plain strings ("read"/"write") are accepted wherever a `QueryMode` is expected.
+    Plain strings ("READ"/"WRITE", case-insensitive) are accepted wherever a `QueryMode` is expected.
     """
 
-    READ = "read"
-    WRITE = "write"
+    READ = "READ"
+    WRITE = "WRITE"
 
     @classmethod
     def of(cls, mode: QueryMode | str) -> QueryMode:
@@ -23,11 +23,12 @@ class QueryMode(str, Enum):
         if isinstance(mode, QueryMode):
             return mode
 
+        upper = mode.upper()
         valid = [m.value for m in cls]
-        if mode not in valid:
+        if upper not in valid:
             raise ValueError(f"Invalid query mode: '{mode}'. Valid values are: {valid}.")
 
-        return cls(mode)
+        return cls(upper)
 
     def neo4j_routing(self) -> neo4j.RoutingControl:
         if self == QueryMode.READ:

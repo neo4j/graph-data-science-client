@@ -65,7 +65,29 @@ def test_run_cypher_read_str_mode(mocker: MockerFixture) -> None:
         session_lifecycle_manager=Noop(),
     )
 
-    gds.run_cypher("RETURN 1", params={"foo": 1}, mode="read")
+    gds.run_cypher("RETURN 1", params={"foo": 1}, mode="READ")
+
+    assert query_runner.last_query() == "RETURN 1"
+    assert query_runner.last_params() == {"foo": 1}
+    assert query_runner.run_args[-1] == {
+        "custom_error": False,
+        "db": None,
+        "mode": QueryMode.READ,
+        "retryable": True,
+        "query_type": "user-direct",
+    }
+
+
+def test_run_cypher_read_lower_case_str_mode(mocker: MockerFixture) -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(v, {"version": DataFrame.from_dict({"version": ["v3"]})})
+    gds = AuraGraphDataScience(
+        mocker.Mock(),
+        db_query_runner=query_runner,
+        session_lifecycle_manager=Noop(),
+    )
+
+    gds.run_cypher("RETURN 1", params={"foo": 1}, mode="read")  # type: ignore[arg-type]
 
     assert query_runner.last_query() == "RETURN 1"
     assert query_runner.last_params() == {"foo": 1}

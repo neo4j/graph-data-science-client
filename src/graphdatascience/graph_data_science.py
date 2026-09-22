@@ -858,7 +858,7 @@ class GraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] = QueryMode.WRITE,
+        mode: QueryMode | Literal["READ", "WRITE"] = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query
@@ -872,8 +872,8 @@ class GraphDataScience:
         database: str
             the database on which to run the query
         mode
-            the query mode to use (read or write). Set based on the operation performed in the query.
-            Plain strings ("read"/"write") and QueryMode values are both accepted.
+            the query mode to use (READ or WRITE). Set based on the operation performed in the query.
+            Plain strings ("READ"/"WRITE") and QueryMode values are both accepted.
 
         Returns
         -------

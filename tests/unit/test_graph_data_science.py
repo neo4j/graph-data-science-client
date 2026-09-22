@@ -94,10 +94,21 @@ def test_run_cypher_str_mode(supported_runner: CollectingQueryRunner) -> None:
     gds = GraphDataScience(supported_runner, arrow=False)
 
     try:
-        gds.run_cypher("RETURN 1", mode="read")
+        gds.run_cypher("RETURN 1", mode="READ")
 
         assert supported_runner.last_run_args()["mode"] == QueryMode.READ
         assert supported_runner.last_run_args()["retryable"] is True
+    finally:
+        gds.close()
+
+
+def test_run_cypher_lower_case_str_mode(supported_runner: CollectingQueryRunner) -> None:
+    gds = GraphDataScience(supported_runner, arrow=False)
+
+    try:
+        gds.run_cypher("RETURN 1", mode="read")  # type: ignore[arg-type]
+
+        assert supported_runner.last_run_args()["mode"] == QueryMode.READ
     finally:
         gds.close()
 

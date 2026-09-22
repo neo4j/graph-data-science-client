@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any, Generator, Literal
+from typing import Any, Generator
 
 import pytest
 from pandas import DataFrame
@@ -51,7 +51,7 @@ class CollectingQueryRunner(QueryRunner):
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] = QueryMode.READ,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
@@ -82,7 +82,7 @@ class CollectingQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         db: str | None = None,
-        mode: QueryMode | Literal["read", "write"] | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -107,7 +107,7 @@ class CollectingQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:

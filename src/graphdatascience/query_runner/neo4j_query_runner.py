@@ -4,7 +4,7 @@ import logging
 import re
 import time
 import warnings
-from typing import Any, Literal, NamedTuple
+from typing import Any, NamedTuple
 
 import neo4j
 from pandas import DataFrame
@@ -181,7 +181,7 @@ class Neo4jQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
         connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
@@ -190,8 +190,6 @@ class Neo4jQueryRunner(QueryRunner):
 
         if mode is None:
             mode = QueryMode.WRITE
-
-        mode = QueryMode.of(mode)
 
         if database is None:
             database = self._database
@@ -228,7 +226,7 @@ class Neo4jQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] | None = None,
+        mode: QueryMode | None = None,
         custom_error: bool = True,
         connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
@@ -238,7 +236,7 @@ class Neo4jQueryRunner(QueryRunner):
         if not mode:
             routing = neo4j.RoutingControl.WRITE
         else:
-            routing = QueryMode.of(mode).neo4j_routing()
+            routing = mode.neo4j_routing()
 
         try:
             bookmark_manager = neo4j.GraphDatabase.bookmark_manager(self.bookmarks())
@@ -281,7 +279,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
-        mode: QueryMode | Literal["read", "write"] = QueryMode.READ,
+        mode: QueryMode = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
