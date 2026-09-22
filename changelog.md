@@ -8,7 +8,7 @@
 
 ## Bug fixes
 
-* Deriving the default project for GDS Sessions now first checks the account's organizations via the Aura API `v2beta1` endpoint. Accounts with access to multiple organizations must specify `project_id` explicitly, since the non-organization-aware `v1/tenants` endpoint could make them appear to have a single project and silently create sessions in the wrong one.
+* Deriving the default project for GDS Sessions now first checks the users organizations. Users with access to multiple organizations must specify `project_id` explicitly to have a single project and avoid silently create sessions in the wrong one.
 
 ## Improvements
 
