@@ -113,6 +113,28 @@ def test_run_cypher_invalid_mode(mocker: MockerFixture) -> None:
         gds.run_cypher("RETURN 1", mode="reads")  # type: ignore[arg-type]
 
 
+def test_run_cypher_auto_commit(mocker: MockerFixture) -> None:
+    v = ServerVersion(9, 9, 9)
+    query_runner = CollectingQueryRunner(v, {"version": DataFrame.from_dict({"version": ["v3"]})})
+    gds = AuraGraphDataScience(
+        mocker.Mock(),
+        db_query_runner=query_runner,
+        session_lifecycle_manager=Noop(),
+    )
+
+    gds.run_cypher("RETURN 1", params={"foo": 1}, database="bar", auto_commit=True)
+
+    assert query_runner.last_query() == "RETURN 1"
+    assert query_runner.last_params() == {"foo": 1}
+    assert query_runner.run_args[-1] == {
+        "custom_error": False,
+        "db": "bar",
+        "mode": QueryMode.WRITE,
+        "retryable": False,
+        "query_type": "user-direct",
+    }
+
+
 def test_verify_connectivity(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     session_lifecycle_manager = mocker.Mock(spec=SessionLifecycleManager)

@@ -121,3 +121,33 @@ def test_run_cypher_invalid_mode(supported_runner: CollectingQueryRunner) -> Non
             gds.run_cypher("RETURN 1", mode="reads")  # type: ignore[arg-type]
     finally:
         gds.close()
+
+
+def test_run_cypher_auto_commit(supported_runner: CollectingQueryRunner) -> None:
+    gds = GraphDataScience(supported_runner, arrow=False)
+
+    try:
+        gds.run_cypher("RETURN 1", params={"foo": 1}, database="bar", auto_commit=True)
+
+        assert supported_runner.last_query() == "RETURN 1"
+        assert supported_runner.last_params() == {"foo": 1}
+        assert supported_runner.last_run_args() == {
+            "db": "bar",
+            "mode": QueryMode.WRITE,
+            "custom_error": False,
+            "retryable": False,
+            "query_type": "user-direct",
+        }
+    finally:
+        gds.close()
+
+
+def test_run_cypher_uses_transactional_retries_by_default(supported_runner: CollectingQueryRunner) -> None:
+    gds = GraphDataScience(supported_runner, arrow=False)
+
+    try:
+        gds.run_cypher("RETURN 1")
+
+        assert supported_runner.last_run_args()["retryable"] is True
+    finally:
+        gds.close()

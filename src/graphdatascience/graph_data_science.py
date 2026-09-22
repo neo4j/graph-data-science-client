@@ -859,6 +859,7 @@ class GraphDataScience:
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | Literal["READ", "WRITE"] = QueryMode.WRITE,
+        auto_commit: bool = False,
     ) -> DataFrame:
         """
         Run a Cypher query
@@ -873,6 +874,8 @@ class GraphDataScience:
             the database on which to run the query
         mode
             the query mode to use. Set based on the operation performed in the query.
+        auto_commit: bool
+            run the query in an auto-commit transaction. This is required for queries using `CALL { ... } IN TRANSACTIONS`.
 
         Returns
         -------
@@ -882,6 +885,9 @@ class GraphDataScience:
         query_type = QueryType.USER_DIRECTED
 
         mode = QueryMode.of(mode)
+
+        if auto_commit:
+            return self._query_runner.run_cypher(query, query_type, params, database, mode, custom_error=False)
 
         return self._query_runner.run_retryable_cypher(
             query, query_type, params, database, custom_error=False, mode=mode

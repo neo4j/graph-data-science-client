@@ -221,5 +221,13 @@ See xref:pipelines.adoc[] and xref:model-object.adoc[] for the full API.
 === Running Cypher
 
 The `retryable` parameter of `gds.run_cypher` has been removed.
-Cypher queries run via `run_cypher` now always use transactional retries.
+Cypher queries run via `run_cypher` now always use transactional retries by default.
+
+Queries using `CALL { ... } IN TRANSACTIONS` are not supported by these driver-managed transactions.
+Use the `auto_commit` parameter to run such a query in an auto-commit transaction instead:
+
+[source, python]
+----
+gds.run_cypher("MATCH (n) CALL (n) { DETACH DELETE n } IN TRANSACTIONS", auto_commit=True)
+----
 

@@ -39,6 +39,25 @@ def test_run_cypher_write_and_read(query_runner: Neo4jQueryRunner) -> None:
         query_runner.run_cypher("MATCH (n:TestNode) DETACH DELETE n", QueryType.USER_ACTION)
 
 
+def test_run_cypher_call_in_transactions(query_runner: Neo4jQueryRunner) -> None:
+    # the auto-commit session path used by `gds.run_cypher(auto_commit=True)`
+    try:
+        query_runner.run_cypher("CREATE (n:AutoCommitTest)", QueryType.USER_ACTION)
+        query_runner.run_cypher(
+            """
+            MATCH (n:AutoCommitTest)
+            CALL (n) {
+                DELETE n
+            } IN TRANSACTIONS
+            """,
+            QueryType.USER_ACTION,
+        )
+        count = query_runner.run_cypher("MATCH (n:AutoCommitTest) RETURN count(n) AS c", QueryType.USER_ACTION)
+        assert count["c"].item() == 0
+    finally:
+        query_runner.run_cypher("MATCH (n:AutoCommitTest) DETACH DELETE n", QueryType.USER_ACTION)
+
+
 # --- run_retryable_cypher ---
 
 

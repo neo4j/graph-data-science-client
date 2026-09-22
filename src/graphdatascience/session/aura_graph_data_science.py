@@ -863,6 +863,7 @@ class AuraGraphDataScience:
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | Literal["READ", "WRITE"] = QueryMode.WRITE,
+        auto_commit: bool = False,
     ) -> DataFrame:
         """
         Run a Cypher query against the Neo4j database.
@@ -877,6 +878,8 @@ class AuraGraphDataScience:
             the database on which to run the query
         mode
             the query mode to use. Set based on the operation performed in the query.
+        auto_commit: bool
+            run the query in an auto-commit transaction. This is required for queries using `CALL { ... } IN TRANSACTIONS`.
 
         Returns
         -------
@@ -887,6 +890,11 @@ class AuraGraphDataScience:
             raise NotAvailableInStandaloneSessions("Running Cypher queries")
 
         mode = QueryMode.of(mode)
+
+        if auto_commit:
+            return self._db_query_runner.run_cypher(
+                query, QueryType.USER_DIRECTED, params, database, mode, custom_error=False
+            )
 
         return self._db_query_runner.run_retryable_cypher(
             query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode
