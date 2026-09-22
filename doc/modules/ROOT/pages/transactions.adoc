@@ -35,9 +35,6 @@ A bookmark is a marker representing a state of the database.
 Bookmarks are useful when subsequent transactions in a cluster need to be coordinated, for example when you need to read data right after writing it.
 
 When using the GDS client, any query following a call to `gds.set_bookmarks()` is not executed until the bookmarked transactions are propagated across the cluster.
-Existing bookmarks can also be provided when constructing the `GraphDataScience` object, via its `bookmarks` parameter, for example to continue from a query run through the Neo4j driver in a previous session.
-
-NOTE: When using GDS Sessions, bookmarks can only be set via `gds.set_bookmarks()`, as `GdsSessions.get_or_create()` does not accept initial bookmarks.
 
 .Example of using bookmarks with GDS
 [source, python]
