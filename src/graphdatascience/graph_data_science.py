@@ -183,6 +183,7 @@ from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.versions import ServerVersion
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
+from .arrow_client.arrow_client_options_util import disable_server_verification
 from .arrow_client.arrow_endpoint_version import ArrowEndpointVersion
 from .arrow_client.arrow_info import ArrowInfo
 from .arrow_client.authenticated_flight_client import AuthenticatedArrowClient
@@ -299,7 +300,9 @@ class GraphDataScience:
                         listen_address,
                         auth=arrow_auth,
                         encrypted=self._query_runner.encrypted(),
-                        arrow_client_options=arrow_client_options,
+                        arrow_client_options=GraphDataScience._derive_arrow_client_options(
+                            endpoint, arrow_client_options
+                        ),
                     )
                 )
 
@@ -904,6 +907,23 @@ class GraphDataScience:
             return DbEnvironmentResolver.hosted_in_aura(detection_runner)
         finally:
             detection_runner.close()
+
+    @staticmethod
+    def _derive_arrow_client_options(
+        endpoint: str | Driver | QueryRunner, arrow_client_options: dict[str, Any] | None
+    ) -> dict[str, Any] | None:
+        if not isinstance(endpoint, str):
+            return arrow_client_options
+
+        scheme = endpoint.split("://")[0].lower()
+        if not scheme.endswith("+ssc"):
+            return arrow_client_options
+
+        options = dict(arrow_client_options) if arrow_client_options else {}
+        if "disable_server_verification" in options:
+            return options
+
+        return disable_server_verification(options)
 
     @staticmethod
     def _validate_endpoint(endpoint: str | Driver | QueryRunner) -> None:
