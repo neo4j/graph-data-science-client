@@ -179,7 +179,7 @@ from graphdatascience.procedure_surface.cypher.topological_link_prediction_cyphe
     TopologicalLinkPredictionCypherEndpoints,
 )
 from graphdatascience.procedure_surface.cypher.util_cypher_endpoints import UtilCypherEndpoints
-from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_mode import QueryMode, QueryModeLike
 from graphdatascience.versions import ServerVersion
 
 from .arrow_client.arrow_authentication import UsernamePasswordAuthentication
@@ -858,7 +858,7 @@ class GraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode = QueryMode.WRITE,
+        mode: QueryModeLike = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query
@@ -871,8 +871,9 @@ class GraphDataScience:
             parameters to the query
         database: str
             the database on which to run the query
-        mode: QueryMode
-            the query mode to use (READ or WRITE). Set based on the operation performed in the query.
+        mode: QueryMode | str
+            the query mode to use (read or write). Set based on the operation performed in the query.
+            Plain strings ("read"/"write") and QueryMode values are both accepted.
 
         Returns
         -------
@@ -880,6 +881,8 @@ class GraphDataScience:
             The query result as a DataFrame
         """
         query_type = QueryType.USER_DIRECTED
+
+        mode = QueryMode.of(mode)
 
         return self._query_runner.run_retryable_cypher(
             query, query_type, params, database, custom_error=False, mode=mode

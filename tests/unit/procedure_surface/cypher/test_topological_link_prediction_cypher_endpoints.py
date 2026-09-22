@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 from neo4j.graph import Graph, Node
 
 from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import Direction
@@ -82,6 +83,25 @@ def test_relationship_query_and_direction(query_runner: CollectingQueryRunner) -
         "node2": 2,
         "config": {"direction": "OUTGOING", "relationshipQuery": "FRIEND"},
     }
+
+
+def test_direction_str_alias(query_runner: CollectingQueryRunner) -> None:
+    query_runner.add__mock_result("gds.linkprediction.adamicAdar", pd.DataFrame({"score": [1.5]}))
+    endpoints = TopologicalLinkPredictionCypherEndpoints(query_runner)
+
+    assert endpoints.adamic_adar(1, 2, direction="OUTGOING") == 1.5
+    assert query_runner.last_params() == {
+        "node1": 1,
+        "node2": 2,
+        "config": {"direction": "OUTGOING", "relationshipQuery": None},
+    }
+
+
+def test_direction_invalid_str(query_runner: CollectingQueryRunner) -> None:
+    endpoints = TopologicalLinkPredictionCypherEndpoints(query_runner)
+
+    with pytest.raises(ValueError, match="Invalid direction: 'outgoing'"):
+        endpoints.adamic_adar(1, 2, direction="outgoing")  # type: ignore[arg-type]
 
 
 def test_resource_allocation(query_runner: CollectingQueryRunner) -> None:

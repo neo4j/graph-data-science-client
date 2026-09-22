@@ -15,7 +15,7 @@ from graphdatascience.error.gds_not_installed import GdsNotFound
 from graphdatascience.error.unable_to_connect import UnableToConnectError
 from graphdatascience.progress.query_progress_logger import QueryProgressLogger
 from graphdatascience.query_runner.db_environment_resolver import DbEnvironmentResolver
-from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_mode import QueryMode, QueryModeLike
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
@@ -181,7 +181,7 @@ class Neo4jQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | None = None,
+        mode: QueryModeLike | None = None,
         custom_error: bool = True,
         connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
@@ -190,6 +190,8 @@ class Neo4jQueryRunner(QueryRunner):
 
         if mode is None:
             mode = QueryMode.WRITE
+
+        mode = QueryMode.of(mode)
 
         if database is None:
             database = self._database
@@ -226,7 +228,7 @@ class Neo4jQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | None = None,
+        mode: QueryModeLike | None = None,
         custom_error: bool = True,
         connectivity_retry_config: ConnectivityRetriesConfig | None = None,
     ) -> DataFrame:
@@ -236,7 +238,7 @@ class Neo4jQueryRunner(QueryRunner):
         if not mode:
             routing = neo4j.RoutingControl.WRITE
         else:
-            routing = mode.neo4j_routing()
+            routing = QueryMode.of(mode).neo4j_routing()
 
         try:
             bookmark_manager = neo4j.GraphDatabase.bookmark_manager(self.bookmarks())
@@ -279,7 +281,7 @@ class Neo4jQueryRunner(QueryRunner):
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
-        mode: QueryMode = QueryMode.READ,
+        mode: QueryModeLike = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,

@@ -4,6 +4,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
+    AggregationLike,
     CollapsePathResult,
     RelationshipsDropResult,
     RelationshipsEndpoints,
@@ -204,7 +205,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        aggregation: AggregationLike | dict[str, AggregationLike] | None = None,
         concurrency: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,
@@ -212,10 +213,10 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
         job_id: str | None = None,
     ) -> RelationshipsToUndirectedResult:
         aggregation_value: str | dict[str, str] | None = None
-        if isinstance(aggregation, Aggregation):
-            aggregation_value = aggregation.name
-        elif isinstance(aggregation, dict):
-            aggregation_value = {k: v.name for k, v in aggregation.items()}
+        if isinstance(aggregation, dict):
+            aggregation_value = {k: Aggregation.of(v).name for k, v in aggregation.items()}
+        elif aggregation is not None:
+            aggregation_value = Aggregation.of(aggregation).name
 
         config = ConfigConverter.convert_to_gds_config(
             relationship_type=relationship_type,

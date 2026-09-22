@@ -12,7 +12,7 @@ from graphdatascience.arrow_client.arrow_info import ArrowInfo
 from graphdatascience.call_parameters import CallParameters
 from graphdatascience.graph_data_science import GraphDataScience
 from graphdatascience.query_runner import QueryRunner
-from graphdatascience.query_runner.query_mode import QueryMode
+from graphdatascience.query_runner.query_mode import QueryMode, QueryModeLike
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
@@ -51,7 +51,7 @@ class CollectingQueryRunner(QueryRunner):
         params: CallParameters | None = None,
         yields: list[str] | None = None,
         database: str | None = None,
-        mode: QueryMode = QueryMode.READ,
+        mode: QueryModeLike = QueryMode.READ,
         logging: bool = False,
         retryable: bool = False,
         custom_error: bool = True,
@@ -82,7 +82,7 @@ class CollectingQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         db: str | None = None,
-        mode: QueryMode | None = None,
+        mode: QueryModeLike | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:
@@ -107,7 +107,7 @@ class CollectingQueryRunner(QueryRunner):
         query_type: QueryType,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode | None = None,
+        mode: QueryModeLike | None = None,
         custom_error: bool = True,
     ) -> DataFrame:
         if params is None:

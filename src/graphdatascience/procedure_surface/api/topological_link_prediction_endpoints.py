@@ -2,16 +2,38 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import Literal
 
 from neo4j.graph import Node
 
 
 class Direction(str, Enum):
-    """The direction of relationships to consider when computing a topological link prediction."""
+    """
+    The direction of relationships to consider when computing a topological link prediction.
+
+    Plain strings are accepted wherever a `Direction` is expected.
+    """
 
     OUTGOING = "OUTGOING"
     INCOMING = "INCOMING"
     BOTH = "BOTH"
+
+    @classmethod
+    def of(cls, direction: "Direction | str") -> "Direction":
+        """
+        Normalize a `Direction` or a plain string into a `Direction`.
+        """
+        if isinstance(direction, Direction):
+            return direction
+
+        valid = [d.value for d in cls]
+        if direction not in valid:
+            raise ValueError(f"Invalid direction: '{direction}'. Valid values are: {valid}.")
+
+        return cls(direction)
+
+
+DirectionLike = Direction | Literal["OUTGOING", "INCOMING", "BOTH"]
 
 
 class TopologicalLinkPredictionEndpoints(ABC):
@@ -21,7 +43,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: Direction = Direction.BOTH,
+        direction: DirectionLike = Direction.BOTH,
     ) -> float:
         """
         Compute the Adamic-Adar index for two nodes.
@@ -34,8 +56,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction
-            The relationship direction used to compute similarity between node1 and node2
+        direction: Direction | str
+            The relationship direction used to compute similarity between node1 and node2.
+            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -50,7 +73,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: Direction = Direction.BOTH,
+        direction: DirectionLike = Direction.BOTH,
     ) -> float:
         """
         Compute the number of common neighbors for two nodes.
@@ -63,8 +86,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2The relationship type used to compute similarity between node1 and node2
-        direction: Direction
-            The relationship direction used to compute similarity between node1 and node2
+        direction: Direction | str
+            The relationship direction used to compute similarity between node1 and node2.
+            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -79,7 +103,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: Direction = Direction.BOTH,
+        direction: DirectionLike = Direction.BOTH,
     ) -> float:
         """
         Compute the preferential attachment score for two nodes.
@@ -92,8 +116,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction
-            The relationship direction used to compute similarity between node1 and node2
+        direction: Direction | str
+            The relationship direction used to compute similarity between node1 and node2.
+            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -108,7 +133,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: Direction = Direction.BOTH,
+        direction: DirectionLike = Direction.BOTH,
     ) -> float:
         """
         Compute the resource allocation index for two nodes.
@@ -121,8 +146,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction
-            The relationship direction used to compute similarity between node1 and node2
+        direction: Direction | str
+            The relationship direction used to compute similarity between node1 and node2.
+            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------
@@ -163,7 +189,7 @@ class TopologicalLinkPredictionEndpoints(ABC):
         node1: int | Node,
         node2: int | Node,
         relationship_query: str | None = None,
-        direction: Direction = Direction.BOTH,
+        direction: DirectionLike = Direction.BOTH,
     ) -> float:
         """
         Compute the total number of neighbors for two nodes.
@@ -176,8 +202,9 @@ class TopologicalLinkPredictionEndpoints(ABC):
             The second node, either as a node id or a node object.
         relationship_query: str | None
             The relationship type used to compute similarity between node1 and node2
-        direction: Direction
-            The relationship direction used to compute similarity between node1 and node2
+        direction: Direction | str
+            The relationship direction used to compute similarity between node1 and node2.
+            Plain strings ("OUTGOING", "INCOMING", "BOTH") and Direction values are both accepted.
 
         Returns
         -------

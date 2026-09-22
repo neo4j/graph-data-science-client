@@ -39,6 +39,7 @@ from graphdatascience.procedure_surface.api.catalog.relationship_property_endpoi
 from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.catalog.relationships_endpoints import (
     Aggregation,
+    AggregationLike,
     RelationshipsDropResult,
     RelationshipsEndpoints,
     RelationshipsInverseIndexResult,
@@ -55,6 +56,7 @@ from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerC
 
 __all__ = [
     "Aggregation",
+    "AggregationLike",
     "CatalogEndpoints",
     "DatasetEndpoints",
     "GraphExportCsvResult",

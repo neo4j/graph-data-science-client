@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import AliasChoices, Field, field_validator
 
@@ -170,7 +170,7 @@ class RelationshipsEndpoints(ABC):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        aggregation: AggregationLike | dict[str, AggregationLike] | None = None,
         concurrency: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,
@@ -189,10 +189,11 @@ class RelationshipsEndpoints(ABC):
             The input relationship type
         mutate_relationship_type: str,
             Name of the relationship type to store the results in.
-        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        aggregation: Aggregation | str | dict[str, Aggregation | str] | None
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
             A dictionary can be provided to specify property specific aggregations.
+            Plain strings and Aggregation values are both accepted, also as per-property dictionary values.
         concurrency
             Number of concurrent threads to use.
         sudo
@@ -313,9 +314,32 @@ class CollapsePathResult(BaseResult):
 
 
 class Aggregation(str, Enum):
+    """
+    Specifies how to aggregate parallel relationships in a graph.
+
+    Plain strings are accepted wherever an `Aggregation` is expected.
+    """
+
     NONE = "NONE"
     SINGLE = "SINGLE"
     SUM = "SUM"
     MIN = "MIN"
     MAX = "MAX"
     COUNT = "COUNT"
+
+    @classmethod
+    def of(cls, aggregation: "Aggregation | str") -> "Aggregation":
+        """
+        Normalize an `Aggregation` or a plain string into an `Aggregation`.
+        """
+        if isinstance(aggregation, Aggregation):
+            return aggregation
+
+        valid = [a.value for a in cls]
+        if aggregation not in valid:
+            raise ValueError(f"Invalid aggregation: '{aggregation}'. Valid values are: {valid}.")
+
+        return cls(aggregation)
+
+
+AggregationLike = Aggregation | Literal["NONE", "SINGLE", "SUM", "MIN", "MAX", "COUNT"]

@@ -4,6 +4,7 @@ from pyarrow.flight import ActionType
 from pytest_mock import MockerFixture
 
 from graphdatascience.graph_data_science import GraphDataScience
+from graphdatascience.query_runner import QueryMode
 from graphdatascience.versions import ServerVersion
 from tests.unit.conftest import CollectingQueryRunner
 
@@ -87,3 +88,25 @@ def test_does_not_derive_disable_server_verification_for_non_ssc_uri(endpoint: s
 
 def test_does_not_derive_disable_server_verification_for_query_runner(supported_runner: CollectingQueryRunner) -> None:
     assert GraphDataScience._derive_arrow_client_options(supported_runner, None) is None
+
+
+def test_run_cypher_str_mode(supported_runner: CollectingQueryRunner) -> None:
+    gds = GraphDataScience(supported_runner, arrow=False)
+
+    try:
+        gds.run_cypher("RETURN 1", mode="read")
+
+        assert supported_runner.last_run_args()["mode"] == QueryMode.READ
+        assert supported_runner.last_run_args()["retryable"] is True
+    finally:
+        gds.close()
+
+
+def test_run_cypher_invalid_mode(supported_runner: CollectingQueryRunner) -> None:
+    gds = GraphDataScience(supported_runner, arrow=False)
+
+    try:
+        with pytest.raises(ValueError, match="Invalid query mode: 'reads'"):
+            gds.run_cypher("RETURN 1", mode="reads")  # type: ignore[arg-type]
+    finally:
+        gds.close()
