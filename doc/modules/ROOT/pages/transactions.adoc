@@ -35,13 +35,11 @@ A bookmark is a marker representing a state of the database.
 Bookmarks are useful when subsequent transactions in a cluster need to be coordinated, for example when you need to read data right after writing it.
 
 When using the GDS client, any query following a call to `gds.set_bookmarks()` is not executed until the bookmarked transactions are propagated across the cluster.
-
-[.tabbed-example]
-====
-[.include-with-GDS-database-plugin]
-=====
 Existing bookmarks can also be provided when constructing the `GraphDataScience` object, via its `bookmarks` parameter, for example to continue from a query run through the Neo4j driver in a previous session.
 
+NOTE: When using GDS Sessions, bookmarks can only be set via `gds.set_bookmarks()`, as `GdsSessions.get_or_create()` does not accept initial bookmarks.
+
+.Example of using bookmarks with GDS
 [source, python]
 ----
 gds.run_cypher("""
@@ -62,43 +60,5 @@ result = gds.run_cypher("MATCH (p:Person) RETURN p.name, p.pagerank")
 
 G.drop()
 ----
-=====
-
-[.include-with-Aura-Graph-Analytics]
-=====
-When using GDS Sessions, bookmarks can only be set via `gds.set_bookmarks()`; no initial bookmarks can be provided when creating a session via `GdsSessions.get_or_create()`.
-
-[source, python]
-----
-gds.run_cypher("""
-    CREATE (:Person {name: "Alice"})-[:KNOWS]->(:Person {name: "Bob"})
-""")
-
-# Make sure the next queries will be executed after the CREATE query is fully propagated through the cluster
-gds.set_bookmarks(gds.last_bookmarks())
-
-G, _ = gds.graph.project.cypher(
-    "myGraph",
-    """
-    MATCH (n:Person)-[r:KNOWS]->(m:Person)
-    RETURN gds.graph.project.remote(n, m, {
-        sourceNodeLabels: labels(n),
-        targetNodeLabels: labels(m),
-        relationshipType: type(r)
-    })
-    """,
-)
-
-gds.page_rank.write(G, write_property="pagerank")
-
-# Make sure the next queries will be executed after the pageRank scores were written back to the cluster
-gds.set_bookmarks(gds.last_bookmarks())
-
-result = gds.run_cypher("MATCH (p:Person) RETURN p.name, p.pagerank")
-
-G.drop()
-----
-=====
-====
 
 For more details about bookmarks, see the https://neo4j.com/docs/python-manual/current/bookmarks/[Neo4j Python driver].
