@@ -21,6 +21,7 @@ from graphdatascience.session.aura_api_responses import (
     InstanceCreateDetails,
     InstanceDetails,
     InstanceSpecificDetails,
+    OrganizationDetails,
     ProjectDetails,
     SessionDetails,
     SessionDetailsWithErrors,
@@ -434,6 +435,15 @@ class AuraApi:
         return EstimationDetails.from_json(response.json()["data"])
 
     def _get_project_id(self) -> str:
+        # `v1/tenants` is not organization-aware and can silently default to a single
+        # project, so multi-organization accounts are rejected first.
+        organizations = self._list_organizations()
+
+        if len(organizations) > 1:
+            raise RuntimeError(
+                "This account has access to multiple organizations. Please specify the `project_id` to use."
+            )
+
         response = self._request_session.get(f"{self._base_uri}/v1/tenants")
         self._check_resp(response)
 
@@ -446,6 +456,12 @@ class AuraApi:
             )
 
         return raw_data[0]["id"]  # type: ignore
+
+    def _list_organizations(self) -> list[OrganizationDetails]:
+        response = self._request_session.get(f"{self._base_uri}/v2beta1/organizations")
+        self._check_resp(response)
+
+        return [OrganizationDetails.from_json(d) for d in response.json()["data"]]
 
     def project_details(self) -> ProjectDetails:
         if not self._project_details:

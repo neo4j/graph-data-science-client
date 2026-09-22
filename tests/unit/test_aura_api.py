@@ -814,9 +814,13 @@ def test_delete_missing_session(requests_mock: Mocker) -> None:
     assert api.delete_session("id0") is False
 
 
-def test_multiple_tenants(requests_mock: Mocker) -> None:
+def test_multiple_projects(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations",
+        json={"data": [{"id": "org1", "name": "MetaCortex"}]},
+    )
     requests_mock.get(
         "https://api.neo4j.io/v1/tenants",
         json={
@@ -830,6 +834,26 @@ def test_multiple_tenants(requests_mock: Mocker) -> None:
     with pytest.raises(
         RuntimeError,
         match="This account has access to multiple projects: `{'tenant1': 'Production', 'tenant2': 'Development'}`",
+    ):
+        AuraApi(client_id="", client_secret="")
+
+
+def test_multiple_organizations(requests_mock: Mocker) -> None:
+    mock_auth_token(requests_mock)
+
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations",
+        json={
+            "data": [
+                {"id": "org1", "name": "MetaCortex"},
+                {"id": "org2", "name": "Zion"},
+            ]
+        },
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match="This account has access to multiple organizations. Please specify the `project_id` to use.",
     ):
         AuraApi(client_id="", client_secret="")
 
@@ -1136,33 +1160,21 @@ def test_auth_token_use_short_token(requests_mock: Mocker) -> None:
     assert api._request_session.auth._auth_token() == "one_token"  # type: ignore
 
 
-def test_derive_tenant(requests_mock: Mocker) -> None:
+def test_derive_project(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
 
+    requests_mock.get(
+        "https://api.neo4j.io/v2beta1/organizations",
+        json={"data": [{"id": "org1", "name": "MetaCortex"}]},
+    )
     requests_mock.get(
         "https://api.neo4j.io/v1/tenants",
         json={"data": [{"id": "6981ace7-efe8-4f5c-b7c5-267b5162ce91", "name": "Production"}]},
     )
 
-    AuraApi(client_id="", client_secret="")
+    api = AuraApi(client_id="", client_secret="")
 
-
-def test_raise_on_missing_tenant(requests_mock: Mocker) -> None:
-    mock_auth_token(requests_mock)
-
-    requests_mock.get(
-        "https://api.neo4j.io/v1/tenants",
-        json={
-            "data": [
-                {"id": "6981ace7-efe8-4f5c-b7c5-267b5162ce91", "name": "Production"},
-                {"id": "YOUR_project_id", "name": "Staging"},
-                {"id": "da045ab3-3b89-4f45-8b96-528f2e47cd13", "name": "Development"},
-            ]
-        },
-    )
-
-    with pytest.raises(RuntimeError, match="This account has access to multiple projects"):
-        AuraApi(client_id="", client_secret="")
+    assert api._project_id == "6981ace7-efe8-4f5c-b7c5-267b5162ce91"
 
 
 def test_list_instance(requests_mock: Mocker) -> None:
