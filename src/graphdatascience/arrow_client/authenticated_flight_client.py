@@ -246,7 +246,7 @@ class AuthenticatedArrowClient:
 
     def _raise_if_grpc_dns_resolver_failed(self, error: Exception) -> None:
         """
-        gRPC ships its own DNS resolver (c-ares) that talks directly to the configured nameserver.
+        gRPC uses the c-ares DNS resolver that talks directly to the configured nameserver.
         Behind local DNS proxies such as Cloudflare WARP or some VPN clients those queries go unanswered
         while the OS resolver works fine. If gRPC failed to resolve the host but the OS resolver can,
         point the user at the `GRPC_DNS_RESOLVER=native` workaround.
