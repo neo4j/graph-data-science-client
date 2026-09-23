@@ -106,7 +106,10 @@ class ProjectArrowEndpoints:
             logging,
         )
 
-        job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
+        if self._query_runner.hosted_in_aura:
+            job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
+        else:
+            job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, graph_name))
 
         return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
 

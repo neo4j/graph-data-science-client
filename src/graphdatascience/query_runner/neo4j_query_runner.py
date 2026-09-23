@@ -7,6 +7,7 @@ import warnings
 from typing import Any, NamedTuple
 
 import neo4j
+from neo4j import Address
 from pandas import DataFrame
 from tenacity import retry, retry_if_exception, stop_after_delay, wait_fixed
 
@@ -408,6 +409,9 @@ class Neo4jQueryRunner(QueryRunner):
             show_progress=self._show_progress,
             instance_description=self._instance_description,
         )
+
+    def connection_info(self) -> Address:
+        return self._driver.get_server_info().address
 
     @retry(retry=retry_if_exception(is_retryable_neo4j_exception), stop=stop_after_delay(60), wait=wait_fixed(2))
     def verify_connectivity(self) -> None:

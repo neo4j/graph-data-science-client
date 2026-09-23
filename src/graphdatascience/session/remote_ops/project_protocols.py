@@ -130,7 +130,7 @@ class ProjectProtocolV3(ProjectProtocol):
         )
 
         member_host = response["host"]
-        member_port = response["port"] if ("port" in response) else 7687
+        member_port = response["port"] if ("port" in response) else self._query_runner.connection_info().port
 
         projection_query_runner = self._query_runner.cloneWithoutRouting(member_host, member_port)
 
