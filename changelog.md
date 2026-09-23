@@ -13,5 +13,6 @@
 
 ## Improvements
 
+* When gRPC fails to resolve the Arrow server host but the operating system resolver can (typically behind local DNS proxies such as Cloudflare WARP), the client now raises an error pointing at the `GRPC_DNS_RESOLVER=native` workaround instead of the bare `FlightUnavailableError`.
 
 ## Other changes

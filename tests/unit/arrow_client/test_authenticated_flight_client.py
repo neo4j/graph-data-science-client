@@ -1,3 +1,5 @@
+import socket
+
 import certifi
 import pytest
 from pyarrow.flight import ActionType, FlightTimedOutError, FlightUnavailableError
@@ -165,6 +167,60 @@ def test_do_action_with_retry_keeps_error_if_health_check_explains_nothing(
         client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
 
     health_check.raise_if_unhealthy.assert_called_once()
+
+
+DNS_ERROR = FlightUnavailableError(
+    "Flight returned unavailable error, with message: errors resolving example.neo4j.io:8491: "
+    "[field:hostname lookup error:address lookup failed for example.neo4j.io:8491: DNS query cancelled]"
+)
+
+
+def test_do_action_with_retry_hints_at_grpc_dns_resolver(retry_config_v2: RetryConfigV2, mocker: MockerFixture) -> None:
+    flight_client = mocker.Mock()
+    flight_client.do_action.side_effect = DNS_ERROR
+    mocker.patch.object(AuthenticatedArrowClient, "_instantiate_flight_client", return_value=flight_client)
+    getaddrinfo = mocker.patch("graphdatascience.arrow_client.authenticated_flight_client.socket.getaddrinfo")
+
+    client = AuthenticatedArrowClient(("example.neo4j.io", 8491), retry_config=retry_config_v2)
+
+    with pytest.raises(ConnectionError, match="GRPC_DNS_RESOLVER=native") as e:
+        client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
+
+    assert e.value.__cause__ is DNS_ERROR
+    getaddrinfo.assert_called_once_with("example.neo4j.io", 8491)
+
+
+def test_do_action_with_retry_keeps_dns_error_if_os_resolver_fails_too(
+    retry_config_v2: RetryConfigV2, mocker: MockerFixture
+) -> None:
+    flight_client = mocker.Mock()
+    flight_client.do_action.side_effect = DNS_ERROR
+    mocker.patch.object(AuthenticatedArrowClient, "_instantiate_flight_client", return_value=flight_client)
+    mocker.patch(
+        "graphdatascience.arrow_client.authenticated_flight_client.socket.getaddrinfo",
+        side_effect=socket.gaierror("Name or service not known"),
+    )
+
+    client = AuthenticatedArrowClient(("example.neo4j.io", 8491), retry_config=retry_config_v2)
+
+    with pytest.raises(FlightUnavailableError, match="address lookup failed"):
+        client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
+
+
+def test_do_action_with_retry_does_not_resolve_host_for_other_errors(
+    retry_config_v2: RetryConfigV2, mocker: MockerFixture
+) -> None:
+    flight_client = mocker.Mock()
+    flight_client.do_action.side_effect = FlightUnavailableError("Flight server is unavailable")
+    mocker.patch.object(AuthenticatedArrowClient, "_instantiate_flight_client", return_value=flight_client)
+    getaddrinfo = mocker.patch("graphdatascience.arrow_client.authenticated_flight_client.socket.getaddrinfo")
+
+    client = AuthenticatedArrowClient(("example.neo4j.io", 8491), retry_config=retry_config_v2)
+
+    with pytest.raises(FlightUnavailableError, match="Flight server is unavailable"):
+        client.do_action_with_retry("v2/test.endpoint", {"foo": "bar"})
+
+    getaddrinfo.assert_not_called()
 
 
 def test_pickle_roundtrip_keeps_health_check(retry_config_v2: RetryConfigV2) -> None:
