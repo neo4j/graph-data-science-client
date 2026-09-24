@@ -32,7 +32,7 @@ def test_train_runs_against_train_endpoint() -> None:
     with mock.patch.object(
         endpoints._node_property_endpoints,
         "run_job_and_get_summary",
-        return_value={"configuration": {}, "preProcessingMillis": 1, "trainMillis": 2},
+        return_value={"configuration": {}, "preProcessingMillis": 1, "train_ms": 2},
     ) as run_summary:
         model, result = endpoints.train(
             G=_graph(),
@@ -92,7 +92,7 @@ def test_write_runs_against_predict_endpoint() -> None:
         endpoints._node_property_endpoints,
         "run_job_and_write",
         return_value={
-            "computeMillis": 1,
+            "predict_ms": 1,
             "configuration": {},
             "nodePropertiesWritten": 2,
             "preProcessingMillis": 3,
@@ -120,7 +120,7 @@ def test_mutate_runs_against_predict_endpoint() -> None:
         endpoints._node_property_endpoints,
         "run_job_and_mutate",
         return_value={
-            "computeMillis": 1,
+            "predict_ms": 1,
             "configuration": {},
             "mutateMillis": 2,
             "nodePropertiesWritten": 3,

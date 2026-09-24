@@ -124,7 +124,7 @@ class GraphSageSupervisedEndpoints(ABC):
         G
            Graph object to use
         model_name
-            Name under which the model is stored
+            Name of the model.
         feature_properties
             Names of the node properties to use as input features
         batch_size
@@ -168,11 +168,11 @@ class GraphSageSupervisedEndpoints(ABC):
         G
            Graph object to use
         model_name
-            Name under which the model is stored
+            Name of the model.
         feature_properties
             Names of the node properties to use as input features
         write_property
-            Name of the node property to store the predicted classes in.
+            Name of the node property to store the results in.
         predicted_probability_property
             Name of the node property to store the predicted class probabilities in.
         batch_size
@@ -217,11 +217,11 @@ class GraphSageSupervisedEndpoints(ABC):
         G
            Graph object to use
         model_name
-            Name under which the model is stored
+            Name of the model.
         feature_properties
             Names of the node properties to use as input features
         mutate_property
-            Name of the node property to store the predicted classes in.
+            Name of the node property to store the results in.
         predicted_probability_property
             Name of the node property to store the predicted class probabilities in.
         batch_size

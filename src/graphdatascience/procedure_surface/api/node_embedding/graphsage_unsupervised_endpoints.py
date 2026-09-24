@@ -121,7 +121,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         G
            Graph object to use
         model_name
-            Name under which the model is stored
+            Name of the model.
         feature_properties
             Names of the node properties to use as input features
         batch_size
@@ -164,7 +164,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         G
            Graph object to use
         model_name
-            Name under which the model is stored
+            Name of the model.
         feature_properties
             Names of the node properties to use as input features
         write_property
@@ -210,7 +210,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         G
            Graph object to use
         model_name
-            Name under which the model is stored
+            Name of the model.
         feature_properties
             Names of the node properties to use as input features
         mutate_property

@@ -144,9 +144,10 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
             job_id=job_id,
         )
 
-        property_overwrites: dict[str, str] = {"predictedClass": write_property}
+        # the runtime streams the results under snake_case column names
+        property_overwrites: dict[str, str] = {"predicted_class": write_property}
         if predicted_probability_property is not None:
-            property_overwrites["predictedProbabilities"] = predicted_probability_property
+            property_overwrites["predicted_probabilities"] = predicted_probability_property
 
         raw_result = self._node_property_endpoints.run_job_and_write(
             "v2/embeddings.graphSage.supervised.predict",
@@ -188,7 +189,10 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
                 "v2/embeddings.graphSage.supervised.predict",
                 config,
                 OrderedDict(
-                    [("predictedClass", mutate_property), ("predictedProbabilities", predicted_probability_property)]
+                    [
+                        ("predicted_class", mutate_property),
+                        ("predicted_probabilities", predicted_probability_property),
+                    ]
                 ),
             )
         else:

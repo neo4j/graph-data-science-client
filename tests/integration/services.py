@@ -95,6 +95,13 @@ def runtime_session_alias() -> str:
     return f"{RUNTIME_SESSION_ALIAS}-{run_token()}"
 
 
+NO_RUNTIME_SESSION_ALIAS = "gds-session-without-runtime"
+
+
+def no_runtime_session_alias() -> str:
+    return f"{NO_RUNTIME_SESSION_ALIAS}-{run_token()}"
+
+
 def db_alias() -> str:
     return f"neo4j-db-{run_token()}"
 

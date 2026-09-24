@@ -7,6 +7,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
     GraphSageSupervisedModel,
 )
+from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_supervised_arrow_endpoints import (
     GraphSageSupervisedArrowEndpoints,
 )
@@ -44,12 +45,14 @@ def db_graph(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Query
         "gs-sup-g",
         graph,
         """
-            MATCH (n)-->(m)
-            WITH gds.graph.project.remote(
-                n,
-                m,
-                {sourceNodeProperties: properties(n), targetNodeProperties: properties(m)}
-            ) as g
+            MATCH (n)-[r]->(m)
+            WITH gds.graph.project.remote(n, m, {
+                sourceNodeLabels: labels(n),
+                targetNodeLabels: labels(m),
+                sourceNodeProperties: properties(n),
+                targetNodeProperties: properties(m),
+                relationshipType: type(r)
+            }) as g
             RETURN g
         """,
     ) as g:
@@ -60,23 +63,26 @@ def db_graph(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Query
 def gs_model(
     arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
 ) -> Generator[GraphSageSupervisedModel, None, None]:
-    endpoints = GraphSageSupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
-    model, _ = endpoints.train(
-        G=sample_graph,
-        model_name="gs-sup-model",
-        feature_properties=["feature"],
-        target_label="Node",
-        target_property="label",
-        embedding_dimension=1,
-        epochs=1,
-    )
+    model_name = "gs-sup-model"
+    model_catalog = ModelCatalogArrowEndpoints(arrow_client_runtime)
+    try:
+        endpoints = GraphSageSupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
+        model, _ = endpoints.train(
+            G=sample_graph,
+            model_name=model_name,
+            feature_properties=["feature"],
+            target_label="Node",
+            target_property="label",
+            embedding_dimension=1,
+            epochs=1,
+        )
 
-    yield model
-
-    # `drop` only unloads the model; `delete` removes the stored artifact so it cannot
-    # collide with the next test's training under the same name.
-    model.drop()
-    model.delete(fail_if_missing=False)
+        yield model
+    finally:
+        # `drop` only unloads the model; `delete` removes the stored artifact so it cannot
+        # collide with the next test's training under the same name.
+        model_catalog.drop(model_name, fail_if_missing=False)
+        model_catalog.delete(model_name, fail_if_missing=False)
 
 
 def test_train(gs_model: GraphSageSupervisedModel) -> None:
@@ -99,7 +105,8 @@ def test_mutate(gs_model: GraphSageSupervisedModel, sample_graph: Graph) -> None
         predicted_probability_property="predictedProbabilities",
     )
 
-    assert result.node_properties_written == 4
+    # two properties (predicted classes + probabilities) written for each of the 4 nodes
+    assert result.node_properties_written == 8
     assert result.compute_millis >= 0
     assert result.mutate_millis >= 0
 
@@ -109,17 +116,19 @@ def test_write(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Que
     endpoints = GraphSageSupervisedArrowEndpoints(
         arrow_client_runtime, WriteProtocol.select(arrow_client_runtime, query_runner), show_progress=False
     )
-    model, _ = endpoints.train(
-        G=db_graph,
-        model_name="gs-sup-model-write",
-        feature_properties=["feature"],
-        target_label="Node",
-        target_property="label",
-        embedding_dimension=1,
-        epochs=1,
-    )
-
+    model_name = "gs-sup-model-write"
+    model_catalog = ModelCatalogArrowEndpoints(arrow_client_runtime)
     try:
+        model, _ = endpoints.train(
+            G=db_graph,
+            model_name=model_name,
+            feature_properties=["feature"],
+            target_label="Node",
+            target_property="label",
+            embedding_dimension=1,
+            epochs=1,
+        )
+
         result = model.predict_write(
             db_graph,
             feature_properties=["feature"],
@@ -127,7 +136,8 @@ def test_write(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Que
             predicted_probability_property="predictedProbabilities",
         )
 
-        assert result.node_properties_written == 4
+        # two properties (predicted classes + probabilities) written for each of the 4 nodes
+        assert result.node_properties_written == 8
         assert result.compute_millis >= 0
         assert result.write_millis >= 0
 
@@ -139,5 +149,5 @@ def test_write(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Que
             == 4
         )
     finally:
-        model.drop()
-        model.delete(fail_if_missing=False)
+        model_catalog.drop(model_name, fail_if_missing=False)
+        model_catalog.delete(model_name, fail_if_missing=False)

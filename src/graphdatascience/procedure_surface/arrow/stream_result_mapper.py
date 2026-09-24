@@ -102,6 +102,16 @@ def map_scale_properties_stream_result(result: DataFrame) -> None:
     result.rename(columns={"scaledProperties": "scaledProperty"}, inplace=True)
 
 
+def map_graphsage_supervised_predict_stream_result(result: DataFrame) -> None:
+    result.rename(
+        columns={
+            "predicted_class": "predictedClass",
+            "predicted_probabilities": "predictedProbabilities",
+        },
+        inplace=True,
+    )
+
+
 def map_articulation_points_stream_result(result: DataFrame) -> None:
     min_sizes = result["minComponentSize"]
     max_sizes = result["maxComponentSize"]
@@ -145,6 +155,7 @@ _STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame | None]] = {
     "v2/graph.nodeProperties.stream": map_node_properties_stream_result,
     "v2/graph.nodeProperties.scale": map_scale_properties_stream_result,
     "v2/centrality.articulationPoints": map_articulation_points_stream_result,
+    "v2/embeddings.graphSage.supervised.predict": map_graphsage_supervised_predict_stream_result,
     "v2/pipeline.linkPrediction.predict": rename_similarity_stream_result,
 }
 

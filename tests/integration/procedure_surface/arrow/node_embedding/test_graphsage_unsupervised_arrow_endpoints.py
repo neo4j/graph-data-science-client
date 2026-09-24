@@ -7,6 +7,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_model import (
     GraphSageUnsupervisedModel,
 )
+from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_unsupervised_arrow_endpoints import (
     GraphSageUnsupervisedArrowEndpoints,
 )
@@ -44,12 +45,14 @@ def db_graph(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Query
         "gs-unsup-g",
         graph,
         """
-            MATCH (n)-->(m)
-            WITH gds.graph.project.remote(
-                n,
-                m,
-                {sourceNodeProperties: properties(n), targetNodeProperties: properties(m)}
-            ) as g
+            MATCH (n)-[r]->(m)
+            WITH gds.graph.project.remote(n, m, {
+                sourceNodeLabels: labels(n),
+                targetNodeLabels: labels(m),
+                sourceNodeProperties: properties(n),
+                targetNodeProperties: properties(m),
+                relationshipType: type(r)
+            }) as g
             RETURN g
         """,
     ) as g:
@@ -60,23 +63,26 @@ def db_graph(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Query
 def gs_model(
     arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
 ) -> Generator[GraphSageUnsupervisedModel, None, None]:
-    endpoints = GraphSageUnsupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
-    model, _ = endpoints.train(
-        G=sample_graph,
-        model_name="gs-unsup-model",
-        feature_properties=["feature"],
-        embedding_dimension=1,
-        epochs=1,
-        num_walks=1,
-        walk_depth=1,
-    )
+    model_name = "gs-unsup-model"
+    model_catalog = ModelCatalogArrowEndpoints(arrow_client_runtime)
+    try:
+        endpoints = GraphSageUnsupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
+        model, _ = endpoints.train(
+            G=sample_graph,
+            model_name=model_name,
+            feature_properties=["feature"],
+            embedding_dimension=1,
+            epochs=1,
+            num_walks=1,
+            walk_depth=1,
+        )
 
-    yield model
-
-    # `drop` only unloads the model; `delete` removes the stored artifact so it cannot
-    # collide with the next test's training under the same name.
-    model.drop()
-    model.delete(fail_if_missing=False)
+        yield model
+    finally:
+        # `drop` only unloads the model; `delete` removes the stored artifact so it cannot
+        # collide with the next test's training under the same name.
+        model_catalog.drop(model_name, fail_if_missing=False)
+        model_catalog.delete(model_name, fail_if_missing=False)
 
 
 def test_train(gs_model: GraphSageUnsupervisedModel) -> None:
@@ -104,17 +110,19 @@ def test_write(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Que
     endpoints = GraphSageUnsupervisedArrowEndpoints(
         arrow_client_runtime, WriteProtocol.select(arrow_client_runtime, query_runner), show_progress=False
     )
-    model, _ = endpoints.train(
-        G=db_graph,
-        model_name="gs-unsup-model-write",
-        feature_properties=["feature"],
-        embedding_dimension=1,
-        epochs=1,
-        num_walks=1,
-        walk_depth=1,
-    )
-
+    model_name = "gs-unsup-model-write"
+    model_catalog = ModelCatalogArrowEndpoints(arrow_client_runtime)
     try:
+        model, _ = endpoints.train(
+            G=db_graph,
+            model_name=model_name,
+            feature_properties=["feature"],
+            embedding_dimension=1,
+            epochs=1,
+            num_walks=1,
+            walk_depth=1,
+        )
+
         result = model.predict_write(db_graph, feature_properties=["feature"], write_property="embedding")
 
         assert result.node_properties_written == 4
@@ -128,5 +136,5 @@ def test_write(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Que
             == 4
         )
     finally:
-        model.drop()
-        model.delete(fail_if_missing=False)
+        model_catalog.drop(model_name, fail_if_missing=False)
+        model_catalog.delete(model_name, fail_if_missing=False)

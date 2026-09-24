@@ -31,7 +31,7 @@ def test_train_runs_against_train_endpoint() -> None:
     with mock.patch.object(
         endpoints._node_property_endpoints,
         "run_job_and_get_summary",
-        return_value={"configuration": {}, "preProcessingMillis": 1, "trainMillis": 2},
+        return_value={"configuration": {}, "preProcessingMillis": 1, "train_ms": 2},
     ) as run_summary:
         model, result = endpoints.train(
             G=_graph(),
@@ -95,7 +95,7 @@ def test_write_overwrites_predicted_class_property() -> None:
         endpoints._node_property_endpoints,
         "run_job_and_write",
         return_value={
-            "computeMillis": 1,
+            "predict_ms": 1,
             "configuration": {},
             "nodePropertiesWritten": 2,
             "preProcessingMillis": 3,
@@ -110,7 +110,7 @@ def test_write_overwrites_predicted_class_property() -> None:
         )
 
     assert run_write.call_args.args[0] == _PREDICT_ENDPOINT
-    assert run_write.call_args.kwargs["property_overwrites"] == {"predictedClass": "predictedClass"}
+    assert run_write.call_args.kwargs["property_overwrites"] == {"predicted_class": "predictedClass"}
 
     assert result.node_properties_written == 2
 
@@ -122,7 +122,7 @@ def test_write_with_probability_property_overwrites_both() -> None:
         endpoints._node_property_endpoints,
         "run_job_and_write",
         return_value={
-            "computeMillis": 1,
+            "predict_ms": 1,
             "configuration": {},
             "nodePropertiesWritten": 2,
             "preProcessingMillis": 3,
@@ -138,8 +138,8 @@ def test_write_with_probability_property_overwrites_both() -> None:
         )
 
     assert run_write.call_args.kwargs["property_overwrites"] == {
-        "predictedClass": "class",
-        "predictedProbabilities": "probs",
+        "predicted_class": "class",
+        "predicted_probabilities": "probs",
     }
 
 
@@ -150,7 +150,7 @@ def test_mutate_single_property() -> None:
         endpoints._node_property_endpoints,
         "run_job_and_mutate",
         return_value={
-            "computeMillis": 1,
+            "predict_ms": 1,
             "configuration": {},
             "mutateMillis": 2,
             "nodePropertiesWritten": 3,
@@ -177,7 +177,7 @@ def test_mutate_with_probability_property_mutates_both() -> None:
         endpoints._node_property_endpoints,
         "run_job_and_mutate_multiple",
         return_value={
-            "computeMillis": 1,
+            "predict_ms": 1,
             "configuration": {},
             "mutateMillis": 2,
             "nodePropertiesWritten": 3,
@@ -194,5 +194,5 @@ def test_mutate_with_probability_property_mutates_both() -> None:
 
     assert run_mutate_multiple.call_args.args[0] == _PREDICT_ENDPOINT
     assert run_mutate_multiple.call_args.args[2] == OrderedDict(
-        [("predictedClass", "class"), ("predictedProbabilities", "probs")]
+        [("predicted_class", "class"), ("predicted_probabilities", "probs")]
     )

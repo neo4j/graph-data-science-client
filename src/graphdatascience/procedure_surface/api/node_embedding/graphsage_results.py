@@ -1,16 +1,20 @@
 from typing import Any
 
+from pydantic import Field
+
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 
 
 class GraphSageRuntimeTrainResult(BaseResult):
     configuration: dict[str, Any]
     pre_processing_millis: int
-    train_millis: int
+    # the arrow summary reports the training time as `train_ms`
+    train_millis: int = Field(alias="train_ms")
 
 
 class GraphSageRuntimeMutateResult(BaseResult):
-    compute_millis: int
+    # the arrow summary reports the compute time as `predict_ms`
+    compute_millis: int = Field(alias="predict_ms")
     configuration: dict[str, Any]
     mutate_millis: int
     node_properties_written: int
@@ -18,7 +22,8 @@ class GraphSageRuntimeMutateResult(BaseResult):
 
 
 class GraphSageRuntimeWriteResult(BaseResult):
-    compute_millis: int
+    # the arrow summary reports the compute time as `predict_ms`
+    compute_millis: int = Field(alias="predict_ms")
     configuration: dict[str, Any]
     node_properties_written: int
     pre_processing_millis: int
