@@ -73,7 +73,10 @@ def gs_model(
 
     yield model
 
+    # `drop` only unloads the model; `delete` removes the stored artifact so it cannot
+    # collide with the next test's training under the same name.
     model.drop()
+    model.delete(fail_if_missing=False)
 
 
 def test_train(gs_model: GraphSageSupervisedModel) -> None:
@@ -137,3 +140,4 @@ def test_write(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Que
         )
     finally:
         model.drop()
+        model.delete(fail_if_missing=False)
