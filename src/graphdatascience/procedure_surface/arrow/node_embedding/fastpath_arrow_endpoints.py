@@ -163,6 +163,8 @@ class FastPathArrowEndpoints(FastPathEndpoints):
         with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             result = self._node_property_endpoints.run_job_and_mutate(FAST_PATH_ENDPOINT, config, mutate_property)
 
+        # FastPath writes a single property per node, so the node count equals the properties written
+        result["nodeCount"] = result["nodePropertiesWritten"]
         return FastPathMutateResult(**result)
 
     def stream(
@@ -277,4 +279,6 @@ class FastPathArrowEndpoints(FastPathEndpoints):
                 write_concurrency=write_concurrency,
             )
 
+        # FastPath writes a single property per node, so the node count equals the properties written
+        result["nodeCount"] = result["nodePropertiesWritten"]
         return FastPathWriteResult(**result)

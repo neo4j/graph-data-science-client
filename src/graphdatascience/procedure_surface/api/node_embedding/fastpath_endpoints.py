@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from pandas import DataFrame
-from pydantic import Field, model_validator
+from pydantic import Field
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -281,14 +281,6 @@ class FastPathMutateResult(BaseResult):
     node_count: int
     configuration: dict[str, Any]
 
-    # FastPath writes a single property per node, so the node count equals the properties written
-    @model_validator(mode="before")
-    @classmethod
-    def _derive_node_count(cls, data: Any) -> Any:
-        if isinstance(data, dict) and "nodeCount" not in data:
-            data["nodeCount"] = data.get("nodePropertiesWritten")
-        return data
-
 
 class FastPathWriteResult(BaseResult):
     pre_processing_millis: int
@@ -297,11 +289,3 @@ class FastPathWriteResult(BaseResult):
     node_properties_written: int
     node_count: int
     configuration: dict[str, Any]
-
-    # FastPath writes a single property per node, so the node count equals the properties written
-    @model_validator(mode="before")
-    @classmethod
-    def _derive_node_count(cls, data: Any) -> Any:
-        if isinstance(data, dict) and "nodeCount" not in data:
-            data["nodeCount"] = data.get("nodePropertiesWritten")
-        return data
