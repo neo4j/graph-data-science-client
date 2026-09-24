@@ -12,12 +12,14 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
     GraphSagePredictEndpoints,
     GraphSageWriteResult,
 )
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_runtime_endpoints import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_endpoints import (
     GraphSageSupervisedEndpoints,
-    GraphSageUnsupervisedEndpoints,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_endpoints import (
+    GraphSageUnsupervisedEndpoints,
 )
 
 
@@ -224,7 +226,8 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
 class SessionGraphSageEndpoints(GraphSageEndpoints):
     """
     API for the GraphSage algorithm in GDS Sessions, combining classic training and prediction
-    with the supervised and unsupervised GraphSage variants backed by the python runtime.
+    with the unsupervised GraphSage endpoints (the successor of the classic `gds.graph_sage.train`)
+    and the supervised (node classification) GraphSage endpoints.
     """
 
     def __init__(
@@ -242,7 +245,7 @@ class SessionGraphSageEndpoints(GraphSageEndpoints):
     @property
     def unsupervised(self) -> GraphSageUnsupervisedEndpoints:
         """
-        Endpoints for the python-runtime backed unsupervised GraphSage.
+        Endpoints for the unsupervised GraphSage.
 
         Returns
         -------
@@ -253,7 +256,7 @@ class SessionGraphSageEndpoints(GraphSageEndpoints):
     @property
     def supervised(self) -> GraphSageSupervisedEndpoints:
         """
-        Endpoints for the python-runtime backed supervised (node classification) GraphSage.
+        Endpoints for the supervised (node classification) GraphSage.
 
         Returns
         -------

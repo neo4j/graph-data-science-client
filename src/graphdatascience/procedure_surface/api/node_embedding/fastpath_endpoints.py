@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from pandas import DataFrame
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
@@ -278,9 +278,16 @@ class FastPathMutateResult(BaseResult):
     compute_millis: int = Field(alias="predict_ms")
     mutate_millis: int
     node_properties_written: int
-    # only reported by the Cypher surface, not part of the Arrow job summary
-    node_count: int | None = None
+    node_count: int
     configuration: dict[str, Any]
+
+    # FastPath writes a single property per node, so the node count equals the properties written
+    @model_validator(mode="before")
+    @classmethod
+    def _derive_node_count(cls, data: Any) -> Any:
+        if isinstance(data, dict) and "nodeCount" not in data:
+            data["nodeCount"] = data.get("nodePropertiesWritten")
+        return data
 
 
 class FastPathWriteResult(BaseResult):
@@ -288,6 +295,13 @@ class FastPathWriteResult(BaseResult):
     compute_millis: int = Field(alias="predict_ms")
     write_millis: int
     node_properties_written: int
-    # only reported by the Cypher surface, not part of the Arrow job summary
-    node_count: int | None = None
+    node_count: int
     configuration: dict[str, Any]
+
+    # FastPath writes a single property per node, so the node count equals the properties written
+    @model_validator(mode="before")
+    @classmethod
+    def _derive_node_count(cls, data: Any) -> Any:
+        if isinstance(data, dict) and "nodeCount" not in data:
+            data["nodeCount"] = data.get("nodePropertiesWritten")
+        return data

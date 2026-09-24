@@ -11,8 +11,10 @@ from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 
 if TYPE_CHECKING:
-    from graphdatascience.procedure_surface.api.node_embedding.graphsage_runtime_endpoints import (
+    from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_endpoints import (
         GraphSageSupervisedEndpoints,
+    )
+    from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_endpoints import (
         GraphSageUnsupervisedEndpoints,
     )
 
