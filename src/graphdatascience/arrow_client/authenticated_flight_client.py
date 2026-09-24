@@ -4,6 +4,7 @@ import json
 import logging
 import math
 import platform
+import socket
 from dataclasses import dataclass
 from types import TracebackType
 from typing import Any, Callable, Iterator, Type, TypeVar
@@ -237,10 +238,41 @@ class AuthenticatedArrowClient:
         """
         try:
             return operation()
-        except FLIGHT_TRANSIENT_EXCEPTIONS:
+        except FLIGHT_TRANSIENT_EXCEPTIONS as e:
             if self._health_check:
                 self._health_check.raise_if_unhealthy()
+            self._raise_if_grpc_dns_resolver_failed(e)
             raise
+
+    def _raise_if_grpc_dns_resolver_failed(self, error: Exception) -> None:
+        """
+        gRPC uses the c-ares DNS resolver that talks directly to the configured nameserver.
+        Behind local DNS proxies such as Cloudflare WARP or some VPN clients those queries go unanswered
+        while the OS resolver works fine. If gRPC failed to resolve the host but the OS resolver can,
+        point the user at the `GRPC_DNS_RESOLVER=native` workaround.
+        """
+        if not isinstance(error, FlightUnavailableError):
+            return
+        message = str(error)
+        if "address lookup failed" not in message and "errors resolving" not in message:
+            return
+        if not self._os_resolver_can_resolve_host():
+            return
+
+        raise ConnectionError(
+            f"gRPC could not resolve the Arrow server host `{self._host}`, but the operating system resolver can. "
+            "This usually happens when a local DNS proxy (e.g. Cloudflare WARP or a VPN client) does not answer "
+            "the queries of gRPC's built-in resolver. "
+            "Set the environment variable `GRPC_DNS_RESOLVER=native` before importing `graphdatascience` "
+            "(for example via `os.environ['GRPC_DNS_RESOLVER'] = 'native'`) to make gRPC use the operating system resolver."
+        ) from error
+
+    def _os_resolver_can_resolve_host(self) -> bool:
+        try:
+            socket.getaddrinfo(self._host, self._port)
+            return True
+        except OSError:
+            return False
 
     def __enter__(self) -> AuthenticatedArrowClient:
         return self
