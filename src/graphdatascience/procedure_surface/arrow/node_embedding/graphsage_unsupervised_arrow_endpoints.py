@@ -4,9 +4,9 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
-    GraphSageRuntimeMutateResult,
-    GraphSageRuntimeTrainResult,
-    GraphSageRuntimeWriteResult,
+    GraphSageUnsupervisedMutateResult,
+    GraphSageUnsupervisedTrainResult,
+    GraphSageUnsupervisedWriteResult,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_endpoints import (
     GraphSageUnsupervisedEndpoints,
@@ -56,7 +56,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> tuple[GraphSageUnsupervisedModel, GraphSageRuntimeTrainResult]:
+    ) -> tuple[GraphSageUnsupervisedModel, GraphSageUnsupervisedTrainResult]:
         config = self._node_property_endpoints.create_base_config(
             G,
             model_name=model_name,
@@ -84,7 +84,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedEndpoints):
         )
 
         model = GraphSageUnsupervisedModel(model_name, self._model_catalog, self)
-        train_result = GraphSageRuntimeTrainResult(**result)
+        train_result = GraphSageUnsupervisedTrainResult(**result)
 
         return model, train_result
 
@@ -127,7 +127,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedEndpoints):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
-    ) -> GraphSageRuntimeWriteResult:
+    ) -> GraphSageUnsupervisedWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
             model_name=model_name,
@@ -147,7 +147,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedEndpoints):
             write_concurrency=write_concurrency,
         )
 
-        return GraphSageRuntimeWriteResult(**raw_result)
+        return GraphSageUnsupervisedWriteResult(**raw_result)
 
     def mutate(
         self,
@@ -161,7 +161,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> GraphSageRuntimeMutateResult:
+    ) -> GraphSageUnsupervisedMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
             model_name=model_name,
@@ -179,4 +179,4 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedEndpoints):
             mutate_property,
         )
 
-        return GraphSageRuntimeMutateResult(**raw_result)
+        return GraphSageUnsupervisedMutateResult(**raw_result)

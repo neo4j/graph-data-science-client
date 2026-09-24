@@ -7,9 +7,9 @@ from pandas import DataFrame
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
-    GraphSageRuntimeMutateResult,
-    GraphSageRuntimeTrainResult,
-    GraphSageRuntimeWriteResult,
+    GraphSageUnsupervisedMutateResult,
+    GraphSageUnsupervisedTrainResult,
+    GraphSageUnsupervisedWriteResult,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_model import (
     GraphSageUnsupervisedModel,
@@ -46,7 +46,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> tuple[GraphSageUnsupervisedModel, GraphSageRuntimeTrainResult]:
+    ) -> tuple[GraphSageUnsupervisedModel, GraphSageUnsupervisedTrainResult]:
         """
         Trains an unsupervised GraphSage model on the given graph.
 
@@ -96,7 +96,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
 
         Returns
         -------
-        tuple[GraphSageUnsupervisedModel, GraphSageRuntimeTrainResult]
+        tuple[GraphSageUnsupervisedModel, GraphSageUnsupervisedTrainResult]
             The trained model and training metrics
         """
 
@@ -155,7 +155,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
-    ) -> GraphSageRuntimeWriteResult:
+    ) -> GraphSageUnsupervisedWriteResult:
         """
         Uses a pre-trained unsupervised GraphSage model to predict embeddings for a graph and writes the results back to the database.
 
@@ -184,7 +184,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
 
         Returns
         -------
-        GraphSageRuntimeWriteResult
+        GraphSageUnsupervisedWriteResult
             Algorithm metrics and statistics
         """
 
@@ -201,7 +201,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> GraphSageRuntimeMutateResult:
+    ) -> GraphSageUnsupervisedMutateResult:
         """
         Uses a pre-trained unsupervised GraphSage model to predict embeddings for a graph and writes the results back to the graph as a node property.
 
@@ -228,6 +228,6 @@ class GraphSageUnsupervisedEndpoints(ABC):
 
         Returns
         -------
-        GraphSageRuntimeMutateResult
+        GraphSageUnsupervisedMutateResult
             Algorithm metrics and statistics
         """

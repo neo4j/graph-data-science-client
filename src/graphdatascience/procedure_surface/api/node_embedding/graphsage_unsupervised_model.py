@@ -9,8 +9,8 @@ from graphdatascience.model.model import Model
 from graphdatascience.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
-    GraphSageRuntimeMutateResult,
-    GraphSageRuntimeWriteResult,
+    GraphSageUnsupervisedMutateResult,
+    GraphSageUnsupervisedWriteResult,
 )
 
 if TYPE_CHECKING:
@@ -90,7 +90,7 @@ class GraphSageUnsupervisedModel(Model):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
-    ) -> GraphSageRuntimeWriteResult:
+    ) -> GraphSageUnsupervisedWriteResult:
         """
         Generate embeddings for the given graph and write the results to the database.
 
@@ -117,7 +117,7 @@ class GraphSageUnsupervisedModel(Model):
 
         Returns
         -------
-        GraphSageRuntimeWriteResult
+        GraphSageUnsupervisedWriteResult
             The result of the write operation.
         """
         return self._predict_endpoints.write(
@@ -144,7 +144,7 @@ class GraphSageUnsupervisedModel(Model):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> GraphSageRuntimeMutateResult:
+    ) -> GraphSageUnsupervisedMutateResult:
         """
         Generate embeddings for the given graph and mutate the graph with the results.
 
@@ -169,7 +169,7 @@ class GraphSageUnsupervisedModel(Model):
 
         Returns
         -------
-        GraphSageRuntimeMutateResult
+        GraphSageUnsupervisedMutateResult
             The result of the mutate operation.
         """
         return self._predict_endpoints.mutate(

@@ -9,8 +9,8 @@ from graphdatascience.model.model import Model
 from graphdatascience.model.model_catalog_protocol import ModelCatalogProtocol
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
-    GraphSageRuntimeMutateResult,
-    GraphSageRuntimeWriteResult,
+    GraphSageSupervisedMutateResult,
+    GraphSageSupervisedWriteResult,
 )
 
 if TYPE_CHECKING:
@@ -91,7 +91,7 @@ class GraphSageSupervisedModel(Model):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
-    ) -> GraphSageRuntimeWriteResult:
+    ) -> GraphSageSupervisedWriteResult:
         """
         Predict classes for the given graph and write the results to the database.
 
@@ -120,7 +120,7 @@ class GraphSageSupervisedModel(Model):
 
         Returns
         -------
-        GraphSageRuntimeWriteResult
+        GraphSageSupervisedWriteResult
             The result of the write operation.
         """
         return self._predict_endpoints.write(
@@ -149,7 +149,7 @@ class GraphSageSupervisedModel(Model):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> GraphSageRuntimeMutateResult:
+    ) -> GraphSageSupervisedMutateResult:
         """
         Predict classes for the given graph and mutate the graph with the results.
 
@@ -176,7 +176,7 @@ class GraphSageSupervisedModel(Model):
 
         Returns
         -------
-        GraphSageRuntimeMutateResult
+        GraphSageSupervisedMutateResult
             The result of the mutate operation.
         """
         return self._predict_endpoints.mutate(

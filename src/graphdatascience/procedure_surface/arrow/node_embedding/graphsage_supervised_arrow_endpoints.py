@@ -6,9 +6,9 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
-    GraphSageRuntimeMutateResult,
-    GraphSageRuntimeTrainResult,
-    GraphSageRuntimeWriteResult,
+    GraphSageSupervisedMutateResult,
+    GraphSageSupervisedTrainResult,
+    GraphSageSupervisedWriteResult,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_endpoints import (
     GraphSageSupervisedEndpoints,
@@ -60,7 +60,7 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
         node_labels: list[str] = ALL_LABELS,
         split_ratios: dict[str, float] = {"TRAIN": 0.6, "TEST": 0.2, "VALID": 0.2},
         job_id: str | None = None,
-    ) -> tuple[GraphSageSupervisedModel, GraphSageRuntimeTrainResult]:
+    ) -> tuple[GraphSageSupervisedModel, GraphSageSupervisedTrainResult]:
         config = self._node_property_endpoints.create_base_config(
             G,
             model_name=model_name,
@@ -90,7 +90,7 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
         )
 
         model = GraphSageSupervisedModel(model_name, self._model_catalog, self)
-        train_result = GraphSageRuntimeTrainResult(**result)
+        train_result = GraphSageSupervisedTrainResult(**result)
 
         return model, train_result
 
@@ -132,7 +132,7 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
-    ) -> GraphSageRuntimeWriteResult:
+    ) -> GraphSageSupervisedWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
             model_name=model_name,
@@ -157,7 +157,7 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
             write_concurrency=write_concurrency,
         )
 
-        return GraphSageRuntimeWriteResult(**raw_result)
+        return GraphSageSupervisedWriteResult(**raw_result)
 
     def mutate(
         self,
@@ -172,7 +172,7 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> GraphSageRuntimeMutateResult:
+    ) -> GraphSageSupervisedMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
             model_name=model_name,
@@ -202,4 +202,4 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
                 mutate_property,
             )
 
-        return GraphSageRuntimeMutateResult(**raw_result)
+        return GraphSageSupervisedMutateResult(**raw_result)

@@ -7,9 +7,9 @@ from pandas import DataFrame
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
-    GraphSageRuntimeMutateResult,
-    GraphSageRuntimeTrainResult,
-    GraphSageRuntimeWriteResult,
+    GraphSageSupervisedMutateResult,
+    GraphSageSupervisedTrainResult,
+    GraphSageSupervisedWriteResult,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
     GraphSageSupervisedModel,
@@ -46,7 +46,7 @@ class GraphSageSupervisedEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         split_ratios: dict[str, float] = {"TRAIN": 0.6, "TEST": 0.2, "VALID": 0.2},
         job_id: str | None = None,
-    ) -> tuple[GraphSageSupervisedModel, GraphSageRuntimeTrainResult]:
+    ) -> tuple[GraphSageSupervisedModel, GraphSageSupervisedTrainResult]:
         """
         Trains a supervised (node classification) GraphSage model on the given graph.
 
@@ -99,7 +99,7 @@ class GraphSageSupervisedEndpoints(ABC):
 
         Returns
         -------
-        tuple[GraphSageSupervisedModel, GraphSageRuntimeTrainResult]
+        tuple[GraphSageSupervisedModel, GraphSageSupervisedTrainResult]
             The trained model and training metrics
         """
 
@@ -159,7 +159,7 @@ class GraphSageSupervisedEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
-    ) -> GraphSageRuntimeWriteResult:
+    ) -> GraphSageSupervisedWriteResult:
         """
         Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and writes the results back to the database.
 
@@ -190,7 +190,7 @@ class GraphSageSupervisedEndpoints(ABC):
 
         Returns
         -------
-        GraphSageRuntimeWriteResult
+        GraphSageSupervisedWriteResult
             Algorithm metrics and statistics
         """
 
@@ -208,7 +208,7 @@ class GraphSageSupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
-    ) -> GraphSageRuntimeMutateResult:
+    ) -> GraphSageSupervisedMutateResult:
         """
         Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and writes the results back to the graph as a node property.
 
@@ -237,6 +237,6 @@ class GraphSageSupervisedEndpoints(ABC):
 
         Returns
         -------
-        GraphSageRuntimeMutateResult
+        GraphSageSupervisedMutateResult
             Algorithm metrics and statistics
         """
