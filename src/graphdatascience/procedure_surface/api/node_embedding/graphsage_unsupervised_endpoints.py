@@ -6,10 +6,12 @@ from pandas import DataFrame
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_runtime_model import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
     GraphSageRuntimeMutateResult,
     GraphSageRuntimeTrainResult,
     GraphSageRuntimeWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_model import (
     GraphSageUnsupervisedModel,
 )
 

@@ -30,15 +30,16 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
     GraphSagePredictEndpoints,
     GraphSageWriteResult,
 )
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_runtime_model import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
     GraphSageRuntimeMutateResult,
     GraphSageRuntimeTrainResult,
     GraphSageRuntimeWriteResult,
-    GraphSageSupervisedModel,
-    GraphSageUnsupervisedModel,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_endpoints import (
     GraphSageSupervisedEndpoints,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
+    GraphSageSupervisedModel,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
@@ -46,6 +47,9 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpo
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_endpoints import (
     GraphSageUnsupervisedEndpoints,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_model import (
+    GraphSageUnsupervisedModel,
 )
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import (
     HashGNNEndpoints,

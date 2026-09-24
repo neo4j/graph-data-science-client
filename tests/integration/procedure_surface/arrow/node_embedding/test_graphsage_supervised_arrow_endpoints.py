@@ -4,7 +4,7 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_runtime_model import (
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
     GraphSageSupervisedModel,
 )
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_supervised_arrow_endpoints import (

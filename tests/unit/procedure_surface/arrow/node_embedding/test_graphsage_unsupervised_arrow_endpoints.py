@@ -3,7 +3,9 @@ from unittest import mock
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_runtime_model import GraphSageUnsupervisedModel
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_model import (
+    GraphSageUnsupervisedModel,
+)
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_unsupervised_arrow_endpoints import (
     GraphSageUnsupervisedArrowEndpoints,
 )
