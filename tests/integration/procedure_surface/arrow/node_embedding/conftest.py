@@ -9,18 +9,10 @@ from tests.integration.services import (
     GdsSessionConnectionInfo,
     create_arrow_client,
     runtime_session_alias,
-    start_runtime_api,
     start_session,
 )
 
 ignore_preview_warning = pytest.mark.filterwarnings("ignore:.*is a preview feature:UserWarning")
-
-
-@pytest.fixture(scope="package")
-def runtime_api(
-    network: Network, logs_dir: Path, request: pytest.FixtureRequest, models_dir: Path
-) -> Generator[str, None, None]:
-    yield from start_runtime_api(logs_dir, network, request.node.name, models_dir)
 
 
 @pytest.fixture(scope="package")

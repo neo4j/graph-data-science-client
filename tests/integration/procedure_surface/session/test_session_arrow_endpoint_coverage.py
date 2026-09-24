@@ -15,6 +15,10 @@ UNMAPPED_ENDPOINTS = [
     "pipeline.nodeRegression.features.select",
     "centrality.hits",
     "centrality.hits.estimate",
+    # preview embeddings api, mapped as `gds.embedding` on the client
+    "embeddings.train",
+    "embeddings.predict",
+    "embeddings.encode",
 ]
 
 # mapping for arrow endpoint name parts -> endpoint callable from SessionV2Endpoints
@@ -35,6 +39,9 @@ ENDPOINT_MAPPINGS = {
     "fastrp": "fast_rp",
     "fastPath": "fast_path",
     "hashgnn": "hash_gnn",
+    # the python-runtime backed graphsage variants serve their modes on the variant namespace directly
+    "graphSage.supervised.predict": "graph_sage.supervised",
+    "graphSage.unsupervised.predict": "graph_sage.unsupervised",
     # pathfinding algos
     "sourceTarget": "shortest_path",
     "singleSource.bellmanFord": "bellman_ford",

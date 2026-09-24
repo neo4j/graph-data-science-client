@@ -52,7 +52,7 @@ from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import
 from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import EmbeddingEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import SessionGraphSageEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
@@ -137,8 +137,14 @@ from graphdatascience.procedure_surface.arrow.node_embedding.fastrp_arrow_endpoi
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
 )
+from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_supervised_arrow_endpoints import (
+    GraphSageSupervisedArrowEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arrow_endpoints import (
     GraphSageTrainArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_unsupervised_arrow_endpoints import (
+    GraphSageUnsupervisedArrowEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_embedding.hashgnn_arrow_endpoints import HashGNNArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.node2vec_arrow_endpoints import Node2VecArrowEndpoints
@@ -522,11 +528,11 @@ class AuraGraphDataScience:
         )
 
     @property
-    def graph_sage(self) -> GraphSageEndpoints:
+    def graph_sage(self) -> SessionGraphSageEndpoints:
         """
         Return endpoints for the GraphSage algorithm.
         """
-        return GraphSageEndpoints(
+        return SessionGraphSageEndpoints(
             train_endpoints=GraphSageTrainArrowEndpoints(
                 self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
             ),
@@ -534,6 +540,12 @@ class AuraGraphDataScience:
                 self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
             ),
             catalog_endpoints=self.model,
+            unsupervised_endpoints=GraphSageUnsupervisedArrowEndpoints(
+                self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
+            ),
+            supervised_endpoints=GraphSageSupervisedArrowEndpoints(
+                self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
+            ),
         )
 
     @property

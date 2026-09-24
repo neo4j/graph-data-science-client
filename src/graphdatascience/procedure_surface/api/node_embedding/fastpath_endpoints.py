@@ -278,6 +278,8 @@ class FastPathMutateResult(BaseResult):
     compute_millis: int = Field(alias="predict_ms")
     mutate_millis: int
     node_properties_written: int
+    # only reported by the Cypher surface, not part of the Arrow job summary
+    node_count: int | None = None
     configuration: dict[str, Any]
 
 
@@ -286,4 +288,6 @@ class FastPathWriteResult(BaseResult):
     compute_millis: int = Field(alias="predict_ms")
     write_millis: int
     node_properties_written: int
+    # only reported by the Cypher surface, not part of the Arrow job summary
+    node_count: int | None = None
     configuration: dict[str, Any]
