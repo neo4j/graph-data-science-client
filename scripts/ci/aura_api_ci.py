@@ -104,9 +104,15 @@ class AuraApiCI:
             if should_retry:
                 logging.debug(f"Error code: {response.status_code} - Retrying in {wait_time} s")
 
-        response_json = response.json()
+        try:
+            response_json = response.json()
+        except requests.JSONDecodeError:
+            response.raise_for_status()
+            raise
         if "errors" in response_json:
             raise Exception(response_json["errors"])
+
+        response.raise_for_status()
 
         return response_json["data"]  # type: ignore
 

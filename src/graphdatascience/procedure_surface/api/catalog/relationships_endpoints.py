@@ -170,7 +170,7 @@ class RelationshipsEndpoints(ABC):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        aggregation: Aggregation | str | dict[str, Aggregation | str] | None = None,
         concurrency: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,
@@ -189,7 +189,7 @@ class RelationshipsEndpoints(ABC):
             The input relationship type
         mutate_relationship_type: str,
             Name of the relationship type to store the results in.
-        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        aggregation
             Specifies how to aggregate parallel relationships in the graph.
             If a single aggregation is provided, it will be used for properties of the specified relationships.
             A dictionary can be provided to specify property specific aggregations.
@@ -313,9 +313,27 @@ class CollapsePathResult(BaseResult):
 
 
 class Aggregation(str, Enum):
+    """
+    Specifies how to aggregate parallel relationships in a graph.
+    """
+
     NONE = "NONE"
     SINGLE = "SINGLE"
     SUM = "SUM"
     MIN = "MIN"
     MAX = "MAX"
     COUNT = "COUNT"
+
+    @classmethod
+    def of(cls, aggregation: Aggregation | str) -> Aggregation:
+        """
+        Normalize an `Aggregation` or a plain string into an `Aggregation`.
+        """
+        if isinstance(aggregation, Aggregation):
+            return aggregation
+
+        valid = [a.value for a in cls]
+        if aggregation not in valid:
+            raise ValueError(f"Invalid aggregation: '{aggregation}'. Valid values are: {valid}.")
+
+        return cls(aggregation)

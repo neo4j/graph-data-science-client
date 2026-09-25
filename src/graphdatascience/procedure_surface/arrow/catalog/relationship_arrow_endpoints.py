@@ -185,18 +185,24 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         relationship_type: str,
         mutate_relationship_type: str,
         *,
-        aggregation: Aggregation | dict[str, Aggregation] | None = None,
+        aggregation: Aggregation | str | dict[str, Aggregation | str] | None = None,
         concurrency: int | None = None,
         sudo: bool = False,
         log_progress: bool = True,
         username: str | None = None,
         job_id: str | None = None,
     ) -> RelationshipsToUndirectedResult:
+        aggregation_value: Aggregation | dict[str, Aggregation] | None = None
+        if isinstance(aggregation, dict):
+            aggregation_value = {k: Aggregation.of(v) for k, v in aggregation.items()}
+        elif aggregation is not None:
+            aggregation_value = Aggregation.of(aggregation)
+
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
             relationship_type=relationship_type,
             mutate_relationship_type=mutate_relationship_type,
-            aggregation=aggregation,
+            aggregation=aggregation_value,
             concurrency=concurrency,
             sudo=sudo,
             log_progress=log_progress,

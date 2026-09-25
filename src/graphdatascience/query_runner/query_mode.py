@@ -1,13 +1,34 @@
+from __future__ import annotations
+
 from enum import Enum
 
 import neo4j
 
 
 class QueryMode(str, Enum):
-    READ = "read"
-    WRITE = "write"
+    """
+    The mode in which a Cypher query is run.
+    """
 
-    def neo4j_routing(self) -> "neo4j.RoutingControl":
+    READ = "READ"
+    WRITE = "WRITE"
+
+    @classmethod
+    def of(cls, mode: QueryMode | str) -> QueryMode:
+        """
+        Normalize a `QueryMode` or a plain string into a `QueryMode`.
+        """
+        if isinstance(mode, QueryMode):
+            return mode
+
+        upper = mode.upper()
+        valid = [m.value for m in cls]
+        if upper not in valid:
+            raise ValueError(f"Invalid query mode: '{mode}'. Valid values are: {valid}.")
+
+        return cls(upper)
+
+    def neo4j_routing(self) -> neo4j.RoutingControl:
         if self == QueryMode.READ:
             return neo4j.RoutingControl.READ
         elif self == QueryMode.WRITE:

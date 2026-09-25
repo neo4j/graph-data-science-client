@@ -13,6 +13,9 @@
 
 ## Improvements
 
+* `QueryMode` parameters, such as `gds.run_cypher(mode=...)`, now also accept plain strings (`"READ"`/`"WRITE"`, case-insensitive)
+* `gds.graph.relationships.to_undirected(aggregation=...)` now also accepts plain strings, including as per-property dictionary values
+* Topological link prediction `direction` parameters now also accept plain strings (`"OUTGOING"`/`"INCOMING"`/`"BOTH"`)
 * When gRPC fails to resolve the Arrow server host but the operating system resolver can (typically behind local DNS proxies such as Cloudflare WARP), the client now raises an error pointing at the `GRPC_DNS_RESOLVER=native` workaround instead of the bare `FlightUnavailableError`.
 
 ## Other changes

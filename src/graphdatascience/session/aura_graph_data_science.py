@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Tuple
+from typing import Any, Literal, Tuple
 
 import neo4j
 from pandas import DataFrame
@@ -862,7 +862,7 @@ class AuraGraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode = QueryMode.WRITE,
+        mode: QueryMode | Literal["READ", "WRITE"] = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query against the Neo4j database.
@@ -875,8 +875,8 @@ class AuraGraphDataScience:
             parameters to the query
         database: str
             the database on which to run the query
-        mode: QueryMode
-            the query mode to use (READ or WRITE). Set based on the operation performed in the query.
+        mode
+            the query mode to use. Set based on the operation performed in the query.
 
         Returns
         -------
@@ -885,6 +885,8 @@ class AuraGraphDataScience:
         """
         if not self._db_query_runner:
             raise NotAvailableInStandaloneSessions("Running Cypher queries")
+
+        mode = QueryMode.of(mode)
 
         return self._db_query_runner.run_retryable_cypher(
             query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode

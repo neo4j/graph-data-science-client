@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from types import TracebackType
-from typing import Any, Type
+from typing import Any, Literal, Type
 
 import neo4j
 from neo4j import Driver
@@ -858,7 +858,7 @@ class GraphDataScience:
         query: str,
         params: dict[str, Any] | None = None,
         database: str | None = None,
-        mode: QueryMode = QueryMode.WRITE,
+        mode: QueryMode | Literal["READ", "WRITE"] = QueryMode.WRITE,
     ) -> DataFrame:
         """
         Run a Cypher query
@@ -871,8 +871,8 @@ class GraphDataScience:
             parameters to the query
         database: str
             the database on which to run the query
-        mode: QueryMode
-            the query mode to use (READ or WRITE). Set based on the operation performed in the query.
+        mode
+            the query mode to use. Set based on the operation performed in the query.
 
         Returns
         -------
@@ -880,6 +880,8 @@ class GraphDataScience:
             The query result as a DataFrame
         """
         query_type = QueryType.USER_DIRECTED
+
+        mode = QueryMode.of(mode)
 
         return self._query_runner.run_retryable_cypher(
             query, query_type, params, database, custom_error=False, mode=mode
