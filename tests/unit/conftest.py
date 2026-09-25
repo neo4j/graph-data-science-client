@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import Any, Generator
 
+import neo4j
 import pytest
 from pandas import DataFrame
 from pytest_mock import MockerFixture
@@ -29,7 +30,10 @@ QueryResultMap = dict[str, QueryResultOrList]  # Substring -> QueryResult or lis
 
 class CollectingQueryRunner(QueryRunner):
     def __init__(
-        self, server_version: ServerVersion, result_mock: QueryResultOrList | QueryResultMap | None = None
+        self,
+        server_version: ServerVersion,
+        result_mock: QueryResultOrList | QueryResultMap | None = None,
+        db_driver: neo4j.Driver | None = None,
     ) -> None:
         self._result_map: dict[str, QueryResultOrList] = {}
         if isinstance(result_mock, (DataFrame, Exception, list)):
@@ -43,6 +47,7 @@ class CollectingQueryRunner(QueryRunner):
         self.params: list[dict[str, Any]] = []
         self._server_version = server_version
         self._database = "dummy"
+        self._db_driver = db_driver
 
     def call_procedure(
         self,
@@ -137,6 +142,12 @@ class CollectingQueryRunner(QueryRunner):
 
     def driver_config(self) -> dict[str, Any]:
         return {}
+
+    def db_driver(self) -> neo4j.Driver:
+        if self._db_driver is None:
+            raise ValueError("db_driver was not set")
+
+        return self._db_driver
 
     def encrypted(self) -> bool:
         return False

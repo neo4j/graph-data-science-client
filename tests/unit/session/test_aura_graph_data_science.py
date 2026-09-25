@@ -1,3 +1,4 @@
+import neo4j
 import pytest
 from pandas import DataFrame
 from pytest_mock import MockerFixture
@@ -234,3 +235,29 @@ def test_topological_link_prediction_standalone_session_raises(mocker: MockerFix
 
     with pytest.raises(NotAvailableInStandaloneSessions):
         gds.topological_link_prediction
+
+
+def test_db_driver(mocker: MockerFixture) -> None:
+    v = ServerVersion(9, 9, 9)
+    driver = mocker.Mock(spec=neo4j.Driver)
+    query_runner = CollectingQueryRunner(
+        v, {"gds.session.dbms.protocol.version": DataFrame.from_dict({"version": ["v3"]})}, db_driver=driver
+    )
+    gds = AuraGraphDataScience(
+        mocker.Mock(),
+        db_query_runner=query_runner,
+        session_lifecycle_manager=Noop(),
+    )
+
+    assert gds.db_driver() is driver
+
+
+def test_db_driver_standalone_session_raises(mocker: MockerFixture) -> None:
+    gds = AuraGraphDataScience(
+        mocker.Mock(spec=AuthenticatedArrowClient),
+        None,
+        mocker.Mock(spec=SessionLifecycleManager),
+    )
+
+    with pytest.raises(NotAvailableInStandaloneSessions):
+        gds.db_driver()

@@ -1,3 +1,4 @@
+import neo4j
 import pytest
 from neo4j.exceptions import Neo4jError
 from pyarrow.flight import ActionType
@@ -149,5 +150,16 @@ def test_run_cypher_uses_transactional_retries_by_default(supported_runner: Coll
         gds.run_cypher("RETURN 1")
 
         assert supported_runner.last_run_args()["retryable"] is True
+    finally:
+        gds.close()
+
+
+def test_db_driver_returns_query_runner_driver(mocker: MockerFixture) -> None:
+    driver = mocker.Mock(spec=neo4j.Driver)
+    runner = CollectingQueryRunner(ServerVersion(2, 13, 0), db_driver=driver)
+    gds = GraphDataScience(runner, arrow=False)
+
+    try:
+        assert gds.db_driver() is driver
     finally:
         gds.close()

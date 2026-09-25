@@ -904,6 +904,23 @@ class GraphDataScience:
         """
         return self._query_runner.driver_config()
 
+    def db_driver(self) -> neo4j.Driver:
+        """
+        Get the Neo4j driver used by this client to communicate with the Neo4j DBMS.
+
+        This is mainly useful when the `run_cypher()` API is too simple for a use case,
+        as the driver allows full control over sessions and transactions.
+
+        The driver is closed by `close()` if the client created it itself, after which it is
+        unusable; a driver supplied at construction is never closed by this client.
+
+        Returns
+        -------
+        neo4j.Driver
+            The Neo4j driver used by this client.
+        """
+        return self._query_runner.db_driver()
+
     @staticmethod
     def _derive_aura_ds(endpoint: str, auth: neo4j.Auth | None, database: str | None) -> bool:
         # Whether a database is hosted in Aura can only be determined by connecting to it,

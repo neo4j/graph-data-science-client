@@ -966,6 +966,25 @@ class AuraGraphDataScience:
             raise NotAvailableInStandaloneSessions("Getting the database")
         return self._db_query_runner.database()
 
+    def db_driver(self) -> neo4j.Driver:
+        """
+        Get the Neo4j driver used by this client to communicate with the Neo4j DBMS.
+
+        This is mainly useful when the `run_cypher()` API is too simple for a use case,
+        as the driver allows full control over sessions and transactions.
+
+        The driver is always created and managed by this client, and closed by `close()`,
+        after which it is unusable.
+
+        Returns
+        -------
+        neo4j.Driver
+            The Neo4j driver used by this client.
+        """
+        if not self._db_query_runner:
+            raise NotAvailableInStandaloneSessions("Getting the Neo4j driver")
+        return self._db_query_runner.db_driver()
+
     def bookmarks(self) -> neo4j.Bookmarks | None:
         """
         Get the Neo4j bookmarks defining the currently required states for cypher queries to execute

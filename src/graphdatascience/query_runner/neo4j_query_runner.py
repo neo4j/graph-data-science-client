@@ -336,6 +336,9 @@ class Neo4jQueryRunner(QueryRunner):
     def driver_config(self) -> dict[str, Any]:
         return self._config
 
+    def db_driver(self) -> neo4j.Driver:
+        return self._driver
+
     def _handle_notifications(self, result_summary: neo4j.ResultSummary) -> None:
         if self._NEO4J_DRIVER_VERSION < SemanticVersion(6, 0, 0):
             notifications = result_summary.notifications

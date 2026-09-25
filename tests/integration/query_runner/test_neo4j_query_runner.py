@@ -150,6 +150,13 @@ def test_driver_config(query_runner: Neo4jQueryRunner) -> None:
     assert "user_agent" in config
 
 
+# --- db_driver ---
+
+
+def test_db_driver(query_runner: Neo4jQueryRunner) -> None:
+    assert query_runner.db_driver() is not None
+
+
 # --- set_show_progress ---
 
 
@@ -192,6 +199,7 @@ def test_create_for_db_with_driver(neo4j_connection: DbmsConnectionInfo) -> None
     )
     try:
         runner = Neo4jQueryRunner.create_for_db(driver)
+        assert runner.db_driver() is driver
         runner.set_database("neo4j")
         result = runner.run_cypher("RETURN 1 AS n", QueryType.USER_ACTION)
         assert result["n"].iloc[0] == 1
