@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 import neo4j
+from neo4j import Address
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
@@ -107,4 +108,7 @@ class QueryRunner(ABC):
         pass
 
     def set_server_version(self, _: ServerVersion) -> None:
+        pass
+
+    def connection_info(self) -> Address:
         pass

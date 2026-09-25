@@ -106,6 +106,10 @@ def db_alias() -> str:
     return f"neo4j-db-{run_token()}"
 
 
+def self_managed_db_alias() -> str:
+    return f"neo4j-self_managed-db-{run_token()}"
+
+
 def gds_api_alias() -> str:
     return f"{MOCK_GDS_API_NETWORK_ALIAS}-{run_token()}"
 
@@ -408,6 +412,45 @@ def start_database(
         else:
             uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
         print(f"[it] neo4j reachable at {uri}", flush=True)
+        yield DbmsConnectionInfo(
+            uri=uri,
+            username="neo4j",
+            password="password",
+        )
+
+
+def start_self_managed_database(
+    logs_dir: Path, network: Network, log_name: str, db_alias: str
+) -> Generator[DbmsConnectionInfo, None, None]:
+    """
+    Start a stock Neo4j database (no GDS plugin, no Aura image).
+
+    Unlike `start_database`, the GDS feature toggles shipped in Neo4j core are left
+    enabled, so the built-in remote-projection stubs (`gds.arrow.project.v3`,
+    `gds.graph.project.remote`) are available and can project into a GDS session.
+    """
+    neo4j_image = os.getenv("NEO4J_SELF_MANAGED_DATABASE_IMAGE", "neo4j:enterprise")
+
+    advertise_address = db_alias if inside_ci() else "localhost"
+
+    db_container = (
+        DockerContainer(image=neo4j_image)
+        .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
+        .with_env("NEO4J_AUTH", "neo4j/password")
+        .with_env("NEO4J_server_bolt_advertised__address", f"{advertise_address}:7687")
+        .with_network_aliases(db_alias)
+        .with_network(network)
+        .with_exposed_ports(7687)
+        .waiting_for(LogMessageWaitStrategy("Started."))
+    )
+    for key, value in neo4j_memory_envs().items():
+        db_container = db_container.with_env(key, value)
+    with running_container(db_container, logs_dir / log_name / "self_managed_db_stdout.log", "self_managed database"):
+        if current_container_id() is not None:
+            uri = f"{db_alias}:7687"
+        else:
+            uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
+        print(f"[it] self_managed neo4j reachable at {uri}", flush=True)
         yield DbmsConnectionInfo(
             uri=uri,
             username="neo4j",
