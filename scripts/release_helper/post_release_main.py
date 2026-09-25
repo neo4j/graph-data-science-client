@@ -7,6 +7,7 @@ from pathlib import Path
 
 import installation_adoc
 import pypi
+from gha_workflows import add_branch_to_triggers
 
 from graphdatascience.versions import SemanticVersion
 
@@ -254,6 +255,7 @@ def main() -> None:
         update_antora_yml(next_version)
         update_publish_yml(released_version, next_version)
         update_preview_yml(released_version)
+        add_branch_to_triggers(REPO_ROOT, released_version.major_minor())
 
         update_installation_adoc(next_version)
 
