@@ -140,10 +140,10 @@ def test_fastpath_write(
     )
 
 
-def test_fastpath_not_enabled_without_runtime(arrow_client: AuthenticatedArrowClient) -> None:
-    # arrow_client is the plain session WITHOUT the python-runtime API, so FastPath is unavailable.
-    with create_graph(arrow_client, "g_plain", graph) as G:
-        endpoints = FastPathArrowEndpoints(arrow_client)
+def test_fastpath_not_enabled_without_runtime(arrow_client_no_runtime: AuthenticatedArrowClient) -> None:
+    # arrow_client_no_runtime is a session WITHOUT the python-runtime API, so FastPath is unavailable.
+    with create_graph(arrow_client_no_runtime, "g_plain", graph) as G:
+        endpoints = FastPathArrowEndpoints(arrow_client_no_runtime)
         with pytest.raises(FeatureNotEnabledError, match="not enabled for this session"):
             endpoints.stream(
                 G=G,

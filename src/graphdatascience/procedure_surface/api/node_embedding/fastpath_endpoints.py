@@ -278,6 +278,7 @@ class FastPathMutateResult(BaseResult):
     compute_millis: int = Field(alias="predict_ms")
     mutate_millis: int
     node_properties_written: int
+    node_count: int
     configuration: dict[str, Any]
 
 
@@ -286,4 +287,5 @@ class FastPathWriteResult(BaseResult):
     compute_millis: int = Field(alias="predict_ms")
     write_millis: int
     node_properties_written: int
+    node_count: int
     configuration: dict[str, Any]

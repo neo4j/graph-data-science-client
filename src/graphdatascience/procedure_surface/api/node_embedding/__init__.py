@@ -21,15 +21,38 @@ from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints impo
     FastRPStatsResult,
     FastRPWriteResult,
 )
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import GraphSageEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import (
+    GraphSageEndpoints,
+    SessionGraphSageEndpoints,
+)
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
     GraphSagePredictEndpoints,
     GraphSageWriteResult,
 )
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
+    GraphSageSupervisedMutateResult,
+    GraphSageSupervisedTrainResult,
+    GraphSageSupervisedWriteResult,
+    GraphSageUnsupervisedMutateResult,
+    GraphSageUnsupervisedTrainResult,
+    GraphSageUnsupervisedWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_endpoints import (
+    GraphSageSupervisedEndpoints,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
+    GraphSageSupervisedModel,
+)
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_endpoints import (
+    GraphSageUnsupervisedEndpoints,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_model import (
+    GraphSageUnsupervisedModel,
 )
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import (
     HashGNNEndpoints,
@@ -59,8 +82,18 @@ __all__ = [
     "GraphSageEndpoints",
     "GraphSageMutateResult",
     "GraphSagePredictEndpoints",
+    "GraphSageSupervisedEndpoints",
+    "GraphSageSupervisedModel",
+    "GraphSageSupervisedMutateResult",
+    "GraphSageSupervisedTrainResult",
+    "GraphSageSupervisedWriteResult",
     "GraphSageTrainEndpoints",
     "GraphSageTrainResult",
+    "GraphSageUnsupervisedEndpoints",
+    "GraphSageUnsupervisedModel",
+    "GraphSageUnsupervisedMutateResult",
+    "GraphSageUnsupervisedTrainResult",
+    "GraphSageUnsupervisedWriteResult",
     "GraphSageWriteResult",
     "HashGNNEndpoints",
     "HashGNNMutateResult",
@@ -70,4 +103,5 @@ __all__ = [
     "Node2VecEndpoints",
     "Node2VecMutateResult",
     "Node2VecWriteResult",
+    "SessionGraphSageEndpoints",
 ]

@@ -24,6 +24,7 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
     ):
         self._arrow_client = arrow_client
         self._write_protocol = write_protocol
+        self._show_progress = show_progress
         self._node_property_endpoints = NodePropertyEndpointsHelper(
             arrow_client, write_protocol=write_protocol, show_progress=show_progress
         )
@@ -95,7 +96,9 @@ class GraphSageTrainArrowEndpoints(GraphSageTrainEndpoints):
         model = GraphSageModel(
             model_name,
             self._model_catalog,
-            predict_endpoints=GraphSagePredictArrowEndpoints(self._arrow_client, self._write_protocol),
+            predict_endpoints=GraphSagePredictArrowEndpoints(
+                self._arrow_client, self._write_protocol, show_progress=self._show_progress
+            ),
         )
         train_result = GraphSageTrainResult(**result)
 

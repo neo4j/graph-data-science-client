@@ -18,16 +18,27 @@ if [ "${SKIP_NOTEBOOKS:-false}" == "true" ]; then
 fi
 
 echo "Checking notebooks"
-NOTEBOOKS="./examples/*.ipynb" # ./examples/dev/*.ipynb"
-for f in $NOTEBOOKS
-do
-  NB=$(cat $f)
-  FORMATTED_NB=$(uv run python scripts/clean_notebooks.py -i "$f" -o stdout)
+. scripts/parallel_jobs.sh
 
-  if [[ "$FORMATTED_NB" != "$NB" ]];
+PYTHON="$(uv run python -c 'import sys; print(sys.executable)')"
+NOTEBOOKS=(./examples/*.ipynb) # ./examples/dev/*.ipynb
+
+check_notebook() {
+  local file="$1"
+  local original formatted
+  original="$(cat "$file")"
+  formatted="$("$PYTHON" scripts/clean_notebooks.py -i "$file" -o stdout)"
+
+  if [[ "$formatted" != "$original" ]];
   then
-    echo "Notebook $f is not correctly formatted. See diff above for more details."
-    diff --color=always --suppress-common-lines --minimal --side-by-side <(echo "$NB") <(echo "$FORMATTED_NB")
-    exit 1
+    echo "Notebook $file is not correctly formatted. See diff above for more details."
+    diff --color=always --suppress-common-lines --minimal --side-by-side <(echo "$original") <(echo "$formatted")
+    return 1
   fi
+}
+
+for f in "${NOTEBOOKS[@]}"
+do
+  spawn check_notebook "$f"
 done
+wait_jobs

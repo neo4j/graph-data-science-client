@@ -12,8 +12,14 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
     GraphSagePredictEndpoints,
     GraphSageWriteResult,
 )
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_endpoints import (
+    GraphSageSupervisedEndpoints,
+)
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_endpoints import (
+    GraphSageUnsupervisedEndpoints,
 )
 
 
@@ -215,3 +221,45 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             sudo=sudo,
             job_id=job_id,
         )
+
+
+class SessionGraphSageEndpoints(GraphSageEndpoints):
+    """
+    API for the GraphSage algorithm in GDS Sessions, combining classic training and prediction
+    with the unsupervised GraphSage endpoints (the successor of the classic `gds.graph_sage.train`)
+    and the supervised (node classification) GraphSage endpoints.
+    """
+
+    def __init__(
+        self,
+        train_endpoints: GraphSageTrainEndpoints,
+        predict_endpoints: GraphSagePredictEndpoints,
+        catalog_endpoints: ModelCatalogProtocol,
+        unsupervised_endpoints: GraphSageUnsupervisedEndpoints,
+        supervised_endpoints: GraphSageSupervisedEndpoints,
+    ) -> None:
+        super().__init__(train_endpoints, predict_endpoints, catalog_endpoints)
+        self._unsupervised_endpoints = unsupervised_endpoints
+        self._supervised_endpoints = supervised_endpoints
+
+    @property
+    def unsupervised(self) -> GraphSageUnsupervisedEndpoints:
+        """
+        Endpoints for the unsupervised GraphSage.
+
+        Returns
+        -------
+        GraphSageUnsupervisedEndpoints
+        """
+        return self._unsupervised_endpoints
+
+    @property
+    def supervised(self) -> GraphSageSupervisedEndpoints:
+        """
+        Endpoints for the supervised (node classification) GraphSage.
+
+        Returns
+        -------
+        GraphSageSupervisedEndpoints
+        """
+        return self._supervised_endpoints

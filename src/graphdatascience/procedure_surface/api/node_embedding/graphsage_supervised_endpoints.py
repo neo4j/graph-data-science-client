@@ -1,0 +1,242 @@
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+from pandas import DataFrame
+
+from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
+    GraphSageSupervisedMutateResult,
+    GraphSageSupervisedTrainResult,
+    GraphSageSupervisedWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
+    GraphSageSupervisedModel,
+)
+
+
+class GraphSageSupervisedEndpoints(ABC):
+    """
+    Endpoints for the supervised (node classification) GraphSage algorithm.
+    """
+
+    @abstractmethod
+    def train(
+        self,
+        G: Graph,
+        model_name: str,
+        feature_properties: list[str],
+        *,
+        target_label: str,
+        target_property: str,
+        epochs: int,
+        activation_function: str = "relu",
+        aggregator: str = "mean",
+        batch_size: int | None = None,
+        class_weights: bool = False,
+        dropout: float = 0.1,
+        embedding_dimension: int = 256,
+        epochs_per_val: int = 0,
+        layer_normalization: bool = True,
+        learning_rate: float = 0.001,
+        num_neighbors: list[int] = [20, 10],
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        split_ratios: dict[str, float] = {"TRAIN": 0.6, "TEST": 0.2, "VALID": 0.2},
+        job_id: str | None = None,
+    ) -> tuple[GraphSageSupervisedModel, GraphSageSupervisedTrainResult]:
+        """
+        Trains a supervised (node classification) GraphSage model on the given graph.
+
+        The resulting model can be used for prediction with `gds.graph_sage.supervised.stream`, `.write` and `.mutate`.
+
+        Parameters
+        ----------
+        G
+           Graph object to use
+        model_name
+            Name of the trained model.
+        feature_properties
+            Names of the node properties to use as input features
+        target_label
+            Node label to train on.
+        target_property
+            Node property to train on.
+        epochs
+            Maximum number of training epochs.
+        activation_function
+            The activation function to apply after each layer
+        aggregator
+            The aggregator function for neighborhood aggregation
+        batch_size
+            Number of nodes to process in each batch.
+        class_weights
+            Whether to weight the classes inversely proportional to their frequency
+        dropout
+            Dropout probability applied during training.
+        embedding_dimension
+            Output dimensionality of the embeddings
+        epochs_per_val
+            Number of training epochs between validation runs
+        layer_normalization
+            Whether to apply layer normalization after each layer
+        learning_rate
+            Learning rate for the training optimization
+        num_neighbors
+            Number of neighbors to sample at each layer
+        random_seed
+            Seed for random number generation to ensure reproducible results.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        split_ratios
+            Ratios for splitting the nodes into training, validation and test sets
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        tuple[GraphSageSupervisedModel, GraphSageSupervisedTrainResult]
+            The trained model and training metrics
+        """
+
+    @abstractmethod
+    def stream(
+        self,
+        G: Graph,
+        model_name: str,
+        feature_properties: list[str],
+        *,
+        batch_size: int | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        job_id: str | None = None,
+    ) -> DataFrame:
+        """
+        Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and returns the results as a stream.
+
+        Parameters
+        ----------
+        G
+           Graph object to use
+        model_name
+            Name of the model.
+        feature_properties
+            Names of the node properties to use as input features
+        batch_size
+            Number of nodes to process in each batch.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with node IDs, their predicted classes and predicted class probabilities
+        """
+
+    @abstractmethod
+    def write(
+        self,
+        G: Graph,
+        model_name: str,
+        feature_properties: list[str],
+        write_property: str,
+        *,
+        predicted_probability_property: str | None = None,
+        batch_size: int | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        job_id: str | None = None,
+        write_concurrency: int | None = None,
+    ) -> GraphSageSupervisedWriteResult:
+        """
+        Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and writes the results back to the database.
+
+        Parameters
+        ----------
+        G
+           Graph object to use
+        model_name
+            Name of the model.
+        feature_properties
+            Names of the node properties to use as input features
+        write_property
+            Name of the node property to store the results in.
+        predicted_probability_property
+            Name of the node property to store the predicted class probabilities in.
+        batch_size
+            Number of nodes to process in each batch.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        job_id
+            Identifier for the computation.
+        write_concurrency
+            Number of concurrent threads to use for writing.
+
+        Returns
+        -------
+        GraphSageSupervisedWriteResult
+            Algorithm metrics and statistics
+        """
+
+    @abstractmethod
+    def mutate(
+        self,
+        G: Graph,
+        model_name: str,
+        feature_properties: list[str],
+        mutate_property: str,
+        *,
+        predicted_probability_property: str | None = None,
+        batch_size: int | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        job_id: str | None = None,
+    ) -> GraphSageSupervisedMutateResult:
+        """
+        Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and writes the results back to the graph as a node property.
+
+        Parameters
+        ----------
+        G
+           Graph object to use
+        model_name
+            Name of the model.
+        feature_properties
+            Names of the node properties to use as input features
+        mutate_property
+            Name of the node property to store the results in.
+        predicted_probability_property
+            Name of the node property to store the predicted class probabilities in.
+        batch_size
+            Number of nodes to process in each batch.
+        random_seed
+            Seed for random number generation to ensure reproducible results.
+        relationship_types
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
+        node_labels
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
+        job_id
+            Identifier for the computation.
+
+        Returns
+        -------
+        GraphSageSupervisedMutateResult
+            Algorithm metrics and statistics
+        """

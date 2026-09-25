@@ -28,6 +28,7 @@ from tests.integration.services import (
     start_database,
     start_gds_api,
     start_gds_plugin_database,
+    start_runtime_api,
     start_session,
 )
 
@@ -93,11 +94,26 @@ def session_connection(
     models_dir: Path,
     logs_dir: Path,
     gds_api_connection: str,
+    runtime_api: str,
     request: pytest.FixtureRequest,
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     yield from start_session(
-        logs_dir, models_dir, network, request.node.name, gds_api_uri=gds_api_connection, session_alias=session_alias()
+        logs_dir,
+        models_dir,
+        network,
+        request.node.name,
+        gds_api_uri=gds_api_connection,
+        runtime_api_uri=runtime_api,
+        session_alias=session_alias(),
     )
+
+
+@pytest.fixture(scope="session")
+def runtime_api(
+    network: Network, logs_dir: Path, request: pytest.FixtureRequest, models_dir: Path
+) -> Generator[str, None, None]:
+    """Mock python-runtime API, enabling the python-runtime backed endpoints (e.g. GraphSage, FastPath)."""
+    yield from start_runtime_api(logs_dir, network, request.node.name, models_dir)
 
 
 @pytest.fixture(scope="package")
