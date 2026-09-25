@@ -39,6 +39,25 @@ def test_run_cypher_write_and_read(query_runner: Neo4jQueryRunner) -> None:
         query_runner.run_cypher("MATCH (n:TestNode) DETACH DELETE n", QueryType.USER_ACTION)
 
 
+def test_run_cypher_call_in_transactions(query_runner: Neo4jQueryRunner) -> None:
+    # the auto-commit session path used by `gds.run_cypher(auto_commit=True)`
+    try:
+        query_runner.run_cypher("CREATE (n:AutoCommitTest)", QueryType.USER_ACTION)
+        query_runner.run_cypher(
+            """
+            MATCH (n:AutoCommitTest)
+            CALL (n) {
+                DELETE n
+            } IN TRANSACTIONS
+            """,
+            QueryType.USER_ACTION,
+        )
+        count = query_runner.run_cypher("MATCH (n:AutoCommitTest) RETURN count(n) AS c", QueryType.USER_ACTION)
+        assert count["c"].item() == 0
+    finally:
+        query_runner.run_cypher("MATCH (n:AutoCommitTest) DETACH DELETE n", QueryType.USER_ACTION)
+
+
 # --- run_retryable_cypher ---
 
 
@@ -131,6 +150,13 @@ def test_driver_config(query_runner: Neo4jQueryRunner) -> None:
     assert "user_agent" in config
 
 
+# --- db_driver ---
+
+
+def test_db_driver(query_runner: Neo4jQueryRunner) -> None:
+    assert query_runner.db_driver() is not None
+
+
 # --- set_show_progress ---
 
 
@@ -173,6 +199,7 @@ def test_create_for_db_with_driver(neo4j_connection: DbmsConnectionInfo) -> None
     )
     try:
         runner = Neo4jQueryRunner.create_for_db(driver)
+        assert runner.db_driver() is driver
         runner.set_database("neo4j")
         result = runner.run_cypher("RETURN 1 AS n", QueryType.USER_ACTION)
         assert result["n"].iloc[0] == 1

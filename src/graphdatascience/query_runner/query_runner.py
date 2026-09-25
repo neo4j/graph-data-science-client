@@ -68,6 +68,10 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
+    def db_driver(self) -> neo4j.Driver:
+        pass
+
+    @abstractmethod
     def encrypted(self) -> bool:
         pass
 

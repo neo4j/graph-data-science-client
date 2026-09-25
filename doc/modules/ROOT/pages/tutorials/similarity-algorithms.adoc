@@ -232,7 +232,7 @@ approach ensures high throughput while preventing the transaction log
 from growing too large.
 
 After the import, we use
-https://neo4j.com/docs/graph-data-science-client/current/bookmarks/[bookmarks]
+https://neo4j.com/docs/graph-data-science-client/current/transactions/#coordinate-parallel-transactions[bookmarks]
 to ensure that the remote graph projections only execute once all
 imported data is fully propagated across the database cluster.
 
@@ -734,33 +734,16 @@ latent features or interaction style.
 
 [source, python, role=no-test]
 ----
-# 1. Delete all relationships first, in batches
-while True:
-    deleted = gds.run_cypher(
-        """
-        MATCH ()-[r]->()
-        WITH r LIMIT $batch_size
-        DELETE r
-        RETURN count(*) AS deleted
-        """,
-        params={"batch_size": 10000},
-    )["deleted"].item()
-    if deleted == 0:
-        break
-
-# 2. Delete all nodes in batches
-while True:
-    deleted = gds.run_cypher(
-        """
-        MATCH (n)
-        WITH n LIMIT $batch_size
+# Remove all the example data from the database
+gds.run_cypher(
+    """
+    MATCH (n)
+    CALL (n) {
         DETACH DELETE n
-        RETURN count(*) AS deleted
-        """,
-        params={"batch_size": 5000},
-    )["deleted"].item()
-    if deleted == 0:
-        break
+    } IN TRANSACTIONS
+    """,
+    auto_commit=True,
+)
 ----
 
 [source, python, role=no-test]

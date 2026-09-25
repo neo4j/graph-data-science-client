@@ -222,4 +222,21 @@ See xref:pipelines.adoc[] and xref:model-object.adoc[] for the full API.
 
 The `retryable` parameter of `gds.run_cypher` has been removed.
 Cypher queries run via `run_cypher` now always use transactional retries.
+Its role is taken over by the inverse `auto_commit` parameter, which runs a query without retries in an https://neo4j.com/docs/python-manual/current/query-advanced/#implicit-transactions[auto-commit transaction]:
+
+[opts="header,autowidth", cols="m,m"]
+|===
+| 1.x | 2.x
+| `gds.run_cypher(query)` (default, `retryable=False`) | `gds.run_cypher(query, auto_commit=True)`
+| `gds.run_cypher(query, retryable=True)` | `gds.run_cypher(query)` (default, always retried)
+|===
+
+Queries using `CALL { ... } IN TRANSACTIONS` require such an auto-commit transaction:
+
+[source, python]
+----
+gds.run_cypher("MATCH (n) CALL (n) { DETACH DELETE n } IN TRANSACTIONS", auto_commit=True)
+----
+
+See xref:transactions.adoc[] for more details.
 

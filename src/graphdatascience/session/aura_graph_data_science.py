@@ -863,6 +863,7 @@ class AuraGraphDataScience:
         params: dict[str, Any] | None = None,
         database: str | None = None,
         mode: QueryMode | Literal["READ", "WRITE"] = QueryMode.WRITE,
+        auto_commit: bool = False,
     ) -> DataFrame:
         """
         Run a Cypher query against the Neo4j database.
@@ -877,6 +878,8 @@ class AuraGraphDataScience:
             the database on which to run the query
         mode
             the query mode to use. Set based on the operation performed in the query.
+        auto_commit: bool
+            run the query in an auto-commit transaction. This is required for queries using `CALL { ... } IN TRANSACTIONS`.
 
         Returns
         -------
@@ -887,6 +890,11 @@ class AuraGraphDataScience:
             raise NotAvailableInStandaloneSessions("Running Cypher queries")
 
         mode = QueryMode.of(mode)
+
+        if auto_commit:
+            return self._db_query_runner.run_cypher(
+                query, QueryType.USER_DIRECTED, params, database, mode, custom_error=False
+            )
 
         return self._db_query_runner.run_retryable_cypher(
             query, QueryType.USER_DIRECTED, params, database, custom_error=False, mode=mode
@@ -957,6 +965,25 @@ class AuraGraphDataScience:
         if not self._db_query_runner:
             raise NotAvailableInStandaloneSessions("Getting the database")
         return self._db_query_runner.database()
+
+    def db_driver(self) -> neo4j.Driver:
+        """
+        Get the Neo4j driver used by this client to communicate with the Neo4j DBMS.
+
+        This is mainly useful when the `run_cypher()` API is too simple for a use case,
+        as the driver allows full control over sessions and transactions.
+
+        The driver is always created and managed by this client, and closed by `close()`,
+        after which it is unusable.
+
+        Returns
+        -------
+        neo4j.Driver
+            The Neo4j driver used by this client.
+        """
+        if not self._db_query_runner:
+            raise NotAvailableInStandaloneSessions("Getting the Neo4j driver")
+        return self._db_query_runner.db_driver()
 
     def bookmarks(self) -> neo4j.Bookmarks | None:
         """

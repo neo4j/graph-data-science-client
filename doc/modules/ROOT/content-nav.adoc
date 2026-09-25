@@ -20,7 +20,7 @@ include::partial$tutorial-list.adoc[]
 * xref:read-graph.adoc[]
 * xref:algorithms.adoc[]
 * xref:async-execution.adoc[]
-* xref:bookmarks.adoc[]
+* xref:transactions.adoc[]
 
 * *Machine learning*
 * xref:pipelines.adoc[]
