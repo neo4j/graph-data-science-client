@@ -4,22 +4,23 @@ permissions:
   contents: read
 
 # The list of branches should contain all the branches in the Antora publish
-# playbook (doc/publish.yml). For graph-data-science-client those are the
-# published versions 1.19–1.22 (main / 2.0 is not published yet).
+# playbook (doc/publish.yml).
 on:
   push:
     branches:
+      - main
       - '1.19'
       - '1.20'
       - '1.21'
       - '1.22'
+      - '2.0'
     paths:
       - "doc/**"
   workflow_dispatch:
 
 # DEV_BRANCH / PROD_BRANCH is the branch whose doc/publish.yml playbook drives the
-# build. For gds-client that is main: its publish.yml sources the published versions
-# (1.19–1.22), so a push to any of those version branches triggers a republish built
+# build. For gds-client that is main: its publish.yml sources the published versions,
+# so a push to any of those version branches triggers a republish built
 # from main, publishing to both staging (dev) and neo4j.com/docs (prod).
 env:
   DEV_BRANCH: 'main'
