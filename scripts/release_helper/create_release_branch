@@ -17,7 +17,7 @@ git switch -c "$VERSION"
 uv run scripts/release_helper/prepare_release_branch.py "$VERSION"
 rm doc/publish.yml
 
-git add doc/antora.yml doc/package.json doc/preview.yml doc/publish.yml
+git add doc/antora.yml doc/package.json doc/preview.yml doc/publish.yml .github/workflows
 git commit -m "Prepare release branch"
 
 git show --stat --oneline HEAD
