@@ -4,6 +4,7 @@ from dataclasses import asdict
 from typing import Any, Generator
 
 import pytest
+from neo4j import Address
 from pandas import DataFrame
 from pytest_mock import MockerFixture
 
@@ -176,6 +177,9 @@ class CollectingQueryRunner(QueryRunner):
 
     def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
         return self
+
+    def connection_info(self) -> Address:
+        return Address(("localhost", 7687))
 
     def set__mock_result(self, result: QueryResultOrList) -> None:
         self._result_map.clear()
