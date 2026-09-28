@@ -106,6 +106,10 @@ def db_alias() -> str:
     return f"neo4j-db-{run_token()}"
 
 
+def self_managed_db_alias() -> str:
+    return f"neo4j-self_managed-db-{run_token()}"
+
+
 def gds_api_alias() -> str:
     return f"{MOCK_GDS_API_NETWORK_ALIAS}-{run_token()}"
 
@@ -371,48 +375,95 @@ def neo4j_memory_envs() -> dict[str, str]:
     }
 
 
-def start_database(
-    logs_dir: Path, network: Network, log_name: str, db_alias: str = "neo4j-db"
+def _start_neo4j_database(
+    logs_dir: Path,
+    network: Network,
+    log_name: str,
+    db_alias: str,
+    image: str,
+    logs_subdir: str,
+    label: str,
+    extra_envs: dict[str, str],
+    fixed_bolt_port: bool,
 ) -> Generator[DbmsConnectionInfo, None, None]:
-    default_neo4j_image = (
-        f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
-    )
-    neo4j_image = os.getenv("NEO4J_AURA_DATABASE_IMAGE", default_neo4j_image)
-
+    """Start a plain Neo4j container (no GDS plugin) and yield how to reach it over bolt."""
     advertise_address = db_alias if inside_ci() else "localhost"
 
-    db_logs_dir = logs_dir / log_name / "neo4j_db_logs"
+    db_logs_dir = logs_dir / log_name / logs_subdir
     db_logs_dir.mkdir(parents=True, exist_ok=True)
     db_logs_dir.chmod(0o777)
     db_container = (
-        DockerContainer(image=neo4j_image)
+        DockerContainer(image=image)
         .with_env("NEO4J_ACCEPT_LICENSE_AGREEMENT", "yes")
         .with_env("NEO4J_AUTH", "neo4j/password")
-        .with_env("NEO4J_server_jvm_additional", "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false")
         .with_env("NEO4J_server_bolt_advertised__address", f"{advertise_address}:7687")
         .with_network_aliases(db_alias)
         .with_network(network)
         .with_volume_mapping(db_logs_dir, "/logs", mode="rw")
         .waiting_for(LogMessageWaitStrategy("Started."))
     )
-    for key, value in neo4j_memory_envs().items():
+    for key, value in {**neo4j_memory_envs(), **extra_envs}.items():
         db_container = db_container.with_env(key, value)
-    if tox_running_parallel():
-        db_container = db_container.with_exposed_ports(7687)
-    else:
-        # Local runs (and sequential CI runs via TOX_SEQUENTIAL=1) keep the well-known port.
+    if fixed_bolt_port:
         db_container = db_container.with_bind_ports(7687, 7687)
-    with running_container(db_container, db_logs_dir / "stdout.log", "database"):
+    else:
+        db_container = db_container.with_exposed_ports(7687)
+    with running_container(db_container, db_logs_dir / "stdout.log", label):
         if current_container_id() is not None:
             uri = f"{db_alias}:7687"
         else:
             uri = f"{db_container.get_container_host_ip()}:{db_container.get_exposed_port(7687)}"
-        print(f"[it] neo4j reachable at {uri}", flush=True)
+        print(f"[it] {label} reachable at {uri}", flush=True)
         yield DbmsConnectionInfo(
             uri=uri,
             username="neo4j",
             password="password",
         )
+
+
+def start_aura_database(
+    logs_dir: Path, network: Network, log_name: str, db_alias: str = "neo4j-db"
+) -> Generator[DbmsConnectionInfo, None, None]:
+    """Start an Aura-image Neo4j database with the built-in GDS feature toggles disabled."""
+    default_neo4j_image = (
+        f"europe-west1-docker.pkg.dev/neo4j-aura-image-artifacts/aura-dev/neo4j-enterprise:{latest_neo4j_version()}"
+    )
+    yield from _start_neo4j_database(
+        logs_dir,
+        network,
+        log_name,
+        db_alias,
+        image=os.getenv("NEO4J_AURA_DATABASE_IMAGE", default_neo4j_image),
+        logs_subdir="neo4j_db_logs",
+        label="database",
+        extra_envs={"NEO4J_server_jvm_additional": "-Dcom.neo4j.arrow.GdsFeatureToggles.enableGds=false"},
+        # Local runs (and sequential CI runs via TOX_SEQUENTIAL=1) keep the well-known port.
+        fixed_bolt_port=not tox_running_parallel(),
+    )
+
+
+def start_self_managed_database(
+    logs_dir: Path, network: Network, log_name: str, db_alias: str
+) -> Generator[DbmsConnectionInfo, None, None]:
+    """
+    Start a stock Neo4j database (no GDS plugin, no Aura image).
+
+    Unlike `start_database`, the GDS feature toggles shipped in Neo4j core are left
+    enabled, so the built-in remote-projection stubs (`gds.arrow.project.v3`,
+    `gds.graph.project.remote`) are available and can project into a GDS session.
+    """
+    yield from _start_neo4j_database(
+        logs_dir,
+        network,
+        log_name,
+        db_alias,
+        image=os.getenv("NEO4J_SELF_MANAGED_DATABASE_IMAGE", "neo4j:enterprise"),
+        logs_subdir="self_managed_db_logs",
+        label="self_managed database",
+        extra_envs={},
+        # Always ephemeral so it can coexist with the fixed-port `start_database` in one run.
+        fixed_bolt_port=False,
+    )
 
 
 def create_db_query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:

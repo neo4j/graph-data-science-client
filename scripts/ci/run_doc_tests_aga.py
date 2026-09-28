@@ -29,7 +29,7 @@ from tests.integration.services import (
     db_alias,
     inside_ci,
     session_alias,
-    start_database,
+    start_aura_database,
     start_gds_api,
     start_session,
 )
@@ -46,7 +46,7 @@ def _gds_api(logs_dir: Path, network: Network) -> Generator[str, None, None]:
 
 @contextmanager
 def _database(logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
-    yield from start_database(logs_dir, network, LOG_NAME, db_alias=db_alias())
+    yield from start_aura_database(logs_dir, network, LOG_NAME, db_alias=db_alias())
 
 
 @contextmanager

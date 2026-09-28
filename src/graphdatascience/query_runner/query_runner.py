@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 import neo4j
+from neo4j import Address
 from pandas import DataFrame
 
 from graphdatascience.call_parameters import CallParameters
@@ -104,6 +105,10 @@ class QueryRunner(ABC):
 
     @abstractmethod
     def cloneWithoutRouting(self, host: str, port: int) -> "QueryRunner":
+        pass
+
+    @abstractmethod
+    def connection_info(self) -> Address:
         pass
 
     def set_server_version(self, _: ServerVersion) -> None:

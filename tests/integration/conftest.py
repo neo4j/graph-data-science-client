@@ -25,7 +25,7 @@ from tests.integration.services import (
     db_alias,
     inside_ci,
     session_alias,
-    start_database,
+    start_aura_database,
     start_gds_api,
     start_gds_plugin_database,
     start_runtime_api,
@@ -130,7 +130,7 @@ def neo4j_connection(
     Packages that need a Neo4j+GDS-plugin database instead override this fixture (see
     procedure_surface/plugin/conftest.py).
     """
-    yield from start_database(logs_dir, network, request.node.name, db_alias=db_alias())
+    yield from start_aura_database(logs_dir, network, request.node.name, db_alias=db_alias())
 
 
 @pytest.fixture(scope="session")
