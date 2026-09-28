@@ -12,6 +12,7 @@ on:
       - '1.20'
       - '1.21'
       - '1.22'
+      - '2.0'
     paths:
       - "doc/**"
       - ".github/workflows/docs-*.yml"
