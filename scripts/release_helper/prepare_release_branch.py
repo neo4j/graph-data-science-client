@@ -5,6 +5,8 @@ import re
 import sys
 from pathlib import Path
 
+import gha_workflows
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 VERSION_FILE = REPO_ROOT / "src" / "graphdatascience" / "version.py"
 
@@ -82,6 +84,7 @@ def main() -> None:
     update_antora_yml(version)
     update_package_json(version)
     update_preview_yml(version)
+    gha_workflows.add_branch_to_triggers(REPO_ROOT, version)
 
     print("\n✅ Release branch docs prepared!")
 

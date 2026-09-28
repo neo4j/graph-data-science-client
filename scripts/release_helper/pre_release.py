@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import colorama
+import gha_workflows
 import installation_adoc
 import pypi
 import requests
@@ -88,6 +89,27 @@ def verify_installation_docs(repo_dir: Path, client_version: str, min_server_ver
     )
 
 
+def verify_docs_branch_sync(repo_dir: Path) -> None:
+    publish_file = repo_dir / "doc" / "publish.yml"
+    if not publish_file.exists():
+        # Release branches drop publish.yml; the playbook is only maintained on main.
+        print("☑️ No doc/publish.yml found, skipping docs workflow branch sync check")
+        return
+
+    expected = set(gha_workflows.publish_branches(repo_dir))
+
+    for workflow in gha_workflows.WORKFLOW_FILES:
+        actual = set(gha_workflows.workflow_branches(repo_dir, workflow))
+        missing = expected - actual
+        if missing:
+            raise ValueError(
+                f"{workflow} does not list the published version branches {sorted(missing)} in its "
+                f"'branches:' trigger list.\nRun `uv run scripts/release_helper/generate_gha_branches.py` to fix it."
+            )
+
+    print("✅ docs workflow branch lists are in sync with doc/publish.yml")
+
+
 def main() -> None:
     print(f"{colorama.Style.BRIGHT}Client Pre-Release Checker{colorama.Style.RESET_ALL}")
 
@@ -101,6 +123,7 @@ def main() -> None:
     print(f"Minimum GDS Plugin version required: `{min_server_version}`")
 
     verify_installation_docs(repo_dir, version, min_server_version)
+    verify_docs_branch_sync(repo_dir)
 
     print(
         "All checks passed. Now find the latest prepare build to release from at https://live.neo4j-build.io/buildConfiguration/GraphAnalytics_Prepare_gdsclient"
