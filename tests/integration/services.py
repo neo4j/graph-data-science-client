@@ -414,7 +414,7 @@ def _start_neo4j_database(
         )
 
 
-def start_database(
+def start_aura_database(
     logs_dir: Path, network: Network, log_name: str, db_alias: str = "neo4j-db"
 ) -> Generator[DbmsConnectionInfo, None, None]:
     """Start an Aura-image Neo4j database with the built-in GDS feature toggles disabled."""

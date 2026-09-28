@@ -9,7 +9,7 @@ from tests.integration.services import self_managed_db_alias, start_self_managed
 
 
 @pytest.fixture(scope="package")
-def neo4j_connection(
+def self_managed_db_connection(
     network: Network, logs_dir: Path, request: pytest.FixtureRequest
 ) -> Generator[DbmsConnectionInfo, None, None]:
     """Stock Neo4j database (no GDS plugin) with the shipped remote-projection stubs enabled.
