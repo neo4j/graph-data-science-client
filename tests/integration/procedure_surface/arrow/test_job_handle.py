@@ -122,10 +122,12 @@ def test_summary_no_wait_raises_when_not_done(arrow_client: AuthenticatedArrowCl
         endpoint="v2/centrality.pageRank",
     )
 
-    # Best-effort: if the tiny pagerank finished too quickly, just skip this assertion.
-    if not handle.done():
-        with pytest.raises(JobNotFinishedError):
-            handle.summary(wait=False)
+    try:
+        handle.summary(wait=False)
+    except JobNotFinishedError:
+        return  # expected: the job was still running
+    # Not raising is only correct if the job finished between the two status checks.
+    assert handle.done(), "summary(wait=False) must raise while the job is running"
 
 
 def test_stream_returns_dataframe(arrow_client: AuthenticatedArrowClient, sample_graph: Graph) -> None:
