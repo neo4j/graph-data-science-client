@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import ArrowDtype, DataFrame
 from pyarrow import ArrowKeyError
-from pyarrow.flight import Ticket
+from pyarrow.flight import FlightStreamReader, Ticket
 from tenacity import Retrying, retry_if_exception, retry_if_result, stop_after_attempt, wait_fixed
 
 from graphdatascience.arrow_client.authenticated_flight_client import (
@@ -140,3 +140,11 @@ class JobClient:
         get = client.get_stream(ticket)
         arrow_table = get.read_all()
         return arrow_table.to_pandas(types_mapper=ArrowDtype)  # type: ignore
+
+    @staticmethod
+    def get_flight_stream(client: AuthenticatedArrowClient, export_job_id: str) -> FlightStreamReader:
+        stream_payload = {"version": "v2", "name": export_job_id, "body": {}}
+
+        ticket = Ticket(json.dumps(stream_payload).encode("utf-8"))
+
+        return client.get_stream(ticket)
