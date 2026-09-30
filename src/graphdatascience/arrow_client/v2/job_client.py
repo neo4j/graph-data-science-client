@@ -119,7 +119,7 @@ class JobClient:
     def stream_results(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> DataFrame:
         export_job_id = JobClient.start_export_result(client, graph_name, job_id)
 
-        return JobClient.get_stream(client, export_job_id)
+        return JobClient.get_pandas(client, export_job_id)
 
     @staticmethod
     def start_export_result(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> str:
@@ -132,13 +132,9 @@ class JobClient:
         return JobIdConfig(**deserialize_single(res)).job_id
 
     @staticmethod
-    def get_stream(client: AuthenticatedArrowClient, export_job_id: str) -> DataFrame:
-        stream_payload = {"version": "v2", "name": export_job_id, "body": {}}
-
-        ticket = Ticket(json.dumps(stream_payload).encode("utf-8"))
-
-        get = client.get_stream(ticket)
-        arrow_table = get.read_all()
+    def get_pandas(client: AuthenticatedArrowClient, export_job_id: str) -> DataFrame:
+        stream = JobClient.get_flight_stream(client, export_job_id)
+        arrow_table = stream.read_all()
         return arrow_table.to_pandas(types_mapper=ArrowDtype)  # type: ignore
 
     @staticmethod
