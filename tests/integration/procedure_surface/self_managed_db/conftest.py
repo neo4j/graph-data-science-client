@@ -4,8 +4,9 @@ from typing import Generator
 import pytest
 from testcontainers.core.network import Network
 
+from graphdatascience.query_runner import QueryRunner
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
-from tests.integration.services import self_managed_db_alias, start_self_managed_database
+from tests.integration.services import create_db_query_runner, self_managed_db_alias, start_self_managed_database
 
 
 @pytest.fixture(scope="package")
@@ -19,3 +20,8 @@ def self_managed_db_connection(
     session (`arrow_client`).
     """
     yield from start_self_managed_database(logs_dir, network, request.node.name, db_alias=self_managed_db_alias())
+
+
+@pytest.fixture(scope="package")
+def query_runner(self_managed_db_connection: DbmsConnectionInfo) -> Generator[QueryRunner, None, None]:
+    yield from create_db_query_runner(self_managed_db_connection)
