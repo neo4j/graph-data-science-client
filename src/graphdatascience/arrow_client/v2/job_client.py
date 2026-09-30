@@ -116,10 +116,16 @@ class JobClient:
         return deserialize_single(res)
 
     @staticmethod
-    def stream_results(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> DataFrame:
+    def export_to_pandas(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> DataFrame:
         export_job_id = JobClient.start_export_result(client, graph_name, job_id)
 
         return JobClient.get_pandas(client, export_job_id)
+
+    @staticmethod
+    def export_to_flight_stream(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> FlightStreamReader:
+        export_job_id = JobClient.start_export_result(client, graph_name, job_id)
+
+        return JobClient.get_flight_stream(client, export_job_id)
 
     @staticmethod
     def start_export_result(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> str:

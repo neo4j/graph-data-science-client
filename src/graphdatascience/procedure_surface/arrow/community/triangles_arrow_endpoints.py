@@ -45,4 +45,4 @@ class TrianglesArrowEndpoints(TrianglesEndpoints):
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/community.triangles", config, show_progress=show_progress
         )
-        return JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        return JobClient.export_to_pandas(self._arrow_client, G.name(), job_id)
