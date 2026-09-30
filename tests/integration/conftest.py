@@ -106,7 +106,7 @@ def arrow_client(session_connection: GdsSessionConnectionInfo) -> AuthenticatedA
 
 
 @pytest.fixture(scope="session")
-def neo4j_connection(
+def aura_neo4j_connection(
     network: Network, logs_dir: Path, request: pytest.FixtureRequest
 ) -> Generator[DbmsConnectionInfo, None, None]:
     """Shared plain Neo4j (no GDS) database, reused across all packages that need a bare DB.

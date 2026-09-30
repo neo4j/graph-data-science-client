@@ -153,9 +153,9 @@ def test_verify_authentication(query_runner: Neo4jQueryRunner) -> None:
 # --- create_for_db factory ---
 
 
-def test_create_for_db_with_string(neo4j_connection: DbmsConnectionInfo) -> None:
+def test_create_for_db_with_string(aura_neo4j_connection: DbmsConnectionInfo) -> None:
     runner = Neo4jQueryRunner.create_for_db(
-        f"bolt://{neo4j_connection.uri}",
+        f"bolt://{aura_neo4j_connection.uri}",
         ("neo4j", "password"),
     )
     try:
@@ -166,9 +166,9 @@ def test_create_for_db_with_string(neo4j_connection: DbmsConnectionInfo) -> None
         runner.close()
 
 
-def test_create_for_db_with_driver(neo4j_connection: DbmsConnectionInfo) -> None:
+def test_create_for_db_with_driver(aura_neo4j_connection: DbmsConnectionInfo) -> None:
     driver = neo4j.GraphDatabase.driver(
-        f"bolt://{neo4j_connection.uri}",
+        f"bolt://{aura_neo4j_connection.uri}",
         auth=("neo4j", "password"),
     )
     try:
@@ -184,8 +184,8 @@ def test_create_for_db_with_driver(neo4j_connection: DbmsConnectionInfo) -> None
 # --- cloneWithoutRouting ---
 
 
-def test_clone_without_routing(query_runner: Neo4jQueryRunner, neo4j_connection: DbmsConnectionInfo) -> None:
-    host, _, port_str = neo4j_connection.get_uri().rpartition(":")
+def test_clone_without_routing(query_runner: Neo4jQueryRunner, aura_neo4j_connection: DbmsConnectionInfo) -> None:
+    host, _, port_str = aura_neo4j_connection.get_uri().rpartition(":")
     # If the URI doesn't contain a colon (no explicit port), use the default bolt port
     if not host:
         host = port_str  # rpartition returns ('', '', uri) when separator not found
@@ -204,9 +204,9 @@ def test_clone_without_routing(query_runner: Neo4jQueryRunner, neo4j_connection:
 # --- close ---
 
 
-def test_close_does_not_raise(neo4j_connection: DbmsConnectionInfo) -> None:
+def test_close_does_not_raise(aura_neo4j_connection: DbmsConnectionInfo) -> None:
     runner = Neo4jQueryRunner.create_for_db(
-        f"bolt://{neo4j_connection.uri}",
+        f"bolt://{aura_neo4j_connection.uri}",
         ("neo4j", "password"),
     )
     runner.close()
