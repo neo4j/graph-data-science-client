@@ -26,7 +26,7 @@ from graphdatascience.session.remote_ops.projection_runner import ProjectionRunn
 
 
 @pytest.fixture
-def populated_db(query_runner: QueryRunner, neo4j_connection: DbmsConnectionInfo) -> Generator[None, None, None]:
+def populated_db(query_runner: QueryRunner, aura_neo4j_connection: DbmsConnectionInfo) -> Generator[None, None, None]:
     query_runner.run_cypher(
         "UNWIND range(1, 5) AS x CREATE (:Person)-[:KNOWS]->(:Person)",
         QueryType.USER_ACTION,
