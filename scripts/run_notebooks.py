@@ -79,13 +79,12 @@ def classify_notebook(nb: NotebookNode, notebook_name: str) -> NotebookKind:
 # The `resources` dict nbconvert threads through the preprocessor chain. We only pass it along.
 Resources = dict[str, object]
 
-# Matches `session_name="..."` (also the `session_name = '...'` assignment form) in a code cell.
-SESSION_NAME_RE = re.compile(r"""(session_name\s*=\s*)(["'])(.+?)\2""")
-# Matches `model_save_name="..."`, the assignment that introduces a trained model.
-MODEL_SAVE_NAME_RE = re.compile(r"""(model_save_name\s*=\s*)(["'])(.+?)\2""")
-# Matches only the string form of `graph_encoder="..."`, i.e. a reference to a saved model.
-# Inline encoder configs (e.g. `graph_encoder=FastRPConfig()`) are deliberately not matched.
-GRAPH_ENCODER_NAME_RE = re.compile(r"""(graph_encoder\s*=\s*)(["'])(.+?)\2""")
+# Each pattern captures the name in a `name` group; the surrounding quotes are left in place.
+SESSION_NAME_RE = re.compile(r"""session_name\s*=\s*(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
+MODEL_SAVE_NAME_RE = re.compile(r"""model_save_name\s*=\s*(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
+# Any quoted string; only rewritten when it refers to a model introduced by MODEL_SAVE_NAME_RE,
+# which covers later uses such as `graph_encoder="..."` and `gds.model.delete("...")`.
+QUOTED_NAME_RE = re.compile(r"""(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
 
 
 def _env_suffix(override_var: str, default: str | None) -> str | None:
@@ -124,12 +123,14 @@ def _apply_name_suffix(
     renamed: dict[str, str] = {}
 
     def rename(match: re.Match[str], *, known_only: bool) -> str:
-        assignment, quote, name = match.group(1), match.group(2), match.group(3)
+        name = match.group("name")
         if known_only and name not in renamed:
             return match.group(0)
         # keep the total length bounded in case the suffix is long
         new_name = renamed.setdefault(name, f"{name}-{suffix}")
-        return f"{assignment}{quote}{new_name}{quote}"
+        start, end = match.span("name")
+        offset = match.start()
+        return match.group(0)[: start - offset] + new_name + match.group(0)[end - offset :]
 
     code_cells = [cell for cell in nb["cells"] if cell["cell_type"] == "code"]
     for cell in code_cells:
@@ -161,7 +162,7 @@ def _apply_model_name_suffix(nb: NotebookNode, suffix: str, notebook_name: str) 
         suffix,
         notebook_name,
         definition_re=MODEL_SAVE_NAME_RE,
-        reference_res=(GRAPH_ENCODER_NAME_RE,),
+        reference_res=(QUOTED_NAME_RE,),
         subject="model",
         reason="to avoid clashes with models left in a reused session",
     )
