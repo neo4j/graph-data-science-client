@@ -1,11 +1,17 @@
-from typing import Callable
+from typing import Any, Protocol
 
 from pandas import DataFrame
 
 from .progress_provider import ProgressProvider, TaskWithProgress
 
-# takes a query str, optional db str and returns the result as a DataFrame
-CypherQueryFunction = Callable[[str, str | None], DataFrame]
+
+class CypherQueryFunction(Protocol):
+    def __call__(
+        self,
+        query: str,
+        database: str | None,
+        params: dict[str, Any] | None = None,
+    ) -> DataFrame: ...
 
 
 class QueryProgressProvider(ProgressProvider):
@@ -15,10 +21,11 @@ class QueryProgressProvider(ProgressProvider):
     def root_task_with_progress(self, job_id: str, database: str | None = None) -> TaskWithProgress:
         # expect at exactly one row (query will fail if not existing)
         progress = self._run_cypher_func(
-            f"CALL gds.listProgress('{job_id}')"
+            "CALL gds.listProgress($job_id)"
             + " YIELD taskName, progress, status"
             + " RETURN taskName, progress, status",
-            database,
+            database=database,
+            params={"job_id": job_id},
         )
 
         # compute depth of each subtask

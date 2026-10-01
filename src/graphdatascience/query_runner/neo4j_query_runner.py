@@ -154,14 +154,18 @@ class Neo4jQueryRunner(QueryRunner):
         self._progress_logger = QueryProgressLogger(self.__run_cypher_simplified_for_query_progress_logger)
         self._instance_description = instance_description
 
-    def __run_cypher_simplified_for_query_progress_logger(self, query: str, database: str | None) -> DataFrame:
-        # progress logging should not retry a lot as it perodically fetches the latest progress anyway
+    def __run_cypher_simplified_for_query_progress_logger(
+        self, query: str, database: str | None, params: dict[str, Any] | None = None
+    ) -> DataFrame:
+        # progress logging should not retry a lot as it periodically fetches the latest progress anyway
         connectivity_retry_config = Neo4jQueryRunner.ConnectivityRetriesConfig(max_retries=2)
         # not using retryable cypher as failing is okay
         return self.run_cypher(
             query=query,
             query_type=QueryType.USER_TRANSPILED,
+            params=params,
             database=database,
+            mode=QueryMode.READ,
             connectivity_retry_config=connectivity_retry_config,
         )
 

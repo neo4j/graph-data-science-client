@@ -6,6 +6,11 @@ from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 
 
+def _escape_identifier(identifier: str) -> str:
+    # Cypher escapes backticks inside quoted identifiers by doubling them.
+    return identifier.replace("`", "``")
+
+
 @filter_id_func_deprecation_warning()
 def find_node_id(
     query_runner: QueryRunner,
@@ -14,24 +19,23 @@ def find_node_id(
 ) -> int:
     labels = labels or []
     properties = properties or {}
+    label_pattern = "".join(f":`{_escape_identifier(label)}`" for label in labels)
 
-    conditions = [f"n:`{label}`" for label in labels]
-
-    # Property values are passed as query parameters to avoid injection and quoting issues.
     params: dict[str, Any] = {}
+    property_entries: list[str] = []
     for i, (key, value) in enumerate(properties.items()):
         param_name = f"value_{i}"
-        conditions.append(f"n.`{key}` = ${param_name}")
+        property_entries.append(f"`{_escape_identifier(key)}`: ${param_name}")
         params[param_name] = value
 
-    where_clause = f" WHERE {' AND '.join(conditions)}" if conditions else ""
-    query = f"MATCH (n){where_clause} RETURN id(n) AS id"
+    property_pattern = f" {{{', '.join(property_entries)}}}" if property_entries else ""
+    query = f"MATCH (n{label_pattern}{property_pattern}) RETURN id(n) AS id"
 
     node_match = query_runner.run_retryable_cypher(
         query, QueryType.USER_TRANSPILED, params, custom_error=False, mode=QueryMode.READ
     )
 
     if len(node_match) != 1:
-        raise ValueError(f"Filter did not match with exactly one node: {node_match}")
+        raise ValueError(f"Filter did not match with exactly one node: {node_match.to_string()}")
 
     return node_match["id"][0].item()  # type: ignore

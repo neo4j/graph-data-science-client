@@ -67,7 +67,7 @@ def test_find_node_id_runs_db_cypher() -> None:
     util = UtilArrowEndpoints(query_runner)
 
     assert util.find_node_id(["City"], {"name": "New York City"}) == 42
-    assert query_runner.last_query() == "MATCH (n) WHERE n:`City` AND n.`name` = $value_0 RETURN id(n) AS id"
+    assert query_runner.last_query() == "MATCH (n:`City` {`name`: $value_0}) RETURN id(n) AS id"
     assert query_runner.last_params() == {"value_0": "New York City"}
     assert query_runner.last_run_args()["mode"] == QueryMode.READ
 
