@@ -64,7 +64,7 @@ def test_node_classification_predict_stream_forces_probability_distribution() ->
             return_value="job-1",
         ) as run_job_and_wait,
         mock.patch(
-            "graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints.JobClient.stream_results",
+            "graphdatascience.procedure_surface.arrow.pipeline.node_classification_predict_arrow_endpoints.JobClient.export_to_pandas",
             return_value=expected,
         ) as stream_results,
     ):

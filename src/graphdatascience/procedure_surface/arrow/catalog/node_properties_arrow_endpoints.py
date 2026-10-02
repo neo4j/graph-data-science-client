@@ -73,7 +73,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
 
         job_id = JobClient.run_job(self._arrow_client, "v2/graph.nodeProperties.stream", config)
         result = apply_stream_mapper(
-            "v2/graph.nodeProperties.stream", JobClient.stream_results(self._arrow_client, G.name(), job_id)
+            "v2/graph.nodeProperties.stream", JobClient.export_to_pandas(self._arrow_client, G.name(), job_id)
         )
 
         if has_db_properties:
