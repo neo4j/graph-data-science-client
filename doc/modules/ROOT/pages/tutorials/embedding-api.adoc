@@ -112,14 +112,14 @@ with gds.graph.datasets.load_cora() as G:
         G=G,
         graph_encoder=GraphSAGEConfig(target_type="Paper"),
         decoder=MLPClassifierConfig(),
-        model_save_name="cora_model_1",
+        model_save_name="cora_model",
         target_label="Paper",
         target_property="subject",
         feature_properties=["features"],
     )
     create_result = gds.embedding.create(
         G=G,
-        graph_encoder="cora_model_1",
+        graph_encoder="cora_model",
         feature_properties=["features"],
         mutate_property="graphsage_embeddings",
     )
@@ -128,12 +128,17 @@ with gds.graph.datasets.load_cora() as G:
     graphsage_embeddings.head()
 ----
 
-== Deleting the session
+== Cleanup
 
-After the analysis is done, you can delete the session. As this example
-is not connected to a Neo4j DB, make sure to persist any results you
-want to keep beforehand. Deleting the session releases all resources
-associated with it, and stops incurring costs.
+After the analysis is done, we delete the trained model and the session.
+As this example is not connected to a Neo4j DB, make sure to persist any
+results you want to keep beforehand. Deleting the session releases all
+resources associated with it, and stops incurring costs.
+
+[source, python, role=no-test]
+----
+gds.model.delete("cora_model")
+----
 
 [source, python, role=no-test]
 ----

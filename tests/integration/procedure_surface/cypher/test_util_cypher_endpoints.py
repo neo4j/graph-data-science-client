@@ -17,6 +17,8 @@ def sample_graph(query_runner: QueryRunner) -> Generator[Graph, None, None]:
         CREATE
         (a:Node {name: 'a', rank: 1}),
         (b:Node {name: 'b', rank: 2}),
+        (c:City:Capital {name: 'Washington D.C.', settled: 1790}),
+        (special:`Ci``ty` {`na``me`: "Le'Andre"}),
         (a)-[:REL]->(b)
     """
 
@@ -70,3 +72,29 @@ def test_node_property(util_endpoints: UtilCypherEndpoints, sample_graph: Graph,
 
 def test_one_hot_encoding(util_endpoints: UtilCypherEndpoints) -> None:
     assert util_endpoints.one_hot_encoding(["a", "b", "c"], ["b"]) == [0, 1, 0]
+
+
+def test_find_node_id_by_label_and_property(
+    util_endpoints: UtilCypherEndpoints, sample_graph: Graph, query_runner: QueryRunner
+) -> None:
+    ids = _node_ids_by_name(query_runner)
+
+    assert util_endpoints.find_node_id(["Node"], {"name": "a"}) == ids["a"]
+    assert util_endpoints.find_node_id(["Node"], {"rank": 2}) == ids["b"]
+
+
+def test_find_node_id_by_multiple_labels(util_endpoints: UtilCypherEndpoints, sample_graph: Graph) -> None:
+    node = util_endpoints.as_node(util_endpoints.find_node_id(["City", "Capital"], {"name": "Washington D.C."}))
+
+    assert node["name"] == "Washington D.C."
+
+
+def test_find_node_id_handles_special_identifiers(util_endpoints: UtilCypherEndpoints, sample_graph: Graph) -> None:
+    node = util_endpoints.as_node(util_endpoints.find_node_id(["Ci`ty"], {"na`me": "Le'Andre"}))
+
+    assert node["na`me"] == "Le'Andre"
+
+
+def test_find_node_id_requires_exactly_one_match(util_endpoints: UtilCypherEndpoints, sample_graph: Graph) -> None:
+    with pytest.raises(ValueError, match="did not match with exactly one node"):
+        util_endpoints.find_node_id(["Node"])

@@ -162,3 +162,12 @@ The notebook files on disk are never modified, so the generated docs are unaffec
 
 The suffix is taken from `NOTEBOOK_SESSION_SUFFIX` if set, otherwise from `BUILD_ID` (which CI provides).
 If neither is set — the usual local case — the names are left as they are, so re-running a notebook reuses the existing session.
+
+### Model names
+
+Session notebooks that train a model (e.g. `model_save_name="..."` in the Embedding API) would clash on a re-run that reattaches to a session left behind by an earlier failed build, because the model already exists in that session.
+To avoid this, `scripts/run_notebooks.py` appends a random per-run suffix to every `model_save_name="..."` occurrence and to later quoted references to that model, such as `graph_encoder="..."` or `gds.model.delete("...")`.
+Inline encoder configs (e.g. `graph_encoder=FastRPConfig()`) and unrelated strings are left untouched.
+
+The suffix is taken from `NOTEBOOK_MODEL_SUFFIX` if set, otherwise it is random when `BUILD_ID` is set (CI).
+Locally the names are left as they are, so re-running a notebook reuses the trained model.

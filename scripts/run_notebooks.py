@@ -5,6 +5,7 @@ import os
 import re
 import signal
 import sys
+import uuid
 from enum import Enum
 from pathlib import Path
 from types import FrameType
@@ -78,41 +79,93 @@ def classify_notebook(nb: NotebookNode, notebook_name: str) -> NotebookKind:
 # The `resources` dict nbconvert threads through the preprocessor chain. We only pass it along.
 Resources = dict[str, object]
 
-# Matches `session_name="..."` (also the `session_name = '...'` assignment form) in a code cell.
-SESSION_NAME_RE = re.compile(r"""(session_name\s*=\s*)(["'])(.+?)\2""")
+# Each pattern captures the name in a `name` group; the surrounding quotes are left in place.
+SESSION_NAME_RE = re.compile(r"""session_name\s*=\s*(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
+MODEL_SAVE_NAME_RE = re.compile(r"""model_save_name\s*=\s*(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
+# Any quoted string; only rewritten when it refers to a model introduced by MODEL_SAVE_NAME_RE,
+# which covers later uses such as `graph_encoder="..."` and `gds.model.delete("...")`.
+QUOTED_NAME_RE = re.compile(r"""(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
+
+
+def _env_suffix(override_var: str, default: str | None) -> str | None:
+    """Suffix from `override_var` if set, else `default`, sanitized to a name-safe charset."""
+    suffix = os.environ.get(override_var) or default
+    return re.sub(r"[^A-Za-z0-9-]", "-", suffix) if suffix else None
 
 
 def _session_name_suffix() -> str | None:
     """Unique per-build suffix so concurrent CI builds don't share a session name."""
-    suffix = os.environ.get("NOTEBOOK_SESSION_SUFFIX")
-    if not suffix:
-        build_id = os.environ.get("BUILD_ID")
-        suffix = f"ci{build_id}" if build_id else None
-    return re.sub(r"[^A-Za-z0-9-]", "-", suffix) if suffix else None
+    build_id = os.environ.get("BUILD_ID")
+    return _env_suffix("NOTEBOOK_SESSION_SUFFIX", f"ci{build_id}" if build_id else None)
 
 
-def _apply_session_name_suffix(nb: NotebookNode, suffix: str, notebook_name: str) -> None:
-    """Rename the sessions of an in-memory notebook. The notebook file itself is never written back."""
+def _model_name_suffix() -> str | None:
+    """Random per-run suffix so a re-run reusing a leaked session doesn't clash on existing models."""
+    return _env_suffix("NOTEBOOK_MODEL_SUFFIX", uuid.uuid4().hex[:8] if os.environ.get("BUILD_ID") else None)
+
+
+def _apply_name_suffix(
+    nb: NotebookNode,
+    suffix: str,
+    notebook_name: str,
+    *,
+    definition_re: re.Pattern[str],
+    subject: str,
+    reason: str,
+    reference_res: tuple[re.Pattern[str], ...] = (),
+) -> None:
+    """Suffix quoted names in a notebook's code cells. The notebook file itself is never written back.
+
+    `definition_re` matches the assignment that introduces a name and is always suffixed.
+    `reference_res` match later occurrences that are only suffixed when they refer to a known name.
+    """
 
     renamed: dict[str, str] = {}
 
-    def rename(match: re.Match[str]) -> str:
-        assignment, quote, name = match.group(1), match.group(2), match.group(3)
-        # keep the total length bounded in case the build id is long
-        new_name = f"{name}-{suffix}"
-        renamed[name] = new_name
-        return f"{assignment}{quote}{new_name}{quote}"
+    def rename(match: re.Match[str], *, known_only: bool) -> str:
+        name = match.group("name")
+        if known_only and name not in renamed:
+            return match.group(0)
+        # keep the total length bounded in case the suffix is long
+        new_name = renamed.setdefault(name, f"{name}-{suffix}")
+        start, end = match.span("name")
+        offset = match.start()
+        return match.group(0)[: start - offset] + new_name + match.group(0)[end - offset :]
 
-    cells: list[NotebookNode] = nb["cells"]
-    for cell in cells:
-        if cell["cell_type"] == "code":
-            cell["source"] = SESSION_NAME_RE.sub(rename, cell["source"])
+    code_cells = [cell for cell in nb["cells"] if cell["cell_type"] == "code"]
+    for cell in code_cells:
+        cell["source"] = definition_re.sub(lambda m: rename(m, known_only=False), cell["source"])
+    for reference_re in reference_res:
+        for cell in code_cells:
+            cell["source"] = reference_re.sub(lambda m: rename(m, known_only=True), cell["source"])
 
-    # a session name usually shows up twice: once when creating and once in the teardown cell
     for name, new_name in renamed.items():
-        logger.info(
-            "[%s] renaming session %s -> %s to avoid clashes between concurrent runs", notebook_name, name, new_name
-        )
+        logger.info("[%s] renaming %s %s -> %s %s", notebook_name, subject, name, new_name, reason)
+
+
+def _apply_session_name_suffix(nb: NotebookNode, suffix: str, notebook_name: str) -> None:
+    """Rename the sessions of an in-memory notebook."""
+    _apply_name_suffix(
+        nb,
+        suffix,
+        notebook_name,
+        definition_re=SESSION_NAME_RE,
+        subject="session",
+        reason="to avoid clashes between concurrent runs",
+    )
+
+
+def _apply_model_name_suffix(nb: NotebookNode, suffix: str, notebook_name: str) -> None:
+    """Rename the trained models of an in-memory notebook."""
+    _apply_name_suffix(
+        nb,
+        suffix,
+        notebook_name,
+        definition_re=MODEL_SAVE_NAME_RE,
+        reference_res=(QUOTED_NAME_RE,),
+        subject="model",
+        reason="to avoid clashes with models left in a reused session",
+    )
 
 
 class IndexedCell(NamedTuple):
@@ -237,6 +290,7 @@ def main(notebooks: list[LoadedNotebook]) -> None:
     logger.info("Found notebooks to execute: %s", [n.path.name for n in notebooks])
 
     session_name_suffix = _session_name_suffix()
+    model_name_suffix = _model_name_suffix()
 
     for notebook in notebooks:
         logger.info("Executing notebook %s", notebook.path)
@@ -245,6 +299,9 @@ def main(notebooks: list[LoadedNotebook]) -> None:
 
         if session_name_suffix and notebook.kind in SESSION_KINDS:
             _apply_session_name_suffix(nb, session_name_suffix, notebook.path.name)
+
+        if model_name_suffix and notebook.kind in SESSION_KINDS:
+            _apply_model_name_suffix(nb, model_name_suffix, notebook.path.name)
 
         # Collect tear down cells
         td_collector.init_notebook()

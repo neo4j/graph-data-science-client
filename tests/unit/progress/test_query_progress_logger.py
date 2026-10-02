@@ -3,6 +3,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
+from typing import Any
 
 from pandas import DataFrame
 
@@ -25,11 +26,12 @@ def test_call_through_functions() -> None:
     progress_fetched_event = threading.Event()
     progress_called = []
 
-    def fake_run_cypher(query: str, database: str | None = None) -> DataFrame:
+    def fake_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
         progress_called.append(time.time())
 
-        assert "CALL gds.listProgress('foo')" in query
+        assert "CALL gds.listProgress($job_id)" in query
         assert database == "database"
+        assert params == {"job_id": "foo"}
 
         progress_fetched_event.set()
 
@@ -46,12 +48,29 @@ def test_call_through_functions() -> None:
     assert df["result"][0] == 42
 
 
+def test_job_id_is_parameterized_and_not_interpolated() -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
+        captured["query"] = query
+        captured["params"] = params
+        return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
+
+    malicious_job_id = "foo') CALL gds.graph.drop('g', false) //"
+    provider = QueryProgressProvider(fake_run_cypher)
+
+    provider.root_task_with_progress(malicious_job_id, "database")
+
+    assert malicious_job_id not in captured["query"]
+    assert captured["params"] == {"job_id": malicious_job_id}
+
+
 def test_uses_query_provider() -> None:
     server_version = ServerVersion(3, 0, 0)
     query_runner = CollectingQueryRunner(server_version)
 
-    def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
-        return query_runner.run_cypher(query, QueryType.USER_ACTION, db=database)
+    def simple_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
+        return query_runner.run_cypher(query, QueryType.USER_ACTION, params=params, db=database)
 
     qpl = QueryProgressLogger(simple_run_cypher)
     progress_provider = qpl._select_progress_provider("test-job")
@@ -72,8 +91,8 @@ def test_uses_query_provider_with_task_description() -> None:
 
     query_runner = CollectingQueryRunner(server_version, result_mock={"gds.listProgress": detailed_progress})
 
-    def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
-        return query_runner.run_cypher(query, QueryType.USER_ACTION, db=database)
+    def simple_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
+        return query_runner.run_cypher(query, QueryType.USER_ACTION, params=params, db=database)
 
     qpl = QueryProgressLogger(simple_run_cypher)
     progress_provider = qpl._select_progress_provider("test-job")
@@ -86,7 +105,7 @@ def test_uses_query_provider_with_task_description() -> None:
 
 
 def test_progress_bar_quantitive_output() -> None:
-    def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
+    def simple_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
         raise NotImplementedError("Should not be called!")
 
     with StringIO() as pbarOutputStream:
@@ -125,7 +144,7 @@ def test_progress_bar_quantitive_output() -> None:
 
 
 def test_progress_bar_qualitative_output() -> None:
-    def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
+    def simple_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
         raise NotImplementedError("Should not be called!")
 
     with StringIO() as pbarOutputStream:
@@ -163,7 +182,7 @@ def test_progress_bar_qualitative_output() -> None:
 
 
 def test_progress_bar_with_failing_query() -> None:
-    def simple_run_cypher(query: str, database: str | None = None) -> DataFrame:
+    def simple_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
         raise NotImplementedError("Should not be called!")
 
     def failing_runnable() -> DataFrame:
@@ -192,7 +211,7 @@ def test_progress_bar_with_failing_query() -> None:
 
 
 def test_uses_static_store() -> None:
-    def fake_run_cypher(query: str, database: str | None = None) -> DataFrame:
+    def fake_run_cypher(query: str, database: str | None = None, params: dict[str, Any] | None = None) -> DataFrame:
         return DataFrame([{"progress": "n/a", "taskName": "Test task", "status": "RUNNING"}])
 
     qpl = QueryProgressLogger(fake_run_cypher)

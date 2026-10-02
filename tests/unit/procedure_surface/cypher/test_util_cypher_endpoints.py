@@ -62,7 +62,7 @@ def test_find_node_id_with_labels_and_properties(query_runner: CollectingQueryRu
     util = UtilCypherEndpoints(query_runner)
 
     assert util.find_node_id(["City"], {"name": "New York City"}) == 42
-    assert query_runner.last_query() == "MATCH (n) WHERE n:`City` AND n.`name` = $value_0 RETURN id(n) AS id"
+    assert query_runner.last_query() == "MATCH (n:`City` {`name`: $value_0}) RETURN id(n) AS id"
     assert query_runner.last_params() == {"value_0": "New York City"}
 
 
@@ -72,9 +72,18 @@ def test_find_node_id_multiple_conditions(query_runner: CollectingQueryRunner) -
 
     assert util.find_node_id(["City", "Capital"], {"settled": 1790, "name": "Washington D.C."}) == 7
     assert query_runner.last_query() == (
-        "MATCH (n) WHERE n:`City` AND n:`Capital` AND n.`settled` = $value_0 AND n.`name` = $value_1 RETURN id(n) AS id"
+        "MATCH (n:`City`:`Capital` {`settled`: $value_0, `name`: $value_1}) RETURN id(n) AS id"
     )
     assert query_runner.last_params() == {"value_0": 1790, "value_1": "Washington D.C."}
+
+
+def test_find_node_id_handles_backticks_in_labels_and_property_keys(query_runner: CollectingQueryRunner) -> None:
+    query_runner.add__mock_result("RETURN id(n) AS id", pd.DataFrame({"id": [42]}))
+    util = UtilCypherEndpoints(query_runner)
+
+    assert util.find_node_id(["Ci`ty"], {"na`me": "Le'Andre"}) == 42
+    assert query_runner.last_query() == ("MATCH (n:`Ci``ty` {`na``me`: $value_0}) RETURN id(n) AS id")
+    assert query_runner.last_params() == {"value_0": "Le'Andre"}
 
 
 def test_find_node_id_no_filters(query_runner: CollectingQueryRunner) -> None:
