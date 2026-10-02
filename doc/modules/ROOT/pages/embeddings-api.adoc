@@ -1,0 +1,372 @@
+= Embeddings API (preview)
+:description: Generate node embeddings for any graph with a single call using gds.embedding.create, or train your own embedding model with gds.embedding.train.
+
+[IMPORTANT]
+.Only available in Aura Graph Analytics
+====
+The `gds.embedding` endpoints are only available on link:https://neo4j.com/docs/graph-data-science-client/current/aura-graph-analytics/[Aura Graph Analytics] sessions.
+They are not available on the `GraphDataScience` client used with the GDS plugin.
+====
+
+[WARNING]
+.Preview feature
+====
+`gds.embedding.create` and `gds.embedding.train` are preview features.
+They may change or be renamed in future releases, and the client emits a `UserWarning` to remind you.
+====
+
+Node embeddings turn every node in a graph into a vector that captures where the node sits in the graph and what surrounds it.
+Nodes with similar neighborhoods get similar vectors, so you can feed the result straight into similarity search, clustering, classification, recommendations, or any model that expects vectors.
+
+The `gds.embedding` endpoints are the shortest path from a graph to those vectors.
+You don't need to pick an algorithm, tune hyperparameters, or know how graph machine learning works.
+
+[cols="1,3", options="header"]
+|===
+| Endpoint | What it does
+
+| `gds.embedding.create`
+| Generates embeddings for every node and adds them to your in-memory graph as a node property (_mutate_ mode).
+With no encoder specified, it runs FastRP with sensible service-chosen defaults that are meant to work well across a wide range of graphs.
+
+| `gds.embedding.train`
+| Trains an embedding model on your own labels, for when you want embeddings tuned to one specific prediction task.
+The trained model is saved under a name you choose, like any other trained model in Aura Graph Analytics, and can be passed to `gds.embedding.create`.
+Store it with `gds.model.store` to reuse it from later sessions.
+|===
+
+== Requirements
+
+* GDS Python client 2.2 or later (`pip install "graphdatascience>=2.2"`).
+* Aura API credentials (a client ID and secret), used to create and manage sessions.
+* An Aura Graph Analytics session. The `gds.embedding` endpoints are available on the client object returned by `GdsSessions.get_or_create`.
+* A graph in the session's graph catalog, for example projected from your database or constructed from DataFrames.
+
+== Quick start
+
+[source, python]
+----
+from graphdatascience.session import AuraAPICredentials, CloudLocation, GdsSessions
+
+sessions = GdsSessions(api_credentials=AuraAPICredentials.from_env())  # reads CLIENT_ID, CLIENT_SECRET, and optionally PROJECT_ID
+gds = sessions.get_or_create(
+    session_name="embeddings",
+    memory="2GB",
+    cloud_location=CloudLocation(provider="<cloud-provider>", region="<cloud-region>"),
+)
+
+G = gds.graph.datasets.load_cora(undirected=True)  # or any graph in your session's catalog
+
+result = gds.embedding.create(G, mutate_property="embedding")
+print(result.node_properties_written)  # 2708: one embedding per node
+
+embeddings = gds.graph.node_properties.stream(G, "embedding")  # pandas DataFrame
+----
+
+This example starts a session that is not attached to an AuraDB instance, which needs a `cloud_location`.
+Replace the placeholders with a provider (`gcp`, `aws`, or `azure`) and a region available to your project; `sessions.available_cloud_locations()` lists them.
+For a session attached to an AuraDB instance, pass `db_connection` instead and leave `cloud_location` out.
+
+The `embedding` property now exists on every node of `G`.
+Stream it into pandas as shown above, or pass it to other GDS algorithms in the same session.
+
+== Create embeddings
+
+[source, python]
+----
+gds.embedding.create(G, mutate_property="embedding")
+----
+
+With no `graph_encoder`, `create` uses FastRP with settings chosen by the service.
+To change the encoder's settings, pass a configuration object from `graphdatascience.embedding`, as in the examples below.
+
+=== Parameters
+
+[cols="2,2,1,4", options="header"]
+|===
+| Name | Type | Default | Description
+
+| `G`
+| `Graph`
+| required
+| The graph to embed.
+
+| `mutate_property`
+| `str`
+| required
+| Name of the node property the embeddings are stored in.
+
+| `graph_encoder`
+| `FastRPConfig`, `IdentityConfig`, or `str`
+| `FastRPConfig()`
+| What produces the embeddings: an inline configuration of a non-trainable encoder, or the name of a model saved by `gds.embedding.train`.
+Leave it out to use FastRP with service-chosen settings, which is the recommended starting point.
+
+| `random_seed`
+| `int`
+| `None`
+| Seed for reproducible results. If unset, a random seed is used.
+
+| `node_labels`
+| `list[str]`
+| `["*"]`
+| Only nodes with one of these labels are included.
+
+| `relationship_types`
+| `list[str]`
+| `["*"]`
+| Only relationships of these types are included.
+
+| `feature_properties`
+| `list[str]`
+| `[]`
+| Node properties to use as input features. Optional for FastRP.
+
+| `job_id`
+| `str`
+| `None`
+| Identifier for the computation.
+|===
+
+=== Result
+
+`gds.embedding.create` returns an `EmbeddingCreateResult`.
+
+[cols="2,1,4", options="header"]
+|===
+| Field | Type | Description
+
+| `node_properties_written`
+| `int`
+| Number of nodes that received an embedding.
+
+| `compute_millis`
+| `int`
+| Time spent computing the embeddings, in milliseconds.
+
+| `pre_processing_millis`
+| `int`
+| Time spent preparing the computation, in milliseconds.
+
+| `mutate_millis`
+| `int`
+| Time spent adding the property to the in-memory graph, in milliseconds.
+
+| `configuration`
+| `dict`
+| The configuration the job ran with.
+|===
+
+=== Examples
+
+Choose the embedding dimension and make the run reproducible:
+
+[source, python]
+----
+from graphdatascience.embedding import FastRPConfig
+
+gds.embedding.create(
+    G,
+    graph_encoder=FastRPConfig(out_dim=256),
+    mutate_property="embedding",
+    random_seed=42,
+)
+----
+
+If you leave `out_dim` unset, the service picks a dimension for you.
+
+Embed only part of the graph:
+
+[source, python]
+----
+gds.embedding.create(
+    G,
+    mutate_property="embedding",
+    node_labels=["Customer", "Product"],
+    relationship_types=["PURCHASED"],
+)
+----
+
+Get the embeddings out of the session:
+
+[source, python]
+----
+df = gds.graph.node_properties.stream(G, "embedding")  # to pandas
+----
+
+In a session attached to a database, `gds.graph.node_properties.write` writes the property back to your Neo4j database.
+
+== Train your own model
+
+`gds.embedding.create` is designed to give good results without training.
+Use `gds.embedding.train` when you have labels for a specific task, such as node classification, and want embeddings tuned to it.
+
+Training runs a graph encoder together with a decoder (a classifier) on a labeled node property, and saves the result under the name you give it.
+You then pass that name as the `graph_encoder` of `gds.embedding.create`.
+
+[source, python]
+----
+from graphdatascience.embedding import GraphSAGEConfig, MLPClassifierConfig
+
+gds.embedding.train(
+    G,
+    graph_encoder=GraphSAGEConfig(target_type="Paper"),
+    decoder=MLPClassifierConfig(),
+    model_save_name="paper-topic-encoder",
+    target_label="Paper",
+    target_property="subject",
+    feature_properties=["features"],
+)
+
+gds.embedding.create(
+    G,
+    graph_encoder="paper-topic-encoder",
+    mutate_property="embedding",
+    feature_properties=["features"],
+)
+----
+
+=== Parameters
+
+[cols="2,2,1,4", options="header"]
+|===
+| Name | Type | Default | Description
+
+| `G`
+| `Graph`
+| required
+| The graph to train on.
+
+| `graph_encoder`
+| `FastRPConfig`, `GraphSAGEConfig`, or `IdentityConfig`
+| required
+| Configuration of the graph encoder to train.
+
+| `decoder`
+| `GBClassifierConfig` or `MLPClassifierConfig`
+| required
+| Configuration of the decoder trained on top of the encoder's embeddings.
+
+| `model_save_name`
+| `str`
+| required
+| Name to save the trained model under.
+
+| `target_label`
+| `str`
+| required
+| Node label to train on.
+
+| `target_property`
+| `str`
+| required
+| Node property holding the labels to train on.
+
+| `num_epochs`
+| `int`
+| `None`
+| Maximum number of training epochs. If unset, the service chooses.
+
+| `batch_size`
+| `int`
+| `None`
+| Number of examples per training batch. If unset, the service chooses.
+
+| `num_trials`
+| `int`
+| `1`
+| Number of hyperparameter tuning trials. Values above 1 enable tuning.
+
+| `random_seed`
+| `int`
+| `None`
+| Seed for reproducible results. If unset, a random seed is used.
+
+| `node_labels`
+| `list[str]`
+| `["*"]`
+| Only nodes with one of these labels are included.
+
+| `relationship_types`
+| `list[str]`
+| `["*"]`
+| Only relationships of these types are included.
+
+| `feature_properties`
+| `list[str]`
+| `[]`
+| Node properties to use as input features.
+
+| `job_id`
+| `str`
+| `None`
+| Identifier for the computation.
+|===
+
+=== Result
+
+`gds.embedding.train` returns an `EmbeddingTrainResult` with `compute_millis`, `pre_processing_millis`, and `configuration`.
+
+=== Trained models work like any other model in Aura Graph Analytics
+
+A model trained with `gds.embedding.train` is a regular Aura Graph Analytics model.
+It is listed in the model catalog next to models from other training procedures, and you manage it with the same `gds.model` endpoints.
+
+Storing a model is optional.
+To keep it for later sessions, persist it with `gds.model.store`.
+Stored models live in the link:https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/machine-learning/[Aura Graph Analytics model catalog], a persistent store scoped to your Aura project, the cloud provider, and region.
+They remain available after the session that trained them has ended.
+
+The other model catalog endpoints work the same way as for any model.
+
+== Encoder and decoder configurations
+
+All configuration classes are imported from `graphdatascience.embedding`:
+
+[source, python]
+----
+from graphdatascience.embedding import (
+    FastRPConfig,
+    GBClassifierConfig,
+    GraphSAGEConfig,
+    IdentityConfig,
+    MLPClassifierConfig,
+)
+----
+
+[cols="2,4", options="header"]
+|===
+| Configuration | Fields
+
+| `FastRPConfig`
+| `out_dim`, `coefficients`, `normalization_strength`. All optional.
+
+| `IdentityConfig`
+| `target_type` and `out_dim`, both required. Passes node properties through unchanged.
+
+| `GraphSAGEConfig`
+| `target_type` (required), `hidden_dims`, `num_neighbors`, `out_dim`, `dropout`. `num_neighbors` must have exactly one more entry than `hidden_dims`.
+
+| `GBClassifierConfig`
+| No fields. A gradient boosted tree classifier.
+
+| `MLPClassifierConfig`
+| `hidden_dims`, `dropout`. A multi-layer perceptron classifier.
+|===
+
+Optional fields you leave out are left to the service.
+
+== Good to know
+
+* *Embeddings cover the whole graph.* Each call computes embeddings for all nodes in the (filtered) graph. To embed new nodes, add them to the graph and call `create` again.
+* *Seeds make runs repeatable.* Set `random_seed` to get repeatable embeddings across runs.
+* *Trained models have seen your labels.* Metrics computed on the labels a model was trained on are optimistic by construction.
+* *Store models you want to keep.* To use a trained model from a later session, persist it with `gds.model.store`. Stored models are scoped to your project and cloud location. Delete the ones you no longer need with `gds.model.delete`.
+* *Sessions bill while they run.* Delete the session when you're done using `gds.delete()`.
+
+== Next steps
+
+* link:https://neo4j.com/docs/graph-data-science-client/current/aura-graph-analytics/[Aura Graph Analytics] for creating and managing sessions using the GDS Python client.
+* link:https://neo4j.com/docs/graph-data-science/current/aura-graph-analytics/machine-learning/[Machine learning in Aura Graph Analytics] for the model catalog and how stored models are scoped.
+* link:https://neo4j.com/docs/graph-data-science-client/current/api/endpoints/node_embedding_endpoints/[Node embedding endpoints API reference].
+* link:https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/[Fast Random Projection] in the GDS manual, for what the default encoder does under the hood.
