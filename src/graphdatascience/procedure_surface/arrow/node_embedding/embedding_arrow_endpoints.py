@@ -31,7 +31,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         self._arrow_client = arrow_client
         self._endpoints_helper = NodePropertyEndpointsHelper(arrow_client, write_protocol, show_progress)
         warnings.warn(
-            "embeddings.encode is a preview feature and may change or be removed in future releases.",
+            "gds.embedding.create and gds.embedding.train are preview features and may change or be removed in future releases.",
             UserWarning,
             stacklevel=2,
         )
