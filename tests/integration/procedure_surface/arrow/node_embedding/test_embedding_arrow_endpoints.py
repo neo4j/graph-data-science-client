@@ -74,7 +74,6 @@ def test_embedding_create_fastrp(embedding_endpoints: EmbeddingArrowEndpoints, s
     result = embedding_endpoints.create(
         G=sample_graph,
         graph_encoder=FastRPConfig(),
-        feature_properties=["x"],  # FIXME remove once the bugfix is released
         mutate_property="embedding123",
     )
 
