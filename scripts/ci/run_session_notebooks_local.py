@@ -17,11 +17,11 @@ from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Run the self-managed family of session notebooks against a local Neo4j started via
+# Run the standalone-family session notebooks against a local Neo4j started via
 # testcontainers (instead of provisioning an AuraDB). The GDS session itself is still a real
 # cloud (staging) session created through the Aura API, so AURA_API_CLIENT_ID/SECRET are
-# required. The `graph-analytics-serverless-self-managed` and `similarity-algorithms`
-# notebooks use the database; the remaining session notebooks ignore the NEO4J_* env vars.
+# required. The `similarity-algorithms` notebook uses the database; the remaining session
+# notebooks ignore the NEO4J_* env vars.
 #
 # This script is invoked via plain `uv run` (default `dev` group), which includes the `test`
 # group where `testcontainers` lives.
@@ -123,13 +123,13 @@ def main() -> None:
                 cmd = (
                     f"AURA_ENV=staging CLIENT_ID={client_id} CLIENT_SECRET={client_secret} PROJECT_ID={project_id} "
                     f"NEO4J_URI={neo4j_uri} NEO4J_USERNAME=neo4j NEO4J_PASSWORD=password "
-                    f"uv run --group notebook-aura-ci ./scripts/run_notebooks.py sessions-self-managed-db"
+                    f"uv run --group notebook-aura-ci ./scripts/run_notebooks.py sessions-local-db"
                 )
 
                 if os.system(f"cd {REPO_ROOT} && {cmd}") != 0:
-                    raise Exception("Failed to run self-managed session notebooks")
+                    raise Exception("Failed to run local-db session notebooks")
 
-                logger.info("Self-managed session notebooks ran successfully")
+                logger.info("Local-db session notebooks ran successfully")
         finally:
             if self_id is not None:
                 try:

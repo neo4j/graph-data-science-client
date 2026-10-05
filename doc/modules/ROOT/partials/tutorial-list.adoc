@@ -10,7 +10,6 @@
 * xref:tutorials/kge-predict-transe-pyg-train.adoc[]
 * xref:tutorials/embedding-api.adoc[]
 * xref:tutorials/graph-analytics-serverless.adoc[]
-* xref:tutorials/graph-analytics-serverless-self-managed.adoc[]
 * xref:tutorials/graph-analytics-serverless-standalone.adoc[]
 * xref:tutorials/graph-analytics-serverless-spark.adoc[]
 * xref:tutorials/graph-analytics-serverless-standalone-fastpath.adoc[]

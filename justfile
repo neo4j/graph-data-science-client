@@ -97,7 +97,7 @@ test-session-notebooks:
     set -uo pipefail
     rc=0
     uv run scripts/ci/run_session_notebooks.py              || rc=1
-    uv run scripts/ci/run_session_notebooks_self_managed.py || rc=1
+    uv run scripts/ci/run_session_notebooks_local.py || rc=1
     exit $rc
 
 test-aurads-notebooks:

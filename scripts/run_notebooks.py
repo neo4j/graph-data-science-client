@@ -357,7 +357,7 @@ if __name__ == "__main__":
 
     if notebook_filter == "sessions-attached":
         selected = [n for n in all_notebooks if n.kind is NotebookKind.SESSION_AURA_ATTACHED]
-    elif notebook_filter == "sessions-self-managed-db":
+    elif notebook_filter == "sessions-local-db":
         selected = [n for n in all_notebooks if n.kind is NotebookKind.SESSION]
     elif notebook_filter:
         selected = [n for n in all_notebooks if notebook_filter in n.path.name]

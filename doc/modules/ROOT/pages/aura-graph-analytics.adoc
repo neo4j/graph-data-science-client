@@ -6,18 +6,17 @@ Aura Graph Analytics is an on-demand ephemeral compute environment for running G
 Each compute unit is called a _GDS Session_.
 It is offered as part of link:https://neo4j.com/docs/aura/graph-analytics/#aura-gds-serverless[Neo4j Aura], a fast, scalable, always-on, fully automated cloud graph platform.
 
-There are three types of GDS Sessions:
+There are two types of GDS Sessions:
 
 * *Attached*: the data source is a Neo4j AuraDB instance.
-* *Self-managed*: the data source is a self-managed Neo4j DBMS.
 * *Standalone*: the data source is not based on Neo4j.
 
 
 The process of populating the session with data is called _projection_.
 Once populated, a GDS Session can run GDS workloads, such as algorithms and machine learning models.
-Results from these computations can be written back to the original source, using _remote write-back_ in the Attached and Self-managed types.
+Results from these computations can be written back to the original source, using _remote write-back_ in the Attached type.
 
-TIP: For ready-to-run notebooks, see our tutorials on GDS Sessions for xref:tutorials/graph-analytics-serverless.adoc[AuraDB], xref:tutorials/graph-analytics-serverless-self-managed.adoc[self-managed databases], and xref:tutorials/graph-analytics-serverless-standalone.adoc[any other data source].
+TIP: For ready-to-run notebooks, see our tutorials on GDS Sessions for xref:tutorials/graph-analytics-serverless.adoc[AuraDB] and xref:tutorials/graph-analytics-serverless-standalone.adoc[any other data source].
 
 
 == GDS Session management
@@ -59,7 +58,7 @@ The return value of `get_or_create()` is an `AuraGraphDataScience` object.
 It offers a similar API to the `GraphDataScience` object, but it is configured to run on a GDS Session.
 As a convention, always use the variable name `gds` for the return value of `get_or_create()`.
 
-TIP: For the Self-managed and Standalone session types, a `cloud_location` parameter is required.
+TIP: For the Standalone session type, a `cloud_location` parameter is required.
 Use `sessions.available_cloud_locations()` to list all valid cloud provider/region combinations supported by your Aura project.
 
 
@@ -101,10 +100,10 @@ sessions.get_or_create(
 | Name                        | Type               | Optional | Default | Description
 | session_name                | str                | no       | -       | Name of the session. Must be unique within the project.
 | memory                      | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/session_memory[SessionMemory]      | no       | -       | Amount of memory available to the session.
-| db_connection               |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/dbms_connection_info[DbmsConnectionInfo] | yes      | None    | Aura instance-id, username, and password to a Neo4j DBMS. Required for the Attached and Self-managed types. For self-managed, provide the URI instead of the instance-id.
+| db_connection               |  https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/dbms_connection_info[DbmsConnectionInfo] | yes      | None    | Aura instance-id, username, and password to a Neo4j DBMS. Required for the Attached type.
 Alternatively to username and password, you can provide a `neo4j.Auth` https://neo4j.com/docs/python-manual/current/connect-advanced/#authentication-methods[object].
 | ttl                         | datetime.timedelta | yes      | 1h      | Time-to-live for the session.
-| cloud_location              | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/cloud_location[CloudLocation]      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. The provider must be one of `"gcp"`, `"aws"`, or `"azure"`, and the region must be an Aura-supported region (e.g. `"europe-west1"`). Required for the Self-managed and Standalone types. Use `sessions.available_cloud_locations()` to list all valid provider/region combinations.
+| cloud_location              | https://neo4j.com/docs/graph-data-science-client/{docs-version}/api/sessions/cloud_location[CloudLocation]      | yes      | None    | Aura-supported cloud provider and region where the GDS Session will run. The provider must be one of `"gcp"`, `"aws"`, or `"azure"`, and the region must be an Aura-supported region (e.g. `"europe-west1"`). Required for the Standalone type. Use `sessions.available_cloud_locations()` to list all valid provider/region combinations.
 | timeout                     | int                | yes      | None    | Seconds to wait for the session to enter Ready state. If the time is exceeded, an error will be returned.
 | neo4j_driver_config         | dict[str, any]     | yes      | None    | Additional options passed to the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified.
 | arrow_client_options        | dict[str, any]     | yes      | None    | Additional options passed to the Arrow Flight Client used to connect to the Session.
@@ -133,26 +132,6 @@ gds = sessions.get_or_create(
         username="my-user",
         password="my-password"
     ),
-)
-----
-=======
-
-[.include-with-self-managed]
-=======
-.Creating a GDS Session for a self-managed Neo4j DBMS:
-[source,python,role=no-test]
-----
-from graphdatascience.session import DbmsConnectionInfo, CloudLocation, SessionMemory
-
-gds = sessions.get_or_create(
-    session_name="my-self-managed-session", # Must be unique within the project
-    memory=SessionMemory.m_4GB,
-    db_connection=DbmsConnectionInfo(
-        uri="neo4j://localhost",
-        username="my-user",
-        password="my-password"
-    ),
-    cloud_location=CloudLocation(provider="gcp", region="europe-west1"),
 )
 ----
 =======
@@ -383,7 +362,7 @@ G, result = gds.graph.project.native(
 
 You can create a cypher projection using the `gds.graph.project.cypher()` endpoint with a graph name, a Cypher query, and additional optional parameters.
 The Cypher query must contain the `gds.graph.project.remote()` function to project the graph into the GDS Session.
-This is only possible to do with Attached and self-managed sessions.
+This is only possible to do with Attached sessions.
 
 .Remote projection:
 [source, role=no-test]
@@ -449,7 +428,7 @@ For a full list of the available algorithms, see the link:{neo4j-docs-base-uri}/
 == Remote write-back
 
 Persisting the results of a computation done in a GDS Session differs by the session's type.
-Attached and Self-managed sessions come with built-in support for writing back algorithms results to the same Neo4j DB where the graph was projected from.
+Attached sessions come with built-in support for writing back algorithms results to the same Neo4j DB where the graph was projected from.
 Users of Standalone sessions have to stream the results back to the client and the user has to persist it in their target system.
 This section will illustrate the built-in remote write-back capability.
 
@@ -463,7 +442,7 @@ The behaviour is controlled by three aspects:
 
 === Syntax
 
-The syntax for remote write-back is identical for Attached and Self-managed sessions.
+The syntax for remote write-back is as follows.
 
 [.tabbed-example, caption = ]
 ====

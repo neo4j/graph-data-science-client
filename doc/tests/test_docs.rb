@@ -141,7 +141,6 @@ NETWORKX = ENV.fetch('DOC_TEST_NETWORKX', 'yes') == 'yes'
 NON_PLUGIN_TAB_ROLES = %w[
   include-with-Aura-Graph-Analytics
   include-with-attached
-  include-with-self-managed
   include-with-standalone
   include-with-AuraDS
 ].freeze

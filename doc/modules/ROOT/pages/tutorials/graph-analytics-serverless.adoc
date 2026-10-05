@@ -20,9 +20,6 @@ run algorithms, and eventually write back your analytical results to the
 AuraDB database. We will cover all management operations: creation,
 listing, and deletion.
 
-If you are using self managed DB, follow
-link:../graph-analytics-serverless-self-managed[this example].
-
 == Prerequisites
 
 This notebook requires having an AuraDB instance available and have the
