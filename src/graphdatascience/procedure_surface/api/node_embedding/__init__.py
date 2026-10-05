@@ -23,7 +23,6 @@ from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints impo
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import (
     GraphSageEndpoints,
-    SessionGraphSageEndpoints,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_endpoints import (
     GraphSageMutateResult,
@@ -103,5 +102,4 @@ __all__ = [
     "Node2VecEndpoints",
     "Node2VecMutateResult",
     "Node2VecWriteResult",
-    "SessionGraphSageEndpoints",
 ]

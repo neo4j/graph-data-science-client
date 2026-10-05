@@ -5,11 +5,11 @@ import pytest
 from pyarrow import ArrowInvalid
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.error.feature_not_enabled import FeatureNotEnabledError
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import (
     FAST_PATH_ENDPOINT,
     FastPathArrowEndpoints,
-    FeatureNotEnabledError,
 )
 
 # A session without FastPath rejects the action with this invalid-argument error.

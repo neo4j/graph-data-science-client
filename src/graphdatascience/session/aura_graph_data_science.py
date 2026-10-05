@@ -52,7 +52,6 @@ from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import
 from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import EmbeddingEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import SessionGraphSageEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
@@ -136,6 +135,9 @@ from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endp
 from graphdatascience.procedure_surface.arrow.node_embedding.fastrp_arrow_endpoints import FastRPArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_session_endpoints import (
+    GraphSageSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_supervised_arrow_endpoints import (
     GraphSageSupervisedArrowEndpoints,
@@ -528,11 +530,11 @@ class AuraGraphDataScience:
         )
 
     @property
-    def graph_sage(self) -> SessionGraphSageEndpoints:
+    def graph_sage(self) -> GraphSageSessionEndpoints:
         """
         Return endpoints for the GraphSage algorithm.
         """
-        return SessionGraphSageEndpoints(
+        return GraphSageSessionEndpoints(
             train_endpoints=GraphSageTrainArrowEndpoints(
                 self._authenticated_arrow_client, self._write_protocol, show_progress=self._show_progress
             ),

@@ -97,6 +97,33 @@ def test_stream(gs_model: GraphSageUnsupervisedModel, sample_graph: Graph) -> No
     assert len(result) == 4
 
 
+def test_compute_stream(
+    arrow_client_runtime: AuthenticatedArrowClient, gs_model: GraphSageUnsupervisedModel, sample_graph: Graph
+) -> None:
+    endpoints = GraphSageUnsupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
+
+    handle = endpoints.compute(G=sample_graph, model_name="gs-unsup-model", feature_properties=["feature"])
+    handle.wait()
+
+    result = handle.stream()
+
+    assert set(result.columns) == {"nodeId", "embedding"}
+    assert len(result) == 4
+
+
+def test_compute_mutate(
+    arrow_client_runtime: AuthenticatedArrowClient, gs_model: GraphSageUnsupervisedModel, sample_graph: Graph
+) -> None:
+    endpoints = GraphSageUnsupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
+
+    handle = endpoints.compute(G=sample_graph, model_name="gs-unsup-model", feature_properties=["feature"])
+    handle.wait()
+
+    result = handle.mutate(mutate_property="embedding")
+
+    assert result["nodePropertiesWritten"] == 4
+
+
 def test_mutate(gs_model: GraphSageUnsupervisedModel, sample_graph: Graph) -> None:
     result = gs_model.predict_mutate(sample_graph, feature_properties=["feature"], mutate_property="embedding")
 

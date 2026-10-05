@@ -3,8 +3,10 @@ from collections import OrderedDict
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.error.feature_not_enabled import translate_feature_not_enabled
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_results import (
     GraphSageSupervisedMutateResult,
     GraphSageSupervisedTrainResult,
@@ -93,6 +95,40 @@ class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
         train_result = GraphSageSupervisedTrainResult(**result)
 
         return model, train_result
+
+    def compute(
+        self,
+        G: Graph,
+        model_name: str,
+        feature_properties: list[str],
+        *,
+        batch_size: int | None = None,
+        random_seed: int | None = None,
+        relationship_types: list[str] = ALL_TYPES,
+        node_labels: list[str] = ALL_LABELS,
+        job_id: str | None = None,
+    ) -> JobHandle:
+        """Start a supervised (node classification) GraphSage prediction and return a
+        :class:`~graphdatascience.procedure_surface.api.job_handle.JobHandle`.
+
+        The handle exposes ``stream`` / ``mutate`` / ``write`` so the caller can decide
+        how to materialize the prediction after the computation is started. The result
+        carries the ``predicted_class`` and ``predicted_probabilities`` columns, which
+        the handle maps to node properties.
+        """
+        config = self._node_property_endpoints.create_base_config(
+            G,
+            model_name=model_name,
+            feature_properties=feature_properties,
+            batch_size=batch_size,
+            random_seed=random_seed,
+            relationship_types=relationship_types,
+            node_labels=node_labels,
+            job_id=job_id,
+        )
+
+        with translate_feature_not_enabled("v2/embeddings.graphSage.supervised.predict", "Supervised GraphSage"):
+            return self._node_property_endpoints.run_job(G, "v2/embeddings.graphSage.supervised.predict", config)
 
     def stream(
         self,

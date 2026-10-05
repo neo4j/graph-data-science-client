@@ -3,12 +3,10 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.error.feature_not_enabled import FeatureNotEnabledError
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathWriteResult
-from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import (
-    FastPathArrowEndpoints,
-    FeatureNotEnabledError,
-)
+from graphdatascience.procedure_surface.arrow.node_embedding.fastpath_arrow_endpoints import FastPathArrowEndpoints
 from graphdatascience.query_runner import QueryRunner, QueryType
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from tests.integration.procedure_surface.arrow.graph_creation_helper import (
