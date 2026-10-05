@@ -208,7 +208,7 @@ class GdsSessions:
             cloud_location (CloudLocation | None): The cloud location where the GDS Session will run.
                 Must be a `CloudLocation(provider, region)` with a supported provider (`"gcp"`, `"aws"`, or `"azure"`)
                 and an Aura-supported region (e.g. `"europe-west1"`).
-                Required for the Self-managed and Standalone session types; must not be provided for Attached sessions.
+                Required for the Standalone session type; must not be provided for Attached sessions.
                 Use `available_cloud_locations()` to list all valid provider/region combinations.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
