@@ -13,4 +13,5 @@
 
 ## Other changes
 
+* Support Python 3.15
 * The supported `pyarrow` range is now `>= 22.0, < 27.0`.
