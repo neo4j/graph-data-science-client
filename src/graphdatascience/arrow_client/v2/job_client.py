@@ -5,7 +5,7 @@ from typing import Any
 
 from pandas import ArrowDtype, DataFrame
 from pyarrow import ArrowKeyError
-from pyarrow.flight import Ticket
+from pyarrow.flight import FlightStreamReader, Ticket
 from tenacity import Retrying, retry_if_exception, retry_if_result, stop_after_attempt, wait_fixed
 
 from graphdatascience.arrow_client.authenticated_flight_client import (
@@ -116,10 +116,16 @@ class JobClient:
         return deserialize_single(res)
 
     @staticmethod
-    def stream_results(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> DataFrame:
+    def export_to_pandas(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> DataFrame:
         export_job_id = JobClient.start_export_result(client, graph_name, job_id)
 
-        return JobClient.get_stream(client, export_job_id)
+        return JobClient.get_pandas(client, export_job_id)
+
+    @staticmethod
+    def export_to_flight_stream(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> FlightStreamReader:
+        export_job_id = JobClient.start_export_result(client, graph_name, job_id)
+
+        return JobClient.get_flight_stream(client, export_job_id)
 
     @staticmethod
     def start_export_result(client: AuthenticatedArrowClient, graph_name: str, job_id: str) -> str:
@@ -132,11 +138,15 @@ class JobClient:
         return JobIdConfig(**deserialize_single(res)).job_id
 
     @staticmethod
-    def get_stream(client: AuthenticatedArrowClient, export_job_id: str) -> DataFrame:
+    def get_pandas(client: AuthenticatedArrowClient, export_job_id: str) -> DataFrame:
+        stream = JobClient.get_flight_stream(client, export_job_id)
+        arrow_table = stream.read_all()
+        return arrow_table.to_pandas(types_mapper=ArrowDtype)  # type: ignore
+
+    @staticmethod
+    def get_flight_stream(client: AuthenticatedArrowClient, export_job_id: str) -> FlightStreamReader:
         stream_payload = {"version": "v2", "name": export_job_id, "body": {}}
 
         ticket = Ticket(json.dumps(stream_payload).encode("utf-8"))
 
-        get = client.get_stream(ticket)
-        arrow_table = get.read_all()
-        return arrow_table.to_pandas(types_mapper=ArrowDtype)  # type: ignore
+        return client.get_stream(ticket)

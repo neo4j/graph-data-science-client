@@ -68,7 +68,7 @@ class NodeClassificationPredictArrowEndpoints(NodeClassificationPipelinePredictE
             config,
             show_progress=show_progress,
         )
-        return JobClient.stream_results(self._arrow_client, G.name(), result_job_id)
+        return JobClient.export_to_pandas(self._arrow_client, G.name(), result_job_id)
 
     def estimate(
         self,

@@ -316,7 +316,7 @@ def test_link_prediction_predict_stream_runs_arrow_job() -> None:
             return_value="job-1",
         ) as run_job_and_wait,
         mock.patch(
-            "graphdatascience.procedure_surface.arrow.pipeline.link_prediction_predict_arrow_endpoints.JobClient.stream_results",
+            "graphdatascience.procedure_surface.arrow.pipeline.link_prediction_predict_arrow_endpoints.JobClient.export_to_pandas",
             return_value=expected,
         ),
     ):
