@@ -40,7 +40,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         self,
         G: Graph,
         *,
-        graph_encoder: str | (FastRPConfig | IdentityConfig),
+        graph_encoder: str | FastRPConfig | IdentityConfig | None = None,
         random_seed: int | None = None,
         mutate_property: str,
         job_id: str | None = None,

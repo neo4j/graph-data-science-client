@@ -27,7 +27,7 @@ class EmbeddingEndpoints(ABC):
         self,
         G: Graph,
         *,
-        graph_encoder: str | (FastRPConfig | IdentityConfig),
+        graph_encoder: str | FastRPConfig | IdentityConfig | None = None,
         random_seed: int | None = None,
         mutate_property: str,
         job_id: str | None = None,
@@ -119,7 +119,7 @@ class EncodeConfig(BaseModel):
     task_name: Literal["GML_ENCODE"] = Field(
         "GML_ENCODE", validation_alias="taskName", description=TASK_NAME_DESCRIPTION
     )
-    graph_encoder: str | Annotated[NoTrainGraphEncoderConfig, Field(discriminator="graph_encoder_type")] = Field(
+    graph_encoder: str | Annotated[NoTrainGraphEncoderConfig, Field(discriminator="graph_encoder_type")] | None = Field(
         description="Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder (e.g. FastRP or Identity)."
     )
     random_seed: int = Field(default_factory=lambda: random.randint(0, 2**32 - 1), description=RANDOM_SEED_DESCRIPTION)
