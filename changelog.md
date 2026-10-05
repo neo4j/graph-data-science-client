@@ -14,3 +14,5 @@
 
 
 ## Other changes
+
+* Support Python 3.15
