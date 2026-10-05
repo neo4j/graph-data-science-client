@@ -20,8 +20,7 @@ Session, run algorithms, and inspect the results. We will cover all
 management operations: creation, listing, and deletion.
 
 If you are using AuraDB, follow link:../graph-analytics-serverless[this
-example]. If you are using a self-managed Neo4j instance, follow
-link:../graph-analytics-serverless-self-managed[this example].
+example].
 
 == Prerequisites
 
