@@ -72,13 +72,11 @@ Stream it into pandas as shown above, or pass it to other GDS algorithms in the 
 
 
 [[in-memory-graph]]
-== Embeddings are added to your in-memory graph
+== Using the embeddings
  
-`gds.embedding.create` runs in _mutate_ mode.
-It computes an embedding for every node and adds the result to the in-memory graph `G` as a node property, named `embedding` unless you choose another name with `mutate_property` parameter.
-Nothing is written to your database, and the graph isn't copied: the property simply becomes part of `G` in your session's graph catalog.
- 
-From there, the embeddings are yours to use however you like:
+`gds.embedding.create` runs in _mutate_ mode: it adds the embeddings to the in-memory graph `G` as a node property, named `embedding` unless you choose another name with `mutate_property`.
+Nothing is written to your database, and the graph isn't copied.
+The property simply becomes part of `G` in your session's graph catalog, so the embeddings are yours to use however you like:
  
 [source, python]
 ----
@@ -95,8 +93,7 @@ clusters = gds.kmeans.stream(G, node_property="embedding", k=7)
 gds.graph.node_properties.write(G, "embedding")
 ----
  
-The embeddings live as long as the graph does.
-When you drop the graph or the session ends, they are gone, so stream or write out whatever you want to keep.
+The embeddings live as long as the graph does: when you drop the graph or the session ends, they are gone, so stream or write out whatever you want to keep.
  
 [IMPORTANT]
 .Calling `create` again with the same property name overwrites the existing embeddings
@@ -230,7 +227,7 @@ gds.embedding.create(
 )
 ----
 
-To get the embeddings out of the session, see <<in-memory-graph,Embeddings are added to your in-memory graph>>.
+To get the embeddings out of the session, see <<in-memory-graph,Using the embeddings>>.
 
 == Train your own model
 
