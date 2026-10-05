@@ -26,8 +26,8 @@ You don't need to pick an algorithm, tune hyperparameters, or know how graph mac
 | Endpoint | What it does
 
 | `gds.embedding.create`
-| Generates embeddings for every node and adds them to your in-memory graph as a node property (_mutate_ mode).
-With no encoder specified, it runs FastRP with sensible service-chosen defaults that are meant to work well across a wide range of graphs.
+| Generates embeddings for every node and adds them to your in-memory graph as a node property, named `embedding` unless you choose another name (_mutate_ mode).
+With no encoder specified, it runs link:https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/[Fast Random Projection] (FastRP) with sensible service-chosen defaults that are meant to work well across a wide range of graphs.
 
 | `gds.embedding.train`
 | Trains an embedding model on your own labels, for when you want embeddings tuned to one specific prediction task.
@@ -57,7 +57,7 @@ gds = sessions.get_or_create(
 
 G = gds.graph.datasets.load_cora(undirected=True)  # or any graph in your session's catalog
 
-result = gds.embedding.create(G, mutate_property="embedding")
+result = gds.embedding.create(G) # adds an "embedding" property to every node of G
 print(result.node_properties_written)  # 2708: one embedding per node
 
 embeddings = gds.graph.node_properties.stream(G, "embedding")  # pandas DataFrame
@@ -67,18 +67,54 @@ This example starts a session that is not attached to an AuraDB instance, which 
 Replace the placeholders with a provider (`gcp`, `aws`, or `azure`) and a region available to your project; `sessions.available_cloud_locations()` lists them.
 For a session attached to an AuraDB instance, pass `db_connection` instead and leave `cloud_location` out.
 
-The `embedding` property now exists on every node of `G`.
+The `embedding` property now exists on every node of the in-memory graph `G`.
 Stream it into pandas as shown above, or pass it to other GDS algorithms in the same session.
+
+
+[[in-memory-graph]]
+== Embeddings are added to your in-memory graph
+ 
+`gds.embedding.create` runs in _mutate_ mode.
+It computes an embedding for every node and adds the result to the in-memory graph `G` as a node property, named `embedding` unless you choose another name with `mutate_property` parameter.
+Nothing is written to your database, and the graph isn't copied: the property simply becomes part of `G` in your session's graph catalog.
+ 
+From there, the embeddings are yours to use however you like:
+ 
+[source, python]
+----
+# After gds.embedding.create(G) has run:
+ 
+# Pull them into pandas
+df = gds.graph.node_properties.stream(G, "embedding")
+ 
+# Use them in other algorithms in the same session
+similar = gds.knn.stream(G, node_properties="embedding", top_k=10)
+clusters = gds.kmeans.stream(G, node_property="embedding", k=7)
+ 
+# Write them to your Neo4j database (sessions attached to an AuraDB instance)
+gds.graph.node_properties.write(G, "embedding")
+----
+ 
+The embeddings live as long as the graph does.
+When you drop the graph or the session ends, they are gone, so stream or write out whatever you want to keep.
+ 
+[IMPORTANT]
+.Calling `create` again with the same property name overwrites the existing embeddings
+====
+If `G` already has a node property with the name you pass as `mutate_property` (`embedding` by default), `create` drops that property and stores the newly generated embeddings under the same name.
+The call doesn't fail, and the previous embeddings are not kept, so re-running a notebook cell is safe.
+ 
+To keep an earlier set of embeddings, for example to compare settings, give each call its own `mutate_property`.
+====
+
+To remove a property you no longer need, use `gds.graph.node_properties.drop(G, ["embedding"])`.
 
 == Create embeddings
 
-[source, python]
-----
-gds.embedding.create(G, mutate_property="embedding")
-----
-
+`gds.embedding.create(G)` is the whole call.
 With no `graph_encoder`, `create` uses FastRP with settings chosen by the service.
-To change the encoder's settings, pass a configuration object from `graphdatascience.embedding`, as in the examples below.
+With no `mutate_property`, it stores the embeddings as the `embedding` node property of `G`.
+To change either, pass them explicitly, as in the examples below.
 
 === Parameters
 
@@ -91,16 +127,16 @@ To change the encoder's settings, pass a configuration object from `graphdatasci
 | required
 | The graph to embed.
 
-| `mutate_property`
-| `str`
-| required
-| Name of the node property the embeddings are stored in.
-
 | `graph_encoder`
 | `FastRPConfig`, `IdentityConfig`, or `str`
 | `FastRPConfig()`
 | What produces the embeddings: an inline configuration of a non-trainable encoder, or the name of a model saved by `gds.embedding.train`.
 Leave it out to use FastRP with service-chosen settings, which is the recommended starting point.
+ 
+| `mutate_property`
+| `str`
+| `"embedding"`
+| Name of the node property that holds the embeddings on the in-memory graph `G`. If `G` already has a property with this name, it is replaced.
 
 | `random_seed`
 | `int`
@@ -158,43 +194,43 @@ Leave it out to use FastRP with service-chosen settings, which is the recommende
 |===
 
 === Examples
-
-Choose the embedding dimension and make the run reproducible:
-
+ 
+Choose the embedding dimension and make the run reproducible.
+Because `mutate_property` is not set, this replaces the `embedding` property if `G` already has one:
+ 
 [source, python]
 ----
 from graphdatascience.embedding import FastRPConfig
-
+ 
 gds.embedding.create(
     G,
     graph_encoder=FastRPConfig(out_dim=256),
-    mutate_property="embedding",
     random_seed=42,
 )
 ----
-
+ 
 If you leave `out_dim` unset, the service picks a dimension for you.
 
-Embed only part of the graph:
+Keep the earlier embeddings by storing the new ones under a different property name:
+ 
+[source, python]
+----
+gds.embedding.create(G, mutate_property="embedding_256", graph_encoder=FastRPConfig(out_dim=256))
+----
 
+Embed only part of the graph, in a property of its own so a full-graph `embedding` property stays as it is:
+ 
 [source, python]
 ----
 gds.embedding.create(
     G,
-    mutate_property="embedding",
+    mutate_property="embedding_subset",
     node_labels=["Customer", "Product"],
     relationship_types=["PURCHASED"],
 )
 ----
 
-Get the embeddings out of the session:
-
-[source, python]
-----
-df = gds.graph.node_properties.stream(G, "embedding")  # to pandas
-----
-
-In a session attached to a database, `gds.graph.node_properties.write` writes the property back to your Neo4j database.
+To get the embeddings out of the session, see <<in-memory-graph,Embeddings are added to your in-memory graph>>.
 
 == Train your own model
 
@@ -221,7 +257,6 @@ gds.embedding.train(
 gds.embedding.create(
     G,
     graph_encoder="paper-topic-encoder",
-    mutate_property="embedding",
     feature_properties=["features"],
 )
 ----
@@ -307,7 +342,7 @@ gds.embedding.create(
 
 `gds.embedding.train` returns an `EmbeddingTrainResult` with `compute_millis`, `pre_processing_millis`, and `configuration`.
 
-=== Trained models work like any other model in Aura Graph Analytics
+=== Store and reuse trained models
 
 A model trained with `gds.embedding.train` is a regular Aura Graph Analytics model.
 It is listed in the model catalog next to models from other training procedures, and you manage it with the same `gds.model` endpoints.
