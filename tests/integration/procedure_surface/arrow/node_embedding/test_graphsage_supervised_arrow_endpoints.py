@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from typing import Generator
 
 import pytest
@@ -95,6 +96,38 @@ def test_stream(gs_model: GraphSageSupervisedModel, sample_graph: Graph) -> None
 
     assert set(result.columns) == {"nodeId", "predictedClass", "predictedProbabilities"}
     assert len(result) == 4
+
+
+def test_compute_stream(
+    arrow_client_runtime: AuthenticatedArrowClient, gs_model: GraphSageSupervisedModel, sample_graph: Graph
+) -> None:
+    endpoints = GraphSageSupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
+
+    handle = endpoints.compute(G=sample_graph, model_name="gs-sup-model", feature_properties=["feature"])
+    handle.wait()
+
+    result = handle.stream()
+
+    assert set(result.columns) == {"nodeId", "predictedClass", "predictedProbabilities"}
+    assert len(result) == 4
+
+
+def test_compute_mutate(
+    arrow_client_runtime: AuthenticatedArrowClient, gs_model: GraphSageSupervisedModel, sample_graph: Graph
+) -> None:
+    endpoints = GraphSageSupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
+
+    handle = endpoints.compute(G=sample_graph, model_name="gs-sup-model", feature_properties=["feature"])
+    handle.wait()
+
+    result = handle.mutate(
+        mutate_property_overwrites=OrderedDict(
+            [("predicted_class", "predictedClass"), ("predicted_probabilities", "predictedProbabilities")]
+        )
+    )
+
+    # two properties (predicted classes + probabilities) written for each of the 4 nodes
+    assert result["nodePropertiesWritten"] == 8
 
 
 def test_mutate(gs_model: GraphSageSupervisedModel, sample_graph: Graph) -> None:

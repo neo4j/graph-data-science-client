@@ -1,9 +1,13 @@
 from collections import OrderedDict
 from unittest import mock
 
+import pytest
 from pandas import DataFrame
+from pyarrow import ArrowInvalid
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.error.feature_not_enabled import FeatureNotEnabledError
+from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import GraphSageSupervisedModel
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_supervised_arrow_endpoints import (
     GraphSageSupervisedArrowEndpoints,
@@ -141,6 +145,84 @@ def test_write_with_probability_property_overwrites_both() -> None:
         "predicted_class": "class",
         "predicted_probabilities": "probs",
     }
+
+
+# A session without the python-runtime rejects the action with this invalid-argument error.
+_UNSUPPORTED_ACTION_ERROR = ArrowInvalid(
+    "Flight returned invalid argument error, with message: "
+    "Unsupported action: v2/embeddings.graphSage.supervised.predict. Supported: ['v2/embeddings.fastrp']"
+)
+
+# An unrelated invalid-argument error (config validation) that must keep propagating unchanged.
+_CONFIG_VALIDATION_ERROR = ArrowInvalid(
+    "Flight returned invalid argument error, with message: Must specify featureProperties"
+)
+
+
+def _compute(endpoints: GraphSageSupervisedArrowEndpoints) -> None:
+    endpoints.compute(
+        G=_graph(),
+        model_name="my-model",
+        feature_properties=["f1"],
+    )
+
+
+def test_compute_returns_job_handle() -> None:
+    endpoints = _endpoints()
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.endpoints_helper_base.JobClient.run_job",
+        return_value="job-123",
+    ) as run_job:
+        handle = endpoints.compute(
+            G=_graph(),
+            model_name="my-model",
+            feature_properties=["f1"],
+        )
+
+    assert isinstance(handle, JobHandle)
+    assert handle.job_id() == "job-123"
+    assert run_job.call_args.args[1] == _PREDICT_ENDPOINT
+    config = run_job.call_args.args[2]
+    assert config["modelName"] == "my-model"
+    assert config["featureProperties"] == ["f1"]
+    assert "targetProperty" not in config
+    assert "epochs" not in config
+
+
+def test_compute_translates_unsupported_action_to_feature_not_enabled() -> None:
+    endpoints = _endpoints()
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.endpoints_helper_base.JobClient.run_job",
+        side_effect=_UNSUPPORTED_ACTION_ERROR,
+    ):
+        with pytest.raises(FeatureNotEnabledError, match="not enabled for this session"):
+            _compute(endpoints)
+
+
+def test_compute_keeps_original_error_as_cause() -> None:
+    endpoints = _endpoints()
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.endpoints_helper_base.JobClient.run_job",
+        side_effect=_UNSUPPORTED_ACTION_ERROR,
+    ):
+        with pytest.raises(FeatureNotEnabledError) as exc_info:
+            _compute(endpoints)
+
+    assert exc_info.value.__cause__ is _UNSUPPORTED_ACTION_ERROR
+
+
+def test_compute_unrelated_invalid_argument_error_is_not_translated() -> None:
+    endpoints = _endpoints()
+
+    with mock.patch(
+        "graphdatascience.procedure_surface.arrow.endpoints_helper_base.JobClient.run_job",
+        side_effect=_CONFIG_VALIDATION_ERROR,
+    ):
+        with pytest.raises(ArrowInvalid, match="Must specify featureProperties"):
+            _compute(endpoints)
 
 
 def test_mutate_single_property() -> None:

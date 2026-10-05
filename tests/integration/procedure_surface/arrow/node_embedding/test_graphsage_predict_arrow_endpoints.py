@@ -1,5 +1,6 @@
 import json
 from typing import Generator
+from unittest import mock
 
 import pytest
 
@@ -8,6 +9,9 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_model import GraphSageModel
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_predict_arrow_endpoints import (
     GraphSagePredictArrowEndpoints,
+)
+from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_session_endpoints import (
+    GraphSageSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_embedding.graphsage_train_arrow_endpoints import (
     GraphSageTrainArrowEndpoints,
@@ -141,6 +145,28 @@ def test_compute(arrow_client: AuthenticatedArrowClient, gs_model: GraphSageMode
 
     assert summary["computeMillis"] >= 0
     assert "writeProperty" not in summary["configuration"]
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "embedding"}
+    assert len(df) == 4
+
+
+def test_session_facade_compute(
+    arrow_client: AuthenticatedArrowClient, gs_model: GraphSageModel, sample_graph: Graph
+) -> None:
+    # The session facade delegates compute to its (Arrow) predict endpoints.
+    endpoints = GraphSageSessionEndpoints(
+        train_endpoints=mock.Mock(),
+        predict_endpoints=GraphSagePredictArrowEndpoints(arrow_client, None, show_progress=False),
+        catalog_endpoints=mock.Mock(),
+        unsupervised_endpoints=mock.Mock(),
+        supervised_endpoints=mock.Mock(),
+    )
+
+    handle = endpoints.compute(sample_graph, gs_model.name(), concurrency=4)
+    summary = handle.summary()
+
+    assert summary["computeMillis"] >= 0
 
     df = handle.stream()
     assert set(df.columns) == {"nodeId", "embedding"}

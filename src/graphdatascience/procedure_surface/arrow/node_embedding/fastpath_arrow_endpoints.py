@@ -1,9 +1,9 @@
-from contextlib import contextmanager
-from typing import Any, Iterator
+from typing import Any
 
 from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.error.feature_not_enabled import translate_feature_not_enabled
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -16,28 +16,6 @@ from graphdatascience.procedure_surface.arrow.node_property_endpoints import Nod
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 FAST_PATH_ENDPOINT = "v2/embeddings.fastPath"
-
-
-class FeatureNotEnabledError(Exception):
-    """Raised when endpoint is invoked against a session that does not have the feature enabled."""
-
-
-_NOT_ENABLED_MESSAGE = (
-    "{feature} is not enabled for this session. "
-    "Please reach out to the Neo4j GDS team to have it enabled for your session."
-)
-
-
-@contextmanager
-def _translate_feature_not_enabled(endpoint: str, feature: str) -> Iterator[None]:
-    """Translate the session's "unsupported action" error into a clear feature-not-enabled error."""
-    try:
-        yield
-    except Exception as e:
-        message = str(e)
-        if "Unsupported action" in message and endpoint in message:
-            raise FeatureNotEnabledError(_NOT_ENABLED_MESSAGE.format(feature=feature)) from e
-        raise
 
 
 class FastPathArrowEndpoints(FastPathEndpoints):
@@ -107,7 +85,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
+        with translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             return self._node_property_endpoints.run_job(G, FAST_PATH_ENDPOINT, config)
 
     def mutate(
@@ -160,7 +138,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
+        with translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             result = self._node_property_endpoints.run_job_and_mutate(FAST_PATH_ENDPOINT, config, mutate_property)
 
         # FastPath writes a single property per node, so the node count equals the properties written
@@ -216,7 +194,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
+        with translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             return self._node_property_endpoints.run_job_and_stream(FAST_PATH_ENDPOINT, G, config)
 
     def write(
@@ -270,7 +248,7 @@ class FastPathArrowEndpoints(FastPathEndpoints):
             job_id=job_id,
         )
 
-        with _translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
+        with translate_feature_not_enabled(FAST_PATH_ENDPOINT, "FastPath"):
             result = self._node_property_endpoints.run_job_and_write(
                 FAST_PATH_ENDPOINT,
                 G,
