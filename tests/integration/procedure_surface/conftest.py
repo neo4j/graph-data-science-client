@@ -61,5 +61,5 @@ def download_gds_api_spec(destination: Path) -> None:
 
 
 @pytest.fixture(scope="package")
-def query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[QueryRunner, None, None]:
-    yield from create_db_query_runner(neo4j_connection)
+def query_runner(aura_neo4j_connection: DbmsConnectionInfo) -> Generator[QueryRunner, None, None]:
+    yield from create_db_query_runner(aura_neo4j_connection)

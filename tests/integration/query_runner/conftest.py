@@ -8,5 +8,5 @@ from tests.integration.services import create_db_query_runner
 
 
 @pytest.fixture(scope="package")
-def query_runner(neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
-    yield from create_db_query_runner(neo4j_connection)
+def query_runner(aura_neo4j_connection: DbmsConnectionInfo) -> Generator[Neo4jQueryRunner, None, None]:
+    yield from create_db_query_runner(aura_neo4j_connection)
