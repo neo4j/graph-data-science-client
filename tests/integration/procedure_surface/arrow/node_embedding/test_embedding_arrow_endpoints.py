@@ -84,6 +84,17 @@ def test_embedding_create_fastrp(embedding_endpoints: EmbeddingArrowEndpoints, s
 
 
 @ignore_preview_warning
+def test_embedding_create_default(embedding_endpoints: EmbeddingArrowEndpoints, sample_graph: Graph) -> None:
+    """Test create operation with defaults"""
+    result = embedding_endpoints.create(G=sample_graph, mutate_property="embedding123")
+
+    assert result.compute_millis >= 0
+    assert result.mutate_millis >= 0
+    assert result.node_properties_written > 0
+    assert result.configuration is not None
+
+
+@ignore_preview_warning
 def test_embedding_train_and_create_graphsage(
     arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
 ) -> None:
