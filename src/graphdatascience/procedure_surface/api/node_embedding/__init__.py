@@ -1,6 +1,5 @@
 from graphdatascience.procedure_surface.api.node_embedding.config import (
     FastRPConfig,
-    GBClassifierConfig,
     GraphSAGEConfig,
     MLPClassifierConfig,
 )
@@ -75,7 +74,6 @@ __all__ = [
     "FastPathEndpoints",
     "FastPathMutateResult",
     "FastPathWriteResult",
-    "GBClassifierConfig",
     "GraphSAGEConfig",
     "GraphSageEndpoints",
     "GraphSageMutateResult",

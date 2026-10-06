@@ -50,16 +50,6 @@ class FastRPConfig(BaseModel):
     )
 
 
-NoTrainGraphEncoderConfig = FastRPConfig
-GraphEncoderConfig = FastRPConfig | GraphSAGEConfig
-
-
-class GBClassifierConfig(BaseModel):
-    """Configuration for the gradient boosted tree classifier decoder."""
-
-    decoder_type: Literal["gb_classifier"] = "gb_classifier"
-
-
 class MLPClassifierConfig(BaseModel):
     """Configuration for the multi-layer perceptron classifier decoder."""
 
@@ -70,4 +60,4 @@ class MLPClassifierConfig(BaseModel):
     dropout: Dropout | None = Field(default=None, description="Dropout probability applied during training.")
 
 
-DecoderConfig = GBClassifierConfig | MLPClassifierConfig
+DecoderConfig = MLPClassifierConfig

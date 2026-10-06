@@ -12,11 +12,8 @@ from graphdatascience.procedure_surface.api.descriptions import RANDOM_SEED_DESC
 from graphdatascience.procedure_surface.api.node_embedding.config import (
     DecoderConfig,
     FastRPConfig,
-    GBClassifierConfig,
-    GraphEncoderConfig,
     GraphSAGEConfig,
     MLPClassifierConfig,
-    NoTrainGraphEncoderConfig,
 )
 
 
@@ -64,8 +61,8 @@ class EmbeddingEndpoints(ABC):
         self,
         G: Graph,
         *,
-        graph_encoder: FastRPConfig | GraphSAGEConfig,
-        decoder: GBClassifierConfig | MLPClassifierConfig,
+        graph_encoder: GraphSAGEConfig,
+        decoder: MLPClassifierConfig,
         model_save_name: str,
         target_label: str,
         target_property: str,
@@ -118,7 +115,7 @@ class EncodeConfig(BaseModel):
     task_name: Literal["GML_ENCODE"] = Field(
         "GML_ENCODE", validation_alias="taskName", description=TASK_NAME_DESCRIPTION
     )
-    graph_encoder: str | Annotated[NoTrainGraphEncoderConfig, Field(discriminator="graph_encoder_type")] | None = Field(
+    graph_encoder: str | FastRPConfig | None = Field(
         description="Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder, i.e. FastRP."
     )
     random_seed: int = Field(default_factory=lambda: random.randint(0, 2**32 - 1), description=RANDOM_SEED_DESCRIPTION)
@@ -126,11 +123,9 @@ class EncodeConfig(BaseModel):
 
 class EmbeddingTrainConfig(BaseModel):
     task_name: Literal["GML_TRAIN"] = Field("GML_TRAIN", validation_alias="taskName", description=TASK_NAME_DESCRIPTION)
-    graph_encoder: Annotated[GraphEncoderConfig, Field(discriminator="graph_encoder_type")] | None = Field(
-        default=None, description="Configuration for the graph encoder to train (FastRP or GraphSAGE)."
-    )
+    graph_encoder: GraphSAGEConfig = Field(description="Configuration for the graph encoder (GraphSAGE) to train.")
     decoder: Annotated[DecoderConfig, Field(discriminator="decoder_type")] = Field(
-        description="Configuration for the decoder to train on top of the graph encoder's embeddings."
+        description="Configuration for the decoder (MLP) to train on top of the graph encoder's embeddings."
     )
     model_save_name: str = Field(description="Name to save the trained graph encoder + decoder model under.")
     target_label: str = Field(description="Node label to train on.")

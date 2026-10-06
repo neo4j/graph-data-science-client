@@ -5,7 +5,6 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.config import (
     FastRPConfig,
-    GBClassifierConfig,
     GraphSAGEConfig,
     MLPClassifierConfig,
 )
@@ -65,8 +64,8 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         self,
         G: Graph,
         *,
-        graph_encoder: FastRPConfig | GraphSAGEConfig,
-        decoder: GBClassifierConfig | MLPClassifierConfig,
+        graph_encoder: GraphSAGEConfig,
+        decoder: MLPClassifierConfig,
         model_save_name: str,
         target_label: str,
         target_property: str,
