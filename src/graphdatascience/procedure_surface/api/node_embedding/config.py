@@ -12,7 +12,6 @@ class GraphSAGEConfig(BaseModel):
     """Configuration for the GraphSAGE graph encoder."""
 
     graph_encoder_type: Literal["graphsage"] = "graphsage"
-    target_type: NodeType = Field(description="Node type (label) of the nodes the encoder is trained on.")
     hidden_dims: Annotated[list[PositiveInt], Len(max_length=3)] | None = Field(
         default=None,
         description="Sizes of the hidden layers. The depth of the GNN is inferred as `len(hidden_dims) + 1`.",

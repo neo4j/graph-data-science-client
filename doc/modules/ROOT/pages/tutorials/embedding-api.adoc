@@ -110,7 +110,7 @@ from graphdatascience.procedure_surface.api.node_embedding.config import GraphSA
 with gds.graph.datasets.load_cora() as G:
     train_result = gds.embedding.train(
         G=G,
-        graph_encoder=GraphSAGEConfig(target_type="Paper"),
+        graph_encoder=GraphSAGEConfig(),
         decoder=MLPClassifierConfig(),
         model_save_name="cora_model",
         target_label="Paper",

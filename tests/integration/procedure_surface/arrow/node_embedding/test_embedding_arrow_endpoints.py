@@ -115,7 +115,7 @@ def test_embedding_train_and_create_graphsage_mlp(
         train_result = embedding_endpoints.train(
             G=sample_graph,
             feature_properties=["x"],
-            graph_encoder=GraphSAGEConfig(target_type="A"),
+            graph_encoder=GraphSAGEConfig(),
             decoder=MLPClassifierConfig(),
             target_label="A",
             target_property="y",
