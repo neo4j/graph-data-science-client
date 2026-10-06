@@ -181,8 +181,9 @@ class AuraApi:
         database_id: str | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
+        gpu: bool = False,
     ) -> SessionDetails:
-        json = {"name": name, "memory": memory.value, "project_id": self._project_id}
+        json: dict[str, Any] = {"name": name, "memory": memory.value, "project_id": self._project_id}
 
         if instance_id:
             json["instance_id"] = instance_id
@@ -196,6 +197,9 @@ class AuraApi:
         if cloud_location:
             json["cloud_provider"] = cloud_location.provider
             json["region"] = cloud_location.region
+
+        if gpu:
+            json["gpu"] = True
 
         response = self._request_session.post(
             f"{self._base_uri}/{AuraApi.API_VERSION}/graph-analytics/sessions", json=json
