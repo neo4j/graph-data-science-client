@@ -28,7 +28,7 @@ class EmbeddingEndpoints(ABC):
         *,
         graph_encoder: str | FastRPConfig | None = None,
         random_seed: int | None = None,
-        mutate_property: str,
+        mutate_property: str = "embedding",
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],

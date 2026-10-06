@@ -3,6 +3,7 @@ from typing import Generator
 import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
+from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.config import (
     FastRPConfig,
@@ -69,29 +70,37 @@ def embedding_endpoints(
 
 
 @ignore_preview_warning
-def test_embedding_create_fastrp(embedding_endpoints: EmbeddingArrowEndpoints, sample_graph: Graph) -> None:
+def test_embedding_create_default(arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     """Test create operation with FastRP"""
-    result = embedding_endpoints.create(
-        G=sample_graph,
-        graph_encoder=FastRPConfig(),
-        mutate_property="embedding123",
-    )
+    embedding_endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
+    result = embedding_endpoints.create(G=sample_graph)
 
     assert result.compute_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written > 0
     assert result.configuration is not None
+
+    gds_arrow_client = GdsArrowClient(arrow_client_runtime)
+    job_id = gds_arrow_client.get_node_properties(sample_graph.name(), node_properties=["embedding"])
+    node_result = gds_arrow_client.stream_job(job_id)
+    assert set(node_result.columns) == {"nodeId", "embedding"}
 
 
 @ignore_preview_warning
-def test_embedding_create_default(embedding_endpoints: EmbeddingArrowEndpoints, sample_graph: Graph) -> None:
+def test_embedding_create_fastrp(arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     """Test create operation with defaults"""
-    result = embedding_endpoints.create(G=sample_graph, mutate_property="embedding123")
+    embedding_endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
+    result = embedding_endpoints.create(G=sample_graph, graph_encoder=FastRPConfig(), mutate_property="embedding123")
 
     assert result.compute_millis >= 0
     assert result.mutate_millis >= 0
     assert result.node_properties_written > 0
     assert result.configuration is not None
+
+    gds_arrow_client = GdsArrowClient(arrow_client_runtime)
+    job_id = gds_arrow_client.get_node_properties(sample_graph.name(), node_properties=["embedding123"])
+    node_result = gds_arrow_client.stream_job(job_id)
+    assert set(node_result.columns) == {"nodeId", "embedding123"}
 
 
 @ignore_preview_warning
@@ -117,7 +126,6 @@ def test_embedding_train_and_create_graphsage(
             G=sample_graph,
             feature_properties=["x"],
             graph_encoder=model_name,
-            mutate_property="embedding123",
         )
         assert create_result.compute_millis >= 0
         assert create_result.mutate_millis >= 0
