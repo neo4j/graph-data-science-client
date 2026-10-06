@@ -104,7 +104,7 @@ def test_embedding_create_fastrp(arrow_client_runtime: AuthenticatedArrowClient,
 
 
 @ignore_preview_warning
-def test_embedding_train_and_create_graphsage(
+def test_embedding_train_and_create_graphsage_mlp(
     arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
 ) -> None:
     """Test train and create operation with GraphSAGE."""
@@ -120,6 +120,36 @@ def test_embedding_train_and_create_graphsage(
             target_label="A",
             target_property="y",
             model_save_name=model_name,
+        )
+        assert train_result.compute_millis > 0
+        create_result = embedding_endpoints.create(
+            G=sample_graph,
+            feature_properties=["x"],
+            graph_encoder=model_name,
+        )
+        assert create_result.compute_millis >= 0
+        assert create_result.mutate_millis >= 0
+        assert create_result.node_properties_written > 0
+        assert create_result.configuration is not None
+    finally:
+        ModelCatalogArrowEndpoints(arrow_client_runtime).delete(model_name=model_name, fail_if_missing=True)
+
+
+@ignore_preview_warning
+def test_embedding_train_and_create_default(
+    arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
+) -> None:
+    """Test train and create operation with GraphSAGE."""
+    embedding_endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
+
+    model_name = "my_model"
+    try:
+        train_result = embedding_endpoints.train(
+            G=sample_graph,
+            feature_properties=["x"],
+            target_label="A",
+            target_property="y",
+            model_save_name=model_name,  # fixme
         )
         assert train_result.compute_millis > 0
         create_result = embedding_endpoints.create(

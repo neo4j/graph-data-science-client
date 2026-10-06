@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 from abc import ABC, abstractmethod
-from typing import Annotated, Literal
+from typing import Literal
 
 from pydantic import BaseModel, Field, PositiveInt
 
@@ -10,7 +10,6 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import MutateResult, NodeResult, StatsResult
 from graphdatascience.procedure_surface.api.descriptions import RANDOM_SEED_DESCRIPTION, TASK_NAME_DESCRIPTION
 from graphdatascience.procedure_surface.api.node_embedding.config import (
-    DecoderConfig,
     FastRPConfig,
     GraphSAGEConfig,
     MLPClassifierConfig,
@@ -61,8 +60,8 @@ class EmbeddingEndpoints(ABC):
         self,
         G: Graph,
         *,
-        graph_encoder: GraphSAGEConfig,
-        decoder: MLPClassifierConfig,
+        graph_encoder: GraphSAGEConfig | None = None,
+        decoder: MLPClassifierConfig | None = None,
         model_save_name: str,
         target_label: str,
         target_property: str,
@@ -123,11 +122,16 @@ class EncodeConfig(BaseModel):
 
 class EmbeddingTrainConfig(BaseModel):
     task_name: Literal["GML_TRAIN"] = Field("GML_TRAIN", validation_alias="taskName", description=TASK_NAME_DESCRIPTION)
-    graph_encoder: GraphSAGEConfig = Field(description="Configuration for the graph encoder (GraphSAGE) to train.")
-    decoder: Annotated[DecoderConfig, Field(discriminator="decoder_type")] = Field(
-        description="Configuration for the decoder (MLP) to train on top of the graph encoder's embeddings."
+    graph_encoder: GraphSAGEConfig | None = Field(
+        default=None, description="Configuration for the graph encoder (GraphSAGE) to train."
     )
-    model_save_name: str = Field(description="Name to save the trained graph encoder + decoder model under.")
+    decoder: MLPClassifierConfig | None = Field(
+        default=None,
+        description="Configuration for the decoder (MLP) to train on top of the graph encoder's embeddings.",
+    )
+    model_save_name: str | None = Field(
+        default=None, description="Name to save the trained graph encoder + decoder model under."
+    )
     target_label: str = Field(description="Node label to train on.")
     target_property: str = Field(description="Node property to train on.")
     num_epochs: PositiveInt | None = Field(default=None, description="Maximum number of training epochs.")

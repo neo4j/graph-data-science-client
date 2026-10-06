@@ -58,6 +58,3 @@ class MLPClassifierConfig(BaseModel):
         default=None, description="Sizes of the hidden layers of the network."
     )
     dropout: Dropout | None = Field(default=None, description="Dropout probability applied during training.")
-
-
-DecoderConfig = MLPClassifierConfig
