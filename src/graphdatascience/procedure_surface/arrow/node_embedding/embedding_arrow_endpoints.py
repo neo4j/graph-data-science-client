@@ -7,7 +7,6 @@ from graphdatascience.procedure_surface.api.node_embedding.config import (
     FastRPConfig,
     GBClassifierConfig,
     GraphSAGEConfig,
-    IdentityConfig,
     MLPClassifierConfig,
 )
 from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import (
@@ -40,7 +39,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         self,
         G: Graph,
         *,
-        graph_encoder: str | FastRPConfig | IdentityConfig | None = None,
+        graph_encoder: str | FastRPConfig | None = None,
         random_seed: int | None = None,
         mutate_property: str,
         job_id: str | None = None,
@@ -66,7 +65,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         self,
         G: Graph,
         *,
-        graph_encoder: FastRPConfig | GraphSAGEConfig | IdentityConfig,
+        graph_encoder: FastRPConfig | GraphSAGEConfig,
         decoder: GBClassifierConfig | MLPClassifierConfig,
         model_save_name: str,
         target_label: str,

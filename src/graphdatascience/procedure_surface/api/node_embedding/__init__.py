@@ -2,7 +2,6 @@ from graphdatascience.procedure_surface.api.node_embedding.config import (
     FastRPConfig,
     GBClassifierConfig,
     GraphSAGEConfig,
-    IdentityConfig,
     MLPClassifierConfig,
 )
 from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import (
@@ -97,7 +96,6 @@ __all__ = [
     "HashGNNEndpoints",
     "HashGNNMutateResult",
     "HashGNNWriteResult",
-    "IdentityConfig",
     "MLPClassifierConfig",
     "Node2VecEndpoints",
     "Node2VecMutateResult",

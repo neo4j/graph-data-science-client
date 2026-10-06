@@ -15,7 +15,6 @@ from graphdatascience.procedure_surface.api.node_embedding.config import (
     GBClassifierConfig,
     GraphEncoderConfig,
     GraphSAGEConfig,
-    IdentityConfig,
     MLPClassifierConfig,
     NoTrainGraphEncoderConfig,
 )
@@ -27,7 +26,7 @@ class EmbeddingEndpoints(ABC):
         self,
         G: Graph,
         *,
-        graph_encoder: str | FastRPConfig | IdentityConfig | None = None,
+        graph_encoder: str | FastRPConfig | None = None,
         random_seed: int | None = None,
         mutate_property: str,
         job_id: str | None = None,
@@ -65,7 +64,7 @@ class EmbeddingEndpoints(ABC):
         self,
         G: Graph,
         *,
-        graph_encoder: FastRPConfig | GraphSAGEConfig | IdentityConfig,
+        graph_encoder: FastRPConfig | GraphSAGEConfig,
         decoder: GBClassifierConfig | MLPClassifierConfig,
         model_save_name: str,
         target_label: str,
@@ -120,15 +119,15 @@ class EncodeConfig(BaseModel):
         "GML_ENCODE", validation_alias="taskName", description=TASK_NAME_DESCRIPTION
     )
     graph_encoder: str | Annotated[NoTrainGraphEncoderConfig, Field(discriminator="graph_encoder_type")] | None = Field(
-        description="Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder (e.g. FastRP or Identity)."
+        description="Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder, i.e. FastRP."
     )
     random_seed: int = Field(default_factory=lambda: random.randint(0, 2**32 - 1), description=RANDOM_SEED_DESCRIPTION)
 
 
 class EmbeddingTrainConfig(BaseModel):
     task_name: Literal["GML_TRAIN"] = Field("GML_TRAIN", validation_alias="taskName", description=TASK_NAME_DESCRIPTION)
-    graph_encoder: Annotated[GraphEncoderConfig, Field(discriminator="graph_encoder_type")] = Field(
-        description="Configuration for the graph encoder to train (e.g. FastRP, GraphSAGE, or Identity)."
+    graph_encoder: Annotated[GraphEncoderConfig, Field(discriminator="graph_encoder_type")] | None = Field(
+        default=None, description="Configuration for the graph encoder to train (FastRP or GraphSAGE)."
     )
     decoder: Annotated[DecoderConfig, Field(discriminator="decoder_type")] = Field(
         description="Configuration for the decoder to train on top of the graph encoder's embeddings."

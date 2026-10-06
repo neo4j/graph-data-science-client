@@ -50,16 +50,8 @@ class FastRPConfig(BaseModel):
     )
 
 
-class IdentityConfig(BaseModel):
-    """Configuration for the Identity encoder, which passes node properties through unchanged."""
-
-    graph_encoder_type: Literal["identity"] = "identity"
-    target_type: NodeType = Field(description="Node type (label) of the nodes to encode.")
-    out_dim: PositiveInt = Field(description="Output dimensionality of the embeddings.")
-
-
-NoTrainGraphEncoderConfig = FastRPConfig | IdentityConfig  # can be run without training
-GraphEncoderConfig = FastRPConfig | GraphSAGEConfig | IdentityConfig
+NoTrainGraphEncoderConfig = FastRPConfig
+GraphEncoderConfig = FastRPConfig | GraphSAGEConfig
 
 
 class GBClassifierConfig(BaseModel):
