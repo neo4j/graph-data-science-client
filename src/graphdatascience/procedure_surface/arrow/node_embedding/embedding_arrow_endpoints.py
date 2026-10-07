@@ -44,7 +44,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str] = [],
+        input_properties: list[str] = [],
     ) -> EmbeddingCreateResult:
         extra_kwargs: dict[str, Any] = {}
         if random_seed is not None:
@@ -54,7 +54,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
             job_id=job_id,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            feature_properties=feature_properties,
+            feature_properties=input_properties,
         )
         config = self._endpoints_helper.create_base_config(G=G, **config)
         result = self._endpoints_helper.run_job_and_mutate("v2/embeddings.encode", config, mutate_property)
@@ -76,11 +76,13 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str] = [],
+        input_properties: list[str] = [],
     ) -> EmbeddingTrainResult:
         extra_kwargs: dict[str, Any] = {}
         if random_seed is not None:
             extra_kwargs["random_seed"] = random_seed
+        if target_property in input_properties:
+            raise ValueError("Target property cannot be used as a feature property")
         config = EmbeddingTrainConfig(
             graph_encoder=graph_encoder,
             decoder=decoder,
@@ -96,7 +98,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
             job_id=job_id,
             node_labels=node_labels,
             relationship_types=relationship_types,
-            feature_properties=feature_properties,
+            feature_properties=input_properties + [target_property],
         )
         config = self._endpoints_helper.create_base_config(G=G, **config)
         result = self._endpoints_helper.run_job_and_get_summary("v2/embeddings.train", config)

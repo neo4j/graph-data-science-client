@@ -80,19 +80,14 @@ together with a built-in graph encoder such as `FastRPConfig`, which
 requires no training. The resulting embeddings are added to the
 in-memory graph and streamed back as a DataFrame.
 
-[source, python, role=no-test]
+[source,python,role=no-test]
 ----
 from graphdatascience.procedure_surface.api.node_embedding.config import FastRPConfig
 
 with gds.graph.datasets.load_cora() as G:
-    create_result = gds.embedding.create(
-        G=G,
-        graph_encoder=FastRPConfig(),
-        feature_properties=["features"],
-        mutate_property="fastrp_embeddings",
-    )
+    create_result = gds.embedding.create(G=G)
 
-    fastrp_embeddings = gds.graph.node_properties.stream(G, node_properties="fastrp_embeddings")
+    fastrp_embeddings = gds.graph.node_properties.stream(G, node_properties="embedding")
     fastrp_embeddings.head()
 ----
 
@@ -103,7 +98,7 @@ that predicts a target property of the graph. The trained model is saved
 under a name, and can then be used as the graph encoder of
 `gds.embedding.create`.
 
-[source, python, role=no-test]
+[source,python,role=no-test]
 ----
 from graphdatascience.procedure_surface.api.node_embedding.config import GraphSAGEConfig, MLPClassifierConfig
 
@@ -115,14 +110,9 @@ with gds.graph.datasets.load_cora() as G:
         model_save_name="cora_model",
         target_label="Paper",
         target_property="subject",
-        feature_properties=["features"],
+        input_properties=["features"],
     )
-    create_result = gds.embedding.create(
-        G=G,
-        graph_encoder="cora_model",
-        feature_properties=["features"],
-        mutate_property="graphsage_embeddings",
-    )
+    create_result = gds.embedding.create(G=G, graph_encoder="cora_model", mutate_property="graphsage_embeddings")
 
     graphsage_embeddings = gds.graph.node_properties.stream(G, node_properties="graphsage_embeddings")
     graphsage_embeddings.head()

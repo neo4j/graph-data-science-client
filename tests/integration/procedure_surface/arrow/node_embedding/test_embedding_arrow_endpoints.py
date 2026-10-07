@@ -114,7 +114,7 @@ def test_embedding_train_and_create_graphsage_mlp(
     try:
         train_result = embedding_endpoints.train(
             G=sample_graph,
-            feature_properties=["x"],
+            input_properties=["x"],
             graph_encoder=GraphSAGEConfig(),
             decoder=MLPClassifierConfig(),
             target_label="A",
@@ -122,11 +122,7 @@ def test_embedding_train_and_create_graphsage_mlp(
             model_save_name=model_name,
         )
         assert train_result.compute_millis > 0
-        create_result = embedding_endpoints.create(
-            G=sample_graph,
-            feature_properties=["x"],
-            graph_encoder=model_name,
-        )
+        create_result = embedding_endpoints.create(G=sample_graph, graph_encoder=model_name, input_properties=["x"])
         assert create_result.compute_millis >= 0
         assert create_result.mutate_millis >= 0
         assert create_result.node_properties_written > 0
@@ -146,17 +142,13 @@ def test_embedding_train_and_create_default(
     try:
         train_result = embedding_endpoints.train(
             G=sample_graph,
-            feature_properties=["x"],
+            input_properties=["x"],
             target_label="A",
             target_property="y",
             model_save_name=model_name,  # fixme
         )
         assert train_result.compute_millis > 0
-        create_result = embedding_endpoints.create(
-            G=sample_graph,
-            feature_properties=["x"],
-            graph_encoder=model_name,
-        )
+        create_result = embedding_endpoints.create(G=sample_graph, graph_encoder=model_name, input_properties=["x"])
         assert create_result.compute_millis >= 0
         assert create_result.mutate_millis >= 0
         assert create_result.node_properties_written > 0

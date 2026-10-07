@@ -28,7 +28,7 @@ class EmbeddingEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str] = [],
+        input_properties: list[str] = [],
     ) -> EmbeddingCreateResult:
         """
         Parameters
@@ -47,7 +47,7 @@ class EmbeddingEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        feature_properties
+        input_properties
             Names of the node properties to use as input features
 
         Returns
@@ -72,7 +72,7 @@ class EmbeddingEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        feature_properties: list[str] = [],
+        input_properties: list[str] = [],
     ) -> EmbeddingTrainResult:
         """
         embeddings.train is a preview feature and may change or be removed in future releases.
@@ -105,7 +105,7 @@ class EmbeddingEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
-        feature_properties
+        input_properties
             Names of the node properties to use as input features
         """
 
