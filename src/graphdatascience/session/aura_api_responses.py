@@ -281,6 +281,33 @@ class ProjectDetails:
         )
 
 
+@dataclass(repr=True, frozen=True)
+class GraphMapping:
+    """
+    A mapping of a `(graph_name, database_username, database_uuid)` triple to the
+    GDS session holding that graph. Registered when a graph is created so that it
+    can be discovered from other APIs (e.g. the Cypher API).
+    """
+
+    graph_name: str
+    database_username: str
+    database_uuid: str
+    session_id: str
+    linked: bool
+    created_at: datetime
+
+    @classmethod
+    def from_json(cls, json: dict[str, Any]) -> GraphMapping:
+        return cls(
+            graph_name=json["graph_name"],
+            database_username=json["database_username"],
+            database_uuid=json["database_uuid"],
+            session_id=json["session_id"],
+            linked=json["linked"],
+            created_at=TimeParser.fromisoformat(json["created_at"]),
+        )
+
+
 # datetime.fromisoformat only works with Python version > 3.9
 class TimeParser:
     @staticmethod

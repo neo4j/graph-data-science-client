@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 import os
 import warnings
@@ -10,6 +11,7 @@ from typing import Any
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
+from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
@@ -18,6 +20,7 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.endpoint_mappings import procedure_name_from_python_endpoint
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
@@ -279,6 +282,8 @@ class GdsSessions:
 
         arrow_authentication = AuraApiTokenAuthentication(self._aura_api)
 
+        graph_mapping_context = self._graph_mapping_context(session_details, db_connection, db_runner)
+
         return self._construct_client(
             session_details.id,
             session_host,
@@ -287,6 +292,7 @@ class GdsSessions:
             db_runner,
             arrow_client_options,
             show_progress,
+            graph_mapping_context,
         )
 
     def delete(self, *, session_name: str | None = None, session_id: str | None = None) -> bool:
@@ -442,6 +448,7 @@ class GdsSessions:
         db_runner: Neo4jQueryRunner | None,
         arrow_client_options: dict[str, Any] | None = None,
         show_progress: bool = True,
+        graph_mapping_context: GraphMappingContext | None = None,
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             (session_host, session_port),
@@ -450,4 +457,51 @@ class GdsSessions:
             session_lifecycle_manager=SessionLifecycleManager(session_id, self._aura_api),
             arrow_client_options=arrow_client_options,
             show_progress=show_progress,
+            graph_mapping_context=graph_mapping_context,
         )
+
+    def _graph_mapping_context(
+        self,
+        session_details: SessionDetails,
+        db_connection: DbmsConnectionInfo | None,
+        db_runner: Neo4jQueryRunner | None,
+    ) -> GraphMappingContext | None:
+        # Graph mappings are scoped to a database user, so sessions without a database
+        # connection cannot register them. Their graphs stay visible to this API only.
+        if db_connection is None or db_runner is None:
+            return None
+
+        if not db_connection.username:
+            logging.getLogger(__name__).debug(
+                "Graph mapping interoperability with the Cypher API is disabled:"
+                " the database connection does not provide a username."
+            )
+            return None
+
+        # The Cypher API keys graph mappings by the kernel UUID of the Neo4j database,
+        # so the same value must be used here for mappings to interoperate.
+        database_uuid = self._kernel_database_uuid(db_runner)
+        if not database_uuid:
+            logging.getLogger(__name__).debug(
+                "Graph mapping interoperability with the Cypher API is disabled:"
+                " the UUID of the database could not be determined."
+            )
+            return None
+
+        return GraphMappingContext.from_aura_api(
+            self._aura_api,
+            session_details.id,
+            db_connection.username,
+            database_uuid,
+        )
+
+    @staticmethod
+    def _kernel_database_uuid(db_runner: Neo4jQueryRunner) -> str | None:
+        try:
+            result = db_runner.run_cypher("CALL db.info() YIELD id", QueryType.USER_DIRECTED)
+            if result.empty:
+                return None
+            return str(result["id"][0])
+        except Exception as e:
+            logging.getLogger(__name__).debug(f"Could not determine the database UUID: {e}")
+            return None

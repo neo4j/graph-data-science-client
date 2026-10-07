@@ -258,6 +258,19 @@ sessions.delete(session_name="my-new-session")
 ----
 
 
+=== Interoperability with the Cypher API
+
+For sessions attached to an AuraDB, the client automatically registers every graph it creates (via `construct`, `project`, `filter`, `generate`, or `sample`) as a _graph mapping_ under the connected database user.
+This makes the graph discoverable from the Cypher API as well, so both APIs operate on one shared graph catalog.
+
+Dropping a graph also removes its graph mapping, and `gds.graph.list()` includes graphs that were created via the Cypher API by the same database user.
+Such graphs are listed for discoverability but live in another GDS session; they cannot be used from this session, and `gds.graph.get()` rejects them.
+
+Graph mappings are keyed by the database username and the UUID of the Neo4j database (the same values the Cypher API uses).
+The client resolves the database UUID from the connected database itself; interoperability requires that the `db_connection` provides a username and that the UUID can be resolved.
+Otherwise it is silently disabled and graphs are only visible within this client.
+
+
 === Estimating session memory
 
 In order to help determine a good session size for a given workload, there is the `estimate()` function.

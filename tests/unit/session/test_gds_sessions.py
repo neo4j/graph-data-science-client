@@ -28,6 +28,7 @@ from graphdatascience.session.aura_api_responses import (
 from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
@@ -308,6 +309,7 @@ class FakeGdsSessions(GdsSessions):
         db_runner: Neo4jQueryRunner | None,
         arrow_client_options: dict[str, Any] | None = None,
         show_progress: bool = True,
+        graph_mapping_context: GraphMappingContext | None = None,
     ) -> AuraGraphDataScience:
         self.construct_client_calls.append(
             {
@@ -318,6 +320,7 @@ class FakeGdsSessions(GdsSessions):
                 "db_runner": db_runner,
                 "arrow_client_options": arrow_client_options,
                 "show_progress": show_progress,
+                "graph_mapping_context": graph_mapping_context,
             }
         )
         return mock.MagicMock(spec=AuraGraphDataScience)
@@ -1008,3 +1011,19 @@ def test_estimate_size_exceeds() -> None:
 
 def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
     return aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
+
+
+def test_kernel_database_uuid_resolved_from_database() -> None:
+    from pandas import DataFrame
+
+    db_runner = mock.MagicMock(spec=Neo4jQueryRunner)
+    db_runner.run_cypher.return_value = DataFrame({"id": ["00000000-0000-0000-0000-000000000021"]})
+
+    assert GdsSessions._kernel_database_uuid(db_runner) == "00000000-0000-0000-0000-000000000021"
+
+
+def test_kernel_database_uuid_returns_none_on_error() -> None:
+    db_runner = mock.MagicMock(spec=Neo4jQueryRunner)
+    db_runner.run_cypher.side_effect = RuntimeError("no db.info")
+
+    assert GdsSessions._kernel_database_uuid(db_runner) is None
