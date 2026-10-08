@@ -15,14 +15,21 @@ from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
 from graphdatascience.procedure_surface.arrow.endpoints_helper_base import EndpointsHelperBase
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 
 
 class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
-    def __init__(self, arrow_client: AuthenticatedArrowClient, show_progress: bool = False):
+    def __init__(
+        self,
+        arrow_client: AuthenticatedArrowClient,
+        show_progress: bool = False,
+        graph_mapping_context: GraphMappingContext | None = None,
+    ):
         self._arrow_client = arrow_client
         self._show_progress = show_progress
+        self._graph_mapping_context = graph_mapping_context
         self._helper = EndpointsHelperBase(arrow_client, show_progress=show_progress)
-        self._graph_ops = GraphOpsArrow(arrow_client)
+        self._graph_ops = GraphOpsArrow(arrow_client, graph_mapping_context)
 
     def rwr(
         self,
@@ -69,9 +76,11 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.sample.rwr", config, show_progress=show_progress
         )
+        if self._graph_mapping_context:
+            self._graph_mapping_context.register(graph_name)
 
         return GraphWithSamplingResult(
-            get_graph(graph_name, self._arrow_client),
+            get_graph(graph_name, self._arrow_client, self._graph_mapping_context),
             GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )
 
@@ -120,9 +129,11 @@ class GraphSamplingArrowEndpoints(GraphSamplingEndpoints):
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.sample.cnarw", config, show_progress=show_progress
         )
+        if self._graph_mapping_context:
+            self._graph_mapping_context.register(graph_name)
 
         return GraphWithSamplingResult(
-            get_graph(graph_name, self._arrow_client),
+            get_graph(graph_name, self._arrow_client, self._graph_mapping_context),
             GraphSamplingResult(**JobClient.get_summary(self._arrow_client, job_id)),
         )
 

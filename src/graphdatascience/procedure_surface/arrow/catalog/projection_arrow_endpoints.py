@@ -16,6 +16,7 @@ from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import Gra
 from graphdatascience.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResolver
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.remote_ops.project_protocols import ProjectProtocol
 from graphdatascience.session.remote_ops.projection_runner import ProjectionRunner
 
@@ -28,10 +29,12 @@ class ProjectArrowEndpoints:
         arrow_client: AuthenticatedArrowClient,
         query_runner: QueryRunner | None = None,
         show_progress: bool = False,
+        graph_mapping_context: GraphMappingContext | None = None,
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._graph_ops = GraphOpsArrow(arrow_client)
+        self._graph_mapping_context = graph_mapping_context
+        self._graph_ops = GraphOpsArrow(arrow_client, graph_mapping_context)
         self._show_progress = show_progress
         if query_runner is not None:
             protocol_version = ProtocolVersionResolver(query_runner).resolve()
@@ -107,8 +110,12 @@ class ProjectArrowEndpoints:
         )
 
         job_result = ProjectionResult(**JobClient.get_summary(self._arrow_client, job_id))
+        if self._graph_mapping_context:
+            self._graph_mapping_context.register(graph_name)
 
-        return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
+        return GraphWithProjectResult(
+            get_graph(graph_name, self._arrow_client, self._graph_mapping_context), job_result
+        )
 
     def cypher_async(
         self,
@@ -151,7 +158,13 @@ class ProjectArrowEndpoints:
         self._project_protocol.get_status(actual_job_id, projection_query_runner)
         projection_query_runner.close()
 
-        return ProjectionJobHandle(self._arrow_client, graph_name, actual_job_id, TerminationFlag.create())
+        return ProjectionJobHandle(
+            self._arrow_client,
+            graph_name,
+            actual_job_id,
+            TerminationFlag.create(),
+            graph_mapping_context=self._graph_mapping_context,
+        )
 
     def native(
         self,
@@ -234,8 +247,12 @@ class ProjectArrowEndpoints:
 
         summary = JobClient.get_summary(self._arrow_client, job_id)
         job_result = StoreProjectionResult(projectMillis=project_millis, **summary)
+        if self._graph_mapping_context:
+            self._graph_mapping_context.register(graph_name)
 
-        return GraphWithProjectResult(get_graph(graph_name, self._arrow_client), job_result)
+        return GraphWithProjectResult(
+            get_graph(graph_name, self._arrow_client, self._graph_mapping_context), job_result
+        )
 
     def native_async(
         self,
@@ -282,7 +299,13 @@ class ProjectArrowEndpoints:
         self._project_protocol.get_status(actual_job_id, projection_query_runner)
         projection_query_runner.close()
 
-        return ProjectionJobHandle(self._arrow_client, graph_name, actual_job_id, TerminationFlag.create())
+        return ProjectionJobHandle(
+            self._arrow_client,
+            graph_name,
+            actual_job_id,
+            TerminationFlag.create(),
+            graph_mapping_context=self._graph_mapping_context,
+        )
 
 
 class ProjectionResult(BaseResult):

@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.job_not_finished_error import JobNot
 from graphdatascience.procedure_surface.arrow.catalog.graph_backend_arrow import ArrowGraphBackend
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.retry_utils.retry_config import ExponentialWaitConfig, RetryConfigV2, StopConfig
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 
 
 class ProjectionJobHandle:
@@ -21,12 +22,14 @@ class ProjectionJobHandle:
         graph_name: str,
         job_id: str,
         termination_flag: TerminationFlag,
+        graph_mapping_context: GraphMappingContext | None = None,
     ):
         self._arrow_client = arrow_client
         self._job_client = JobClient()
         self._graph_name = graph_name
         self._job_id = job_id
         self._termination_flag = termination_flag
+        self._graph_mapping_context = graph_mapping_context
 
     def job_id(self) -> str:
         return self._job_id
@@ -69,4 +72,13 @@ class ProjectionJobHandle:
 
         summary = self._job_client.get_summary(self._arrow_client, self._job_id)
 
-        return Graph(self._graph_name, ArrowGraphBackend(self._graph_name, self._arrow_client)), summary
+        if self._graph_mapping_context and self.status().succeeded():
+            self._graph_mapping_context.register(self._graph_name)
+
+        return (
+            Graph(
+                self._graph_name,
+                ArrowGraphBackend(self._graph_name, self._arrow_client, self._graph_mapping_context),
+            ),
+            summary,
+        )

@@ -130,6 +130,7 @@ class AuraApi:
                     total=total_retries,
                     status_forcelist=[
                         HTTPStatus.TOO_MANY_REQUESTS.value,
+                        HTTPStatus.REQUEST_TIMEOUT.value,
                         HTTPStatus.INTERNAL_SERVER_ERROR.value,
                         HTTPStatus.BAD_GATEWAY.value,
                         HTTPStatus.SERVICE_UNAVAILABLE.value,

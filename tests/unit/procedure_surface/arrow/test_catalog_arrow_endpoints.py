@@ -1,4 +1,5 @@
 from contextlib import ExitStack
+from datetime import datetime
 from unittest import mock
 
 import pytest
@@ -9,6 +10,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.api_types import JobStatus
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
+from graphdatascience.session.aura_api_responses import GraphMapping
 from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 CATALOG_MODULE = "graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints"
@@ -309,3 +311,138 @@ def test_filter_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> Non
         endpoints.filter(G, "g", "true", "true", overwrite=True)
 
     drop_spy.assert_not_called()
+
+
+GRAPH_LIST_ROW = {
+    "graphName": "session-graph",
+    "database": "",
+    "databaseLocation": "",
+    "configuration": {},
+    "memoryUsage": None,
+    "sizeInBytes": 0,
+    "nodeCount": 0,
+    "relationshipCount": 0,
+    "creationTime": "2020-01-01T00:00:00Z",
+    "modificationTime": "2020-01-01T00:00:00Z",
+    "schemaWithOrientation": {},
+    "density": 0.0,
+    "degreeDistribution": {},
+}
+
+DROP_ROW = {
+    "graphName": "session-graph",
+    "database": "",
+    "databaseLocation": "",
+    "configuration": {},
+    "memoryUsage": None,
+    "sizeInBytes": 0,
+    "nodeCount": 0,
+    "relationshipCount": 0,
+    "creationTime": "2020-01-01T00:00:00Z",
+    "modificationTime": "2020-01-01T00:00:00Z",
+    "schemaWithOrientation": {},
+    "density": 0.0,
+}
+
+
+def test_construct_registers_graph_mapping(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    job_id = "job-123"
+    arrow_client.do_action_with_retry = mocker.Mock(
+        side_effect=[
+            iter(
+                [
+                    ArrowTestResult(
+                        {"jobId": job_id, "status": "RELATIONSHIP_LOADING", "progress": -1, "description": ""}
+                    )
+                ]
+            ),
+            iter([ArrowTestResult({"jobId": job_id, "status": "Done", "progress": -1, "description": ""})]),
+        ]
+    )
+    graph_mapping_context = mocker.Mock()
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, graph_mapping_context=graph_mapping_context)
+
+    nodes = DataFrame({"nodeId": [0, 1], "labels": [["A"], ["B"]]})
+
+    with patch_gds_arrow_client(job_id):
+        endpoints.construct(graph_name="g", nodes=nodes, relationships=[])
+
+    graph_mapping_context.register.assert_called_once_with("g")
+
+
+def test_drop_unregisters_graph_mapping(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    arrow_client.do_action_with_retry = mocker.Mock(side_effect=[iter([ArrowTestResult(DROP_ROW)])])
+    graph_mapping_context = mocker.Mock()
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, graph_mapping_context=graph_mapping_context)
+
+    endpoints.drop("session-graph")
+
+    graph_mapping_context.unregister.assert_called_once_with("session-graph")
+
+
+def test_drop_missing_graph_does_not_unregister(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    arrow_client.do_action_with_retry = mocker.Mock(side_effect=[iter([])])
+    graph_mapping_context = mocker.Mock()
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, graph_mapping_context=graph_mapping_context)
+
+    endpoints.drop("missing-graph", fail_if_missing=False)
+
+    graph_mapping_context.unregister.assert_not_called()
+
+
+def test_list_merges_foreign_graph_mappings(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    arrow_client.do_action_with_retry = mocker.Mock(side_effect=[iter([ArrowTestResult(GRAPH_LIST_ROW)])])
+    graph_mapping_context = mocker.Mock()
+    graph_mapping_context.mappings.return_value = [
+        GraphMapping(
+            graph_name="cypher-graph",
+            database_username="neo4j",
+            database_uuid="db-uuid",
+            session_id="other-session",
+            linked=False,
+            created_at=datetime.fromisoformat("2020-01-01T00:00:00+00:00"),
+        )
+    ]
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, graph_mapping_context=graph_mapping_context)
+
+    graphs = endpoints.list()
+
+    assert [g.graph_name for g in graphs] == ["session-graph", "cypher-graph"]
+    assert graphs[1].database_location == "session:other-session"
+
+
+def test_list_merges_nothing_when_mappings_fail(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    arrow_client.do_action_with_retry = mocker.Mock(side_effect=[iter([ArrowTestResult(GRAPH_LIST_ROW)])])
+    graph_mapping_context = mocker.Mock()
+    graph_mapping_context.mappings.side_effect = RuntimeError("api down")
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, graph_mapping_context=graph_mapping_context)
+
+    graphs = endpoints.list()
+
+    assert [g.graph_name for g in graphs] == ["session-graph"]
+
+
+def test_get_rejects_graph_from_another_session(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    # the graph is not in this session, so the session-only list is empty
+    arrow_client.do_action_with_retry = mocker.Mock(side_effect=[iter([]), iter([])])
+    graph_mapping_context = mocker.Mock()
+    graph_mapping_context.mappings.return_value = [
+        GraphMapping(
+            graph_name="cypher-graph",
+            database_username="neo4j",
+            database_uuid="db-uuid",
+            session_id="other-session",
+            linked=False,
+            created_at=datetime.fromisoformat("2020-01-01T00:00:00+00:00"),
+        )
+    ]
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client, graph_mapping_context=graph_mapping_context)
+
+    with pytest.raises(ValueError, match="was created by another API"):
+        endpoints.get("cypher-graph")
