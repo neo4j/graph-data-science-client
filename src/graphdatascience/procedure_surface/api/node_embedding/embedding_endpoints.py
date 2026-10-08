@@ -23,6 +23,7 @@ class EmbeddingEndpoints(ABC):
         G: Graph,
         *,
         graph_encoder: str | FastRPConfig | None = None,
+        embedding_dimension: int | None = None,
         random_seed: int | None = None,
         mutate_property: str = "embedding",
         job_id: str | None = None,
@@ -37,6 +38,8 @@ class EmbeddingEndpoints(ABC):
             Graph object to use
         graph_encoder
             Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder (e.g. FastRP or Identity).
+        embedding_dimension
+            Dimension of the node embeddings.
         random_seed
             Seed for random number generation to ensure reproducible results.
         mutate_property
@@ -62,6 +65,7 @@ class EmbeddingEndpoints(ABC):
         *,
         graph_encoder: GraphSAGEConfig | None = None,
         decoder: MLPClassifierConfig | None = None,
+        embedding_dimension: int | None = None,
         model_save_name: str,
         target_label: str,
         target_property: str,
@@ -85,6 +89,8 @@ class EmbeddingEndpoints(ABC):
             Configuration for the graph encoder to train (e.g. FastRP, GraphSAGE, or Identity).
         decoder
             Configuration for the decoder to train on top of the graph encoder's embeddings.
+        embedding_dimension
+            Dimension of the node embeddings.
         model_save_name
             Name to save the trained graph encoder + decoder model under.
         target_label
@@ -117,6 +123,7 @@ class EncodeConfig(BaseModel):
     graph_encoder: str | FastRPConfig | None = Field(
         description="Encoder used to produce node embeddings: either the name of a previously trained encoder model, or an inline configuration for a non-trainable encoder, i.e. FastRP."
     )
+    embedding_dimension: int | None = Field(default=None, description="Dimension of the node embeddings.")
     random_seed: int = Field(default_factory=lambda: random.randint(0, 2**32 - 1), description=RANDOM_SEED_DESCRIPTION)
 
 
@@ -129,6 +136,7 @@ class EmbeddingTrainConfig(BaseModel):
         default=None,
         description="Configuration for the decoder (MLP) to train on top of the graph encoder's embeddings.",
     )
+    embedding_dimension: int | None = Field(default=None, description="Dimension of the node embeddings.")
     model_save_name: str | None = Field(
         default=None, description="Name to save the trained graph encoder + decoder model under."
     )

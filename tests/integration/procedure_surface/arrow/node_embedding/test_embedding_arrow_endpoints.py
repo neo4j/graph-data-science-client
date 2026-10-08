@@ -90,7 +90,9 @@ def test_embedding_create_default(arrow_client_runtime: AuthenticatedArrowClient
 def test_embedding_create_fastrp(arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     """Test create operation with defaults"""
     embedding_endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
-    result = embedding_endpoints.create(G=sample_graph, graph_encoder=FastRPConfig(), mutate_property="embedding123")
+    result = embedding_endpoints.create(
+        G=sample_graph, graph_encoder=FastRPConfig(), embedding_dimension=63, mutate_property="embedding123"
+    )
 
     assert result.compute_millis >= 0
     assert result.mutate_millis >= 0
@@ -101,6 +103,7 @@ def test_embedding_create_fastrp(arrow_client_runtime: AuthenticatedArrowClient,
     job_id = gds_arrow_client.get_node_properties(sample_graph.name(), node_properties=["embedding123"])
     node_result = gds_arrow_client.stream_job(job_id)
     assert set(node_result.columns) == {"nodeId", "embedding123"}
+    assert len(node_result["embedding123"].iloc[0]) == 63
 
 
 @ignore_preview_warning

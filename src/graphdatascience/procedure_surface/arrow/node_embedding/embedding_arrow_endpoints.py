@@ -39,6 +39,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         G: Graph,
         *,
         graph_encoder: str | FastRPConfig | None = None,
+        embedding_dimension: int | None = None,
         random_seed: int | None = None,
         mutate_property: str = "embedding",
         job_id: str | None = None,
@@ -49,7 +50,9 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         extra_kwargs: dict[str, Any] = {}
         if random_seed is not None:
             extra_kwargs["random_seed"] = random_seed
-        config = EncodeConfig(graph_encoder=graph_encoder, **extra_kwargs).model_dump(exclude={"task_name"})
+        config = EncodeConfig(
+            graph_encoder=graph_encoder, embedding_dimension=embedding_dimension, **extra_kwargs
+        ).model_dump(exclude={"task_name"})
         config.update(
             job_id=job_id,
             node_labels=node_labels,
@@ -66,6 +69,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         *,
         graph_encoder: GraphSAGEConfig | None = None,
         decoder: MLPClassifierConfig | None = None,
+        embedding_dimension: int | None = None,
         model_save_name: str,
         target_label: str,
         target_property: str,
@@ -86,6 +90,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         config = EmbeddingTrainConfig(
             graph_encoder=graph_encoder,
             decoder=decoder,
+            embedding_dimension=embedding_dimension,
             model_save_name=model_save_name,
             target_label=target_label,
             target_property=target_property,
