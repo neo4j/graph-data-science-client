@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from typing import Any, Tuple
+
+from tenacity import Retrying, retry_if_exception, stop_after_attempt, wait_fixed
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.call_parameters import CallParameters
@@ -11,6 +14,8 @@ from graphdatascience.query_runner import QueryMode
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.retry_utils.neo4j_retry_helper import is_retryable_neo4j_exception
+from graphdatascience.retry_utils.retry_utils import before_log
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
 from graphdatascience.session.remote_ops.arrow_config import build_arrow_config
 from graphdatascience.session.remote_ops.status import Status
@@ -208,6 +213,7 @@ class ProjectProtocolV4(ProjectProtocol):
         actual_job_id, projection_query_runner = self._start_job(
             "CALL gds.arrow.project.cypher.v4($graph_name, $query, $jobId, $arrow_config, $configuration)",
             params,
+            job_id,
         )
 
         return actual_job_id, projection_query_runner
@@ -245,6 +251,7 @@ class ProjectProtocolV4(ProjectProtocol):
         actual_job_id, projection_query_runner = self._start_job(
             "CALL gds.arrow.project.store.v4($graph_name, $node_labels, $relationship_types, $arrow_config, $configuration)",
             params,
+            job_id,
         )
 
         return actual_job_id, projection_query_runner
@@ -266,24 +273,60 @@ class ProjectProtocolV4(ProjectProtocol):
 
         return status_result
 
-    def _start_job(self, query: str, params: dict[str, Any]) -> Tuple[str, QueryRunner]:
-        # Unlike write-back, projection start cannot be safely retried on transient
-        # errors. The response contains routing info (host/port of the cluster member
-        # the job was assigned to) that cannot be recovered from get_status. Retrying
-        # could route to a different member, resulting in duplicate projectin jobs.
-        start_response = single_row(
-            self._query_runner.run_cypher(
-                query,
-                QueryType.USER_TRANSPILED,
-                params,
-                mode=QueryMode.READ,
+    def _start_job(self, query: str, params: dict[str, Any], job_id: str | None) -> Tuple[str, QueryRunner]:
+        # The job registry backing the start and status procedures is in-memory and
+        # per member, and the status procedure only resolves jobs on the member that
+        # scheduled them. Pin all attempts to a single member so that a retry after a
+        # lost response attaches to the existing job instead of scheduling a duplicate.
+        member = self._query_runner.connection_info()
+        projection_query_runner = self._query_runner.cloneWithoutRouting(member.host, member.port)
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            for attempt in Retrying(
+                stop=stop_after_attempt(3),
+                wait=wait_fixed(2),
+                retry=retry_if_exception(lambda e: job_id is not None and is_retryable_neo4j_exception(e)),
+                before=before_log(f"start projection job '{job_id}'", logger, logging.DEBUG),
+                reraise=True,
+            ):
+                with attempt:
+                    try:
+                        start_response = single_row(
+                            projection_query_runner.run_cypher(
+                                query,
+                                QueryType.USER_TRANSPILED,
+                                params,
+                                mode=QueryMode.READ,
+                            )
+                        )
+                    except Exception as e:
+                        if job_id is None or not is_retryable_neo4j_exception(e):
+                            raise
+                        if self._job_started(job_id, projection_query_runner):
+                            logger.debug(f"Projection job '{job_id}' was already started, not retrying the start.")
+                            return job_id, projection_query_runner
+                        raise
+
+                    return start_response["jobId"], projection_query_runner
+        except Exception:
+            projection_query_runner.close()
+            raise
+
+        raise AssertionError("unreachable")
+
+    def _job_started(self, job_id: str, query_runner: QueryRunner) -> bool:
+        try:
+            single_row(
+                query_runner.run_retryable_cypher(
+                    "CALL gds.arrow.job.status.v4($job_id)",
+                    QueryType.USER_TRANSPILED,
+                    params={"job_id": job_id},
+                    mode=QueryMode.READ,
+                )
             )
-        )
+        except Exception:
+            return False
 
-        actual_job_id = start_response["jobId"]
-
-        member_host = start_response["host"]
-        member_port = start_response["port"] if ("port" in start_response) else 7687
-        projection_query_runner = self._query_runner.cloneWithoutRouting(member_host, member_port)
-
-        return actual_job_id, projection_query_runner
+        return True

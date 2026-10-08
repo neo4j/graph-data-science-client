@@ -1,7 +1,9 @@
 from unittest.mock import MagicMock
 
+import neo4j
 import pytest
 from pandas import DataFrame
+from pytest_mock import MockerFixture
 
 from graphdatascience.arrow_client.authenticated_flight_client import (
     AuthenticatedArrowClient,
@@ -309,17 +311,127 @@ class TestProjectProtocolV4:
             },
         }
 
-    def test_start_defaults_port_when_missing(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+    def test_start_pins_all_attempts_to_a_single_member(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner, mocker: MockerFixture
+    ) -> None:
         qr.add__mock_result(
             "gds.arrow.project.cypher.v4",
-            DataFrame([{"jobId": "server-job", "host": "member-host"}]),
+            DataFrame([{"jobId": "server-job", "host": "advertised-host", "port": 9999}]),
         )
+        connection_info = mocker.spy(qr, "connection_info")
+        clone_without_routing = mocker.spy(qr, "cloneWithoutRouting")
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+        protocol.start_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
+
+        connection_info.assert_called_once()
+        clone_without_routing.assert_called_once_with("localhost", 7687)
+
+    def test_start_does_not_retry_when_job_already_started(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result("gds.arrow.project.cypher.v4", neo4j.exceptions.SessionExpired("connection lost"))
+        qr.add__mock_result(
+            "gds.arrow.job.status.v4",
+            DataFrame([{"status": Status.RUNNING.name, "error": None, "result": None}]),
+        )
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        job_id, projection_runner = protocol.start_cypher_projection(
+            graph_name="g", query="MATCH (n) RETURN n", job_id="my-job"
+        )
+
+        assert job_id == "my-job"
+        assert projection_runner is qr
+        assert len([q for q in qr.queries if "gds.arrow.project.cypher.v4" in q]) == 1
+        assert len([q for q in qr.queries if "gds.arrow.job.status.v4" in q]) == 1
+
+    def test_start_retries_with_same_job_id_when_job_not_started(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.cypher.v4",
+            [
+                neo4j.exceptions.SessionExpired("connection lost"),
+                DataFrame([{"jobId": "server-job", "host": "member-host", "port": 7777}]),
+            ],
+        )
+        qr.add__mock_result("gds.arrow.job.status.v4", Exception("Unknown job: my-job"))
 
         protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
 
         job_id, _ = protocol.start_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
 
         assert job_id == "server-job"
+        project_calls = [q for q in qr.queries if "gds.arrow.project.cypher.v4" in q]
+        assert len(project_calls) == 2
+        project_params = [p for q, p in zip(qr.queries, qr.params) if "gds.arrow.project.cypher.v4" in q]
+        assert project_params[0] == project_params[1]
+        assert len([q for q in qr.queries if "gds.arrow.job.status.v4" in q]) == 1
+
+    def test_start_raises_after_max_attempts(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner, mocker: MockerFixture
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.cypher.v4",
+            [
+                neo4j.exceptions.SessionExpired("timeout 1"),
+                neo4j.exceptions.SessionExpired("timeout 2"),
+                neo4j.exceptions.SessionExpired("timeout 3"),
+            ],
+        )
+        qr.add__mock_result("gds.arrow.job.status.v4", Exception("Unknown job: my-job"))
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+        close = mocker.spy(qr, "close")
+
+        with pytest.raises(neo4j.exceptions.SessionExpired):
+            protocol.start_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
+
+        assert len([q for q in qr.queries if "gds.arrow.project.cypher.v4" in q]) == 3
+        assert len([q for q in qr.queries if "gds.arrow.job.status.v4" in q]) == 3
+        close.assert_called_once()
+
+    def test_start_store_projection_retries_with_same_job_id(
+        self, arrow_client: MagicMock, qr: CollectingQueryRunner
+    ) -> None:
+        qr.add__mock_result(
+            "gds.arrow.project.store.v4",
+            [
+                neo4j.exceptions.SessionExpired("connection lost"),
+                DataFrame([{"jobId": "server-store-job", "host": "member-host", "port": 7777}]),
+            ],
+        )
+        qr.add__mock_result("gds.arrow.job.status.v4", Exception("Unknown job: store-job"))
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        job_id, _ = protocol.start_store_projection(
+            graph_name="g",
+            node_label_filter=["Person"],
+            relationship_type_filter=["KNOWS"],
+            job_id="store-job",
+        )
+
+        assert job_id == "server-store-job"
+        assert len([q for q in qr.queries if "gds.arrow.project.store.v4" in q]) == 2
+
+    def test_start_without_job_id_does_not_retry(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
+        qr.add__mock_result("gds.arrow.project.store.v4", neo4j.exceptions.SessionExpired("connection lost"))
+
+        protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
+
+        with pytest.raises(neo4j.exceptions.SessionExpired):
+            protocol.start_store_projection(
+                graph_name="g",
+                node_label_filter=["Person"],
+                relationship_type_filter=["KNOWS"],
+                job_id=None,
+            )
+
+        assert len([q for q in qr.queries if "gds.arrow.project.store.v4" in q]) == 1
+        assert not [q for q in qr.queries if "gds.arrow.job.status.v4" in q]
 
     def test_get_status_dispatches_status_query(self, arrow_client: MagicMock, qr: CollectingQueryRunner) -> None:
         qr.add__mock_result(
