@@ -23,6 +23,7 @@ include::partial$tutorial-list.adoc[]
 * xref:transactions.adoc[]
 
 * *Machine learning*
+* xref:embeddings-api.adoc[]
 * xref:pipelines.adoc[]
 * xref:model-object.adoc[]
 * xref:rel-embedding-models.adoc[]
