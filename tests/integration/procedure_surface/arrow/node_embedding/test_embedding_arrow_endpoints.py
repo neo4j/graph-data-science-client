@@ -122,7 +122,7 @@ def test_embedding_train_and_create_graphsage_mlp(
             decoder=MLPClassifierConfig(),
             target_label="A",
             target_property="y",
-            model_save_name=model_name,
+            model_name=model_name,
         )
         assert train_result.compute_millis > 0
         create_result = embedding_endpoints.create(G=sample_graph, graph_encoder=model_name, input_properties=["x"])
@@ -148,7 +148,7 @@ def test_embedding_train_and_create_default(
             input_properties=["x"],
             target_label="A",
             target_property="y",
-            model_save_name=model_name,  # fixme
+            model_name=model_name,
         )
         assert train_result.compute_millis > 0
         create_result = embedding_endpoints.create(G=sample_graph, graph_encoder=model_name, input_properties=["x"])

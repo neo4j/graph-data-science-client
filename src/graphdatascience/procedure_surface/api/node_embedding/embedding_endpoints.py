@@ -66,7 +66,7 @@ class EmbeddingEndpoints(ABC):
         graph_encoder: GraphSAGEConfig | None = None,
         decoder: MLPClassifierConfig | None = None,
         embedding_dimension: int | None = None,
-        model_save_name: str,
+        model_name: str,
         target_label: str,
         target_property: str,
         num_epochs: int | None = None,
@@ -91,7 +91,7 @@ class EmbeddingEndpoints(ABC):
             Configuration for the decoder to train on top of the graph encoder's embeddings.
         embedding_dimension
             Dimension of the node embeddings.
-        model_save_name
+        model_name
             Name to save the trained graph encoder + decoder model under.
         target_label
             Node label to train on.
