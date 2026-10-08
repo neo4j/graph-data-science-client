@@ -1,6 +1,7 @@
 import json
 import logging
 import uuid
+from dataclasses import dataclass
 from typing import Any
 
 from pandas import ArrowDtype, DataFrame
@@ -21,6 +22,67 @@ from graphdatascience.retry_utils.retry_utils import before_log, job_wait_strate
 JOB_STATUS_ENDPOINT = "v2/jobs.status"
 JOBS_CANCEL_ENDPOINT = "v2/jobs.cancel"
 RESULTS_SUMMARY_ENDPOINT = "v2/results.summary"
+
+
+@dataclass(frozen=True)
+class BarSignature:
+    """Identifies the bar currently shown; a change means the bar must be replaced."""
+
+    step: int
+    quantitative: bool
+
+
+class JobProgressBar:
+    """The single progress bar shown while waiting for one job.
+
+    Renders one status per poll and replaces the bar whenever the reported step (or its
+    qualitative <-> quantitative mode) changes.
+    """
+
+    def __init__(self, bar_options: dict[str, Any]) -> None:
+        self._bar_options = bar_options
+        self._bar: TqdmProgressBar | None = None
+        self._signature: BarSignature | None = None
+
+    def render(self, job_status: JobStatus) -> None:
+        base_task = job_status.base_task()
+        sub_tasks = job_status.sub_tasks()
+        step = job_status.step_progress
+
+        if step is None:
+            if self._bar is None:
+                self._bar = TqdmProgressBar(
+                    task_name=base_task,
+                    relative_progress=job_status.progress_percent(),
+                    bar_options=self._bar_options,
+                )
+            self._bar.update(job_status.status, job_status.progress_percent(), sub_tasks)
+        else:
+            percent = step.progress_percent()
+            signature = BarSignature(step=step.current, quantitative=percent is not None)
+            if self._bar is None or signature != self._signature:
+                # A new step (or a qualitative <-> quantitative switch) replaces the bar.
+                if self._bar is not None:
+                    self._bar.close()
+                self._bar = TqdmProgressBar(
+                    task_name=base_task,
+                    relative_progress=percent,
+                    bar_options=self._bar_options,
+                )
+                self._signature = signature
+            self._bar.update(job_status.status, percent, sub_tasks, step=step.label())
+
+    def finish(self, job_status: JobStatus) -> None:
+        if self._bar is None:
+            return
+        if job_status.base_task():
+            self.render(job_status)
+        step = job_status.step_progress
+        self._bar.finish(
+            success=job_status.succeeded(),
+            step=None if step is None else step.label(),
+            sub_tasks_description=job_status.sub_tasks(),
+        )
 
 
 class JobClient:
@@ -70,10 +132,10 @@ class JobClient:
         expected_status: str | None = None,
         termination_flag: TerminationFlag | None = None,
     ) -> None:
-        progress_bar: TqdmProgressBar | None = None
+        progress = JobProgressBar(self._progress_bar_options)
 
         def check_expected_status(status: JobStatus) -> bool:
-            return job_status.succeeded() if expected_status is None else status.status == expected_status
+            return status.succeeded() if expected_status is None else status.status == expected_status
 
         if termination_flag is None:
             termination_flag = TerminationFlag.create()
@@ -84,21 +146,11 @@ class JobClient:
                 job_status = self.get_job_status(client, job_id)
 
                 if check_expected_status(job_status) or job_status.aborted():
-                    if progress_bar:
-                        progress_bar.finish(success=job_status.succeeded())
+                    progress.finish(job_status)
                     return
 
-                if show_progress:
-                    if progress_bar is None:
-                        base_task = job_status.base_task()
-                        if base_task:
-                            progress_bar = TqdmProgressBar(
-                                task_name=base_task,
-                                relative_progress=job_status.progress_percent(),
-                                bar_options=self._progress_bar_options,
-                            )
-                    if progress_bar:
-                        progress_bar.update(job_status.status, job_status.progress_percent(), job_status.sub_tasks())
+                if show_progress and job_status.base_task():
+                    progress.render(job_status)
 
     @staticmethod
     def cancel_job(client: AuthenticatedArrowClient, job_id: str) -> None:

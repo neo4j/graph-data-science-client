@@ -29,11 +29,17 @@ class ProgressBar(ABC):
         status: str,
         progress: float | None,
         sub_tasks_description: str | None = None,
+        step: str | None = None,
     ) -> None:
         pass
 
     @abstractmethod
-    def finish(self, success: bool) -> None:
+    def finish(self, success: bool, step: str | None = None, sub_tasks_description: str | None = None) -> None:
+        pass
+
+    @abstractmethod
+    def close(self) -> None:
+        """Abandon the bar without leaving a final line, e.g. to replace it with a new one."""
         pass
 
 
@@ -51,6 +57,9 @@ class TqdmProgressBar(ProgressBar):
     def __init__(self, task_name: str, relative_progress: float | None, bar_options: dict[str, Any] | None = None):
         root_task_name = task_name
         options = {**self._default_options, **(bar_options or {})}
+        if relative_progress is not None:
+            # Keep the displayed fraction readable instead of e.g. 55.55555555555556/100.
+            relative_progress = round(relative_progress, 4)
         if relative_progress is None:  # Qualitative progress report
             self._tqdm_bar = tqdm(
                 total=None,
@@ -79,27 +88,41 @@ class TqdmProgressBar(ProgressBar):
     ) -> None:
         self.finish(success=exception_value is None)
 
+    @staticmethod
+    def _postfix(status: str, step: str | None, sub_tasks_description: str | None) -> str:
+        postfix_parts = [f"status: {status}"]
+        if step is not None:
+            postfix_parts.append(f"step: {step}")
+        if sub_tasks_description:
+            postfix_parts.append(f"task: {sub_tasks_description}")
+        return ", ".join(postfix_parts)
+
     def update(
         self,
         status: str,
         progress: float | None,
         sub_tasks_description: str | None = None,
+        step: str | None = None,
     ) -> None:
-        postfix = f"status: {status}, task: {sub_tasks_description}" if sub_tasks_description else f"status: {status}"
-        self._tqdm_bar.set_postfix_str(postfix, refresh=False)
+        self._tqdm_bar.set_postfix_str(self._postfix(status, step, sub_tasks_description), refresh=False)
+
         if progress is not None:
-            new_progress = progress - self._tqdm_bar.n
-            self._tqdm_bar.update(new_progress)
+            # tqdm skips the redraw when the delta is below its dynamic threshold, which
+            # would leave a changed postfix invisible, so refresh explicitly in that case.
+            if not self._tqdm_bar.update(round(progress, 4) - self._tqdm_bar.n):
+                self._tqdm_bar.refresh()
         else:
             self._tqdm_bar.refresh()
 
-    def finish(self, success: bool) -> None:
-        if not success:
-            self._tqdm_bar.set_postfix_str("status: FAILED", refresh=True)
-        else:
-            if self._tqdm_bar.total is not None:
-                self._tqdm_bar.update(self._tqdm_bar.total - self._tqdm_bar.n)
-            self._tqdm_bar.set_postfix_str("status: FINISHED", refresh=True)
+    def close(self) -> None:
+        self._tqdm_bar.leave = False
+        self._tqdm_bar.close()
+
+    def finish(self, success: bool, step: str | None = None, sub_tasks_description: str | None = None) -> None:
+        if success and self._tqdm_bar.total is not None:
+            self._tqdm_bar.update(self._tqdm_bar.total - self._tqdm_bar.n)
+        status = "FINISHED" if success else "FAILED"
+        self._tqdm_bar.set_postfix_str(self._postfix(status, step, sub_tasks_description), refresh=True)
         self._tqdm_bar.close()
 
     @staticmethod
@@ -127,8 +150,12 @@ class NoOpProgressBar(ProgressBar):
         status: str,
         progress: float | None,
         sub_tasks_description: str | None = None,
+        step: str | None = None,
     ) -> None:
         pass
 
-    def finish(self, success: bool) -> None:
+    def finish(self, success: bool, step: str | None = None, sub_tasks_description: str | None = None) -> None:
+        pass
+
+    def close(self) -> None:
         pass

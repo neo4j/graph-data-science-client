@@ -12,5 +12,7 @@
 
 ## Improvements
 
+- Improve progress logging for FastPath and supervised/unsupervised GraphSage
+
 
 ## Other changes
