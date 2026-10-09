@@ -13,7 +13,7 @@ from tests.integration.services import (
     start_session,
 )
 
-ignore_preview_warning = pytest.mark.filterwarnings("ignore:.*is a preview feature:UserWarning")
+ignore_preview_warning = pytest.mark.filterwarnings("ignore:.*are preview features:UserWarning")
 
 
 @pytest.fixture(scope="package")
