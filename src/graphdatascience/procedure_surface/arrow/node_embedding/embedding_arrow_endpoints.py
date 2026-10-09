@@ -75,7 +75,6 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         target_property: str,
         num_epochs: int | None = None,
         batch_size: int | None = None,
-        num_trials: int = 1,
         random_seed: int | None = None,
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
@@ -96,7 +95,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
             target_property=target_property,
             num_epochs=num_epochs,
             batch_size=batch_size,
-            num_trials=num_trials,
+            num_trials=1,
             **extra_kwargs,
         ).model_dump(exclude={"task_name"})
         config.update(

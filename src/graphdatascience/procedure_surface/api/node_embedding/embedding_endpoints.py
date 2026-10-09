@@ -67,7 +67,6 @@ class EmbeddingEndpoints(ABC):
         target_property: str,
         num_epochs: int | None = None,
         batch_size: int | None = None,
-        num_trials: int = 1,
         random_seed: int | None = None,
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
