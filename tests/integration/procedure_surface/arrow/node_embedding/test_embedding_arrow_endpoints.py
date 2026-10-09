@@ -4,12 +4,12 @@ import pytest
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.gds_arrow_client import GdsArrowClient
-from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.node_embedding.config import (
+from graphdatascience.embedding.config import (
     FastRPConfig,
     GraphSAGEConfig,
     MLPClassifierConfig,
 )
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.embedding_arrow_endpoints import EmbeddingArrowEndpoints
 from graphdatascience.query_runner import QueryRunner

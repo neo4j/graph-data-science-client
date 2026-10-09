@@ -6,14 +6,10 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, PositiveInt
 
+from graphdatascience.embedding import FastRPConfig, GraphSAGEConfig, MLPClassifierConfig
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import MutateResult, NodeResult, StatsResult
 from graphdatascience.procedure_surface.api.descriptions import RANDOM_SEED_DESCRIPTION, TASK_NAME_DESCRIPTION
-from graphdatascience.procedure_surface.api.node_embedding.config import (
-    FastRPConfig,
-    GraphSAGEConfig,
-    MLPClassifierConfig,
-)
 
 
 class EmbeddingEndpoints(ABC):

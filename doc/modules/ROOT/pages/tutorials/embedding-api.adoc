@@ -82,7 +82,7 @@ in-memory graph and streamed back as a DataFrame.
 
 [source,python,role=no-test]
 ----
-from graphdatascience.procedure_surface.api.node_embedding.config import FastRPConfig
+from graphdatascience.embedding.config import FastRPConfig
 
 with gds.graph.datasets.load_cora() as G:
     create_result = gds.embedding.create(G=G)
@@ -100,7 +100,7 @@ under a name, and can then be used as the graph encoder of
 
 [source,python,role=no-test]
 ----
-from graphdatascience.procedure_surface.api.node_embedding.config import GraphSAGEConfig, MLPClassifierConfig
+from graphdatascience.embedding.config import GraphSAGEConfig, MLPClassifierConfig
 
 with gds.graph.datasets.load_cora() as G:
     train_result = gds.embedding.train(

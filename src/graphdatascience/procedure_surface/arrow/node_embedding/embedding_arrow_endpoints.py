@@ -2,12 +2,12 @@ import warnings
 from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
-from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.node_embedding.config import (
+from graphdatascience.embedding.config import (
     FastRPConfig,
     GraphSAGEConfig,
     MLPClassifierConfig,
 )
+from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import (
     EmbeddingCreateResult,
     EmbeddingEndpoints,
