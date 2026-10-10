@@ -188,6 +188,7 @@ class GdsSessions:
         db_connection: DbmsConnectionInfo | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
+        gpu: bool = False,
         timeout: int | None = None,
         neo4j_driver_config: dict[str, Any] | None = None,
         arrow_client_options: dict[str, Any] | None = None,
@@ -210,6 +211,8 @@ class GdsSessions:
                 and an Aura-supported region (e.g. `"europe-west1"`).
                 Required for the Self-managed and Standalone session types; must not be provided for Attached sessions.
                 Use `available_cloud_locations()` to list all valid provider/region combinations.
+            gpu (bool): Whether to run the session with a GPU, running the Python runtime as a GPU bundle sidecar.
+                Opt-in and only supported on GCP. Defaults to False.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
             neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client. The key ``call_timeout`` sets the per-call RPC timeout in seconds (default 30s).
@@ -264,12 +267,14 @@ class GdsSessions:
             if not cloud_location:
                 raise ValueError("cloud_location must be provided for sessions not attached to an AuraDB.")
 
-            session_details = self._get_or_create_self_managed_session(session_name, memory.value, cloud_location, ttl)
+            session_details = self._get_or_create_self_managed_session(
+                session_name, memory.value, cloud_location, ttl, gpu
+            )
         else:
             if cloud_location is not None:
                 raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
             session_details = self._get_or_create_attached_session(
-                session_name, memory.value, aura_db_instance.id, aura_database_id, ttl
+                session_name, memory.value, aura_db_instance.id, aura_database_id, ttl, gpu
             )
 
         self._await_session_running(session_details, timeout)
@@ -414,9 +419,10 @@ class GdsSessions:
         instance_id: str,
         database_id: str | None = None,
         ttl: timedelta | None = None,
+        gpu: bool = False,
     ) -> SessionDetails:
         return self._aura_api.get_or_create_session(
-            name=session_name, instance_id=instance_id, database_id=database_id, memory=memory, ttl=ttl
+            name=session_name, instance_id=instance_id, database_id=database_id, memory=memory, ttl=ttl, gpu=gpu
         )
 
     def _get_or_create_self_managed_session(
@@ -425,12 +431,14 @@ class GdsSessions:
         memory: SessionMemoryValue,
         cloud_location: CloudLocation,
         ttl: timedelta | None = None,
+        gpu: bool = False,
     ) -> SessionDetails:
         return self._aura_api.get_or_create_session(
             name=session_name,
             memory=memory,
             ttl=ttl,
             cloud_location=cloud_location,
+            gpu=gpu,
         )
 
     def _construct_client(

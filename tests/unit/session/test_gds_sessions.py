@@ -67,6 +67,7 @@ class FakeAuraApi(AuraApi):
         database_id: str | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
+        gpu: bool = False,
     ) -> SessionDetails:
         if not cloud_location and instance_id:
             instance_details = self.list_instance(instance_id)
