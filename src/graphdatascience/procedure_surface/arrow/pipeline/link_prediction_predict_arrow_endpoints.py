@@ -111,7 +111,7 @@ class LinkPredictionPredictArrowEndpoints(LinkPredictionPipelinePredictEndpoints
         )
         return apply_stream_mapper(
             "v2/pipeline.linkPrediction.predict",
-            JobClient.stream_results(self._arrow_client, G.name(), result_job_id),
+            JobClient.export_to_pandas(self._arrow_client, G.name(), result_job_id),
         )
 
     def mutate(

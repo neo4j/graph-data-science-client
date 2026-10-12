@@ -66,7 +66,7 @@ class RelationshipArrowEndpoints(RelationshipsEndpoints):
         config = ConfigConverter.convert_to_gds_config(**config_input)
 
         job_id = JobClient.run_job(self._arrow_client, endpoint, config)
-        result = apply_stream_mapper(endpoint, JobClient.stream_results(self._arrow_client, G.name(), job_id))
+        result = apply_stream_mapper(endpoint, JobClient.export_to_pandas(self._arrow_client, G.name(), job_id))
 
         return RelationshipsDataFrame(result)
 

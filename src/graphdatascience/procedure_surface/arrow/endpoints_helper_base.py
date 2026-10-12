@@ -78,7 +78,7 @@ class EndpointsHelperBase:
         """
         show_progress = config.get("logProgress", True) and self._show_progress
         job_id = JobClient.run_job_and_wait(self._arrow_client, endpoint, config, show_progress=show_progress)
-        result = JobClient.stream_results(self._arrow_client, G.name(), job_id)
+        result = JobClient.export_to_pandas(self._arrow_client, G.name(), job_id)
         return apply_stream_mapper(endpoint, result) if apply_mapping else result
 
     def _run_job_and_write(

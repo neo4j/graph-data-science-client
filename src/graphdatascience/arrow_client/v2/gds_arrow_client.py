@@ -191,7 +191,7 @@ class GdsArrowClient:
         pandas.DataFrame
             A pandas DataFrame containing the results of the job.
         """
-        return JobClient().get_stream(self._flight_client, job_id)
+        return JobClient().get_pandas(self._flight_client, job_id)
 
     def create_graph(
         self,
