@@ -82,10 +82,10 @@ stream back as a DataFrame.
 
 [source, python, role=no-test]
 ----
-with gds.graph.datasets.load_cora() as G:
+with gds.graph.datasets.load_cora(undirected=True) as G:
     create_result = gds.embedding.create(G)
     node_embeddings = gds.graph.node_properties.stream(G, node_properties="embedding")
-node_embeddings.head(50)
+node_embeddings.head()
 ----
 
 == Training a GraphSAGE model
@@ -103,7 +103,7 @@ to generate embeddings using `gds.embedding.create`.
 ----
 from graphdatascience.embedding import GraphSAGEConfig
 
-with gds.graph.datasets.load_cora() as G:
+with gds.graph.datasets.load_cora(undirected=True) as G:
     train_result = gds.embedding.train(
         G=G,
         graph_encoder=GraphSAGEConfig(hidden_dims=[128], num_neighbors=[10, 5], out_dim=64),
