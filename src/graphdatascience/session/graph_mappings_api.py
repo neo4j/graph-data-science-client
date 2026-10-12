@@ -14,6 +14,7 @@ class GraphMappings:
     Graph mappings register which GDS session holds a graph created for a given
     `(database_username, database_uuid)` pair, so that graphs created by one API
     (e.g. this client) can be discovered and used from another (e.g. the Cypher API).
+    `database_uuid` is the Aura database id, or the Aura instance id for single-db instances.
     """
 
     def __init__(self, aura_api: AuraApi) -> None:

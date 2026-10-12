@@ -1013,17 +1013,121 @@ def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
     return aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
 
 
-def test_kernel_database_uuid_resolved_from_database() -> None:
-    from pandas import DataFrame
+def test_graph_mapping_context_uses_aura_instance_id() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(
+        uri="neo4j+s://foo.databases.neo4j.io", username="neo4j", password="pw", aura_instance_id="4242"
+    )
 
-    db_runner = mock.MagicMock(spec=Neo4jQueryRunner)
-    db_runner.run_cypher.return_value = DataFrame({"id": ["00000000-0000-0000-0000-000000000021"]})
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id="4242",
+            database_id=None,
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        "4242",
+    )
 
-    assert GdsSessions._kernel_database_uuid(db_runner) == "00000000-0000-0000-0000-000000000021"
+    assert context is not None
+    assert context.session_id == "session-id"
+    assert context.database_username == "neo4j"
+    assert context.database_uuid == "4242"
 
 
-def test_kernel_database_uuid_returns_none_on_error() -> None:
-    db_runner = mock.MagicMock(spec=Neo4jQueryRunner)
-    db_runner.run_cypher.side_effect = RuntimeError("no db.info")
+def test_graph_mapping_context_prefers_aura_database_id() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(
+        uri="neo4j+s://foo.databases.neo4j.io",
+        username="neo4j",
+        password="pw",
+        aura_instance_id="4242",
+        aura_database_id="db-1",
+    )
 
-    assert GdsSessions._kernel_database_uuid(db_runner) is None
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id="4242",
+            database_id="db-1",
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        "4242",
+    )
+
+    assert context is not None
+    assert context.database_uuid == "db-1"
+
+
+def test_graph_mapping_context_disabled_without_aura_instance() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(uri="neo4j://localhost", username="neo4j", password="pw")
+
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id=None,
+            database_id=None,
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        None,
+    )
+
+    assert context is None
+
+
+def test_graph_mapping_context_disabled_without_username() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(uri="neo4j+s://foo.databases.neo4j.io", username=None, password="pw")
+
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id="4242",
+            database_id=None,
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        "4242",
+    )
+
+    assert context is None

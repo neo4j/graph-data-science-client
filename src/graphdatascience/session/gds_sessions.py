@@ -11,7 +11,6 @@ from typing import Any
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
-from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.session.algorithm_category import AlgorithmCategory
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import SessionDetails
@@ -282,7 +281,7 @@ class GdsSessions:
 
         arrow_authentication = AuraApiTokenAuthentication(self._aura_api)
 
-        graph_mapping_context = self._graph_mapping_context(session_details, db_connection, db_runner)
+        graph_mapping_context = self._graph_mapping_context(session_details, db_connection, aura_instance_id)
 
         return self._construct_client(
             session_details.id,
@@ -464,11 +463,14 @@ class GdsSessions:
         self,
         session_details: SessionDetails,
         db_connection: DbmsConnectionInfo | None,
-        db_runner: Neo4jQueryRunner | None,
+        aura_instance_id: str | None,
     ) -> GraphMappingContext | None:
-        # Graph mappings are scoped to a database user, so sessions without a database
-        # connection cannot register them. Their graphs stay visible to this API only.
-        if db_connection is None or db_runner is None:
+        # Graph mappings are keyed by the Aura database id, falling back to the Aura
+        # instance id for single-db instances, and scoped to a database user. The Cypher
+        # API derives the same identity on the database side, so both APIs see the same
+        # mappings. Sessions without an Aura instance cannot register them; their graphs
+        # stay visible to this API only.
+        if db_connection is None or not aura_instance_id:
             return None
 
         if not db_connection.username:
@@ -478,30 +480,9 @@ class GdsSessions:
             )
             return None
 
-        # The Cypher API keys graph mappings by the kernel UUID of the Neo4j database,
-        # so the same value must be used here for mappings to interoperate.
-        database_uuid = self._kernel_database_uuid(db_runner)
-        if not database_uuid:
-            logging.getLogger(__name__).debug(
-                "Graph mapping interoperability with the Cypher API is disabled:"
-                " the UUID of the database could not be determined."
-            )
-            return None
-
         return GraphMappingContext.from_aura_api(
             self._aura_api,
             session_details.id,
             db_connection.username,
-            database_uuid,
+            db_connection.aura_database_id or aura_instance_id,
         )
-
-    @staticmethod
-    def _kernel_database_uuid(db_runner: Neo4jQueryRunner) -> str | None:
-        try:
-            result = db_runner.run_cypher("CALL db.info() YIELD id", QueryType.USER_DIRECTED)
-            if result.empty:
-                return None
-            return str(result["id"][0])
-        except Exception as e:
-            logging.getLogger(__name__).debug(f"Could not determine the database UUID: {e}")
-            return None

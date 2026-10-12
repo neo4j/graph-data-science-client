@@ -14,6 +14,9 @@ class GraphMappingContext:
     The identity under which graphs of a GDS session are registered as graph mappings,
     and the API to manage them. Present only for sessions attached to an AuraDB with
     resolvable identity; all interoperability hooks are no-ops when it is absent.
+
+    `database_uuid` mirrors the Aura API field name and holds the Aura database id,
+    or the Aura instance id for single-db instances.
     """
 
     session_id: str
