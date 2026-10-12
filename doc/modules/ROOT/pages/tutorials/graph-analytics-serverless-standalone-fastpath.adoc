@@ -29,8 +29,7 @@ load this graph from Pandas DataFrames, run FastPath in stream mode, and
 inspect the resulting embeddings.
 
 If you are using AuraDB, follow link:../graph-analytics-serverless[this
-example]. If you are using a self-managed Neo4j instance, follow
-link:../graph-analytics-serverless-self-managed[this example].
+example].
 
 == Prerequisites
 
