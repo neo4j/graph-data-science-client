@@ -64,7 +64,7 @@ nitpick_ignore = [
     ),
     (
         "py:obj",
-        "graphdatascience.procedure_surface.api.node_embedding.config.GraphSAGEConfig.depth_validator",
+        "graphdatascience.embedding.config.GraphSAGEConfig.depth_validator",
     ),
     ("py:class", "graphdatascience.procedure_surface.api.write_protocol.WriteProtocol"),
 ]
