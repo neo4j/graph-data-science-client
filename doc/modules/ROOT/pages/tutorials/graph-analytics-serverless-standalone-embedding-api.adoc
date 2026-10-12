@@ -73,59 +73,56 @@ gds = sessions.get_or_create(
 )
 ----
 
-== FastRP embeddings
+== Embeddings
 
 The simplest way to compute node embeddings is `gds.embedding.create`
-together with a built-in graph encoder such as `FastRPConfig`, which
-requires no training. The resulting embeddings are added to the
-in-memory graph and streamed back as a DataFrame.
+with a default graph encoder, here FastRP, which requires no training.
+The resulting embeddings are added to the in-memory graph which we then
+stream back as a DataFrame.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.procedure_surface.api.node_embedding.config import FastRPConfig
-
 with gds.graph.datasets.load_cora() as G:
-    create_result = gds.embedding.create(
-        G=G,
-        graph_encoder=FastRPConfig(),
-        feature_properties=["features"],
-        mutate_property="fastrp_embeddings",
-    )
-
-    fastrp_embeddings = gds.graph.node_properties.stream(G, node_properties="fastrp_embeddings")
-    fastrp_embeddings.head()
+    create_result = gds.embedding.create(G)
+    node_embeddings = gds.graph.node_properties.stream(G, node_properties="embedding")
+node_embeddings.head(50)
 ----
 
 == Training a GraphSAGE model
 
-`gds.embedding.train` trains a graph encoder together with a decoder
-that predicts a target property of the graph. The trained model is saved
-under a name, and can then be used as the graph encoder of
-`gds.embedding.create`.
+`gds.embedding.train` trains a graph encoder together on a specific task
+(classifying a target property). Here we have been specific about the
+graph encoder, its hyperparameters and training parameters. Left out
+optional parameters will be replaced by defaults consistent with the
+specified parameters.
+
+The trained model is saved under a specified name, and can then be used
+to generate embeddings using `gds.embedding.create`.
 
 [source, python, role=no-test]
 ----
-from graphdatascience.procedure_surface.api.node_embedding.config import GraphSAGEConfig, MLPClassifierConfig
+from graphdatascience.embedding import GraphSAGEConfig
 
 with gds.graph.datasets.load_cora() as G:
     train_result = gds.embedding.train(
         G=G,
-        graph_encoder=GraphSAGEConfig(target_type="Paper"),
-        decoder=MLPClassifierConfig(),
-        model_save_name="cora_model",
+        graph_encoder=GraphSAGEConfig(hidden_dims=[128], num_neighbors=[10, 5], out_dim=64),
+        model_name="cora_model",
         target_label="Paper",
         target_property="subject",
-        feature_properties=["features"],
+        num_epochs=25,
+        batch_size=64,
+        input_properties=["features"],
     )
     create_result = gds.embedding.create(
         G=G,
         graph_encoder="cora_model",
-        feature_properties=["features"],
-        mutate_property="graphsage_embeddings",
+        input_properties=["features"],
+        mutate_property="my_graphsage_embedding",
     )
 
-    graphsage_embeddings = gds.graph.node_properties.stream(G, node_properties="graphsage_embeddings")
-    graphsage_embeddings.head()
+    graphsage_embeddings = gds.graph.node_properties.stream(G, node_properties="my_graphsage_embedding")
+graphsage_embeddings.head()
 ----
 
 == Cleanup
@@ -138,6 +135,7 @@ resources associated with it, and stops incurring costs.
 [source, python, role=no-test]
 ----
 gds.model.delete("cora_model")
+gds.model.delete("hyperparameter_tuned_cora_model")
 ----
 
 [source, python, role=no-test]

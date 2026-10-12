@@ -12,7 +12,6 @@ class GraphSAGEConfig(BaseModel):
     """Configuration for the GraphSAGE graph encoder."""
 
     graph_encoder_type: Literal["graphsage"] = "graphsage"
-    target_type: NodeType = Field(description="Node type (label) of the nodes the encoder is trained on.")
     hidden_dims: Annotated[list[PositiveInt], Len(max_length=3)] | None = Field(
         default=None,
         description="Sizes of the hidden layers. The depth of the GNN is inferred as `len(hidden_dims) + 1`.",
@@ -50,24 +49,6 @@ class FastRPConfig(BaseModel):
     )
 
 
-class IdentityConfig(BaseModel):
-    """Configuration for the Identity encoder, which passes node properties through unchanged."""
-
-    graph_encoder_type: Literal["identity"] = "identity"
-    target_type: NodeType = Field(description="Node type (label) of the nodes to encode.")
-    out_dim: PositiveInt = Field(description="Output dimensionality of the embeddings.")
-
-
-NoTrainGraphEncoderConfig = FastRPConfig | IdentityConfig  # can be run without training
-GraphEncoderConfig = FastRPConfig | GraphSAGEConfig | IdentityConfig
-
-
-class GBClassifierConfig(BaseModel):
-    """Configuration for the gradient boosted tree classifier decoder."""
-
-    decoder_type: Literal["gb_classifier"] = "gb_classifier"
-
-
 class MLPClassifierConfig(BaseModel):
     """Configuration for the multi-layer perceptron classifier decoder."""
 
@@ -76,6 +57,3 @@ class MLPClassifierConfig(BaseModel):
         default=None, description="Sizes of the hidden layers of the network."
     )
     dropout: Dropout | None = Field(default=None, description="Dropout probability applied during training.")
-
-
-DecoderConfig = GBClassifierConfig | MLPClassifierConfig

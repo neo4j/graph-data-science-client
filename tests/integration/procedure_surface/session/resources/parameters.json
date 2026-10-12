@@ -33,7 +33,8 @@
   "monte_carlo_simulations": "Number of Monte-Carlo simulations.",
   "model_name": [
     "Name of the model.",
-    "Name of the trained model."
+    "Name of the trained model.",
+    "Name to save the trained graph encoder + decoder model under."
   ],
   "mutate_property": ["Name of the node property to store the results in.",
   "Name of the relationship property to store the predicted probability.",
