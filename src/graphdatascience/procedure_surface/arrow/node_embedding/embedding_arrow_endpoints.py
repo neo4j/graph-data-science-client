@@ -79,7 +79,7 @@ class EmbeddingArrowEndpoints(EmbeddingEndpoints):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        input_properties: list[str] = [],
+        input_properties: list[str],
     ) -> EmbeddingTrainResult:
         extra_kwargs: dict[str, Any] = {}
         if random_seed is not None:
