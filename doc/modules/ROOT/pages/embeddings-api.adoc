@@ -292,6 +292,11 @@ To tune the encoder, pass a `GraphSAGEConfig` as `graph_encoder`.
 | required
 | Node property holding the known classes to train on.
 
+| `feature_properties`
+| `list[str]`
+| required
+| Node properties the encoder learns from.
+
 | `graph_encoder`
 | `GraphSAGEConfig` or `None`
 | `None`
@@ -326,11 +331,6 @@ To tune the encoder, pass a `GraphSAGEConfig` as `graph_encoder`.
 | `list[str]`
 | `["*"]`
 | Only relationships of these types are included.
-
-| `feature_properties`
-| `list[str]`
-| `[]`
-| Node properties to use as input features.
 
 | `job_id`
 | `str`
