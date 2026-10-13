@@ -237,6 +237,19 @@ sessions.delete(session_name="my-new-session")
 ----
 
 
+=== Interoperability with the Cypher API
+
+For sessions attached to an AuraDB, the client automatically registers every graph it creates (via `construct`, `project`, `filter`, `generate`, or `sample`) as a _graph mapping_ under the connected database user.
+This makes the graph discoverable from the Cypher API as well, so both APIs operate on one shared graph catalog.
+
+Dropping a graph also removes its graph mapping, and `gds.graph.list()` includes graphs that were created via the Cypher API by the same database user.
+Such graphs are listed for discoverability but live in another GDS session; they cannot be used from this session, and `gds.graph.get()` rejects them.
+
+Graph mappings are keyed by the database username and the Aura database id of the connected database, or its Aura instance id for single-db instances (the same values the Cypher API uses).
+Interoperability requires that the `db_connection` provides a username and refers to an Aura instance (directly via `aura_instance_id` or via a resolvable Aura URI); on multi-db instances `aura_database_id` must be provided as well.
+Otherwise it is silently disabled and graphs are only visible within this client.
+
+
 === Estimating session memory
 
 In order to help determine a good session size for a given workload, there is the `estimate()` function.

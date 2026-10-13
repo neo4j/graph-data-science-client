@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 import os
 import warnings
@@ -18,6 +19,7 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.endpoint_mappings import procedure_name_from_python_endpoint
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
@@ -279,6 +281,8 @@ class GdsSessions:
 
         arrow_authentication = AuraApiTokenAuthentication(self._aura_api)
 
+        graph_mapping_context = self._graph_mapping_context(session_details, db_connection, aura_instance_id)
+
         return self._construct_client(
             session_details.id,
             session_host,
@@ -287,6 +291,7 @@ class GdsSessions:
             db_runner,
             arrow_client_options,
             show_progress,
+            graph_mapping_context,
         )
 
     def delete(self, *, session_name: str | None = None, session_id: str | None = None) -> bool:
@@ -442,6 +447,7 @@ class GdsSessions:
         db_runner: Neo4jQueryRunner | None,
         arrow_client_options: dict[str, Any] | None = None,
         show_progress: bool = True,
+        graph_mapping_context: GraphMappingContext | None = None,
     ) -> AuraGraphDataScience:
         return AuraGraphDataScience.create(
             (session_host, session_port),
@@ -450,4 +456,33 @@ class GdsSessions:
             session_lifecycle_manager=SessionLifecycleManager(session_id, self._aura_api),
             arrow_client_options=arrow_client_options,
             show_progress=show_progress,
+            graph_mapping_context=graph_mapping_context,
+        )
+
+    def _graph_mapping_context(
+        self,
+        session_details: SessionDetails,
+        db_connection: DbmsConnectionInfo | None,
+        aura_instance_id: str | None,
+    ) -> GraphMappingContext | None:
+        # Graph mappings are keyed by the Aura database id, falling back to the Aura
+        # instance id for single-db instances, and scoped to a database user. The Cypher
+        # API derives the same identity on the database side, so both APIs see the same
+        # mappings. Sessions without an Aura instance cannot register them; their graphs
+        # stay visible to this API only.
+        if db_connection is None or not aura_instance_id:
+            return None
+
+        if not db_connection.username:
+            logging.getLogger(__name__).debug(
+                "Graph mapping interoperability with the Cypher API is disabled:"
+                " the database connection does not provide a username."
+            )
+            return None
+
+        return GraphMappingContext.from_aura_api(
+            self._aura_api,
+            session_details.id,
+            db_connection.username,
+            db_connection.aura_database_id or aura_instance_id,
         )

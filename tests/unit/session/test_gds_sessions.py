@@ -28,6 +28,7 @@ from graphdatascience.session.aura_api_responses import (
 from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
@@ -308,6 +309,7 @@ class FakeGdsSessions(GdsSessions):
         db_runner: Neo4jQueryRunner | None,
         arrow_client_options: dict[str, Any] | None = None,
         show_progress: bool = True,
+        graph_mapping_context: GraphMappingContext | None = None,
     ) -> AuraGraphDataScience:
         self.construct_client_calls.append(
             {
@@ -318,6 +320,7 @@ class FakeGdsSessions(GdsSessions):
                 "db_runner": db_runner,
                 "arrow_client_options": arrow_client_options,
                 "show_progress": show_progress,
+                "graph_mapping_context": graph_mapping_context,
             }
         )
         return mock.MagicMock(spec=AuraGraphDataScience)
@@ -1008,3 +1011,123 @@ def test_estimate_size_exceeds() -> None:
 
 def _setup_db_instance(aura_api: AuraApi) -> InstanceCreateDetails:
     return aura_api.create_instance("test", SessionMemory.m_8GB.value, "aws", "leipzig-1")
+
+
+def test_graph_mapping_context_uses_aura_instance_id() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(
+        uri="neo4j+s://foo.databases.neo4j.io", username="neo4j", password="pw", aura_instance_id="4242"
+    )
+
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id="4242",
+            database_id=None,
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        "4242",
+    )
+
+    assert context is not None
+    assert context.session_id == "session-id"
+    assert context.database_username == "neo4j"
+    assert context.database_uuid == "4242"
+
+
+def test_graph_mapping_context_prefers_aura_database_id() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(
+        uri="neo4j+s://foo.databases.neo4j.io",
+        username="neo4j",
+        password="pw",
+        aura_instance_id="4242",
+        aura_database_id="db-1",
+    )
+
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id="4242",
+            database_id="db-1",
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        "4242",
+    )
+
+    assert context is not None
+    assert context.database_uuid == "db-1"
+
+
+def test_graph_mapping_context_disabled_without_aura_instance() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(uri="neo4j://localhost", username="neo4j", password="pw")
+
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id=None,
+            database_id=None,
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        None,
+    )
+
+    assert context is None
+
+
+def test_graph_mapping_context_disabled_without_username() -> None:
+    aura_api = FakeAuraApi(client_id="client-id")
+    sessions = FakeGdsSessions(aura_api)
+    db_connection = DbmsConnectionInfo(uri="neo4j+s://foo.databases.neo4j.io", username=None, password="pw")
+
+    context = sessions._graph_mapping_context(
+        SessionDetails(
+            id="session-id",
+            name="s",
+            instance_id="4242",
+            database_id=None,
+            memory=SessionMemoryValue("2GB"),
+            status="Ready",
+            host="host",
+            created_at=datetime.now(),
+            expiry_date=None,
+            ttl=None,
+            user_id="user",
+            project_id="project",
+        ),
+        db_connection,
+        "4242",
+    )
+
+    assert context is None
