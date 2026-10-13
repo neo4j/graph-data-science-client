@@ -71,7 +71,7 @@ class EmbeddingEndpoints(ABC):
         job_id: str | None = None,
         node_labels: list[str] = ["*"],
         relationship_types: list[str] = ["*"],
-        input_properties: list[str] = [],
+        input_properties: list[str],
     ) -> EmbeddingTrainResult:
         """
         embeddings.train is a preview feature and may change or be removed in future releases.
