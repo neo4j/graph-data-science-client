@@ -378,7 +378,7 @@ from graphdatascience.embedding import (
 | `hidden_dims`, `num_neighbors`, `out_dim`, `dropout`. All optional. `num_neighbors` must have exactly one more entry than `hidden_dims`.
 
 | `MLPClassifierConfig`
-| `hidden_dims`, `dropout`. A multi-layer perceptron classifier.
+| `hidden_dims`, `dropout`. A multi-layer perceptron classifier. If `hidden_dims` is empty (`[]`), the classifier has no hidden layers and acts as a linear classifier.
 |===
 
 Optional fields you leave out are left to the service.
@@ -386,7 +386,7 @@ Optional fields you leave out are left to the service.
 == Good to know
 
 * *Embeddings cover the whole graph.* Each call computes embeddings for all nodes in the (filtered) graph. To embed new nodes, add them to the graph and call `create` again.
-* *Seeds make runs repeatable.* Set `random_seed` to get repeatable embeddings across runs.
+* *Seeds make runs reproducible.* Set `random_seed` to get the same embeddings from the same graph across runs. If the graph changes, the embeddings can change too, even with the same seed.
 * *Trained models have seen your known classes.* Metrics computed on the nodes a model was trained on are optimistic by construction.
 * *Store models you want to keep.* To use a trained model from a later session, persist it with `gds.model.store`. Stored models are scoped to your project and cloud location. Delete the ones you no longer need with `gds.model.delete`.
 * *Sessions bill while they run.* Delete the session when you're done using `gds.delete()`.
