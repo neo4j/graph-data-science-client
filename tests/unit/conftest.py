@@ -189,7 +189,7 @@ class CollectingQueryRunner(QueryRunner):
     def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
         return self
 
-    def connection_info(self) -> Address:
+    def read_connection_info(self) -> Address:
         return Address(("localhost", 7687))
 
     def set__mock_result(self, result: QueryResultOrList) -> None:

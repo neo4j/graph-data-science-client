@@ -8,6 +8,26 @@ class JobIdConfig(ArrowBaseModel):
 UNKNOWN_PROGRESS = -1
 
 
+class StepProgress(ArrowBaseModel):
+    """Progress of a single step within a multi-step job.
+
+    ``progress`` is ``None`` for qualitative steps (e.g. "Fetching graph") and a fraction
+    in ``[0, 1]`` for quantitative steps (e.g. "Training epoch 3").
+    """
+
+    current: int
+    total: int
+    progress: float | None = None
+
+    def progress_percent(self) -> float | None:
+        if self.progress is None:
+            return None
+        return self.progress * 100
+
+    def label(self) -> str:
+        return f"{self.current}/{self.total}"
+
+
 class JobStatus(ArrowBaseModel):
     """Status and progress information for a GDS Arrow job."""
 
@@ -15,6 +35,7 @@ class JobStatus(ArrowBaseModel):
     status: str
     progress: float
     description: str
+    step_progress: StepProgress | None = None
 
     def progress_known(self) -> bool:
         if self.progress == UNKNOWN_PROGRESS:

@@ -318,13 +318,13 @@ class TestProjectProtocolV4:
             "gds.arrow.project.cypher.v4",
             DataFrame([{"jobId": "server-job", "host": "advertised-host", "port": 9999}]),
         )
-        connection_info = mocker.spy(qr, "connection_info")
+        read_connection_info = mocker.spy(qr, "read_connection_info")
         clone_without_routing = mocker.spy(qr, "cloneWithoutRouting")
 
         protocol = ProjectProtocolV4(arrow_client, qr, TerminationFlagNoop())
         protocol.start_cypher_projection(graph_name="g", query="MATCH (n) RETURN n", job_id="my-job")
 
-        connection_info.assert_called_once()
+        read_connection_info.assert_called_once()
         clone_without_routing.assert_called_once_with("localhost", 7687)
 
     def test_start_does_not_retry_when_job_already_started(

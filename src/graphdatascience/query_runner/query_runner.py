@@ -108,7 +108,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def connection_info(self) -> Address:
+    def read_connection_info(self) -> Address:
         pass
 
     def set_server_version(self, _: ServerVersion) -> None:
