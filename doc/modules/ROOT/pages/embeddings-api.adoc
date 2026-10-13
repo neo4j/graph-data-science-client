@@ -30,7 +30,7 @@ You don't need to pick an algorithm, tune hyperparameters, or know how graph mac
 With no encoder specified, it runs link:https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/fastrp/[Fast Random Projection] (FastRP) with sensible service-chosen defaults that are meant to work well across a wide range of graphs.
 
 | `gds.embedding.train`
-| Trains an embedding model on your own labels, for when you want embeddings tuned to one specific prediction task.
+| Trains a GraphSAGE model on your own graph, using node properties and known classes, for when you want embeddings that take node properties into account or are tuned to one specific prediction task.
 The trained model is saved under a name you choose, like any other trained model in Aura Graph Analytics, and can be passed to `gds.embedding.create`.
 Store it with `gds.model.store` to reuse it from later sessions.
 |===
@@ -202,14 +202,15 @@ Leave it out (`None`) to use FastRP with service-chosen settings, which is the r
 === Examples
  
 Choose the embedding dimension and make the run reproducible.
-Because `mutate_property` is not set, the embeddings go into the `embedding` property, so `G` must not already have one:
+`G` already has an `embedding` property from the quick start, and `create` fails if the property exists, so drop it first:
  
 [source, python]
 ----
+gds.graph.node_properties.drop(G, ["embedding"], fail_if_missing=False)
 gds.embedding.create(
     G,
     embedding_dimension=256,
-    random_seed=42
+    random_seed=42,
 )
 ----
  
@@ -222,7 +223,8 @@ Keep the earlier embeddings by storing the new ones under a different property n
 gds.embedding.create(G, mutate_property="embedding_256", embedding_dimension=256)
 ----
 
-Restrict the graph to the node labels and relationship types you want, and keep the result in a property of its own so a full-graph `embedding` property stays as it is: 
+Restrict the graph to the node labels and relationship types you want, and keep the result in a property of its own so a full-graph `embedding` property stays as it is:
+
 [source, python]
 ----
 gds.embedding.create(
@@ -242,7 +244,7 @@ To get the embeddings out of the session, see <<in-memory-graph,Using the embedd
 `gds.embedding.create` is designed to give good results without training, using only the structure of the graph.
 Use `gds.embedding.train` when you want embeddings that take node properties into account, which is currently the only way to do so, or that are tuned to a specific task such as node classification.
 
-Training runs a graph encoder together with a decoder (a classifier) on a labeled node property, and saves the result under the name you give it.
+Training fits a GraphSAGE encoder so that its embeddings are good at predicting a node property that holds your known classes, and saves it under the name you give it.
 You then pass that name as the `graph_encoder` of `gds.embedding.create`.
 
 [source, python]
@@ -262,6 +264,8 @@ gds.embedding.create(
 )
 ----
 
+To tune the encoder, pass a `GraphSAGEConfig` as `graph_encoder`.
+
 === Parameters
 
 [cols="2,2,1,4", options="header"]
@@ -273,17 +277,7 @@ gds.embedding.create(
 | required
 | The graph to train on.
 
-| `graph_encoder`
-| `FastRPConfig`, `GraphSAGEConfig`, or `IdentityConfig`
-| required
-| Configuration of the graph encoder to train.
-
-| `decoder`
-| `GBClassifierConfig` or `MLPClassifierConfig`
-| required
-| Configuration of the decoder trained on top of the encoder's embeddings.
-
-| `model_save_name`
+| `model_name`
 | `str`
 | required
 | Name to save the trained model under.
@@ -296,7 +290,17 @@ gds.embedding.create(
 | `target_property`
 | `str`
 | required
-| Node property holding the labels to train on.
+| Node property holding the known classes to train on.
+
+| `graph_encoder`
+| `GraphSAGEConfig` or `None`
+| `None`
+| Configuration of the GraphSAGE encoder to train. If unset, the service trains a GraphSAGE encoder with default settings.
+
+| `decoder`
+| `MLPClassifierConfig` or `None`
+| `None`
+| Configuration of the classifier trained on top of the encoder's embeddings. Most users can leave it out.
 
 | `num_epochs`
 | `int`
@@ -383,7 +387,7 @@ Optional fields you leave out are left to the service.
 
 * *Embeddings cover the whole graph.* Each call computes embeddings for all nodes in the (filtered) graph. To embed new nodes, add them to the graph and call `create` again.
 * *Seeds make runs repeatable.* Set `random_seed` to get repeatable embeddings across runs.
-* *Trained models have seen your labels.* Metrics computed on the labels a model was trained on are optimistic by construction.
+* *Trained models have seen your known classes.* Metrics computed on the nodes a model was trained on are optimistic by construction.
 * *Store models you want to keep.* To use a trained model from a later session, persist it with `gds.model.store`. Stored models are scoped to your project and cloud location. Delete the ones you no longer need with `gds.model.delete`.
 * *Sessions bill while they run.* Delete the session when you're done using `gds.delete()`.
 
