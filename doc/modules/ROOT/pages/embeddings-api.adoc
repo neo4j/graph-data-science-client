@@ -96,15 +96,19 @@ gds.graph.node_properties.write(G, "embedding")
 The embeddings live as long as the graph does: when you drop the graph or the session ends, they are gone, so stream or write out whatever you want to keep.
  
 [IMPORTANT]
-.Calling `create` again with the same property name overwrites the existing embeddings
+.Calling `create` again with the same property name fails
 ====
-If `G` already has a node property with the name you pass as `mutate_property` (`embedding` by default), `create` drops that property and stores the newly generated embeddings under the same name.
-The call doesn't fail, and the previous embeddings are not kept, so re-running a notebook cell is safe.
- 
-To keep an earlier set of embeddings, for example to compare settings, give each call its own `mutate_property`.
-====
+If `G` already has a node property with the name you pass as `mutate_property` (`embedding` by default), `create` fails.
+To regenerate the embeddings under the same name, for example after changing a setting or as part of a scheduled pipeline, drop the property first:
 
-To remove a property you no longer need, use `gds.graph.node_properties.drop(G, ["embedding"])`.
+[source, python]
+----
+gds.graph.node_properties.drop(G, ["embedding"], fail_if_missing=False)
+gds.embedding.create(G)
+----
+
+To keep both sets instead, give each call its own `mutate_property`.
+====
 
 == Create embeddings
 
@@ -125,20 +129,25 @@ To change either, pass them explicitly, as in the examples below.
 | The graph to embed.
 
 | `graph_encoder`
-| `FastRPConfig`, `IdentityConfig`, or `str`
-| `FastRPConfig()`
-| What produces the embeddings: an inline configuration of a non-trainable encoder, or the name of a model saved by `gds.embedding.train`.
-Leave it out to use FastRP with service-chosen settings, which is the recommended starting point.
+| `FastRPConfig`, `str`, or `None`
+| `None`
+| What produces the embeddings: a `FastRPConfig`, or the name of a model saved by `gds.embedding.train`.
+Leave it out (`None`) to use FastRP with service-chosen settings, which is the recommended starting point.
  
+| `embedding_dimension`
+| `int`
+| `None`
+| Dimension of the embedding vectors. If unset, the service picks one.
+
 | `mutate_property`
 | `str`
 | `"embedding"`
-| Name of the node property that holds the embeddings on the in-memory graph `G`. If `G` already has a property with this name, it is replaced.
+| Name of the node property that holds the embeddings on the in-memory graph `G`. If `G` already has a property with this name, the call fails.
 
 | `random_seed`
 | `int`
 | `None`
-| Seed for reproducible results. If unset, a random seed is used.
+| Seed for reproducible results. If unset, a seed is selected at random.
 
 | `node_labels`
 | `list[str]`
@@ -153,7 +162,7 @@ Leave it out to use FastRP with service-chosen settings, which is the recommende
 | `feature_properties`
 | `list[str]`
 | `[]`
-| Node properties to use as input features. Optional for FastRP.
+| Node properties to use as input features. Required when `graph_encoder` is a trained model (pass the properties it was trained on). Ignored for FastRP, which only uses the graph structure.
 
 | `job_id`
 | `str`
@@ -193,30 +202,27 @@ Leave it out to use FastRP with service-chosen settings, which is the recommende
 === Examples
  
 Choose the embedding dimension and make the run reproducible.
-Because `mutate_property` is not set, this replaces the `embedding` property if `G` already has one:
+Because `mutate_property` is not set, the embeddings go into the `embedding` property, so `G` must not already have one:
  
 [source, python]
 ----
-from graphdatascience.embedding import FastRPConfig
- 
 gds.embedding.create(
     G,
-    graph_encoder=FastRPConfig(out_dim=256),
-    random_seed=42,
+    embedding_dimension=256,
+    random_seed=42
 )
 ----
  
-If you leave `out_dim` unset, the service picks a dimension for you.
+If you leave `embedding_dimension` unset, the service picks a dimension for you. The same applies to the other FastRP settings (`coefficients` and `normalization_strength`), which are set through `FastRPConfig`.
 
 Keep the earlier embeddings by storing the new ones under a different property name:
  
 [source, python]
 ----
-gds.embedding.create(G, mutate_property="embedding_256", graph_encoder=FastRPConfig(out_dim=256))
+gds.embedding.create(G, mutate_property="embedding_256", embedding_dimension=256)
 ----
 
-Embed only part of the graph, in a property of its own so a full-graph `embedding` property stays as it is:
- 
+Restrict the graph to the node labels and relationship types you want, and keep the result in a property of its own so a full-graph `embedding` property stays as it is: 
 [source, python]
 ----
 gds.embedding.create(
@@ -227,25 +233,23 @@ gds.embedding.create(
 )
 ----
 
+Embeddings are computed for every node you include, so you may get vectors for more labels than you plan to use. Keep a label when it is needed for connectivity or for context: here, customers are linked to each other through the products they purchased, so dropping `Product` would disconnect them.
+
 To get the embeddings out of the session, see <<in-memory-graph,Using the embeddings>>.
 
 == Train your own model
 
-`gds.embedding.create` is designed to give good results without training.
-Use `gds.embedding.train` when you have labels for a specific task, such as node classification, and want embeddings tuned to it.
+`gds.embedding.create` is designed to give good results without training, using only the structure of the graph.
+Use `gds.embedding.train` when you want embeddings that take node properties into account, which is currently the only way to do so, or that are tuned to a specific task such as node classification.
 
 Training runs a graph encoder together with a decoder (a classifier) on a labeled node property, and saves the result under the name you give it.
 You then pass that name as the `graph_encoder` of `gds.embedding.create`.
 
 [source, python]
 ----
-from graphdatascience.embedding import GraphSAGEConfig, MLPClassifierConfig
-
 gds.embedding.train(
     G,
-    graph_encoder=GraphSAGEConfig(target_type="Paper"),
-    decoder=MLPClassifierConfig(),
-    model_save_name="paper-topic-encoder",
+    model_name="paper-topic-encoder",
     target_label="Paper",
     target_property="subject",
     feature_properties=["features"],
@@ -304,15 +308,10 @@ gds.embedding.create(
 | `None`
 | Number of examples per training batch. If unset, the service chooses.
 
-| `num_trials`
-| `int`
-| `1`
-| Number of hyperparameter tuning trials. Values above 1 enable tuning.
-
 | `random_seed`
 | `int`
 | `None`
-| Seed for reproducible results. If unset, a random seed is used.
+| Seed for reproducible results. If unset, a seed is selected at random.
 
 | `node_labels`
 | `list[str]`
@@ -359,9 +358,7 @@ All configuration classes are imported from `graphdatascience.embedding`:
 ----
 from graphdatascience.embedding import (
     FastRPConfig,
-    GBClassifierConfig,
     GraphSAGEConfig,
-    IdentityConfig,
     MLPClassifierConfig,
 )
 ----
@@ -373,14 +370,8 @@ from graphdatascience.embedding import (
 | `FastRPConfig`
 | `out_dim`, `coefficients`, `normalization_strength`. All optional.
 
-| `IdentityConfig`
-| `target_type` and `out_dim`, both required. Passes node properties through unchanged.
-
 | `GraphSAGEConfig`
-| `target_type` (required), `hidden_dims`, `num_neighbors`, `out_dim`, `dropout`. `num_neighbors` must have exactly one more entry than `hidden_dims`.
-
-| `GBClassifierConfig`
-| No fields. A gradient boosted tree classifier.
+| `hidden_dims`, `num_neighbors`, `out_dim`, `dropout`. All optional. `num_neighbors` must have exactly one more entry than `hidden_dims`.
 
 | `MLPClassifierConfig`
 | `hidden_dims`, `dropout`. A multi-layer perceptron classifier.
