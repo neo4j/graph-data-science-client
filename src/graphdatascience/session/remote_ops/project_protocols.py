@@ -135,7 +135,7 @@ class ProjectProtocolV3(ProjectProtocol):
         )
 
         member_host = response["host"]
-        member_port = response["port"] if ("port" in response) else self._query_runner.connection_info().port
+        member_port = response["port"] if ("port" in response) else self._query_runner.read_connection_info().port
 
         projection_query_runner = self._query_runner.cloneWithoutRouting(member_host, member_port)
 
@@ -278,7 +278,7 @@ class ProjectProtocolV4(ProjectProtocol):
         # per member, and the status procedure only resolves jobs on the member that
         # scheduled them. Pin all attempts to a single member so that a retry after a
         # lost response attaches to the existing job instead of scheduling a duplicate.
-        member = self._query_runner.connection_info()
+        member = self._query_runner.read_connection_info()
         projection_query_runner = self._query_runner.cloneWithoutRouting(member.host, member.port)
 
         logger = logging.getLogger(__name__)

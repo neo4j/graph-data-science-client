@@ -417,8 +417,16 @@ class Neo4jQueryRunner(QueryRunner):
             instance_description=self._instance_description,
         )
 
-    def connection_info(self) -> Address:
-        return self._driver.get_server_info().address
+    def read_connection_info(self) -> Address:
+        # A trivial read tells us which member the routing driver picks. We return the
+        # unresolved address (hostname) so direct connections pass TLS hostname verification.
+        result = self._driver.execute_query(
+            "RETURN 1",
+            database_=self._database,
+            routing_=QueryMode.READ.neo4j_routing(),
+        )
+        address = result.summary.server.address
+        return getattr(address, "_unresolved", address)
 
     @retry(retry=retry_if_exception(is_retryable_neo4j_exception), stop=stop_after_delay(60), wait=wait_fixed(2))
     def verify_connectivity(self) -> None:
