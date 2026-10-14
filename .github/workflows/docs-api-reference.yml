@@ -30,6 +30,7 @@ on:
       - '1.22'
       - '2.0'
       - '2.1'
+      - '2.2'
     paths:
       - "doc/**"
       - "graphdatascience/**"
