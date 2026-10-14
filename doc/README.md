@@ -65,14 +65,15 @@ just test-docs-plugin
 GDS_LICENSE_KEY=... just test-docs-plugin
 ```
 
-The `just test-docs-aga` target runs the Aura Graph Analytics parts of the manual against a local GDS session, started from the same Docker images and stack as the integration tests (see `scripts/ci/run_doc_tests_aga.py`):
+The `just test-docs-aga` target runs the Aura Graph Analytics parts of the manual against a local GDS session, started from the same Docker images and stack as the integration tests (see `scripts/ci/run_doc_tests_aga.py`).
+The session is wired to a mock python-runtime API, so python-runtime backed endpoints (such as the Embedding API and FastPath) are available to the snippets:
 
 ```bash
 just test-docs-aga
 ```
 
 Both targets require Docker and the test images; pull them via `just update-test-images`.
-Image overrides: `NEO4J_IMAGE` (plugin target), and `GDS_SESSION_IMAGE` / `NEO4J_AURA_DATABASE_IMAGE` / `MOCK_GDS_API_IMAGE` (AGA target).
+Image overrides: `NEO4J_IMAGE` (plugin target), and `GDS_SESSION_IMAGE` / `NEO4J_AURA_DATABASE_IMAGE` / `MOCK_GDS_API_IMAGE` / `MOCK_RUNTIME_API_IMAGE` / `PYTHON_RUNTIME_IMAGE` (AGA target).
 To iterate on a single page, set `DOC_TEST_FILE=<substring>`.
 
 
