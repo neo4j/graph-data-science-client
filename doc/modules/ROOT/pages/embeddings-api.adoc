@@ -55,7 +55,7 @@ gds = sessions.get_or_create(
     cloud_location=CloudLocation(provider="<cloud-provider>", region="<cloud-region>"),
 )
 ----
-[source, python]
+[source, python, session=true, group=embedding-api]
 ----
 G = gds.graph.datasets.load_cora(undirected=True)  # or any graph in your session's catalog
 
@@ -80,7 +80,7 @@ Stream it into pandas as shown above, or pass it to other GDS algorithms in the 
 Nothing is written to your database, and the graph isn't copied.
 The property simply becomes part of `G` in your session's graph catalog, so the embeddings are yours to use however you like:
  
-[source, python]
+[source, python, session=true, group=embedding-api]
 ----
 # After gds.embedding.create(G) has run:
  
@@ -90,12 +90,16 @@ df = gds.graph.node_properties.stream(G, "embedding")
 # Use them in other algorithms in the same session
 similar = gds.knn.stream(G, node_properties="embedding", top_k=10)
 clusters = gds.kmeans.stream(G, node_property="embedding", k=7)
- 
-# Write them to your Neo4j database (sessions attached to an AuraDB instance)
-gds.graph.node_properties.write(G, "embedding")
 ----
  
 The embeddings live as long as the graph does: when you drop the graph or the session ends, they are gone, so stream or write out whatever you want to keep.
+
+To write them back to your Neo4j database, the graph must have been projected from that database, so that the session can map each node to its database counterpart:
+
+[source, python, role=no-test]
+----
+gds.graph.node_properties.write(G, "embedding")
+----
  
 [IMPORTANT]
 .Calling `create` again with the same property name fails
@@ -103,7 +107,7 @@ The embeddings live as long as the graph does: when you drop the graph or the se
 If `G` already has a node property with the name you pass as `mutate_property` (`embedding` by default), `create` fails.
 To regenerate the embeddings under the same name, for example after changing a setting or as part of a scheduled pipeline, drop the property first:
 
-[source, python]
+[source, python, session=true, group=embedding-api]
 ----
 gds.graph.node_properties.drop(G, ["embedding"], fail_if_missing=False)
 gds.embedding.create(G)
@@ -161,7 +165,7 @@ Leave it out (`None`) to use FastRP with service-chosen settings, which is the r
 | `["*"]`
 | Only relationships of these types are included.
 
-| `feature_properties`
+| `input_properties`
 | `list[str]`
 | `[]`
 | Node properties to use as input features. Required when `graph_encoder` is a trained model (pass the properties it was trained on). Ignored for FastRP, which only uses the graph structure.
@@ -206,7 +210,7 @@ Leave it out (`None`) to use FastRP with service-chosen settings, which is the r
 Choose the embedding dimension and make the run reproducible.
 `G` already has an `embedding` property from the quick start, and `create` fails if the property exists, so drop it first:
  
-[source, python]
+[source, python, session=true, group=embedding-api]
 ----
 gds.graph.node_properties.drop(G, ["embedding"], fail_if_missing=False)
 gds.embedding.create(
@@ -220,24 +224,24 @@ If you leave `embedding_dimension` unset, the service picks a dimension for you.
 
 Keep the earlier embeddings by storing the new ones under a different property name:
  
-[source, python]
+[source, python, session=true, group=embedding-api]
 ----
 gds.embedding.create(G, mutate_property="embedding_256", embedding_dimension=256)
 ----
 
 Restrict the graph to the node labels and relationship types you want, and keep the result in a property of its own so a full-graph `embedding` property stays as it is:
 
-[source, python]
+[source, python, session=true, group=embedding-api]
 ----
 gds.embedding.create(
     G,
     mutate_property="embedding_subset",
-    node_labels=["Customer", "Product"],
-    relationship_types=["PURCHASED"],
+    node_labels=["Paper"],
+    relationship_types=["CITES"],
 )
 ----
 
-Embeddings are computed for every node you include, so you may get vectors for more labels than you plan to use. Keep a label when it is needed for connectivity or for context: here, customers are linked to each other through the products they purchased, so dropping `Product` would disconnect them.
+On a graph with several node labels or relationship types, list only the ones you want to include; the embeddings still cover every node of the (filtered) graph, so you may get vectors for more labels than you plan to use. Keep a label when it is needed for connectivity or for context: if nodes of one label are only connected to the rest of the graph through nodes of another, dropping the latter would disconnect them.
 
 To get the embeddings out of the session, see <<in-memory-graph,Using the embeddings>>.
 
@@ -249,20 +253,22 @@ Use `gds.embedding.train` when you want embeddings that take node properties int
 Training fits a GraphSAGE encoder so that its embeddings are good at predicting a node property that holds your known classes, and saves it under the name you give it.
 You then pass that name as the `graph_encoder` of `gds.embedding.create`.
 
-[source, python]
+[source, python, session=true, group=embedding-train]
 ----
+G = gds.graph.datasets.load_cora(undirected=True)
+
 gds.embedding.train(
     G,
     model_name="paper-topic-encoder",
     target_label="Paper",
     target_property="subject",
-    feature_properties=["features"],
+    input_properties=["features"],
 )
 
 gds.embedding.create(
     G,
     graph_encoder="paper-topic-encoder",
-    feature_properties=["features"],
+    input_properties=["features"],
 )
 ----
 
@@ -294,7 +300,7 @@ To tune the encoder, pass a `GraphSAGEConfig` as `graph_encoder`.
 | required
 | Node property holding the known classes to train on.
 
-| `feature_properties`
+| `input_properties`
 | `list[str]`
 | required
 | Node properties the encoder learns from.
@@ -303,6 +309,11 @@ To tune the encoder, pass a `GraphSAGEConfig` as `graph_encoder`.
 | `GraphSAGEConfig` or `None`
 | `None`
 | Configuration of the GraphSAGE encoder to train. If unset, the service trains a GraphSAGE encoder with default settings.
+
+| `embedding_dimension`
+| `int`
+| `None`
+| Dimension of the embedding vectors. If unset, the service picks one.
 
 | `decoder`
 | `MLPClassifierConfig` or `None`

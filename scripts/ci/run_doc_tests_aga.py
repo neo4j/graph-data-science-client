@@ -1,14 +1,16 @@
 """Run the AGA (Aura Graph Analytics) doc tests against a local GDS session.
 
-Starts the same Docker stack as the integration tests (mock GDS API, Neo4j, and a
-GDS session image, via tests/integration/services.py), then invokes the Ruby doc-test
-harness (doc/tests/test_docs.rb) with its AGA lane: the Python snippets of the manual
-that live in Aura Graph Analytics tabs, carry the `session` attribute, or are untabbed
-in AGA files, all executed against the local session.
+Starts the same Docker stack as the integration tests (via tests/integration/services.py), then invokes the
+Ruby doc-test harness (doc/tests/test_docs.rb) with its AGA lane: the Python snippets of
+the manual that live in Aura Graph Analytics tabs, carry the `session` attribute, or are
+untabbed in AGA files, all executed against the local session.
+
+The session is wired to the mock python-runtime API so the python-runtime backed endpoints
+(for example the Embedding API and FastPath) are available to the snippets.
 
 Image overrides work as in the integration tests: GDS_SESSION_IMAGE,
-NEO4J_AURA_DATABASE_IMAGE, and MOCK_GDS_API_IMAGE. Use DOC_TEST_FILE=<substring> to
-iterate on a single manual page.
+NEO4J_AURA_DATABASE_IMAGE, MOCK_GDS_API_IMAGE, MOCK_RUNTIME_API_IMAGE, and
+PYTHON_RUNTIME_IMAGE. Use DOC_TEST_FILE=<substring> to iterate on a single manual page.
 """
 
 import os
@@ -31,6 +33,7 @@ from tests.integration.services import (
     session_alias,
     start_aura_database,
     start_gds_api,
+    start_runtime_api,
     start_session,
 )
 
@@ -45,13 +48,18 @@ def _gds_api(logs_dir: Path, network: Network) -> Generator[str, None, None]:
 
 
 @contextmanager
+def _runtime_api(logs_dir: Path, models_dir: Path, network: Network) -> Generator[str, None, None]:
+    yield from start_runtime_api(logs_dir, network, LOG_NAME, models_dir)
+
+
+@contextmanager
 def _database(logs_dir: Path, network: Network) -> Generator[DbmsConnectionInfo, None, None]:
     yield from start_aura_database(logs_dir, network, LOG_NAME, db_alias=db_alias())
 
 
 @contextmanager
 def _session(
-    logs_dir: Path, models_dir: Path, network: Network, gds_api_uri: str
+    logs_dir: Path, models_dir: Path, network: Network, gds_api_uri: str, runtime_api_uri: str
 ) -> Generator[GdsSessionConnectionInfo, None, None]:
     yield from start_session(
         logs_dir,
@@ -59,6 +67,7 @@ def _session(
         network,
         LOG_NAME,
         gds_api_uri=gds_api_uri,
+        runtime_api_uri=runtime_api_uri,
         session_alias=session_alias(),
     )
 
@@ -67,10 +76,13 @@ def _session(
 def aga_session_stack(
     logs_dir: Path, models_dir: Path
 ) -> Generator[tuple[DbmsConnectionInfo, GdsSessionConnectionInfo], None, None]:
-    """The local AGA test stack: docker network, mock GDS API, Neo4j database, GDS session.
+    """The local AGA test stack: docker network, mock GDS API, mock python-runtime API,
+    Neo4j database, GDS session.
 
     Composes the integration-test services (tests/integration/services.py) the same way
-    the pytest fixtures do. Yields the Neo4j connection info and the session connection info.
+    the pytest fixtures do. The session is wired to the runtime API so runtime-backed
+    endpoints (Embedding API, FastPath) are available. Yields the Neo4j connection info
+    and the session connection info.
     """
     with Network() as network:
         self_id = current_container_id()
@@ -87,8 +99,9 @@ def aga_session_stack(
         try:
             with (
                 _gds_api(logs_dir, network) as gds_api_uri,
+                _runtime_api(logs_dir, models_dir, network) as runtime_api_uri,
                 _database(logs_dir, network) as db_connection,
-                _session(logs_dir, models_dir, network, gds_api_uri) as session,
+                _session(logs_dir, models_dir, network, gds_api_uri, runtime_api_uri) as session,
             ):
                 yield db_connection, session
         finally:
