@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Generator, Optional, TypeVar
 
+import docker
 import dotenv
 import pytest
 from dateutil.relativedelta import relativedelta
@@ -171,6 +172,15 @@ def _remove_spawned_runtime_containers(network: Network, image: str) -> None:
             LOGGER.warning(f"Failed to remove spawned python-runtime container {container.id[:12]}: {e}")
 
 
+def _ensure_image_pulled(image: str) -> None:
+    client = DockerClient().client
+    try:
+        client.images.get(image)
+    except docker.errors.ImageNotFound:
+        LOGGER.info(f"[it] pulling {image}")
+        client.images.pull(image)
+
+
 def start_runtime_api(logs_dir: Path, network: Network, log_name: str, models_dir: Path) -> Generator[str, None, None]:
     """Start the mock python-runtime API container.
 
@@ -191,6 +201,8 @@ def start_runtime_api(logs_dir: Path, network: Network, log_name: str, models_di
         "PYTHON_RUNTIME_IMAGE", "europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/python-runtime:latest"
     )
     LOGGER.info(f"Using mock runtime api image: {runtime_api_image} (python runtime image: {python_runtime_image})")
+    # The API spawns python-runtime containers itself and cannot authenticate to the registry
+    _ensure_image_pulled(python_runtime_image)
 
     alias = runtime_api_alias()
     runtime_api_container = (
