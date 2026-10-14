@@ -5,6 +5,7 @@ import re
 import sys
 from pathlib import Path
 
+import git_remotes
 import installation_adoc
 import pypi
 from gha_workflows import add_branch_to_triggers
@@ -235,6 +236,9 @@ def main() -> None:
 
     print(f"Released version: {released_version}")
 
+    # Resolve the upstream remote up front so we fail before changing any files.
+    remote = git_remotes.resolve_upstream_remote(REPO_ROOT)
+
     pypi.verify_released(str(released_version))
 
     # Calculate next version if not provided
@@ -263,7 +267,7 @@ def main() -> None:
     print("\nNext steps:")
     print("* Review the changes")
     print(f"* Commit with message: 'Prepare for {next_version} development'")
-    print("* Push to main branch")
+    print(f"* Push to main branch: git push {remote} main")
 
 
 if __name__ == "__main__":
