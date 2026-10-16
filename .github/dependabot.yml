@@ -4,11 +4,30 @@
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
+registries:
+  # data.pyg.org (PyG wheels) is not on Dependabot's egress allowlist; declaring
+  # the host as a registry is what makes it reachable. Credentials are dummies,
+  # and the url is host-only so it keeps matching the versioned index urls after
+  # torch bumps.
+  pyg:
+    type: python-index
+    url: https://data.pyg.org
+    username: dummy
+    password: ${{ secrets.PYG_INDEX_PASSWORD }}
+
 updates:
   - package-ecosystem: "uv"
     directory: "/"
+    registries:
+      - pyg
     schedule:
       interval: "weekly"
+    # torch and the PyG packages are ABI-locked to the versioned index urls in
+    # pyproject.toml; they must be bumped by hand together with those urls.
+    ignore:
+      - dependency-name: "torch"
+      - dependency-name: "torch-scatter"
+      - dependency-name: "torch-sparse"
     # Batch the low-risk bumps into a single weekly PR instead of one per dependency.
     groups:
       python-minor-and-patch:
