@@ -2,7 +2,6 @@
 
 ## Breaking changes
 
-
 ## New features
 
 
@@ -13,3 +12,5 @@
 
 
 ## Other changes
+
+* The supported `pyarrow` range is now `>= 22.0, < 27.0`.
