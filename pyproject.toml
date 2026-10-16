@@ -62,11 +62,11 @@ dev = [
 ]
 
 dev-base = [
-    "ruff==0.16.8",
-    "mypy == 2.3.1",
+    "ruff==0.17.0",
+    "mypy==2.4.0",
     "pandas-stubs == 2.3.3.260113 ; python_version < '3.11'",
     "pandas-stubs == 3.0.3.260530 ; python_version >= '3.11'",
-    "tox==4.63.0",
+    "tox==4.65.0",
     "types-setuptools == 84.0.0.20261006",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
@@ -80,7 +80,7 @@ test = [
     "pytest == 9.1.1",
     "pytest-timeout",
     "requests_mock == 1.12.1",
-    "pytest_mock == 3.15.1",
+    "pytest_mock==3.16.0",
     "testcontainers == 4.15.0",
     "python-dateutil >= 2.9",
 ]
@@ -92,7 +92,7 @@ docs-ci = [
     "networkx >= 2.0, < 4.0"
 ]
 notebook-base = [
-    "nbconvert==7.17.1",
+    "nbconvert==7.17.2",
     "nbformat==5.11.1",
     "nbclient==0.11.0",
     "ipykernel==7.3.0",
