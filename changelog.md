@@ -2,6 +2,7 @@
 
 ## Breaking changes
 
+
 ## New features
 
 
@@ -13,5 +14,6 @@
 
 ## Other changes
 
+* Drop support for Python 3.10
 * Support Python 3.15
 * The supported `pyarrow` range is now `>= 22.0, < 27.0`.

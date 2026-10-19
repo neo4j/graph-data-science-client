@@ -7,7 +7,7 @@ import platform
 import socket
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, Callable, Iterator, Type, TypeVar
+from typing import Any, Callable, Iterator, Self, Type, TypeVar
 
 import certifi
 from pyarrow import Schema, flight
@@ -274,7 +274,7 @@ class AuthenticatedArrowClient:
         except OSError:
             return False
 
-    def __enter__(self) -> AuthenticatedArrowClient:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(

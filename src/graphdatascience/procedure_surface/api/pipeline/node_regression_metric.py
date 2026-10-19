@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class NodeRegressionMetric(str, Enum):
+class NodeRegressionMetric(StrEnum):
     MEAN_SQUARED_ERROR = "MEAN_SQUARED_ERROR"
     ROOT_MEAN_SQUARED_ERROR = "ROOT_MEAN_SQUARED_ERROR"
     MEAN_ABSOLUTE_ERROR = "MEAN_ABSOLUTE_ERROR"

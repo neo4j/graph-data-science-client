@@ -4,7 +4,7 @@ import math
 import os
 import warnings
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from graphdatascience.arrow_client.arrow_authentication import ArrowAuthentication
@@ -362,7 +362,7 @@ class GdsSessions:
 
     def _await_session_running(self, session_details: SessionDetails, timeout: int | None = None) -> None:
         if session_details.expiry_date:
-            until_expiry: timedelta = session_details.expiry_date - datetime.now(timezone.utc)
+            until_expiry: timedelta = session_details.expiry_date - datetime.now(UTC)
             if until_expiry < timedelta(0):
                 raise RuntimeError(f"Session `{session_details.name}` expired {_humanize_duration(-until_expiry)} ago.")
             elif until_expiry < timedelta(hours=1):
