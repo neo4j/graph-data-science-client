@@ -16,7 +16,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -27,7 +26,7 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "multimethod >= 1.0, < 3.0",
     "neo4j >= 5.26.0, < 7.0",
@@ -36,7 +35,6 @@ dependencies = [
     "pyarrow >= 22.0, < 27.0",
     "textdistance >= 4.0, < 5.0",
     "tqdm >= 4.0, < 5.0",
-    "typing-extensions >= 4.0, < 5.0",
     "requests",
     "tenacity >= 9.0",
     "pydantic >= 2.11",
@@ -65,8 +63,7 @@ dev = [
 dev-base = [
     "ruff==0.16.8",
     "mypy == 2.3.1",
-    "pandas-stubs == 2.3.3.260113 ; python_version < '3.11'",
-    "pandas-stubs == 3.0.3.260530 ; python_version >= '3.11'",
+    "pandas-stubs == 3.0.3.260530",
     "tox==4.63.0",
     "types-setuptools == 84.0.0.20261006",
     "enum-tools[sphinx]==0.13.0",

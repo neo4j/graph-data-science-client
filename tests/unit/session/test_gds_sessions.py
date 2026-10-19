@@ -22,7 +22,6 @@ from graphdatascience.session.aura_api_responses import (
     SessionDetails,
     SessionDetailsWithErrors,
     SessionErrorData,
-    TimeParser,
     WaitResult,
 )
 from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
@@ -377,10 +376,10 @@ def test_list_session_failed_session(aura_api: AuraApi) -> None:
         status="Failed",
         instance_id="",
         database_id=None,
-        created_at=TimeParser.fromisoformat("1970-01-01T00:00:00Z"),
+        created_at=datetime.fromisoformat("1970-01-01T00:00:00Z"),
         host="1.2.3.4",
         memory=SessionMemory.m_4GB.value,
-        expiry_date=TimeParser.fromisoformat("1977-01-01T00:00:00Z"),
+        expiry_date=datetime.fromisoformat("1977-01-01T00:00:00Z"),
         project_id=fake_aura_api._project_id,
         user_id=fake_aura_api._console_user,
         ttl=timedelta(seconds=42),
