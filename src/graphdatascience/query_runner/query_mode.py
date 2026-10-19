@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 import neo4j
 
 
-class QueryMode(str, Enum):
+class QueryMode(StrEnum):
     """
     The mode in which a Cypher query is run.
     """

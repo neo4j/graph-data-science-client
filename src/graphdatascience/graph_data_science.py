@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from types import TracebackType
-from typing import Any, Literal, Type
+from typing import Any, Literal, Self, Type
 
 import neo4j
 from neo4j import Driver
@@ -972,7 +972,7 @@ class GraphDataScience:
             self._arrow_client.close()
         self._query_runner.close()
 
-    def __enter__(self) -> GraphDataScience:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from types import TracebackType
-from typing import Any, Type
+from typing import Any, Self, Type
 
 import pandas
 import pyarrow
@@ -547,7 +547,7 @@ class GdsArrowClient:
                 ack_stream.read()
                 progress_callback(partition.num_rows)
 
-    def __enter__(self) -> GdsArrowClient:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(

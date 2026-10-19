@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
 from annotated_types import Len
 from pydantic import BaseModel, Field, PositiveInt, model_validator
@@ -24,7 +24,7 @@ class GraphSAGEConfig(BaseModel):
     dropout: Dropout | None = Field(default=None, description="Dropout probability applied during training.")
 
     @model_validator(mode="after")
-    def depth_validator(self) -> "GraphSAGEConfig":
+    def depth_validator(self) -> Self:
         if self.hidden_dims is not None:
             if self.num_neighbors is not None:
                 if len(self.hidden_dims) + 1 != len(self.num_neighbors):

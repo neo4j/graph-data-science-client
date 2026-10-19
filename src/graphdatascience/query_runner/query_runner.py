@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Self
 
 import neo4j
 from neo4j import Address
@@ -104,7 +104,7 @@ class QueryRunner(ABC):
         pass
 
     @abstractmethod
-    def cloneWithoutRouting(self, host: str, port: int) -> "QueryRunner":
+    def cloneWithoutRouting(self, host: str, port: int) -> Self:
         pass
 
     @abstractmethod

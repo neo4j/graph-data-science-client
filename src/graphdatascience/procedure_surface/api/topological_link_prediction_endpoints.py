@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import StrEnum
 
 from neo4j.graph import Node
 
 
-class Direction(str, Enum):
+class Direction(StrEnum):
     """
     The direction of relationships to consider when computing a topological link prediction.
     """

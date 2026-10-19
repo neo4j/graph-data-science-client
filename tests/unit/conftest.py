@@ -186,7 +186,7 @@ class CollectingQueryRunner(QueryRunner):
     def set_show_progress(self, show_progress: bool) -> None:
         pass
 
-    def cloneWithoutRouting(self, host: str, port: int) -> QueryRunner:
+    def cloneWithoutRouting(self, host: str, port: int) -> CollectingQueryRunner:
         return self
 
     def read_connection_info(self) -> Address:

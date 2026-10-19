@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from types import TracebackType
-from typing import Any, Iterable, Type
+from typing import Any, Iterable, Self, Type
 
 import pandas
 import pyarrow
@@ -567,7 +567,7 @@ class GdsArrowClient:
         arrow_table = self._sanitize_arrow_table(arrow_table)
         return arrow_table.to_pandas(types_mapper=pandas.ArrowDtype)  # type: ignore
 
-    def __enter__(self) -> GdsArrowClient:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(

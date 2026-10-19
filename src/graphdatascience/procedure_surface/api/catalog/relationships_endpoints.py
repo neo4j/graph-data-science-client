@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import AliasChoices, Field, field_validator
@@ -312,7 +312,7 @@ class CollapsePathResult(BaseResult):
     configuration: dict[str, Any]
 
 
-class Aggregation(str, Enum):
+class Aggregation(StrEnum):
     """
     Specifies how to aggregate parallel relationships in a graph.
     """

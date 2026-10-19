@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Protocol, TypedDict
+from typing import Any, NotRequired, Protocol, TypedDict
 from warnings import warn
 
 import numpy as np
@@ -13,24 +13,18 @@ from graphdatascience.datasets.graph_constructor_func import GraphConstructorFun
 from graphdatascience.graph import Graph
 
 
-class _HomogeneousOGBGraphBase(TypedDict):
+class HomogeneousOGBGraph(TypedDict):
     edge_index: npt.NDArray[np.int64]
     num_nodes: int
+    edge_feat: NotRequired[npt.NDArray[np.float64] | None]
+    node_feat: NotRequired[npt.NDArray[np.float64] | None]
 
 
-class HomogeneousOGBGraph(_HomogeneousOGBGraphBase, total=False):
-    edge_feat: npt.NDArray[np.float64] | None
-    node_feat: npt.NDArray[np.float64] | None
-
-
-class _HeterogeneousOGBGraphBase(TypedDict):
+class HeterogeneousOGBGraph(TypedDict):
     edge_index_dict: dict[tuple[str, str, str], npt.NDArray[np.int64]]
     num_nodes_dict: dict[str, int]
-
-
-class HeterogeneousOGBGraph(_HeterogeneousOGBGraphBase, total=False):
-    edge_feat_dict: dict[tuple[str, str, str], npt.NDArray[np.float64]]
-    node_feat_dict: dict[str, npt.NDArray[np.float64]]
+    edge_feat_dict: NotRequired[dict[tuple[str, str, str], npt.NDArray[np.float64]]]
+    node_feat_dict: NotRequired[dict[str, npt.NDArray[np.float64]]]
 
 
 class HomogeneousOGBNDataset(Protocol):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from types import TracebackType
-from typing import Any, Type
+from typing import Any, Self, Type
 
 from graphdatascience.graph.graph_backend import GraphBackend
 from graphdatascience.graph.graph_info import GraphInfo
@@ -19,7 +19,7 @@ class Graph:
         self._name = name
         self._backend = backend
 
-    def __enter__(self: Graph) -> Graph:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(

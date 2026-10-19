@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import Any, Type
+from typing import Any, Self, Type
 
 from tqdm.auto import tqdm
 
@@ -11,7 +11,7 @@ from graphdatascience.progress.progress_provider import TaskWithProgress
 
 class ProgressBar(ABC):
     @abstractmethod
-    def __enter__(self) -> ProgressBar:
+    def __enter__(self) -> Self:
         pass
 
     @abstractmethod
@@ -77,7 +77,7 @@ class TqdmProgressBar(ProgressBar):
                 **options,
             )
 
-    def __enter__(self: TqdmProgressBar) -> TqdmProgressBar:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(
@@ -134,7 +134,7 @@ class TqdmProgressBar(ProgressBar):
 
 
 class NoOpProgressBar(ProgressBar):
-    def __enter__(self: NoOpProgressBar) -> NoOpProgressBar:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(
