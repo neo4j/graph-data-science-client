@@ -134,6 +134,27 @@ gds = sessions.get_or_create(
     ),
 )
 ----
+
+A session can also be attached to a link:https://neo4j.com/docs/virtual-graph/aura/instances/[virtual graph instance].
+A virtual graph is only reachable through its own URI and is addressed by its instance id, so both must be provided.
+The instance type is detected from the connected database.
+
+.Creating a GDS Session attached to a graph engine instance:
+[source,python,role=no-test]
+----
+from graphdatascience.session import DbmsConnectionInfo, SessionMemory
+
+gds = sessions.get_or_create(
+    session_name="my-virtual-graph-session",
+    memory=SessionMemory.m_4GB,
+    db_connection=DbmsConnectionInfo(
+        uri="neo4j+s://<uri>",
+        aura_instance_id="myid",
+        username="my-user",
+        password="my-password",
+    ),
+)
+----
 =======
 
 [.include-with-standalone]

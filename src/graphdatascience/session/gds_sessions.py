@@ -16,11 +16,21 @@ from graphdatascience.session.aura_api_responses import SessionDetails
 from graphdatascience.session.aura_api_token_authentication import AuraApiTokenAuthentication
 from graphdatascience.session.aura_graph_data_science import AuraGraphDataScience
 from graphdatascience.session.cloud_location import CloudLocation
+from graphdatascience.session.dbms.instance_type_resolver import InstanceTypeResolver
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.endpoint_mappings import procedure_name_from_python_endpoint
+from graphdatascience.session.instance_type import InstanceType
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
+
+
+def _instance_not_found_error(instance_id: str) -> ValueError:
+    return ValueError(
+        f"Aura instance with id `{instance_id}` could not be found. "
+        "Please verify that the instance id is correct and that you have access to the Aura instance. "
+        "If it is a virtual graph instance, provide its `uri`."
+    )
 
 
 def _humanize_duration(duration: timedelta) -> str:
@@ -204,6 +214,7 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory | SessionMemoryValue | str): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo | None): The database connection information.
+                The instance type is detected from the connected database, which also supports virtual graph instances.
             ttl (datetime.timedelta | None): The session's time to live after inactivity.
             cloud_location (CloudLocation | None): The cloud location where the GDS Session will run.
                 Must be a `CloudLocation(provider, region)` with a supported provider (`"gcp"`, `"aws"`, or `"azure"`)
@@ -222,27 +233,50 @@ class GdsSessions:
         if isinstance(memory, str) or isinstance(memory, SessionMemoryValue):
             memory = SessionMemory.of(memory)
 
-        if db_connection is None:
-            db_runner = None
-            aura_db_instance = None
-            aura_database_id = None
-        else:
+        db_runner = None
+        attached_instance_id: str | None = None
+        instance_type: InstanceType | None = None
+        aura_database_id: str | None = None
+
+        if db_connection is not None:
+            aura_database_id = db_connection.aura_database_id
+
             if aura_instance_id := db_connection.aura_instance_id:
                 aura_db_instance = self._aura_api.list_instance(aura_instance_id)
 
-                if not aura_db_instance:
-                    raise ValueError(
-                        f"Aura instance with id `{aura_instance_id}` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance."
-                    )
+                if aura_db_instance:
+                    db_connection.set_uri(aura_db_instance.connection_url)
 
-                db_connection.set_uri(aura_db_instance.connection_url)
+                    db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
+                    db_runner.hosted_in_aura = True
+                    attached_instance_id = aura_db_instance.id
+                    instance_type = self._detect_instance_type(db_runner)
+                elif db_connection.uri:
+                    # Not an AuraDB instance: the id may belong to a graph engine reachable via the given uri.
+                    db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
+                    db_runner.hosted_in_aura = True
 
-                db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
-                db_runner.hosted_in_aura = True
+                    instance_type = self._detect_instance_type(db_runner)
+                    if instance_type is InstanceType.VIRTUAL_GRAPH:
+                        attached_instance_id = aura_instance_id
+                    else:
+                        raise _instance_not_found_error(aura_instance_id)
+                else:
+                    raise _instance_not_found_error(aura_instance_id)
             else:
                 db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
+                instance_type = self._detect_instance_type(db_runner)
 
-                if db_runner.resolve_hosted_in_aura():
+                if instance_type is InstanceType.VIRTUAL_GRAPH:
+                    warnings.warn(
+                        DeprecationWarning(
+                            "Deriving the Aura instance from the database URI is deprecated and will be removed in a future release. "
+                            "Please specify the `aura_instance_id` in the `db_connection` argument."
+                        )
+                    )
+                    attached_instance_id = AuraApi.extract_id(db_connection.get_uri())
+                    db_runner.hosted_in_aura = True
+                elif db_runner.resolve_hosted_in_aura():
                     warnings.warn(
                         DeprecationWarning(
                             "Deriving the Aura instance from the database URI is deprecated and will be removed in a future release. "
@@ -256,11 +290,9 @@ class GdsSessions:
                         raise ValueError(
                             f"Aura instance with id `{aura_instance_id}` could not be found. Please specify the `aura_instance_id` in the `db_connection` argument."
                         )
-                else:
-                    aura_db_instance = None
-            aura_database_id = db_connection.aura_database_id
+                    attached_instance_id = aura_db_instance.id
 
-        if aura_db_instance is None:
+        if attached_instance_id is None:
             if not cloud_location:
                 raise ValueError("cloud_location must be provided for sessions not attached to an AuraDB.")
 
@@ -269,7 +301,12 @@ class GdsSessions:
             if cloud_location is not None:
                 raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
             session_details = self._get_or_create_attached_session(
-                session_name, memory.value, aura_db_instance.id, aura_database_id, ttl
+                session_name,
+                memory.value,
+                attached_instance_id,
+                aura_database_id,
+                ttl,
+                instance_type=instance_type,
             )
 
         self._await_session_running(session_details, timeout)
@@ -388,6 +425,10 @@ class GdsSessions:
         return matched_sessions[0]
 
     @staticmethod
+    def _detect_instance_type(db_runner: Neo4jQueryRunner) -> InstanceType:
+        return InstanceTypeResolver(db_runner).resolve()
+
+    @staticmethod
     def _validate_db_connection(db_runner: Neo4jQueryRunner) -> None:
         try:
             db_runner.verify_connectivity()
@@ -414,9 +455,15 @@ class GdsSessions:
         instance_id: str,
         database_id: str | None = None,
         ttl: timedelta | None = None,
+        instance_type: str | None = None,
     ) -> SessionDetails:
         return self._aura_api.get_or_create_session(
-            name=session_name, instance_id=instance_id, database_id=database_id, memory=memory, ttl=ttl
+            name=session_name,
+            instance_id=instance_id,
+            database_id=database_id,
+            memory=memory,
+            ttl=ttl,
+            instance_type=instance_type,
         )
 
     def _get_or_create_self_managed_session(

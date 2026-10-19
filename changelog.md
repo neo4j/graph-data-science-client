@@ -5,6 +5,8 @@
 
 ## New features
 
+* `GdsSessions.get_or_create` can attach a session to a virtual graph instance.
+  The instance type is detected from the connected database.
 
 ## Bug fixes
 

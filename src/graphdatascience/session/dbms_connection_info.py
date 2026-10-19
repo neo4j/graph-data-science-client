@@ -9,7 +9,7 @@ from neo4j import Auth, basic_auth
 @dataclass
 class DbmsConnectionInfo:
     """
-    Represents the connection information for a Neo4j DBMS, such as an AuraDB instance.
+    Represents the connection information for a Neo4j DBMS, such as an AuraDB instance or a virtual graph.
     Supports both username/password as well as the authentication options provided by the Neo4j Python driver.
     """
 

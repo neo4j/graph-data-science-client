@@ -5,6 +5,7 @@ from typing import Any, cast
 from unittest import mock
 
 import pytest
+from pandas import DataFrame
 from pytest_mock import MockerFixture
 
 from graphdatascience import GdsSessions
@@ -57,6 +58,7 @@ class FakeAuraApi(AuraApi):
         self._admin_user = admin_user
         self.received_algorithms: dict[str, dict[str, Any]] | None = None
         self.received_algorithm_categories: list[AlgorithmCategory] | None = None
+        self.received_instance_type: str | None = None
 
     def get_or_create_session(
         self,
@@ -66,11 +68,15 @@ class FakeAuraApi(AuraApi):
         database_id: str | None = None,
         ttl: timedelta | None = None,
         cloud_location: CloudLocation | None = None,
+        instance_type: str | None = None,
     ) -> SessionDetails:
+        self.received_instance_type = instance_type
+
         if not cloud_location and instance_id:
-            instance_details = self.list_instance(instance_id)
-            if instance_details:
-                cloud_location = CloudLocation(instance_details.cloud_provider, instance_details.region)
+            if instance_type != "virtual_graph":
+                instance_details = self.list_instance(instance_id)
+                if instance_details:
+                    cloud_location = CloudLocation(instance_details.cloud_provider, instance_details.region)
             id_prefix = instance_id
         else:
             id_prefix = "selfmanaged"
@@ -277,10 +283,11 @@ class FakeGdsSessions(GdsSessions):
     and _construct_client to store its arguments and return a mock client.
     """
 
-    def __init__(self, aura_api: AuraApi, hosted_in_aura: bool = True) -> None:
+    def __init__(self, aura_api: AuraApi, hosted_in_aura: bool = True, database_type: str = "standard") -> None:
         # We are purposefully not calling super.init() to avoid creating an actual instance of AuraAPI
         self._aura_api = aura_api
         self._hosted_in_aura = hosted_in_aura
+        self._database_type = database_type
         self.create_db_runner_calls: list[dict[str, Any]] = []
         self.construct_client_calls: list[dict[str, Any]] = []
 
@@ -290,12 +297,16 @@ class FakeGdsSessions(GdsSessions):
         self.create_db_runner_calls.append({"db_connection": db_connection, "config": config})
         db_runner = mock.MagicMock(spec=Neo4jQueryRunner)
         hosted_in_aura = self._hosted_in_aura
+        database_type = self._database_type
 
         def resolve_hosted_in_aura() -> bool:
             db_runner.hosted_in_aura = hosted_in_aura
             return hosted_in_aura
 
         db_runner.resolve_hosted_in_aura.side_effect = resolve_hosted_in_aura
+        # mimic what the instance-type query reports for the connected database
+        db_runner.database.return_value = "neo4j"
+        db_runner.run_retryable_cypher.return_value = DataFrame([{"type": database_type}])
         return db_runner
 
     def _construct_client(
@@ -521,6 +532,67 @@ def test_create_attached_session_with_only_uri(aura_api: AuraApi) -> None:
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
     assert actual_session.ttl == ttl
+
+
+def test_create_graph_engine_session_detected_from_uri(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, database_type="virtual graph")
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=re.escape("Deriving the Aura instance from the database URI is deprecated"),
+    ):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo("neo4j+s://ge6929df.graphs.neo4j.io", "dbuser", "db_pw"),
+        )
+
+    db_call = sessions.create_db_runner_calls[0]
+    assert db_call["db_connection"].get_uri() == "neo4j+s://ge6929df.graphs.neo4j.io"
+
+    construct_call = sessions.construct_client_calls[0]
+    assert construct_call["session_id"] == "ge6929df-ffff0"
+    assert construct_call["db_runner"].hosted_in_aura is True
+    assert cast(FakeAuraApi, aura_api).received_instance_type == "virtual_graph"
+
+
+def test_create_graph_engine_session_detected_from_instance_id(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, database_type="virtual graph")
+
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo("neo4j+s://ge6929df.graphs.neo4j.io", "dbuser", "db_pw", aura_instance_id="ge6929df"),
+    )
+
+    construct_call = sessions.construct_client_calls[0]
+    assert construct_call["session_id"] == "ge6929df-ffff0"
+    assert construct_call["db_runner"].hosted_in_aura is True
+    assert cast(FakeAuraApi, aura_api).received_instance_type == "virtual_graph"
+
+
+def test_get_or_create_for_graph_engine_without_uri(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api)
+
+    with pytest.raises(ValueError, match="If it is a virtual graph instance, provide its `uri`"):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ge6929df"),
+        )
+
+
+def test_create_attached_session_sends_database_type(aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+    sessions = FakeGdsSessions(aura_api)
+
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
+    )
+
+    assert cast(FakeAuraApi, aura_api).received_instance_type == "database"
 
 
 def test_create_attached_session_passthrough_arrow_settings(aura_api: AuraApi) -> None:
@@ -774,7 +846,7 @@ def test_get_or_create_for_non_accessible_aura_instance(aura_api: AuraApi) -> No
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Aura instance with id `06cba79f` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance."
+            "Aura instance with id `06cba79f` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance. If it is a virtual graph instance, provide its `uri`."
         ),
     ):
         sessions.get_or_create(
