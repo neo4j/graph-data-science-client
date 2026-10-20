@@ -73,7 +73,7 @@ class FakeAuraApi(AuraApi):
         self.received_instance_type = instance_type
 
         if not cloud_location and instance_id:
-            if instance_type != "virtual_graph":
+            if instance_type in (None, "database"):
                 instance_details = self.list_instance(instance_id)
                 if instance_details:
                     cloud_location = CloudLocation(instance_details.cloud_provider, instance_details.region)
@@ -574,11 +574,82 @@ def test_create_graph_engine_session_detected_from_instance_id(aura_api: AuraApi
 def test_get_or_create_for_graph_engine_without_uri(aura_api: AuraApi) -> None:
     sessions = FakeGdsSessions(aura_api)
 
-    with pytest.raises(ValueError, match="If it is a virtual graph instance, provide its `uri`"):
+    with pytest.raises(ValueError, match="If it is a virtual graph or composite instance, provide its `uri`"):
         sessions.get_or_create(
             "my-session",
             SessionMemory.m_8GB,
             DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ge6929df"),
+        )
+
+
+def test_create_composite_session_detected_from_uri(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, database_type="composite")
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=re.escape("Deriving the Aura instance from the database URI is deprecated"),
+    ):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo("neo4j+s://cc6929df.databases.neo4j.io", "dbuser", "db_pw"),
+        )
+
+    db_call = sessions.create_db_runner_calls[0]
+    assert db_call["db_connection"].get_uri() == "neo4j+s://cc6929df.databases.neo4j.io"
+
+    construct_call = sessions.construct_client_calls[0]
+    assert construct_call["session_id"] == "cc6929df-ffff0"
+    assert construct_call["db_runner"].hosted_in_aura is True
+    assert cast(FakeAuraApi, aura_api).received_instance_type == "composite"
+
+
+def test_create_composite_session_detected_from_instance_id(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, database_type="composite")
+
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo("neo4j+s://cc6929df.databases.neo4j.io", "dbuser", "db_pw", aura_instance_id="cc6929df"),
+    )
+
+    construct_call = sessions.construct_client_calls[0]
+    assert construct_call["session_id"] == "cc6929df-ffff0"
+    assert construct_call["db_runner"].hosted_in_aura is True
+    assert cast(FakeAuraApi, aura_api).received_instance_type == "composite"
+
+
+def test_create_attached_session_rejects_database_id_for_virtual_graph(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, database_type="virtual graph")
+
+    with pytest.raises(ValueError, match="`aura_database_id` is not supported for `virtual_graph` instances."):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo(
+                "neo4j+s://ge6929df.graphs.neo4j.io",
+                "dbuser",
+                "db_pw",
+                aura_instance_id="ge6929df",
+                aura_database_id="db-id-1",
+            ),
+        )
+
+
+def test_create_attached_session_rejects_database_id_for_composite(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, database_type="composite")
+
+    with pytest.raises(ValueError, match="`aura_database_id` is not supported for `composite` instances."):
+        sessions.get_or_create(
+            "my-session",
+            SessionMemory.m_8GB,
+            DbmsConnectionInfo(
+                "neo4j+s://cc6929df.databases.neo4j.io",
+                "dbuser",
+                "db_pw",
+                aura_instance_id="cc6929df",
+                aura_database_id="db-id-1",
+            ),
         )
 
 
@@ -846,7 +917,7 @@ def test_get_or_create_for_non_accessible_aura_instance(aura_api: AuraApi) -> No
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Aura instance with id `06cba79f` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance. If it is a virtual graph instance, provide its `uri`."
+            "Aura instance with id `06cba79f` could not be found. Please verify that the instance id is correct and that you have access to the Aura instance. If it is a virtual graph or composite instance, provide its `uri`."
         ),
     ):
         sessions.get_or_create(

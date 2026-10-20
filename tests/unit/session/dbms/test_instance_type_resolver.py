@@ -44,9 +44,8 @@ def test_without_explicit_database_passes_no_filter() -> None:
     assert runner.last_params() == {"database": None}
 
 
-def test_composite_raises() -> None:
-    with pytest.raises(UnknownDatabaseType, match="Unknown database type `composite`"):
-        InstanceTypeResolver(_runner("composite")).resolve()
+def test_resolves_composite() -> None:
+    assert InstanceTypeResolver(_runner("composite")).resolve() is InstanceType.COMPOSITE
 
 
 def test_unknown_type_raises() -> None:

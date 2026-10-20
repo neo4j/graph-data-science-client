@@ -155,6 +155,24 @@ gds = sessions.get_or_create(
     ),
 )
 ----
+
+// TODO uncomment once composite is deployed in prod
+// .Creating a GDS Session attached to a composite instance:
+// [source,python,role=no-test]
+// ----
+// from neo4j import bearer_auth
+// from graphdatascience.session import DbmsConnectionInfo, SessionMemory
+//
+// gds = sessions.get_or_create(
+//     session_name="my-composite-session",
+//     memory=SessionMemory.m_4GB,
+//     db_connection=DbmsConnectionInfo(
+//         uri="neo4j+s://<uri>",
+//         aura_instance_id="myid",
+//         auth=bearer_auth("<sso-token>"),
+//     ),
+// )
+// ----
 =======
 
 [.include-with-standalone]

@@ -16,6 +16,8 @@ class InstanceType(StrEnum):
     DATABASE = "database"
     # A graph engine instance. It is addressed by its instance id and reached through its own uri.
     VIRTUAL_GRAPH = "virtual_graph"
+    # A composite database instance. It is addressed by its instance id and reached through its own uri.
+    COMPOSITE = "composite"
 
     @classmethod
     def from_show_databases_type(cls, database_type: str) -> InstanceType:
