@@ -170,6 +170,7 @@ gds = sessions.get_or_create(
 //         uri="neo4j+s://<uri>",
 //         aura_instance_id="myid",
 //         auth=bearer_auth("<sso-token>"),
+//         database="composite",
 //     ),
 // )
 // ----
