@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import warnings
 from dataclasses import dataclass
 from typing import Any, Callable
@@ -42,6 +43,7 @@ class SessionTargetResolver:
     ) -> None:
         self._aura_api = aura_api
         self._create_db_runner = create_db_runner
+        self._logger = logging.getLogger(__name__)
 
     def resolve(self, db_connection: DbmsConnectionInfo | None, driver_config: dict[str, Any] | None) -> SessionTarget:
         if db_connection is None:
@@ -59,6 +61,7 @@ class SessionTargetResolver:
 
         db_runner = self._create_db_runner(db_connection, driver_config)
         instance_type = InstanceTypeResolver(db_runner).resolve()
+        self._logger.debug(f"Detected instance type `{instance_type}` for `{db_connection.uri or instance_id}`.")
         database_id = db_connection.aura_database_id
 
         if aura_db_instance:

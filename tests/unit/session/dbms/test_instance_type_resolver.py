@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 from neo4j.exceptions import Neo4jError
 from pandas import DataFrame
@@ -53,11 +55,17 @@ def test_unknown_type_raises() -> None:
         InstanceTypeResolver(_runner("something else")).resolve()
 
 
-def test_no_matching_database_falls_back_to_database() -> None:
+def test_no_matching_database_falls_back_to_database(caplog: pytest.LogCaptureFixture) -> None:
     runner = CollectingQueryRunner(result_mock=DataFrame(), server_version=ServerVersion(1, 2, 3))
 
-    assert InstanceTypeResolver(runner).resolve() is InstanceType.DATABASE
+    with caplog.at_level(logging.WARNING):
+        assert InstanceTypeResolver(runner).resolve() is InstanceType.DATABASE
+
+    assert "not listed by `SHOW DATABASES`" in caplog.text
 
 
-def test_failed_query_falls_back_to_database() -> None:
-    assert InstanceTypeResolver(_runner(Neo4jError("no such command"))).resolve() is InstanceType.DATABASE
+def test_failed_query_falls_back_to_database(caplog: pytest.LogCaptureFixture) -> None:
+    with caplog.at_level(logging.WARNING):
+        assert InstanceTypeResolver(_runner(Neo4jError("no such command"))).resolve() is InstanceType.DATABASE
+
+    assert "no such command" in caplog.text
