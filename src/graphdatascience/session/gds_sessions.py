@@ -18,11 +18,10 @@ from graphdatascience.session.aura_graph_data_science import AuraGraphDataScienc
 from graphdatascience.session.cloud_location import CloudLocation
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
 from graphdatascience.session.endpoint_mappings import procedure_name_from_python_endpoint
-from graphdatascience.session.instance_type import InstanceType
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
-from graphdatascience.session.session_target import SessionTargetResolver
+from graphdatascience.session.session_target import SelfManagedTarget, SessionTargetResolver
 
 
 def _humanize_duration(duration: timedelta) -> str:
@@ -229,7 +228,7 @@ class GdsSessions:
             db_connection, neo4j_driver_config
         )
 
-        if target.instance_id is None:
+        if isinstance(target, SelfManagedTarget):
             if not cloud_location:
                 raise ValueError("cloud_location must be provided for sessions not attached to an AuraDB.")
 
@@ -237,13 +236,6 @@ class GdsSessions:
         else:
             if cloud_location is not None:
                 raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
-
-            if (
-                target.instance_type is not None
-                and target.instance_type is not InstanceType.DATABASE
-                and target.database_id is not None
-            ):
-                raise ValueError(f"`aura_database_id` is not supported for `{target.instance_type.value}` instances.")
 
             session_details = self._get_or_create_attached_session(
                 session_name,
