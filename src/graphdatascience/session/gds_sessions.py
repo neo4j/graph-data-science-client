@@ -238,7 +238,11 @@ class GdsSessions:
             if cloud_location is not None:
                 raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
 
-            if target.instance_type is not InstanceType.DATABASE and target.database_id is not None:
+            if (
+                target.instance_type is not None
+                and target.instance_type is not InstanceType.DATABASE
+                and target.database_id is not None
+            ):
                 raise ValueError(f"`aura_database_id` is not supported for `{target.instance_type.value}` instances.")
 
             session_details = self._get_or_create_attached_session(

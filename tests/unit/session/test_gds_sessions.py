@@ -556,14 +556,18 @@ def test_create_graph_engine_session_detected_from_uri(aura_api: AuraApi) -> Non
     assert cast(FakeAuraApi, aura_api).received_instance_type == "virtual_graph"
 
 
-def test_create_graph_engine_session_detected_from_instance_id(aura_api: AuraApi) -> None:
+def test_create_graph_engine_session_detected_from_instance_id(aura_api: AuraApi, mocker: MockerFixture) -> None:
     sessions = FakeGdsSessions(aura_api, database_type="virtual graph")
+    list_instance_spy = mocker.spy(aura_api, "list_instance")
 
     sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://ge6929df.graphs.neo4j.io", "dbuser", "db_pw", aura_instance_id="ge6929df"),
     )
+
+    # a uri lets us detect the type without asking the Aura API about the id
+    list_instance_spy.assert_not_called()
 
     construct_call = sessions.construct_client_calls[0]
     assert construct_call["session_id"] == "ge6929df-ffff0"
@@ -604,14 +608,18 @@ def test_create_composite_session_detected_from_uri(aura_api: AuraApi) -> None:
     assert cast(FakeAuraApi, aura_api).received_instance_type == "composite"
 
 
-def test_create_composite_session_detected_from_instance_id(aura_api: AuraApi) -> None:
+def test_create_composite_session_detected_from_instance_id(aura_api: AuraApi, mocker: MockerFixture) -> None:
     sessions = FakeGdsSessions(aura_api, database_type="composite")
+    list_instance_spy = mocker.spy(aura_api, "list_instance")
 
     sessions.get_or_create(
         "my-session",
         SessionMemory.m_8GB,
         DbmsConnectionInfo("neo4j+s://cc6929df.databases.neo4j.io", "dbuser", "db_pw", aura_instance_id="cc6929df"),
     )
+
+    # a uri lets us detect the type without asking the Aura API about the id
+    list_instance_spy.assert_not_called()
 
     construct_call = sessions.construct_client_calls[0]
     assert construct_call["session_id"] == "cc6929df-ffff0"
@@ -663,6 +671,26 @@ def test_create_attached_session_sends_database_type(aura_api: AuraApi) -> None:
         DbmsConnectionInfo(username="dbuser", password="db_pw", aura_instance_id="ffff0"),
     )
 
+    assert cast(FakeAuraApi, aura_api).received_instance_type == "database"
+
+
+def test_create_attached_session_keeps_given_uri(aura_api: AuraApi) -> None:
+    _setup_db_instance(aura_api)
+    sessions = FakeGdsSessions(aura_api)
+
+    sessions.get_or_create(
+        "my-session",
+        SessionMemory.m_8GB,
+        DbmsConnectionInfo("neo4j+s://custom.example.com", "dbuser", "db_pw", aura_instance_id="ffff0"),
+    )
+
+    # the given uri is used as-is instead of the instance's connection url
+    db_call = sessions.create_db_runner_calls[0]
+    assert db_call["db_connection"].get_uri() == "neo4j+s://custom.example.com"
+
+    construct_call = sessions.construct_client_calls[0]
+    assert construct_call["session_id"] == "ffff0-ffff1"
+    assert construct_call["db_runner"].hosted_in_aura is True
     assert cast(FakeAuraApi, aura_api).received_instance_type == "database"
 
 

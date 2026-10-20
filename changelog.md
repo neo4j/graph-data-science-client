@@ -13,6 +13,9 @@
 
 ## Improvements
 
+* A `uri` given in `DbmsConnectionInfo` is used as-is for AuraDB connections, instead of being replaced by the instance's connection URL.
+* The instance type is detected before the instance is resolved through the Aura API, so attaching to a virtual graph or composite no longer requires an extra API call.
+
 
 ## Other changes
 
