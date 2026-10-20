@@ -24,6 +24,11 @@ from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
 
+_DERIVE_FROM_URI_DEPRECATION = (
+    "Deriving the Aura instance from the database URI is deprecated and will be removed in a future release. "
+    "Please specify the `aura_instance_id` in the `db_connection` argument."
+)
+
 
 def _instance_not_found_error(instance_id: str) -> ValueError:
     return ValueError(
@@ -77,6 +82,20 @@ class AuraAPICredentials:
         project_id = os.environ.get("PROJECT_ID")
 
         return AuraAPICredentials(client_id, client_secret, project_id)
+
+
+@dataclass
+class _SessionTarget:
+    """
+    The DBMS a session attaches to.
+
+    A `None` `instance_id` means the session is self-managed, i.e. not attached to any DBMS.
+    """
+
+    db_runner: Neo4jQueryRunner | None
+    instance_id: str | None = None
+    instance_type: InstanceType = InstanceType.DATABASE
+    database_id: str | None = None
 
 
 class GdsSessions:
@@ -233,66 +252,11 @@ class GdsSessions:
         if isinstance(memory, str) or isinstance(memory, SessionMemoryValue):
             memory = SessionMemory.of(memory)
 
-        db_runner = None
-        attached_instance_id: str | None = None
-        instance_type: InstanceType | None = None
-        aura_database_id: str | None = None
-
+        target = _SessionTarget(db_runner=None)
         if db_connection is not None:
-            aura_database_id = db_connection.aura_database_id
+            target = self._resolve_target(db_connection, neo4j_driver_config)
 
-            if aura_instance_id := db_connection.aura_instance_id:
-                aura_db_instance = self._aura_api.list_instance(aura_instance_id)
-
-                if aura_db_instance:
-                    db_connection.set_uri(aura_db_instance.connection_url)
-
-                    db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
-                    db_runner.hosted_in_aura = True
-                    attached_instance_id = aura_db_instance.id
-                    instance_type = self._detect_instance_type(db_runner)
-                elif db_connection.uri:
-                    # Not an AuraDB instance: the id may belong to a graph engine or composite reachable via the given uri.
-                    db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
-                    db_runner.hosted_in_aura = True
-
-                    instance_type = self._detect_instance_type(db_runner)
-                    if instance_type is not InstanceType.DATABASE:
-                        attached_instance_id = aura_instance_id
-                    else:
-                        raise _instance_not_found_error(aura_instance_id)
-                else:
-                    raise _instance_not_found_error(aura_instance_id)
-            else:
-                db_runner = self._create_db_runner(db_connection, neo4j_driver_config)
-                instance_type = self._detect_instance_type(db_runner)
-
-                if instance_type is not InstanceType.DATABASE:
-                    warnings.warn(
-                        DeprecationWarning(
-                            "Deriving the Aura instance from the database URI is deprecated and will be removed in a future release. "
-                            "Please specify the `aura_instance_id` in the `db_connection` argument."
-                        )
-                    )
-                    attached_instance_id = AuraApi.extract_id(db_connection.get_uri())
-                    db_runner.hosted_in_aura = True
-                elif db_runner.resolve_hosted_in_aura():
-                    warnings.warn(
-                        DeprecationWarning(
-                            "Deriving the Aura instance from the database URI is deprecated and will be removed in a future release. "
-                            "Please specify the `aura_instance_id` in the `db_connection` argument."
-                        )
-                    )
-
-                    aura_instance_id = AuraApi.extract_id(db_connection.get_uri())
-                    aura_db_instance = self._aura_api.list_instance(aura_instance_id)
-                    if not aura_db_instance:
-                        raise ValueError(
-                            f"Aura instance with id `{aura_instance_id}` could not be found. Please specify the `aura_instance_id` in the `db_connection` argument."
-                        )
-                    attached_instance_id = aura_db_instance.id
-
-        if attached_instance_id is None:
+        if target.instance_id is None:
             if not cloud_location:
                 raise ValueError("cloud_location must be provided for sessions not attached to an AuraDB.")
 
@@ -301,20 +265,16 @@ class GdsSessions:
             if cloud_location is not None:
                 raise ValueError("cloud_location cannot be provided for sessions against an AuraDB.")
 
-            if (
-                instance_type is not None
-                and instance_type is not InstanceType.DATABASE
-                and aura_database_id is not None
-            ):
-                raise ValueError(f"`aura_database_id` is not supported for `{instance_type.value}` instances.")
+            if target.instance_type is not InstanceType.DATABASE and target.database_id is not None:
+                raise ValueError(f"`aura_database_id` is not supported for `{target.instance_type.value}` instances.")
 
             session_details = self._get_or_create_attached_session(
                 session_name,
                 memory.value,
-                attached_instance_id,
-                aura_database_id,
+                target.instance_id,
+                target.database_id,
                 ttl,
-                instance_type=instance_type,
+                instance_type=target.instance_type,
             )
 
         self._await_session_running(session_details, timeout)
@@ -329,7 +289,7 @@ class GdsSessions:
             session_host,
             session_port,
             arrow_authentication,
-            db_runner,
+            target.db_runner,
             arrow_client_options,
             show_progress,
         )
@@ -436,6 +396,54 @@ class GdsSessions:
     def _detect_instance_type(db_runner: Neo4jQueryRunner) -> InstanceType:
         return InstanceTypeResolver(db_runner).resolve()
 
+    def _resolve_target(
+        self, db_connection: DbmsConnectionInfo, driver_config: dict[str, Any] | None
+    ) -> _SessionTarget:
+        """
+        Connect to the DBMS a session should attach to and detect its instance type.
+        """
+        instance_id = db_connection.aura_instance_id
+        aura_db_instance = self._aura_api.list_instance(instance_id) if instance_id else None
+
+        if aura_db_instance:
+            # an AuraDB instance provides its own uri
+            db_connection.set_uri(aura_db_instance.connection_url)
+        elif instance_id and not db_connection.uri:
+            # the id is not an AuraDB instance and there is no uri to reach a virtual graph or composite
+            raise _instance_not_found_error(instance_id)
+
+        db_runner = self._create_db_runner(db_connection, driver_config)
+        instance_type = self._detect_instance_type(db_runner)
+        database_id = db_connection.aura_database_id
+
+        if aura_db_instance:
+            db_runner.hosted_in_aura = True
+            return _SessionTarget(db_runner, aura_db_instance.id, instance_type, database_id)
+
+        if instance_type is not InstanceType.DATABASE:
+            db_runner.hosted_in_aura = True
+            if instance_id:
+                return _SessionTarget(db_runner, instance_id, instance_type, database_id)
+
+            warnings.warn(DeprecationWarning(_DERIVE_FROM_URI_DEPRECATION))
+            return _SessionTarget(db_runner, AuraApi.extract_id(db_connection.get_uri()), instance_type, database_id)
+
+        if instance_id:
+            # the id is neither an AuraDB instance nor a virtual graph or composite
+            raise _instance_not_found_error(instance_id)
+
+        if db_runner.resolve_hosted_in_aura():
+            warnings.warn(DeprecationWarning(_DERIVE_FROM_URI_DEPRECATION))
+            derived_id = AuraApi.extract_id(db_connection.get_uri())
+            derived_instance = self._aura_api.list_instance(derived_id)
+            if not derived_instance:
+                raise ValueError(
+                    f"Aura instance with id `{derived_id}` could not be found. Please specify the `aura_instance_id` in the `db_connection` argument."
+                )
+            return _SessionTarget(db_runner, derived_instance.id, instance_type, database_id)
+
+        return _SessionTarget(db_runner)
+
     @staticmethod
     def _validate_db_connection(db_runner: Neo4jQueryRunner) -> None:
         try:
@@ -446,15 +454,6 @@ class GdsSessions:
             db_runner.verify_authentication()
         except Exception as e:
             raise RuntimeError(f"Failed to authenticate to the Neo4j database: {e}")
-
-    def _get_or_create_standalone_session(
-        self,
-        session_name: str,
-        memory: SessionMemoryValue,
-        cloud_location: CloudLocation,
-        ttl: timedelta | None = None,
-    ) -> SessionDetails:
-        return self._aura_api.get_or_create_session(session_name, memory, ttl=ttl, cloud_location=cloud_location)
 
     def _get_or_create_attached_session(
         self,
