@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.15' and sys_platform == 'win32'",
@@ -1485,7 +1485,7 @@ dev = [
     { name = "networkx", specifier = ">=2.0,<4.0" },
     { name = "pandas-stubs", specifier = "==3.0.5.260914" },
     { name = "pytest", specifier = "==9.1.1" },
-    { name = "pytest-mock", specifier = "==3.16.0" },
+    { name = "pytest-mock", specifier = "==3.17.0" },
     { name = "pytest-timeout" },
     { name = "python-dateutil", specifier = ">=2.9" },
     { name = "python-dotenv", specifier = "<2" },
@@ -1493,7 +1493,7 @@ dev = [
     { name = "ruff", specifier = "==0.17.1" },
     { name = "sphinx", specifier = "==8.1.3" },
     { name = "testcontainers", specifier = "==4.15.0" },
-    { name = "tox", specifier = "==4.66.0" },
+    { name = "tox", specifier = "==4.67.1" },
     { name = "types-colorama" },
     { name = "types-python-dateutil" },
     { name = "types-requests" },
@@ -1507,7 +1507,7 @@ dev-base = [
     { name = "pandas-stubs", specifier = "==3.0.5.260914" },
     { name = "python-dotenv", specifier = "<2" },
     { name = "ruff", specifier = "==0.17.1" },
-    { name = "tox", specifier = "==4.66.0" },
+    { name = "tox", specifier = "==4.67.1" },
     { name = "types-colorama" },
     { name = "types-python-dateutil" },
     { name = "types-requests" },
@@ -1551,7 +1551,7 @@ notebook-ci = [
 ]
 test = [
     { name = "pytest", specifier = "==9.1.1" },
-    { name = "pytest-mock", specifier = "==3.16.0" },
+    { name = "pytest-mock", specifier = "==3.17.0" },
     { name = "pytest-timeout" },
     { name = "python-dateutil", specifier = ">=2.9" },
     { name = "requests-mock", specifier = "==1.12.1" },
@@ -3945,14 +3945,14 @@ wheels = [
 
 [[package]]
 name = "pytest-mock"
-version = "3.16.0"
+version = "3.17.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7a/7f/6ed29931d5c8cd396e7c0a55412e6cc88020373365c8685985dea53d26d7/pytest_mock-3.16.0.tar.gz", hash = "sha256:5a8395528b8f498205f3718f575228d0edaed7425fff638f87d1a6c3e0383636", size = 35362, upload-time = "2026-09-27T14:57:55.46Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/97/c2/28b9f5b955ff2bcd4727a6f768e2ca9b586cd7c37b95ea5f7b9b873ac7b3/pytest_mock-3.17.0.tar.gz", hash = "sha256:e36576e0985e01027e999891e7a966c67822d40c89ef1b4c8b6e22737e3590b4", size = 43064, upload-time = "2026-10-17T16:21:42.435Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/5b/b83a9bf1a3b4ec222f9fa083147ff6816245223da0ab92370e7e056f113f/pytest_mock-3.16.0-py3-none-any.whl", hash = "sha256:007cfeb257801d88d9c0b2a7b5a15a15e73b71968dfd72e7bf8c4a2f8393aec8", size = 10016, upload-time = "2026-09-27T14:57:54.283Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/ea/47fbdc8f37410956fd445720e927589b1e2a47772c5f28109f0ce2fa26d9/pytest_mock-3.17.0-py3-none-any.whl", hash = "sha256:1b82aa4b37137248bd687055e109723debeb07b489de1565297dc9589c5f2d6b", size = 11248, upload-time = "2026-10-17T16:21:41.265Z" },
 ]
 
 [[package]]
@@ -5131,7 +5131,7 @@ wheels = [
 
 [[package]]
 name = "tox"
-version = "4.66.0"
+version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachetools" },
@@ -5146,9 +5146,9 @@ dependencies = [
     { name = "typing-extensions", marker = "python_full_version < '3.13'" },
     { name = "virtualenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/65/17/183426a492c45f113fb73e26d7e17de63222338222a887b1da055356d0bc/tox-4.66.0.tar.gz", hash = "sha256:f9dc2cec9310a3ab5a560669cf860cf6ffad7d04733a0845c7ad7ac00d6b2808", size = 344679, upload-time = "2026-10-16T08:09:14.414Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/63/6e/677274ae411fa13f5c2ea5c633a6abfa0886e949bd2ef53c7e564a0b0b2e/tox-4.67.1.tar.gz", hash = "sha256:a68602f64421b199016127364ee47347b958391d19c2b2e53fe95673a8fe98e9", size = 347211, upload-time = "2026-10-18T07:34:04.348Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b9/e4/929ad087f3f4c6c8dadf64251d7215da77c0b2b6628b8e55c9b2fbcb5d72/tox-4.66.0-py3-none-any.whl", hash = "sha256:f12458756246e8be78934f011024dc952c25631008c7a935683fe5843408add4", size = 237594, upload-time = "2026-10-16T08:09:12.609Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/ac/cfba9de0f43b58d199f47c441efd1b670b55c480f3ec18bc1345f752c3d8/tox-4.67.1-py3-none-any.whl", hash = "sha256:23d614cb703e1f7bd39e00c046d4c261b63fb9986e185134c6be2f93531d9726", size = 238078, upload-time = "2026-10-18T07:34:02.728Z" },
 ]
 
 [[package]]
