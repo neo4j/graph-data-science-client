@@ -81,8 +81,9 @@ Resources = dict[str, object]
 
 # Each pattern captures the name in a `name` group; the surrounding quotes are left in place.
 SESSION_NAME_RE = re.compile(r"""session_name\s*=\s*(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
-MODEL_SAVE_NAME_RE = re.compile(r"""model_save_name\s*=\s*(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
-# Any quoted string; only rewritten when it refers to a model introduced by MODEL_SAVE_NAME_RE,
+# `model_name` is the public API kwarg; `model_save_name` is the config field it maps to internally.
+MODEL_NAME_DEF_RE = re.compile(r"""(?:model_save_name|model_name)\s*=\s*(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
+# Any quoted string; only rewritten when it refers to a model introduced by MODEL_NAME_DEF_RE,
 # which covers later uses such as `graph_encoder="..."` and `gds.model.delete("...")`.
 QUOTED_NAME_RE = re.compile(r"""(?P<quote>["'])(?P<name>.+?)(?P=quote)""")
 
@@ -161,7 +162,7 @@ def _apply_model_name_suffix(nb: NotebookNode, suffix: str, notebook_name: str) 
         nb,
         suffix,
         notebook_name,
-        definition_re=MODEL_SAVE_NAME_RE,
+        definition_re=MODEL_NAME_DEF_RE,
         reference_res=(QUOTED_NAME_RE,),
         subject="model",
         reason="to avoid clashes with models left in a reused session",

@@ -135,7 +135,6 @@ resources associated with it, and stops incurring costs.
 [source, python, role=no-test]
 ----
 gds.model.delete("cora_model")
-gds.model.delete("hyperparameter_tuned_cora_model")
 ----
 
 [source, python, role=no-test]

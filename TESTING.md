@@ -165,8 +165,8 @@ If neither is set — the usual local case — the names are left as they are, s
 
 ### Model names
 
-Session notebooks that train a model (e.g. `model_save_name="..."` in the Embedding API) would clash on a re-run that reattaches to a session left behind by an earlier failed build, because the model already exists in that session.
-To avoid this, `scripts/run_notebooks.py` appends a random per-run suffix to every `model_save_name="..."` occurrence and to later quoted references to that model, such as `graph_encoder="..."` or `gds.model.delete("...")`.
+Session notebooks that train a model (e.g. `model_name="..."` in the Embedding API, or the legacy `model_save_name="..."`) would clash on a re-run that reattaches to a session left behind by an earlier failed build, because the model already exists in that session.
+To avoid this, `scripts/run_notebooks.py` appends a random per-run suffix to every `model_name="..."` / `model_save_name="..."` occurrence and to later quoted references to that model, such as `graph_encoder="..."` or `gds.model.delete("...")`.
 Inline encoder configs (e.g. `graph_encoder=FastRPConfig()`) and unrelated strings are left untouched.
 
 The suffix is taken from `NOTEBOOK_MODEL_SUFFIX` if set, otherwise it is random when `BUILD_ID` is set (CI).
