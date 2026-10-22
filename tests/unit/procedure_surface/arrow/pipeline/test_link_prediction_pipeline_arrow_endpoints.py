@@ -308,7 +308,8 @@ def test_link_prediction_predict_stream_runs_arrow_job() -> None:
     arrow_client = mock.Mock(spec=AuthenticatedArrowClient)
     graph = mock.Mock()
     graph.name.return_value = "g"
-    expected = pd.DataFrame({"sourceNodeId": [0], "targetNodeId": [1], "probability": [0.9]})
+    arrow_result = pd.DataFrame({"sourceNodeId": [0], "targetNodeId": [1], "probability": [0.9]})
+    expected = pd.DataFrame({"node1": [0], "node2": [1], "probability": [0.9]})
 
     with (
         mock.patch(
@@ -317,7 +318,7 @@ def test_link_prediction_predict_stream_runs_arrow_job() -> None:
         ) as run_job_and_wait,
         mock.patch(
             "graphdatascience.procedure_surface.arrow.pipeline.link_prediction_predict_arrow_endpoints.JobClient.stream_results",
-            return_value=expected,
+            return_value=arrow_result,
         ),
     ):
         result = LinkPredictionPredictArrowEndpoints(arrow_client, None).stream(

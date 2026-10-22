@@ -146,7 +146,7 @@ class CypherGraphConstructor(GraphConstructor):
             # this way we don't duplicate the node property data and its cheaper
             combined_df: DataFrame = concat(aligned_node_dfs + aligned_rel_dfs, ignore_index=True)
             # sort the columns to ensure the order is the same (for testing)
-            combined_df.sort_index(axis="columns", inplace=True)
+            combined_df = combined_df.sort_index(axis="columns")
             # using a list and not a set to preserve the order
             combined_cols: list[str] = combined_df.columns.tolist()
 
