@@ -32,7 +32,8 @@ class FastPathEndpoints(ABC):
         mutate_property: str,
         embedding_dimension: int,
         lookback_horizon: int,
-        num_time_anchors: int,
+        num_time_anchors: int | None = None,
+        time_anchor_interval: float | None = None,
         *,
         event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
@@ -69,6 +70,10 @@ class FastPathEndpoints(ABC):
             Maximum age of events (relative to the observation time) that are processed.
         num_time_anchors
             Number of grid points used to discretize elapsed time.
+            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
+        time_anchor_interval
+            Time interval between anchor embeddings in the grid.
+            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
         event_node_categorical_properties
             Event node properties holding categorical values.
         relationship_types
@@ -114,7 +119,8 @@ class FastPathEndpoints(ABC):
         event_node_label: str,
         embedding_dimension: int,
         lookback_horizon: int,
-        num_time_anchors: int,
+        num_time_anchors: int | None = None,
+        time_anchor_interval: float | None = None,
         *,
         event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
@@ -149,6 +155,10 @@ class FastPathEndpoints(ABC):
             Maximum age of events (relative to the observation time) that are processed.
         num_time_anchors
             Number of grid points used to discretize elapsed time.
+            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
+        time_anchor_interval
+            Time interval between anchor embeddings in the grid.
+            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
         event_node_categorical_properties
             Event node properties holding categorical values.
         relationship_types
@@ -195,7 +205,8 @@ class FastPathEndpoints(ABC):
         write_property: str,
         embedding_dimension: int,
         lookback_horizon: int,
-        num_time_anchors: int,
+        num_time_anchors: int | None = None,
+        time_anchor_interval: float | None = None,
         *,
         event_node_categorical_properties: list[str] = [],
         relationship_types: list[str] = ALL_TYPES,
@@ -233,6 +244,10 @@ class FastPathEndpoints(ABC):
             Maximum age of events (relative to the observation time) that are processed.
         num_time_anchors
             Number of grid points used to discretize elapsed time.
+            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
+        time_anchor_interval
+            Time interval between anchor embeddings in the grid.
+            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
         event_node_categorical_properties
             Event node properties holding categorical values.
         relationship_types
