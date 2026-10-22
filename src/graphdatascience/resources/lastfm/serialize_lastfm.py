@@ -18,7 +18,7 @@ def readlines(path: str) -> list[str]:
 # artist_df
 # artist_df['labels'] = 'Artist'
 # artist_df['nodeId'] = artist_df['nodeId'] + 10000
-# artist_df.reset_index(drop=True, inplace=True)
+# artist_df = artist_df.reset_index(drop=True)
 
 # User LISTEN_TO Artist relationships
 user_listen_artist_lines = readlines("raw/user_artists.dat")
@@ -30,12 +30,12 @@ user_artist_df["weight"] = user_artist_df["weight"].astype(int)
 # Increment artists ids to avoid clash with usrs ids
 user_artist_df["targetNodeId"] = user_artist_df["targetNodeId"] + 10000
 user_artist_df["relationshipType"] = "LISTEN_TO"
-user_artist_df.reset_index(drop=True, inplace=True)
+user_artist_df = user_artist_df.reset_index(drop=True)
 
 # User nodes
 user_df = pd.DataFrame({"nodeId": user_artist_df["sourceNodeId"].drop_duplicates(), "labels": "User"})
 user_df["rawId"] = user_df["nodeId"]
-user_df.reset_index(drop=True, inplace=True)
+user_df = user_df.reset_index(drop=True)
 
 # User TAG Artist relationships
 user_tag_dmy = readlines("raw/user_taggedartists.dat")
@@ -69,7 +69,7 @@ user_tag_artist_df["timestamp"] = user_tag_artist_df["timestamp"].astype(int)
 user_tag_artist_df["day"] = user_tag_artist_df["day"].astype(int)
 user_tag_artist_df["month"] = user_tag_artist_df["month"].astype(int)
 user_tag_artist_df["year"] = user_tag_artist_df["year"].astype(int)
-user_tag_artist_df.reset_index(drop=True, inplace=True)
+user_tag_artist_df = user_tag_artist_df.reset_index(drop=True)
 
 # User FRIEND User relationships
 user_friends = readlines("raw/user_friends.dat")
@@ -82,7 +82,7 @@ user_friend_df_directed = sorted_user_friend_df.drop_duplicates()
 user_friend_df_directed["relationshipType"] = "IS_FRIEND"
 user_friend_df_directed["sourceNodeId"] = user_friend_df_directed["sourceNodeId"].astype(int)
 user_friend_df_directed["targetNodeId"] = user_friend_df_directed["targetNodeId"].astype(int)
-user_friend_df_directed.reset_index(drop=True, inplace=True)
+user_friend_df_directed = user_friend_df_directed.reset_index(drop=True)
 
 # Artists
 artists_df1 = user_artist_df[["targetNodeId"]].drop_duplicates().reset_index(drop=True)

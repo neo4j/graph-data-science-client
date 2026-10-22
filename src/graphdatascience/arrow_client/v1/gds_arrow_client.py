@@ -83,7 +83,7 @@ class GdsArrowClient:
 
         result = self._get_data(graph_name, database, proc, concurrency, config)
         if list_node_labels:
-            result.rename(columns={"labels": "nodeLabels"}, inplace=True)
+            result = result.rename(columns={"labels": "nodeLabels"})
 
         return result
 

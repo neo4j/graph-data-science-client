@@ -31,7 +31,7 @@ class QueryProgressProvider(ProgressProvider):
         # compute depth of each subtask
         progress["trimmedName"] = progress["taskName"].str.lstrip()
         progress["depth"] = progress["taskName"].str.len() - progress["trimmedName"].str.len()
-        progress.sort_values("depth", ascending=True, inplace=True)
+        progress = progress.sort_values("depth", ascending=True)
 
         root_task = progress.iloc[0]
         root_progress_percent = root_task["progress"]

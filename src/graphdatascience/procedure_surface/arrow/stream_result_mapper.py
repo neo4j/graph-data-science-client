@@ -3,50 +3,51 @@ from typing import Callable
 from pandas import DataFrame, isna
 
 
-def rename_similarity_stream_result(result: DataFrame) -> None:
-    result.rename(columns={"sourceNodeId": "node1", "targetNodeId": "node2"}, inplace=True)
+def rename_similarity_stream_result(result: DataFrame) -> DataFrame:
+    result = result.rename(columns={"sourceNodeId": "node1", "targetNodeId": "node2"})
     if "relationshipType" in result.columns:
-        result.drop(columns=["relationshipType"], inplace=True)
+        result = result.drop(columns=["relationshipType"])
+    return result
 
 
-def map_shortest_path_stream_result(result: DataFrame) -> None:
-    result.rename(
+def map_shortest_path_stream_result(result: DataFrame) -> DataFrame:
+    result = result.rename(
         columns={
             "sourceNodeId": "sourceNode",
             "targetNodeId": "targetNode",
-        },
-        inplace=True,
+        }
     )
-    result.drop(columns=["relationshipType"], inplace=True)
+    result = result.drop(columns=["relationshipType"])
 
     # add an index column to the result DataFrame with just a range from 0 to len(result)-1
     result["index"] = range(len(result))
 
+    return result
 
-def map_max_flow_stream_result(result: DataFrame) -> None:
-    result.rename(
+
+def map_max_flow_stream_result(result: DataFrame) -> DataFrame:
+    result = result.rename(
         columns={
             "sourceNodeId": "source",
             "targetNodeId": "target",
-        },
-        inplace=True,
+        }
     )
-    result.drop(columns=["relationshipType"], inplace=True)
+    result = result.drop(columns=["relationshipType"])
+
+    return result
 
 
-def map_all_shortest_path_stream_result(result: DataFrame) -> None:
-    result.drop(columns=["relationshipType"], inplace=True)
+def map_all_shortest_path_stream_result(result: DataFrame) -> DataFrame:
+    return result.drop(columns=["relationshipType"])
 
 
-def map_topological_sort_stream_result(result: DataFrame) -> None:
+def map_topological_sort_stream_result(result: DataFrame) -> DataFrame:
     # The Arrow result carries an `index` column encoding the topological order; sort by it and drop it.
-    result.sort_values("index", inplace=True)
-    result.drop(columns=["index"], inplace=True)
-    result.reset_index(drop=True, inplace=True)
+    return result.sort_values("index").drop(columns=["index"]).reset_index(drop=True)
 
 
 def aggregate_traversal_rels(result: DataFrame, source_node: int) -> DataFrame:
-    result.drop(columns=["sourceNodeId", "relationshipType"], inplace=True)
+    result = result.drop(columns=["sourceNodeId", "relationshipType"])
 
     # Aggregate targetNodes + index column into a list
     node_ids = result.sort_values("index")["targetNodeId"].values
@@ -67,52 +68,48 @@ def aggregate_traversal_rels_from_result(result: DataFrame) -> DataFrame:
     return aggregate_traversal_rels(result, source_node)
 
 
-def map_steiner_tree_stream_result(result: DataFrame) -> None:
-    result.rename(
+def map_steiner_tree_stream_result(result: DataFrame) -> DataFrame:
+    result = result.rename(
         columns={
             "sourceNodeId": "nodeId",
             "targetNodeId": "parentId",
-        },
-        inplace=True,
+        }
     )
     if "relationshipType" in result.columns:
-        result.drop(columns=["relationshipType"], inplace=True)
+        result = result.drop(columns=["relationshipType"])
+    return result
 
 
-def map_conductance_stream_result(result: DataFrame) -> None:
-    result.rename(
-        columns={"communityId": "community"},
-        inplace=True,
-    )
+def map_conductance_stream_result(result: DataFrame) -> DataFrame:
+    return result.rename(columns={"communityId": "community"})
 
 
-def map_sllpa_stream_result(result: DataFrame) -> None:
-    result.rename(columns={"community": "values"}, inplace=True)
+def map_sllpa_stream_result(result: DataFrame) -> DataFrame:
+    return result.rename(columns={"community": "values"})
 
 
-def map_clique_counting_stream_result(result: DataFrame) -> None:
-    result.rename(columns={"cliqueCount": "counts"}, inplace=True)
+def map_clique_counting_stream_result(result: DataFrame) -> DataFrame:
+    return result.rename(columns={"cliqueCount": "counts"})
 
 
-def map_node_properties_stream_result(result: DataFrame) -> None:
-    result.rename(columns={"labels": "nodeLabels"}, inplace=True)
+def map_node_properties_stream_result(result: DataFrame) -> DataFrame:
+    return result.rename(columns={"labels": "nodeLabels"})
 
 
-def map_scale_properties_stream_result(result: DataFrame) -> None:
-    result.rename(columns={"scaledProperties": "scaledProperty"}, inplace=True)
+def map_scale_properties_stream_result(result: DataFrame) -> DataFrame:
+    return result.rename(columns={"scaledProperties": "scaledProperty"})
 
 
-def map_graphsage_supervised_predict_stream_result(result: DataFrame) -> None:
-    result.rename(
+def map_graphsage_supervised_predict_stream_result(result: DataFrame) -> DataFrame:
+    return result.rename(
         columns={
             "predicted_class": "predictedClass",
             "predicted_probabilities": "predictedProbabilities",
-        },
-        inplace=True,
+        }
     )
 
 
-def map_articulation_points_stream_result(result: DataFrame) -> None:
+def map_articulation_points_stream_result(result: DataFrame) -> DataFrame:
     min_sizes = result["minComponentSize"]
     max_sizes = result["maxComponentSize"]
     counts = result["componentCount"]
@@ -125,10 +122,10 @@ def map_articulation_points_stream_result(result: DataFrame) -> None:
             resulting_components.append(None)
 
     result["resultingComponents"] = resulting_components  # type: ignore[assignment]
-    result.drop(columns=["score", "minComponentSize", "maxComponentSize", "componentCount"], inplace=True)
+    return result.drop(columns=["score", "minComponentSize", "maxComponentSize", "componentCount"])
 
 
-_STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame | None]] = {
+_STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame]] = {
     "v2/similarity.knn": rename_similarity_stream_result,
     "v2/similarity.knn.filtered": rename_similarity_stream_result,
     "v2/similarity.nodeSimilarity": rename_similarity_stream_result,
@@ -161,12 +158,8 @@ _STREAM_MAPPERS: dict[str, Callable[[DataFrame], DataFrame | None]] = {
 
 
 def apply_stream_mapper(endpoint: str, result: DataFrame) -> DataFrame:
-    """Apply the endpoint-specific stream result mapper.
-
-    Mappers may mutate the DataFrame in place (returning ``None``) or return a new one.
-    """
+    """Apply the endpoint-specific stream result mapper, returning the mapped DataFrame."""
     mapper = _STREAM_MAPPERS.get(endpoint)
     if mapper is None:
         return result
-    mapped = mapper(result)
-    return mapped if mapped is not None else result
+    return mapper(result)

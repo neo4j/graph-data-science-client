@@ -26,7 +26,7 @@ nodes_features_df["plot_keywords"] = nodes_features_df.values.tolist()
 nodes_features_df = nodes_features_df["plot_keywords"].reset_index().rename(columns={"index": "nodeId"})
 
 movie_nodes_with_features = movies.merge(nodes_features_df, on="nodeId", how="left")
-movie_nodes_with_features.reset_index(drop=True, inplace=True)
+movie_nodes_with_features = movie_nodes_with_features.reset_index(drop=True)
 
 other_nodes_with_features = (
     pd.merge(nodes_features_df, movies, on=["nodeId"], how="left", indicator=True)
@@ -37,17 +37,17 @@ other_nodes_with_features = (
 unlabeled_movies = other_nodes_with_features["nodeId"] < 4661
 unlabeled_movies_df = other_nodes_with_features[unlabeled_movies]
 unlabeled_movies_df["labels"] = "UnclassifiedMovie"
-unlabeled_movies_df.reset_index(drop=True, inplace=True)
+unlabeled_movies_df = unlabeled_movies_df.reset_index(drop=True)
 
 directors_df = other_nodes_with_features[
     (other_nodes_with_features["nodeId"] >= 4661) & (other_nodes_with_features["nodeId"] <= 6930)
 ]
 directors_df["labels"] = "Director"
-directors_df.reset_index(drop=True, inplace=True)
+directors_df = directors_df.reset_index(drop=True)
 
 actors_df = other_nodes_with_features[(other_nodes_with_features["nodeId"] >= 6931)]
 actors_df["labels"] = "Actor"
-actors_df.reset_index(drop=True, inplace=True)
+actors_df = actors_df.reset_index(drop=True)
 
 movie_nodes_with_features.to_parquet(
     "/FILE_LOC/imdb_movies_with_genre.parquet.gzip",
@@ -87,8 +87,8 @@ edge_list[1]["relationshipType"] = "DIRECTED_IN"
 edge_list[2]["relationshipType"] = "ACTED_IN"
 edge_list[3]["relationshipType"] = "ACTED_IN"
 
-edge_list[1].reset_index(drop=True, inplace=True)
-edge_list[3].reset_index(drop=True, inplace=True)
+edge_list[1] = edge_list[1].reset_index(drop=True)
+edge_list[3] = edge_list[3].reset_index(drop=True)
 
 edge_list[1].to_parquet(
     "/FILE_LOC/imdb_directed_in_rels.parquet.gzip",
