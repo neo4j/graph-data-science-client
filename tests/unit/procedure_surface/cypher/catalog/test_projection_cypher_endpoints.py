@@ -94,7 +94,16 @@ def test_cypher_projection_empty_result_gives_clear_error() -> None:
     runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"RETURN gds.graph.project": pd.DataFrame(columns=["g"])})
     endpoints = ProjectCypherEndpoints(runner)
 
-    with pytest.raises(ValueError, match="produced no rows"):
+    with pytest.raises(ValueError, match="matched no data"):
+        endpoints.cypher("MATCH (n)-->(m) RETURN gds.graph.project('g', n, m)")
+
+
+def test_cypher_projection_null_result_gives_clear_error() -> None:
+    # An aggregation over no rows returns a single row containing null
+    runner = CollectingQueryRunner(DEFAULT_SERVER_VERSION, {"RETURN gds.graph.project": pd.DataFrame({"g": [None]})})
+    endpoints = ProjectCypherEndpoints(runner)
+
+    with pytest.raises(ValueError, match="matched no data"):
         endpoints.cypher("MATCH (n)-->(m) RETURN gds.graph.project('g', n, m)")
 
 

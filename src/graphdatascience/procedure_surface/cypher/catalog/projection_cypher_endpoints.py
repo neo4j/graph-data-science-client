@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import builtins
+import math
 from types import TracebackType
 from typing import Any, NamedTuple, Type
 
@@ -194,14 +195,14 @@ class ProjectCypherEndpoints:
             query, QueryType.USER_DIRECTED, params, custom_error=False, mode=QueryMode.READ
         )
 
-        if result_df.empty:
+        result = result_df.squeeze() if not result_df.empty else None
+
+        if result is None or (isinstance(result, float) and math.isnan(result)):
             raise ValueError(
-                "The Cypher projection query produced no rows. "
+                "The Cypher projection query matched no data, so no graph was created. "
                 "Please check that the query matches the expected data. "
                 f"Query: {query}"
             )
-
-        result = result_df.squeeze()
 
         if not isinstance(result, dict):
             raise ValueError(
