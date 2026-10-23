@@ -311,6 +311,7 @@ def test_filter_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> Non
 
     drop_spy.assert_not_called()
 
+
 def test_construct_registers_graph_mapping(mocker: MockerFixture) -> None:
     endpoints = _construct_endpoints(mocker, "job_123")
     endpoints._graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
@@ -325,20 +326,22 @@ def test_construct_registers_graph_mapping(mocker: MockerFixture) -> None:
 def test_generate_registers_graph_mapping(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    endpoints._graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
+    graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
+    endpoints._graph_mapping_context = graph_mapping_context
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_generate_summary())
     mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
 
     endpoints.generate("g", 4, 2.5)
 
-    endpoints._graph_mapping_context.register.assert_called_once_with("g")
+    graph_mapping_context.register.assert_called_once_with("g")
 
 
 def test_filter_registers_graph_mapping(mocker: MockerFixture) -> None:
     arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
     endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
-    endpoints._graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
+    graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
+    endpoints._graph_mapping_context = graph_mapping_context
     mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
     mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_filter_summary())
     mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
@@ -347,4 +350,4 @@ def test_filter_registers_graph_mapping(mocker: MockerFixture) -> None:
 
     endpoints.filter(G, "filtered", "true", "true")
 
-    endpoints._graph_mapping_context.register.assert_called_once_with("filtered")
+    graph_mapping_context.register.assert_called_once_with("filtered")
