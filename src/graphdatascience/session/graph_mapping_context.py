@@ -53,12 +53,3 @@ class GraphMappingContext:
             logging.getLogger(__name__).warning(
                 f"Failed to delete the graph mapping for graph `{graph_name}` (session `{self.session_id}`): {e}"
             )
-
-    def mappings(self, graph_name: str | None = None) -> list[GraphMapping]:
-        """Lists the graph mapping entries for the given `graph_name`,
-           filtered by the provided `session_id` attribute of this class"""
-        return [
-            mapping
-            for mapping in self.graph_mappings.list(self.database_username, self.database_uuid, graph_name)
-            if mapping.session_id == self.session_id
-        ]

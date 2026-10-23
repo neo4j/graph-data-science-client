@@ -9,6 +9,7 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.arrow_client.v2.api_types import JobStatus
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints import CatalogArrowEndpoints
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 CATALOG_MODULE = "graphdatascience.procedure_surface.arrow.catalog.catalog_arrow_endpoints"
@@ -309,3 +310,41 @@ def test_filter_rejects_name_equal_to_source_graph(mocker: MockerFixture) -> Non
         endpoints.filter(G, "g", "true", "true", overwrite=True)
 
     drop_spy.assert_not_called()
+
+def test_construct_registers_graph_mapping(mocker: MockerFixture) -> None:
+    endpoints = _construct_endpoints(mocker, "job_123")
+    endpoints._graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
+    register_spy = mocker.patch.object(endpoints._graph_mapping_context, "register")
+
+    with patch_gds_arrow_client("job_123"):
+        endpoints.construct(graph_name="g", nodes=_construct_nodes(), relationships=[])
+
+    register_spy.assert_called_once_with("g")
+
+
+def test_generate_registers_graph_mapping(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
+    endpoints._graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
+    mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
+    mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_generate_summary())
+    mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
+
+    endpoints.generate("g", 4, 2.5)
+
+    endpoints._graph_mapping_context.register.assert_called_once_with("g")
+
+
+def test_filter_registers_graph_mapping(mocker: MockerFixture) -> None:
+    arrow_client = mocker.Mock(spec=AuthenticatedArrowClient)
+    endpoints = CatalogArrowEndpoints(arrow_client=arrow_client)
+    endpoints._graph_mapping_context = mocker.Mock(spec=GraphMappingContext)
+    mocker.patch(f"{CATALOG_MODULE}.JobClient.run_job_and_wait", return_value="job-1")
+    mocker.patch(f"{CATALOG_MODULE}.JobClient.get_summary", return_value=_filter_summary())
+    mocker.patch(f"{CATALOG_MODULE}.get_graph", return_value=mocker.Mock())
+
+    G = Graph("g", mocker.Mock())
+
+    endpoints.filter(G, "filtered", "true", "true")
+
+    endpoints._graph_mapping_context.register.assert_called_once_with("filtered")
