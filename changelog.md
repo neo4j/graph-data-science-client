@@ -7,6 +7,7 @@
 
 * `GdsSessions.get_or_create` can attach a session to a virtual graph or composite instance.
   The instance type is detected from the connected database.
+* It is now possible to work with graphs that were projected via CypherApi and vice versa. This includes all supported graph operations and algorithm calls.
 
 ## Bug fixes
 
