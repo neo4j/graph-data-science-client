@@ -15,13 +15,13 @@ class GraphMappingContext:
     and the API to manage them. Present only for sessions attached to an AuraDB with
     resolvable identity; all interoperability hooks are no-ops when it is absent.
 
-    `database_uuid` mirrors the Aura API field name and holds the Aura database id,
+    `database_id` corresponds to the Aura API field `database_uuid` and holds the Aura database id,
     or the Aura instance id for single-db instances.
     """
 
     session_id: str
     database_username: str
-    database_uuid: str
+    database_id: str
     graph_mappings: GraphMappings
 
     @classmethod
@@ -30,15 +30,15 @@ class GraphMappingContext:
         aura_api: AuraApi,
         session_id: str,
         database_username: str,
-        database_uuid: str,
+        database_id: str,
     ) -> GraphMappingContext:
-        return cls(session_id, database_username, database_uuid, GraphMappings(aura_api))
+        return cls(session_id, database_username, database_id, GraphMappings(aura_api))
 
     def register(self, graph_name: str) -> None:
         # Best effort: a failed registration must not fail the graph operation that
         # created the graph. The graph remains fully usable within this session.
         try:
-            self.graph_mappings.create(self.session_id, graph_name, self.database_username, self.database_uuid)
+            self.graph_mappings.create(self.session_id, graph_name, self.database_username, self.database_id)
         except Exception as e:
             logging.getLogger(__name__).warning(
                 f"Failed to register the graph mapping for graph `{graph_name}` (session `{self.session_id}`): {e}"
@@ -48,7 +48,7 @@ class GraphMappingContext:
         # Best effort: a failed unregistering only leaves an orphaned mapping behind,
         # which is cleaned up together with its session.
         try:
-            self.graph_mappings.delete(graph_name, self.database_username, self.database_uuid)
+            self.graph_mappings.delete(graph_name, self.database_username, self.database_id)
         except Exception as e:
             logging.getLogger(__name__).warning(
                 f"Failed to delete the graph mapping for graph `{graph_name}` (session `{self.session_id}`): {e}"

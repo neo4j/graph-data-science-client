@@ -136,7 +136,7 @@ def test_register_is_best_effort(mocker) -> None:
     context = GraphMappingContext(
         session_id="session-1",
         database_username="neo4j",
-        database_uuid="db-uuid",
+        database_id="db-uuid",
         graph_mappings=graph_mappings,
     )
 
@@ -155,7 +155,7 @@ def test_unregister_is_best_effort(mocker) -> None:
     context = GraphMappingContext(
         session_id="session-1",
         database_username="neo4j",
-        database_uuid="db-uuid",
+        database_id="db-uuid",
         graph_mappings=graph_mappings,
     )
 
