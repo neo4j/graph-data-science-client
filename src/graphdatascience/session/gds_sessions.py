@@ -22,7 +22,12 @@ from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
-from graphdatascience.session.session_target import AttachedTarget, SelfManagedTarget, SessionTarget, SessionTargetResolver
+from graphdatascience.session.session_target import (
+    AttachedTarget,
+    SelfManagedTarget,
+    SessionTarget,
+    SessionTargetResolver,
+)
 
 
 def _humanize_duration(duration: timedelta) -> str:

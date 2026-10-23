@@ -1,7 +1,5 @@
-from typing import cast
-
+from pytest_mock import MockerFixture
 from requests_mock import Mocker
-from requests_mock.request import _RequestObjectProxy
 
 from graphdatascience.session.aura_api import AuraApi
 from graphdatascience.session.aura_api_responses import GraphMapping
@@ -24,11 +22,13 @@ def _api() -> AuraApi:
 def _graph_mappings() -> GraphMappings:
     return GraphMappings(_api())
 
+
 def mock_auth_token(requests_mock: Mocker) -> None:
     requests_mock.post(
         "https://api.neo4j.io/oauth/token",
         json={"access_token": "very_short_token", "expires_in": 500, "token_type": "Bearer"},
     )
+
 
 def test_create_graph_mapping(requests_mock: Mocker) -> None:
     mock_auth_token(requests_mock)
@@ -41,7 +41,7 @@ def test_create_graph_mapping(requests_mock: Mocker) -> None:
         session_id="session-1", graph_name="g", database_username="neo4j", database_uuid="db-uuid"
     )
 
-    request = cast(_RequestObjectProxy, requests_mock.request_history[-1])
+    request = requests_mock.request_history[-1]
     assert request.method == "POST"
     assert request.json() == {
         "graph_name": "g",
@@ -61,7 +61,7 @@ def test_list_graph_mappings(requests_mock: Mocker) -> None:
 
     mappings = _graph_mappings().list(database_username="neo4j", database_uuid="db-uuid")
 
-    request = cast(_RequestObjectProxy, requests_mock.request_history[-1])
+    request = requests_mock.request_history[-1]
     assert request.method == "GET"
     assert request.qs == {"databaseusername": ["neo4j"], "databaseuuid": ["db-uuid"]}
     assert mappings == [GraphMapping.from_json(MAPPING_JSON)]
@@ -76,7 +76,7 @@ def test_list_graph_mappings_with_graph_name_filter(requests_mock: Mocker) -> No
 
     _graph_mappings().list(database_username="neo4j", database_uuid="db-uuid", graph_name="g")
 
-    request = cast(_RequestObjectProxy, requests_mock.request_history[-1])
+    request = requests_mock.request_history[-1]
     assert request.qs == {"databaseusername": ["neo4j"], "databaseuuid": ["db-uuid"], "graphname": ["g"]}
 
 
@@ -89,7 +89,7 @@ def test_delete_graph_mapping(requests_mock: Mocker) -> None:
 
     deleted = _graph_mappings().delete(graph_name="g", database_username="neo4j", database_uuid="db-uuid")
 
-    request = cast(_RequestObjectProxy, requests_mock.request_history[-1])
+    request = requests_mock.request_history[-1]
     assert request.method == "DELETE"
     assert request.json() == {
         "graph_name": "g",
@@ -127,7 +127,7 @@ def test_create_graph_mapping_with_errors(requests_mock: Mocker) -> None:
         assert "some message" in str(e)
 
 
-def test_register_is_best_effort(mocker) -> None:
+def test_register_is_best_effort(mocker: MockerFixture) -> None:
     from graphdatascience.session.graph_mapping_context import GraphMappingContext
 
     graph_mappings = mocker.Mock()
@@ -146,7 +146,7 @@ def test_register_is_best_effort(mocker) -> None:
     graph_mappings.create.assert_called_once_with("session-1", "g", "neo4j", "db-uuid")
 
 
-def test_unregister_is_best_effort(mocker) -> None:
+def test_unregister_is_best_effort(mocker: MockerFixture) -> None:
     from graphdatascience.session.graph_mapping_context import GraphMappingContext
 
     graph_mappings = mocker.Mock()

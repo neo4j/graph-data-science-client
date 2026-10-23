@@ -4,7 +4,6 @@ import logging
 from dataclasses import dataclass
 
 from graphdatascience.session.aura_api import AuraApi
-from graphdatascience.session.aura_api_responses import GraphMapping
 from graphdatascience.session.graph_mappings_api import GraphMappings
 
 

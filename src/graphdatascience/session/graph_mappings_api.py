@@ -20,18 +20,12 @@ class GraphMappings:
     def __init__(self, aura_api: AuraApi) -> None:
         self._aura_api = aura_api
 
-    def create(
-        self,
-        session_id: str,
-        graph_name: str,
-        database_username: str,
-        database_uuid: str
-    ) -> GraphMapping:
+    def create(self, session_id: str, graph_name: str, database_username: str, database_uuid: str) -> GraphMapping:
         json = {
             "graph_name": graph_name,
             "database_username": database_username,
             "database_uuid": database_uuid,
-            "linked": False, # will be always false because the python client always creates sessions explicitly
+            "linked": False,  # will be always false because the python client always creates sessions explicitly
         }
 
         response = self._aura_api._request_session.post(
