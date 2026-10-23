@@ -22,7 +22,7 @@ from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.session_info import SessionInfo
 from graphdatascience.session.session_lifecycle_manager import SessionLifecycleManager
 from graphdatascience.session.session_sizes import SessionMemory, SessionMemoryValue
-from graphdatascience.session.session_target import SelfManagedTarget, SessionTargetResolver
+from graphdatascience.session.session_target import AttachedTarget, SelfManagedTarget, SessionTarget, SessionTargetResolver
 
 
 def _humanize_duration(duration: timedelta) -> str:
@@ -254,7 +254,7 @@ class GdsSessions:
 
         arrow_authentication = AuraApiTokenAuthentication(self._aura_api)
 
-        graph_mapping_context = self._graph_mapping_context(session_details, db_connection, aura_instance_id)
+        graph_mapping_context = self._graph_mapping_context(session_details, target)
 
         return self._construct_client(
             session_details.id,
@@ -432,15 +432,14 @@ class GdsSessions:
     def _graph_mapping_context(
         self,
         session_details: SessionDetails,
-        db_connection: DbmsConnectionInfo | None,
-        aura_instance_id: str | None,
+        target: SessionTarget,
     ) -> GraphMappingContext | None:
-        if db_connection is None or not aura_instance_id:
+        if not isinstance(target, AttachedTarget):
             return None
 
         return GraphMappingContext.from_aura_api(
             self._aura_api,
             session_details.id,
             session_details.user_id,
-            db_connection.aura_database_id or aura_instance_id,
+            target.database_id or target.instance_id,
         )
