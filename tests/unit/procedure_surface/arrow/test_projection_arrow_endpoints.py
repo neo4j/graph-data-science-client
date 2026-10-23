@@ -5,6 +5,7 @@ from pytest_mock import MockerFixture
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.procedure_surface.arrow.catalog.projection_arrow_endpoints import ProjectArrowEndpoints
 from graphdatascience.session.dbms.protocol_version import ProtocolVersion
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 
 PROJECTION_MODULE = "graphdatascience.procedure_surface.arrow.catalog.projection_arrow_endpoints"
 
@@ -35,6 +36,29 @@ def _endpoints_with_mocked_projection(
 
     endpoints = ProjectArrowEndpoints(arrow_client=arrow_client, query_runner=query_runner, show_progress=show_progress)
     return endpoints, runner_cls.return_value
+
+
+def _endpoints_with_mocked_mapping_context(mocker: MockerFixture) -> tuple[ProjectArrowEndpoints, mock.Mock]:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    mapping_context = mocker.Mock(spec=GraphMappingContext)
+    endpoints._graph_mapping_context = mapping_context
+    return endpoints, mapping_context
+
+
+def test_cypher_registers_graph_mapping(mocker: MockerFixture) -> None:
+    endpoints, mapping_context = _endpoints_with_mocked_mapping_context(mocker)
+
+    endpoints.cypher("g", "MATCH (n) RETURN gds.graph.project.remote(n, n)")
+
+    mapping_context.register.assert_called_once_with("g")
+
+
+def test_native_registers_graph_mapping(mocker: MockerFixture) -> None:
+    endpoints, mapping_context = _endpoints_with_mocked_mapping_context(mocker)
+
+    endpoints.native("g", ["A"], ["REL"])
+
+    mapping_context.register.assert_called_once_with("g")
 
 
 def test_cypher_logs_when_show_progress_enabled(mocker: MockerFixture) -> None:

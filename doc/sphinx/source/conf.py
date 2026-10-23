@@ -67,6 +67,7 @@ nitpick_ignore = [
         "graphdatascience.embedding.config.GraphSAGEConfig.depth_validator",
     ),
     ("py:class", "graphdatascience.procedure_surface.api.write_protocol.WriteProtocol"),
+    ("py:class", "graphdatascience.session.graph_mappings_api.GraphMappings"),
 ]
 
 # Remaining nitpicky warnings are bare builtins, pydantic/annotated-types field

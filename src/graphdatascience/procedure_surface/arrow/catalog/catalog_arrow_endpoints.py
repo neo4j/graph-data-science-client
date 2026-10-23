@@ -43,6 +43,7 @@ from graphdatascience.procedure_surface.arrow.catalog.relationship_arrow_endpoin
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
@@ -54,10 +55,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         arrow_client: AuthenticatedArrowClient,
         query_runner: QueryRunner | None = None,
         show_progress: bool = False,
+        graph_mapping_context: GraphMappingContext | None = None,
     ):
         self._arrow_client = arrow_client
         self._query_runner = query_runner
-        self._graph_ops = GraphOpsArrow(arrow_client)
+        self._graph_mapping_context = graph_mapping_context
+        self._graph_ops = GraphOpsArrow(arrow_client, graph_mapping_context)
         self._show_progress = show_progress
         self._write_protocol: WriteProtocol | None = None
         if query_runner is not None:
@@ -68,7 +71,12 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         """
         Provides access to the project endpoints.
         """
-        return ProjectArrowEndpoints(self._arrow_client, self._query_runner, self._show_progress)
+        return ProjectArrowEndpoints(
+            self._arrow_client,
+            self._query_runner,
+            self._show_progress,
+            graph_mapping_context=self._graph_mapping_context,
+        )
 
     def get(self, graph_name: str) -> Graph:
         if not self.list(graph_name):
@@ -109,6 +117,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             self._show_progress,
         )
         constructor.run(nodes, relationships)
+        if self._graph_mapping_context:
+            self._graph_mapping_context.register(graph_name)
         return get_graph(graph_name, self._arrow_client)
 
     def drop(self, G: Graph | str | List[Graph | str], fail_if_missing: bool = True) -> List[GraphInfo]:
@@ -164,6 +174,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.project.filter", config, show_progress=self._show_progress
         )
+        if self._graph_mapping_context:
+            self._graph_mapping_context.register(graph_name)
 
         return GraphWithFilterResult(
             get_graph(graph_name, self._arrow_client),
@@ -207,7 +219,13 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         started_job_id = JobClient.run_job(self._arrow_client, "v2/graph.project.filter", config)
 
-        return ProjectionJobHandle(self._arrow_client, graph_name, started_job_id, TerminationFlag.create())
+        return ProjectionJobHandle(
+            self._arrow_client,
+            graph_name,
+            started_job_id,
+            TerminationFlag.create(),
+            graph_mapping_context=self._graph_mapping_context,
+        )
 
     def generate(
         self,
@@ -252,6 +270,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
         job_id = JobClient.run_job_and_wait(
             self._arrow_client, "v2/graph.generate", config, show_progress=show_progress
         )
+        if self._graph_mapping_context:
+            self._graph_mapping_context.register(graph_name)
 
         return GraphWithGenerationStats(
             get_graph(graph_name, self._arrow_client),
@@ -303,7 +323,13 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
         started_job_id = JobClient.run_job(self._arrow_client, "v2/graph.generate", config)
 
-        return ProjectionJobHandle(self._arrow_client, graph_name, started_job_id, TerminationFlag.create())
+        return ProjectionJobHandle(
+            self._arrow_client,
+            graph_name,
+            started_job_id,
+            TerminationFlag.create(),
+            graph_mapping_context=self._graph_mapping_context,
+        )
 
     def list(self, G: Graph | str | None = None) -> list[GraphInfoWithDegrees]:
         graph_name: str | None = None
@@ -320,7 +346,11 @@ class CatalogArrowEndpoints(CatalogEndpoints):
 
     @property
     def sample(self) -> GraphSamplingEndpoints:
-        return GraphSamplingArrowEndpoints(self._arrow_client, show_progress=self._show_progress)
+        return GraphSamplingArrowEndpoints(
+            self._arrow_client,
+            show_progress=self._show_progress,
+            graph_mapping_context=self._graph_mapping_context,
+        )
 
     @property
     def node_labels(self) -> NodeLabelEndpoints:

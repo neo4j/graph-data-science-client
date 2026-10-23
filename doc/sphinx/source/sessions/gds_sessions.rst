@@ -26,3 +26,7 @@ GDS Sessions
 .. autoclass:: graphdatascience.session.gds_sessions.SessionInfo
     :members:
     :inherited-members:
+
+.. autoclass:: graphdatascience.session.graph_mapping_context.GraphMappingContext
+    :members:
+    :inherited-members:

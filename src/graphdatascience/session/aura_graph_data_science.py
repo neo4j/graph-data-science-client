@@ -194,6 +194,7 @@ from graphdatascience.query_runner.neo4j_query_runner import Neo4jQueryRunner
 from graphdatascience.query_runner.query_mode import QueryMode
 from graphdatascience.query_runner.query_type import QueryType
 from graphdatascience.session.dbms_connection_info import DbmsConnectionInfo
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 from graphdatascience.session.session_lifecycle_manager import LifecycleManager
 
@@ -217,6 +218,7 @@ class AuraGraphDataScience:
         arrow_client_options: dict[str, Any] | None = None,
         bookmarks: neo4j.Bookmarks | None = None,
         show_progress: bool = True,
+        graph_mapping_context: GraphMappingContext | None = None,
     ) -> AuraGraphDataScience:
         authenticated_arrow_client = AuthenticatedArrowClient(
             session_connection_info,
@@ -247,6 +249,7 @@ class AuraGraphDataScience:
             db_query_runner,
             session_lifecycle_manager=session_lifecycle_manager,
             show_progress=show_progress,
+            graph_mapping_context=graph_mapping_context,
         )
 
     def __init__(
@@ -255,6 +258,7 @@ class AuraGraphDataScience:
         db_query_runner: QueryRunner | None,
         session_lifecycle_manager: LifecycleManager,
         show_progress: bool = True,
+        graph_mapping_context: GraphMappingContext | None = None,
     ):
         self._authenticated_arrow_client = authenticated_arrow_client
         self._db_query_runner = db_query_runner
@@ -263,6 +267,7 @@ class AuraGraphDataScience:
             self._write_protocol = WriteProtocol.select(authenticated_arrow_client, db_query_runner)
         self._session_lifecycle_manager = session_lifecycle_manager
         self._show_progress = show_progress
+        self._graph_mapping_context = graph_mapping_context
 
     @property
     def graph(self) -> CatalogArrowEndpoints:
@@ -270,7 +275,10 @@ class AuraGraphDataScience:
         Return graph-related endpoints for graph management.
         """
         return CatalogArrowEndpoints(
-            self._authenticated_arrow_client, self._db_query_runner, show_progress=self._show_progress
+            self._authenticated_arrow_client,
+            self._db_query_runner,
+            show_progress=self._show_progress,
+            graph_mapping_context=self._graph_mapping_context,
         )
 
     @property

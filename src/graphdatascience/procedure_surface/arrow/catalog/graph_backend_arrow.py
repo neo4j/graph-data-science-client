@@ -3,6 +3,7 @@ from graphdatascience.graph import Graph
 from graphdatascience.graph.graph_backend import GraphBackend
 from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
 from graphdatascience.procedure_surface.arrow.catalog.graph_ops_arrow import GraphOpsArrow
+from graphdatascience.session.graph_mapping_context import GraphMappingContext
 
 
 def get_graph(name: str, arrow_client: AuthenticatedArrowClient) -> Graph:
@@ -12,9 +13,14 @@ def get_graph(name: str, arrow_client: AuthenticatedArrowClient) -> Graph:
 
 
 class ArrowGraphBackend(GraphBackend):
-    def __init__(self, name: str, arrow_client: AuthenticatedArrowClient) -> None:
+    def __init__(
+        self,
+        name: str,
+        arrow_client: AuthenticatedArrowClient,
+        graph_mapping_context: GraphMappingContext | None = None,
+    ) -> None:
         self._name = name
-        self._graph_ops = GraphOpsArrow(arrow_client)
+        self._graph_ops = GraphOpsArrow(arrow_client, graph_mapping_context)
 
     def graph_info(self) -> GraphInfoWithDegrees:
         results = self._graph_ops.list(self._name)
