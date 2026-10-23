@@ -69,3 +69,35 @@ def test_aggregation_of() -> None:
 
     with pytest.raises(ValueError, match="Invalid aggregation: 'sum'"):
         Aggregation.of("sum")
+
+
+def write_result() -> dict[str, object]:
+    return {
+        "graphName": "g",
+        "relationshipType": "REL",
+        "relationshipProperty": "weight",
+        "relationshipsWritten": 2,
+        "propertiesWritten": 2,
+        "writeMillis": 1,
+        "configuration": {},
+    }
+
+
+def test_write_forwards_write_concurrency(query_runner: CollectingQueryRunner, graph: Graph) -> None:
+    query_runner.add__mock_result("gds.graph.relationship.write", pd.DataFrame([write_result()]))
+
+    RelationshipCypherEndpoints(query_runner).write(graph, "REL", ["weight"], concurrency=4, write_concurrency=2)
+
+    assert "gds.graph.relationship.write" in query_runner.last_query()
+    config = query_runner.last_params()["config"]
+    assert config["concurrency"] == 4
+    assert config["writeConcurrency"] == 2
+
+
+def test_write_properties_forwards_write_concurrency(query_runner: CollectingQueryRunner, graph: Graph) -> None:
+    query_runner.add__mock_result("gds.graph.relationshipProperties.write", pd.DataFrame([write_result()]))
+
+    RelationshipCypherEndpoints(query_runner).write(graph, "REL", ["weight", "score"], write_concurrency=2)
+
+    assert "gds.graph.relationshipProperties.write" in query_runner.last_query()
+    assert query_runner.last_params()["config"]["writeConcurrency"] == 2
