@@ -28,14 +28,6 @@ In order to run the integration tests one must have a [Neo4j DBMS](https://neo4j
 
 If you want to use just, you can use `just it`.
 
-### V2 endpoints
-
-The integration tests for the V2 endpoints are located in `graphdatascience/tests/integration/v2`.
-In order to run the tests, you need to have Docker running.
-You also need to either bring two Docker images, or configure authenticated access to the GCP repository where the production Docker images are stored.
-
-If you want to use just, you can use `just it-v2`.
-
 ### Bringing your own Docker images
 
 Set the environment variables `NEO4J_DATABASE_IMAGE` and `GDS_SESSION_IMAGE` to the names of the Docker images you want to use.
