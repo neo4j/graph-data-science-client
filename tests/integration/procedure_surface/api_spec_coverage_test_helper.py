@@ -97,15 +97,11 @@ IGNORED_PARAMETERS = {
     r".*node_properties.drop": ["sudo", "log_progress"],
     # single list through gds.model.get instead
     r".*model.list": ["model_name"],
-    # hits lists mutate/write-only params in the shared config block, so they surface on every mode;
-    # ignore them where they don't belong (stream/stats have none; mutate has no write params and vice versa).
-    # HITS is also unweighted (per the GDS docs) but the spec wrongly exposes relationshipWeightProperty,
-    # so ignore it on every mode.
+    # HITS is unweighted (per the GDS docs) but the spec wrongly exposes relationshipWeightProperty,
+    # so ignore it on every mode. The spec also exposes auth/hub properties on stats, which the
+    # client's stats mode does not take.
     r".*hits\.": ["relationship_weight_property"],
-    r".*hits\.stream": ["mutate_property", "write_property", "write_concurrency"],
-    r".*hits\.stats": ["mutate_property", "write_property", "write_concurrency", "auth_property", "hub_property"],
-    r".*hits\.mutate": ["write_property", "write_concurrency"],
-    r".*hits\.write": ["mutate_property"],
+    r".*hits\.stats": ["auth_property", "hub_property"],
 }
 
 EXPECTED_PARAMETER_NAME_ALIASES = {

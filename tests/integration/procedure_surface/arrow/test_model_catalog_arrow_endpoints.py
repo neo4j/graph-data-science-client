@@ -3,7 +3,7 @@ import json
 from typing import Generator
 
 import pytest
-from pyarrow.flight import FlightServerError
+from pyarrow.lib import ArrowException
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
@@ -109,7 +109,7 @@ def test_model_drop(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     no_drop_result = model_catalog.drop("nonexistent-model", fail_if_missing=False)
     assert no_drop_result is None
 
-    with pytest.raises(FlightServerError, match="Model with name `nonexistent-model` does not exist"):
+    with pytest.raises(ArrowException, match="Model with name `nonexistent-model` does not exist"):
         model_catalog.drop("nonexistent-model", fail_if_missing=True)
 
 
@@ -125,7 +125,7 @@ def test_store_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) -
     assert dropped.stored
     assert not dropped.loaded
 
-    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
+    with pytest.raises(ArrowException, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.store("nonexistent-model")
 
 
@@ -143,7 +143,7 @@ def test_load_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints) ->
     assert loaded.stored
     assert loaded.loaded
 
-    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
+    with pytest.raises(ArrowException, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.load("nonexistent-model")
 
 
@@ -155,7 +155,7 @@ def test_publish_model(gs_model_name: str, model_catalog: ModelCatalogEndpoints)
     assert published is not None
     assert published.published
 
-    with pytest.raises(FlightServerError, match=r".*Model with name `nonexistent-model` does not exist.*"):
+    with pytest.raises(ArrowException, match=r".*Model with name `nonexistent-model` does not exist.*"):
         model_catalog.publish("nonexistent-model")
 
 
