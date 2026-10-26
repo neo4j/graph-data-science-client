@@ -30,6 +30,14 @@ jobs:
     outputs:
       gds-api-uri: ${{ steps.get-uri.outputs.gds-api-uri }}
     steps:
+      - name: Patch eMudhra CA compromise (CVE-2026-111943)
+        shell: bash
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install --only-upgrade -y ca-certificates
+          sudo update-ca-certificates --fresh
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - id: get-uri
@@ -77,6 +85,14 @@ jobs:
       pages-modified: ${{ steps.get-file-changes.outputs.pages_modified_files }}
       pages-added: ${{ steps.get-file-changes.outputs.pages_added_files }}
     steps:
+      - name: Patch eMudhra CA compromise (CVE-2026-111943)
+        shell: bash
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install --only-upgrade -y ca-certificates
+          sudo update-ca-certificates --fresh
+
       - name: Get file changes
         id: get-file-changes
         uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47

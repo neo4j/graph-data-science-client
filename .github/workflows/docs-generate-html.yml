@@ -37,6 +37,14 @@ jobs:
       build-ref: ${{ steps.set-ref-env.outputs.build-ref }}
       environments: ${{ steps.set-ref-env.outputs.environments }}
     steps:
+      - name: Patch eMudhra CA compromise (CVE-2026-111943)
+        shell: bash
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install --only-upgrade -y ca-certificates
+          sudo update-ca-certificates --fresh
+
       - name: Set Build Ref
         id: set-ref-env
         run: |
@@ -89,6 +97,14 @@ jobs:
         environments: ${{ fromJson(needs.prepare-ref-env.outputs.environments) }}
 
     steps:
+      - name: Patch eMudhra CA compromise (CVE-2026-111943)
+        shell: bash
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install --only-upgrade -y ca-certificates
+          sudo update-ca-certificates --fresh
+
       - name: Publish to ${{ matrix.environments }}
         uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 #v4
         with:

@@ -26,8 +26,15 @@ jobs:
   teardown-docs:
     if: ${{ !startsWith(github.head_ref, 'dependabot/') }}
     runs-on: ubuntu-latest
-
     steps:
+      - name: Patch eMudhra CA compromise (CVE-2026-111943)
+        shell: bash
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install --only-upgrade -y ca-certificates
+          sudo update-ca-certificates --fresh
+
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
         with:
           node-version: lts/*
