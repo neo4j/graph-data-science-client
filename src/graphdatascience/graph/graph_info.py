@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import math
-import re
 from datetime import datetime
 from typing import Any
 
-import neo4j
 from pydantic import Field, field_validator
 
 from graphdatascience.procedure_surface.api.base_result import BaseResult
+from graphdatascience.utils.gds_datetime import normalize_gds_datetime
 
 
 class GraphInfo(BaseResult):
@@ -36,13 +35,7 @@ class GraphInfo(BaseResult):
     @field_validator("creation_time", "modification_time", mode="before")
     @classmethod
     def strip_timezone(cls, value: Any) -> Any:
-        match value:
-            case str():
-                return re.sub(r"\[.*\]$", "", value)
-            case neo4j.time.DateTime():
-                return value.to_native()
-            case _:
-                return value
+        return normalize_gds_datetime(value)
 
 
 class GraphInfoWithDegrees(GraphInfo):
