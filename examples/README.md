@@ -2,6 +2,12 @@
 
 This folder contains example notebooks on how to use the `graphdatascience` python client.
 
+## Running/updating the notebooks locally
+
+1. Copy `examples/sessions.env.template` → `examples/.env` and fill in your Aura credentials.
+2. Use the project `.venv` by selecting it as the interpreter/kernel (run `uv sync --all-extras` first if you haven't).
+3. Skip the `%pip install` cell at the top of each notebook - it is intended for fresh environments.
+
 
 ## Custom cell tags for notebooks
 
