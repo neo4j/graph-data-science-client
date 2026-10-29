@@ -22,6 +22,9 @@
   ],
   "author": "Neo4j",
   "license": "ISC",
+  "engines": {
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1" 
+  },
   "dependencies": {
     "@neo4j-antora/aliases-redirects": "^0.2.7",
     "@neo4j-antora/antora-add-notes": "^0.3.2",
