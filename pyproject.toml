@@ -61,10 +61,10 @@ dev = [
 ]
 
 dev-base = [
-    "ruff==0.17.1",
+    "ruff==0.17.2",
     "mypy == 2.4.0",
     "pandas-stubs == 3.0.5.260914",
-    "tox==4.66.0",
+    "tox==4.67.1",
     "types-setuptools == 84.0.0.20261006",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
@@ -78,7 +78,7 @@ test = [
     "pytest == 9.1.1",
     "pytest-timeout",
     "requests_mock == 1.12.1",
-    "pytest_mock == 3.16.0",
+    "pytest_mock==3.17.0",
     "testcontainers == 4.15.0",
     "python-dateutil >= 2.9",
 ]
