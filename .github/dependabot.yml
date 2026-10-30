@@ -52,3 +52,22 @@ updates:
         update-types:
           - "minor"
           - "patch"
+
+  # Docs toolchain (doc/package.json). No lockfile is committed, so the ranges
+  # are bumped directly; .npmrc's min-release-age=3 is applied as a cooldown
+  # floor automatically. antora is ignored: CI installs it via the docs-tools
+  # workflow's antora-version input, not this manifest.
+  - package-ecosystem: "npm"
+    directory: "/doc"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "antora"
+    groups:
+      docs-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
