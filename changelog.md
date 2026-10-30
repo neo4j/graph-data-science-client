@@ -8,6 +8,7 @@
 
 ## Bug fixes
 
+* Fixed `gds.graph.relationships.write` ignoring the `write_concurrency` parameter when running against a Neo4j database with GDS installed.
 
 ## Improvements
 
