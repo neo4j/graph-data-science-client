@@ -54,6 +54,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> JobHandle:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -80,6 +81,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
             walk_buffer_size=walk_buffer_size,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=result_as_vector or None,
         )
         return self._node_property_endpoints.run_job(G, "v2/embeddings.node2vec", config)
 
@@ -110,6 +112,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> Node2VecMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -136,6 +139,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
             walk_buffer_size=walk_buffer_size,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=result_as_vector or None,
         )
 
         result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.node2vec", config, mutate_property)
@@ -169,6 +173,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -195,6 +200,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
             walk_buffer_size=walk_buffer_size,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=result_as_vector or None,
         )
 
         return self._node_property_endpoints.run_job_and_stream("v2/embeddings.node2vec", G, config)
@@ -226,6 +232,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
         write_concurrency: int | None = None,
     ) -> Node2VecWriteResult:
         config = self._node_property_endpoints.create_base_config(
@@ -253,6 +260,7 @@ class Node2VecArrowEndpoints(Node2VecEndpoints):
             walk_buffer_size=walk_buffer_size,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=result_as_vector or None,
             write_concurrency=write_concurrency,
             write_property=write_property,
         )

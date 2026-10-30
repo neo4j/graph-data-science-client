@@ -50,6 +50,7 @@ class GraphSageSessionEndpoints(GraphSageEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> JobHandle:
         """Start a classic GraphSage prediction and return a
         :class:`~graphdatascience.procedure_surface.api.job_handle.JobHandle`.
@@ -68,6 +69,7 @@ class GraphSageSessionEndpoints(GraphSageEndpoints):
             concurrency=concurrency,
             job_id=job_id,
             batch_size=batch_size,
+            result_as_vector=result_as_vector,
         )
 
     @property

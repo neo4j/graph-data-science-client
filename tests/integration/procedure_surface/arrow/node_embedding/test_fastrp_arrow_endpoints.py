@@ -146,3 +146,19 @@ def test_compute(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Graph) ->
     assert set(df.columns) == {"nodeId", "embedding"}
     assert len(df) == 4
     assert len(df["embedding"].iloc[0]) == 64
+
+
+def test_compute_result_as_vector(fastrp_endpoints: FastRPArrowEndpoints, sample_graph: Graph) -> None:
+    """The compute endpoint forwards result_as_vector, and the handle can stream and mutate the vectors."""
+    handle = fastrp_endpoints.compute(G=sample_graph, embedding_dimension=64, result_as_vector=True)
+
+    summary = handle.summary()
+    assert summary["configuration"]["resultAsVector"] is True
+
+    df = handle.stream()
+    assert set(df.columns) == {"nodeId", "embedding"}
+    assert len(df) == 4
+    assert len(df["embedding"].iloc[0]) == 64
+
+    mutation = handle.mutate(mutate_property="fastrp_embedding")
+    assert mutation["nodePropertiesWritten"] == 4

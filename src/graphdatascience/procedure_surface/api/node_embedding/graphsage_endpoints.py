@@ -117,6 +117,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         return self._predict_endpoints.stream(
             G,
@@ -129,6 +130,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             job_id=job_id,
             batch_size=batch_size,
+            result_as_vector=result_as_vector,
         )
 
     def write(
@@ -146,6 +148,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
         write_concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageWriteResult:
         return self._predict_endpoints.write(
             G,
@@ -160,6 +163,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             write_concurrency=write_concurrency,
             job_id=job_id,
             batch_size=batch_size,
+            result_as_vector=result_as_vector,
         )
 
     def mutate(
@@ -175,6 +179,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageMutateResult:
         return self._predict_endpoints.mutate(
             G,
@@ -188,6 +193,7 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             job_id=job_id,
             batch_size=batch_size,
+            result_as_vector=result_as_vector,
         )
 
     def estimate(

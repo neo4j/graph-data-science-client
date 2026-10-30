@@ -32,6 +32,7 @@ class FastRPEndpoints(ABC):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> FastRPMutateResult:
         """
         Executes the FastRP algorithm and writes the results back to the graph as a node property.
@@ -73,6 +74,9 @@ class FastRPEndpoints(ABC):
             Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -164,6 +168,7 @@ class FastRPEndpoints(ABC):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         """
         Executes the FastRP algorithm and returns the results as a stream.
@@ -203,6 +208,9 @@ class FastRPEndpoints(ABC):
             Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -230,6 +238,7 @@ class FastRPEndpoints(ABC):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
         write_concurrency: int | None = None,
     ) -> FastRPWriteResult:
         """
@@ -272,6 +281,9 @@ class FastRPEndpoints(ABC):
             Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
         write_concurrency
             Number of concurrent threads to use for writing.Returns
         -------

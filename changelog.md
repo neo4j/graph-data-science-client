@@ -5,6 +5,12 @@
 
 ## New features
 
+- Added a `result_as_vector` parameter to the `stream`, `write`, and `mutate` endpoints of the
+  embedding algorithms (`fast_rp`, `node2vec`, `hash_gnn`, and `graph_sage`), as well as their
+  session `compute` endpoints. When enabled, the embeddings are produced as Neo4j `VECTOR`
+  values instead of lists of floats. The parameter requires GDS 2026.11 or later: it is only
+  sent to servers that support it, and requesting it on an older plugin server raises a clear
+  error instead of failing server-side.
 
 ## Bug fixes
 
