@@ -26,6 +26,7 @@ class GraphSagePredictEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and returns the results as a stream.
@@ -52,6 +53,9 @@ class GraphSagePredictEndpoints(ABC):
             Identifier for the computation.
         batch_size
             Number of nodes to process in each batch.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -75,6 +79,7 @@ class GraphSagePredictEndpoints(ABC):
         write_concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageWriteResult:
         """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the database.
@@ -105,6 +110,9 @@ class GraphSagePredictEndpoints(ABC):
             Identifier for the computation.
         batch_size
             Number of nodes to process in each batch.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -126,6 +134,7 @@ class GraphSagePredictEndpoints(ABC):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageMutateResult:
         """
         Uses a pre-trained GraphSage model to predict embeddings for a graph and writes the results back to the graph as a node property.
@@ -154,6 +163,9 @@ class GraphSagePredictEndpoints(ABC):
             Identifier for the computation.
         batch_size
             Number of nodes to process in each batch.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------

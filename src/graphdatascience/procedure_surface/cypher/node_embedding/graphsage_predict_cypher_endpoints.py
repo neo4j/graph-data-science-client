@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_predict_end
     GraphSageWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.cypher.result_as_vector_utils import resolve_result_as_vector
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -33,6 +34,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             modelName=model_name,
@@ -44,6 +46,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             jobId=job_id,
             batchSize=batch_size,
+            resultAsVector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         params = CallParameters(graph_name=G.name(), config=config)
@@ -68,6 +71,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         write_concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             modelName=model_name,
@@ -81,6 +85,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
             writeConcurrency=write_concurrency,
             jobId=job_id,
             batchSize=batch_size,
+            resultAsVector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         params = CallParameters(graph_name=G.name(), config=config)
@@ -105,6 +110,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             modelName=model_name,
@@ -117,6 +123,7 @@ class GraphSagePredictCypherEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             jobId=job_id,
             batchSize=batch_size,
+            resultAsVector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         params = CallParameters(graph_name=G.name(), config=config)

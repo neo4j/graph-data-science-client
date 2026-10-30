@@ -40,6 +40,7 @@ class Node2VecEndpoints(ABC):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> Node2VecMutateResult:
         """
         Executes the Node2Vec algorithm and writes the results back to the graph as a node property.
@@ -96,6 +97,9 @@ class Node2VecEndpoints(ABC):
             Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -130,6 +134,7 @@ class Node2VecEndpoints(ABC):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         """
         Executes the Node2Vec algorithm and returns the results as a stream.
@@ -184,6 +189,9 @@ class Node2VecEndpoints(ABC):
             Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -219,6 +227,7 @@ class Node2VecEndpoints(ABC):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
         write_concurrency: int | None = None,
     ) -> Node2VecWriteResult:
         """
@@ -276,6 +285,9 @@ class Node2VecEndpoints(ABC):
             Name of the property to be used as weights.
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
         write_concurrency
             Number of concurrent threads to use for writing.Returns
         -------

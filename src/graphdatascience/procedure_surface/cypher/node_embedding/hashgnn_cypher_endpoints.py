@@ -12,6 +12,7 @@ from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints imp
     HashGNNWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.cypher.result_as_vector_utils import resolve_result_as_vector
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -45,6 +46,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        result_as_vector: bool = False,
     ) -> HashGNNMutateResult:
         """
         Compute node embeddings using HashGNN and store the result as a node property in the in-memory graph.
@@ -68,6 +70,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
             username=username,
             concurrency=concurrency,
             job_id=job_id,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         # Run procedure and return results
@@ -99,6 +102,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         """
         Compute node embeddings using HashGNN and stream the results.
@@ -121,6 +125,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
             username=username,
             concurrency=concurrency,
             job_id=job_id,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         # Run procedure and return results
@@ -150,6 +155,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
         job_id: str | None = None,
         write_concurrency: int | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> HashGNNWriteResult:
         """
         Compute node embeddings using HashGNN and write the results to the Neo4j database.
@@ -174,6 +180,7 @@ class HashGNNCypherEndpoints(HashGNNEndpoints):
             job_id=job_id,
             write_concurrency=write_concurrency,
             random_seed=random_seed,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         # Run procedure and return results
