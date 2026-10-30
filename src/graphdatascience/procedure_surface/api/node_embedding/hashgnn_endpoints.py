@@ -33,6 +33,7 @@ class HashGNNEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        result_as_vector: bool = False,
     ) -> HashGNNMutateResult:
         """
         Executes the HashGNN algorithm and writes the results back to the graph as a node property.
@@ -62,6 +63,9 @@ class HashGNNEndpoints(ABC):
             Defaults to [] if not specified
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -89,6 +93,7 @@ class HashGNNEndpoints(ABC):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         """
         Executes the HashGNN algorithm and returns the results as a stream.
@@ -116,6 +121,9 @@ class HashGNNEndpoints(ABC):
             Defaults to [] if not specified
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
@@ -145,6 +153,7 @@ class HashGNNEndpoints(ABC):
         job_id: str | None = None,
         write_concurrency: int | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> HashGNNWriteResult:
         """
         Executes the HashGNN algorithm and writes the results back to the database.
@@ -190,6 +199,9 @@ class HashGNNEndpoints(ABC):
             Number of concurrent threads to use for writing.
         random_seed
             Seed for random number generation to ensure reproducible results.
+        result_as_vector
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------

@@ -11,6 +11,7 @@ from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints im
     Node2VecMutateResult,
     Node2VecWriteResult,
 )
+from graphdatascience.procedure_surface.cypher.result_as_vector_utils import resolve_result_as_vector
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -46,6 +47,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> Node2VecMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -72,6 +74,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
             walk_buffer_size=walk_buffer_size,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         params = CallParameters(graph_name=G.name(), config=config)
@@ -109,6 +112,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             iterations=iterations,
@@ -134,6 +138,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
             walk_buffer_size=walk_buffer_size,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         params = CallParameters(graph_name=G.name(), config=config)
@@ -168,6 +173,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
         walk_buffer_size: int = 1000,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
         write_concurrency: int | None = None,
     ) -> Node2VecWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -195,6 +201,7 @@ class Node2VecCypherEndpoints(Node2VecEndpoints):
             walk_buffer_size=walk_buffer_size,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
             write_concurrency=write_concurrency,
         )
 

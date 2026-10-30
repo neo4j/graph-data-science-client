@@ -41,6 +41,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> JobHandle:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -53,6 +54,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             jobId=job_id,
             batchSize=batch_size,
+            resultAsVector=result_as_vector or None,
         )
         return self._node_property_endpoints.run_job(G, "v2/embeddings.graphSage", config)
 
@@ -69,6 +71,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -81,6 +84,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             jobId=job_id,
             batchSize=batch_size,
+            resultAsVector=result_as_vector or None,
         )
         return self._node_property_endpoints.run_job_and_stream("v2/embeddings.graphSage", G, config)
 
@@ -99,6 +103,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         write_concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -111,6 +116,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             jobId=job_id,
             batchSize=batch_size,
+            resultAsVector=result_as_vector or None,
         )
 
         raw_result = self._node_property_endpoints.run_job_and_write(
@@ -137,6 +143,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
         concurrency: int | None = None,
         job_id: str | None = None,
         batch_size: int = 100,
+        result_as_vector: bool = False,
     ) -> GraphSageMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -149,6 +156,7 @@ class GraphSagePredictArrowEndpoints(GraphSagePredictEndpoints):
             concurrency=concurrency,
             jobId=job_id,
             batchSize=batch_size,
+            resultAsVector=result_as_vector or None,
         )
 
         raw_result = self._node_property_endpoints.run_job_and_mutate(

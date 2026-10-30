@@ -52,6 +52,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        result_as_vector: bool = False,
     ) -> JobHandle:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -71,6 +72,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
             username=username,
             concurrency=concurrency,
             job_id=job_id,
+            result_as_vector=result_as_vector or None,
         )
         return self._node_property_endpoints.run_job(G, "v2/embeddings.hashgnn", config)
 
@@ -94,6 +96,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        result_as_vector: bool = False,
     ) -> HashGNNMutateResult:
         """
         Compute node embeddings using HashGNN and store the result as a node property in the in-memory graph.
@@ -117,6 +120,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
             username=username,
             concurrency=concurrency,
             job_id=job_id,
+            result_as_vector=result_as_vector or None,
         )
 
         result = self._node_property_endpoints.run_job_and_mutate("v2/embeddings.hashgnn", config, mutate_property)
@@ -142,6 +146,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         """
         Compute node embeddings using HashGNN and stream the results.
@@ -165,6 +170,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
             username=username,
             concurrency=concurrency,
             job_id=job_id,
+            result_as_vector=result_as_vector or None,
         )
 
         return self._node_property_endpoints.run_job_and_stream("v2/embeddings.hashgnn", G, config)
@@ -190,6 +196,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
         job_id: str | None = None,
         write_concurrency: int | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> HashGNNWriteResult:
         """
         Compute node embeddings using HashGNN and write the results to the Neo4j database.
@@ -214,6 +221,7 @@ class HashGNNArrowEndpoints(HashGNNEndpoints):
             job_id=job_id,
             write_concurrency=write_concurrency,
             random_seed=random_seed,
+            result_as_vector=result_as_vector or None,
         )
 
         result = self._node_property_endpoints.run_job_and_write(

@@ -47,6 +47,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> JobHandle:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -63,6 +64,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
             random_seed=random_seed,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
+            result_as_vector=result_as_vector or None,
             sudo=sudo,
         )
         return self._node_property_endpoints.run_job(G, "v2/embeddings.fastrp", config)
@@ -86,6 +88,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> FastRPMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -102,6 +105,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
             random_seed=random_seed,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
+            result_as_vector=result_as_vector or None,
             sudo=sudo,
         )
 
@@ -168,6 +172,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -184,6 +189,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
             random_seed=random_seed,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
+            result_as_vector=result_as_vector or None,
             sudo=sudo,
         )
 
@@ -208,6 +214,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
         write_concurrency: int | None = None,
     ) -> FastRPWriteResult:
         config = self._node_property_endpoints.create_base_config(
@@ -225,6 +232,7 @@ class FastRPArrowEndpoints(FastRPEndpoints):
             random_seed=random_seed,
             relationship_types=relationship_types,
             relationship_weight_property=relationship_weight_property,
+            result_as_vector=result_as_vector or None,
             sudo=sudo,
         )
 
