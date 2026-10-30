@@ -37,3 +37,18 @@ updates:
         update-types:
           - "minor"
           - "patch"
+
+  # Actions are pinned by full SHA with a version comment; Dependabot updates
+  # both. Reusable workflows pinned to a moving major tag only get major bumps.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions-minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
