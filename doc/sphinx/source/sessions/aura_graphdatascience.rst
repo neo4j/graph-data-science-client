@@ -8,3 +8,4 @@ AuraGraphDataScience
 
 .. autoclass:: graphdatascience.session.aura_api_responses.SessionErrorData
     :members:
+    :exclude-members: message, reason

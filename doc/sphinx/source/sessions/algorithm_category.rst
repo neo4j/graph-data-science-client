@@ -1,6 +1,6 @@
 AlgorithmCategory
 -----------------
 
-.. autoenum:: graphdatascience.session.algorithm_category.AlgorithmCategory
+.. autoclass:: graphdatascience.session.algorithm_category.AlgorithmCategory
     :members:
-    :inherited-members:
+    :undoc-members:

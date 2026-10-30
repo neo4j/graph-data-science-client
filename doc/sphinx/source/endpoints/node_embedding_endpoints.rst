@@ -3,6 +3,7 @@ Node Embedding Algorithms
 
 .. automodule:: graphdatascience.procedure_surface.api.node_embedding
     :members:
+    :undoc-members:
     :exclude-members: __init__
 
 .. autoclass:: graphdatascience.procedure_surface.arrow.node_embedding.graphsage_session_endpoints.GraphSageSessionEndpoints
@@ -23,3 +24,5 @@ Node Embedding Algorithms
 
 .. automodule:: graphdatascience.embedding
     :members:
+    :undoc-members:
+    :exclude-members: depth_validator

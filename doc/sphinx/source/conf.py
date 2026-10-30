@@ -24,9 +24,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 extensions = [
     "sphinx.ext.autodoc",  # include docs from docstrings
     "sphinx.ext.intersphinx",  # link to other projects' documentation such as neo4j driver or pyArrow
-    "enum_tools.autoenum",  # specialised autoclass for enums
     "sphinx.ext.napoleon",  # Support for NumPy and Google style docstrings
-    "sphinxcontrib.autodoc_pydantic",  # Support for Pydantic models
+    "sphinxcontrib.pydantic",  # Support for Pydantic models
 ]
 
 autodoc_class_signature = "separated"
@@ -39,17 +38,16 @@ nitpicky = True
 templates_path = ["_templates"]
 exclude_patterns = []  # type: ignore
 
-# -- Options for Autodoc Pydantic ------------------------------------------------
-autodoc_pydantic_model_show_json = False
-autodoc_pydantic_settings_show_json = False
-autodoc_pydantic_model_show_config_summary = False
-autodoc_pydantic_model_show_field_summary = False
-autodoc_pydantic_model_show_validator_summary = False
-autodoc_pydantic_model_show_validator_members = False
-autodoc_pydantic_field_show_alias = False
-autodoc_pydantic_field_show_required = False
-autodoc_pydantic_field_show_optional = False
-autodoc_pydantic_field_show_default = False
+# -- Options for Sphinxcontrib Pydantic ------------------------------------------
+sphinxcontrib_pydantic_model_show_json = False
+sphinxcontrib_pydantic_settings_show_json = False
+sphinxcontrib_pydantic_model_show_field_summary = False
+sphinxcontrib_pydantic_model_show_validator_summary = False
+sphinxcontrib_pydantic_model_show_private_members = False
+sphinxcontrib_pydantic_field_show_alias = False
+sphinxcontrib_pydantic_field_show_required = False
+sphinxcontrib_pydantic_field_show_default = False
+sphinxcontrib_pydantic_field_show_constraints = False
 
 # Internal plumbing (pydantic validators, the write protocol) is not user-facing
 # API; don't warn when rendered signatures reference it.
@@ -68,6 +66,15 @@ nitpick_ignore = [
     ),
     ("py:class", "graphdatascience.procedure_surface.api.write_protocol.WriteProtocol"),
     ("py:class", "graphdatascience.session.graph_mappings_api.GraphMappings"),
+    # Internal types referenced by annotations of fields/members that are now
+    # documented individually (previously hidden behind autodoc_pydantic).
+    ("py:class", "pyarrow._flight.FlightMetadataReader"),
+    ("py:class", "graphdatascience.session.session_lifecycle_manager.LifecycleManager"),
+    ("py:class", "graphdatascience.session.aura_api.AuraApi"),
+    ("py:class", "graphdatascience.session.aura_api_responses.SessionDetails"),
+    ("py:class", "graphdatascience.session.aura_api_responses.SessionDetailsWithErrors"),
+    ("py:class", "graphdatascience.query_runner.neo4j_query_runner.Neo4jQueryRunner"),
+    ("py:class", "graphdatascience.arrow_client.v2.api_types.StepProgress"),
 ]
 
 # Remaining nitpicky warnings are bare builtins, pydantic/annotated-types field

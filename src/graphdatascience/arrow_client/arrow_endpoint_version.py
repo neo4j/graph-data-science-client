@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 
 
-class ArrowEndpointVersion(Enum):
+class ArrowEndpointVersion(StrEnum):
     V1 = "v1"
     V2 = "v2"
 

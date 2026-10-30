@@ -63,6 +63,10 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "antora"
+      # @neo4j-antora/tabbed-nav, force-installed by the docs-tools CI, pins its
+      # peer dependency to exactly express 5.2.1; bumping express makes that
+      # install fail with ERESOLVE. Drop this once the peer range is widened.
+      - dependency-name: "express"
     groups:
       docs-minor-and-patch:
         applies-to: version-updates
