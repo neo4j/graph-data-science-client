@@ -61,10 +61,10 @@ dev = [
 ]
 
 dev-base = [
-    "ruff==0.17.2",
+    "ruff==0.17.3",
     "mypy == 2.4.0",
     "pandas-stubs == 3.0.5.260914",
-    "tox==4.67.1",
+    "tox==4.67.2",
     "types-setuptools == 84.0.0.20261006",
     "enum-tools[sphinx]==0.13.0",
     "autodoc_pydantic",
