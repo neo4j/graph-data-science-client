@@ -44,7 +44,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f #v6
         with:
-          node-version: lts/*
+          node-version: "24.22.1"
 
       # Same formula as docs-api-reference.yml and the gds-api-uri override in
       # docs-pr-checks.yml - keep the three in sync.

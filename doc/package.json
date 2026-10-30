@@ -22,6 +22,9 @@
   ],
   "author": "Neo4j",
   "license": "ISC",
+  "engines": {
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1"
+  },
   "dependencies": {
     "@neo4j-antora/aliases-redirects": "^0.2.7",
     "@neo4j-antora/antora-add-notes": "^0.3.2",
@@ -32,7 +35,7 @@
     "@neo4j-antora/xref-hash-validator": "^0.1.4",
     "@neo4j-documentation/macros": "^1.0.4",
     "@neo4j-documentation/remote-include": "^1.0.0",
-    "antora": "3.1.14"
+    "antora": "3.1.15"
   },
   "devDependencies": {
     "express": "5.2.1",
