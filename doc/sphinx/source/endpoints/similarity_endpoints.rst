@@ -3,6 +3,7 @@ Similarity Algorithms
 
 .. automodule:: graphdatascience.procedure_surface.api.similarity
     :members:
+    :undoc-members:
     :exclude-members: __init__
 
 .. autoclass:: graphdatascience.procedure_surface.api.similarity.similarity_functions.SimilarityFunctions

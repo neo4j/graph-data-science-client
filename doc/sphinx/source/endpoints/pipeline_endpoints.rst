@@ -3,6 +3,7 @@ Machine Learning Pipelines
 
 .. automodule:: graphdatascience.procedure_surface.api.pipeline
     :members:
+    :undoc-members:
     :exclude-members: __init__
 
 .. autoclass:: graphdatascience.procedure_surface.api.pipeline.node_classification_model.NodeClassificationModel

@@ -41,7 +41,7 @@ render-docs:
     set -e
     # Build the API reference docs (Sphinx) and the manual (Antora).
     # Force the manual's API-reference links to the locally-served refdocs (only for this build).
-    (cd doc/sphinx && uv run --group docs-ci make clean html)
+    (cd doc/sphinx && uv run --python 3.13 --group docs-ci make clean html)
     (cd doc && npm install && \
         npx antora preview.yml --attribute gds-api-uri=http://localhost:8001 --stacktrace --log-format=pretty)
 

@@ -8,4 +8,5 @@ Catalog Arrow Endpoints
 
 .. automodule:: graphdatascience.procedure_surface.arrow.catalog
     :members:
+    :undoc-members:
     :exclude-members: __init__, CatalogArrowEndpoints
