@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ProtocolVersion(Enum):
+class ProtocolVersion(StrEnum):
     V1 = "v1"
     V2 = "v2"
     V3 = "v3"
