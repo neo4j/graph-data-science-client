@@ -38,4 +38,16 @@ def test_compute_delegates_to_predict_endpoints() -> None:
         concurrency=4,
         job_id=None,
         batch_size=10,
+        result_as_vector=False,
     )
+
+
+def test_compute_forwards_result_as_vector() -> None:
+    predict_endpoints = mock.Mock()
+    predict_endpoints.compute.return_value = mock.Mock()
+
+    facade = _facade(predict_endpoints)
+
+    facade.compute(mock.Mock(), "my-model", result_as_vector=True)
+
+    assert predict_endpoints.compute.call_args.kwargs["result_as_vector"] is True

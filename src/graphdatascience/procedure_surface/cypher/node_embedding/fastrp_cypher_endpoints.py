@@ -13,6 +13,7 @@ from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints impo
     FastRPWriteResult,
 )
 from graphdatascience.procedure_surface.cypher.estimation_utils import estimate_algorithm
+from graphdatascience.procedure_surface.cypher.result_as_vector_utils import resolve_result_as_vector
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
 
@@ -45,6 +46,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> FastRPMutateResult:
         config = ConfigConverter.convert_to_gds_config(
             mutate_property=mutate_property,
@@ -63,6 +65,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
             job_id=job_id,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         # Run procedure and return results
@@ -140,6 +143,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
     ) -> DataFrame:
         config = ConfigConverter.convert_to_gds_config(
             embedding_dimension=embedding_dimension,
@@ -157,6 +161,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
             job_id=job_id,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
         )
 
         # Run procedure and return results
@@ -186,6 +191,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
         random_seed: int | None = None,
+        result_as_vector: bool = False,
         write_concurrency: int | None = None,
     ) -> FastRPWriteResult:
         config = ConfigConverter.convert_to_gds_config(
@@ -205,6 +211,7 @@ class FastRPCypherEndpoints(FastRPEndpoints):
             job_id=job_id,
             relationship_weight_property=relationship_weight_property,
             random_seed=random_seed,
+            result_as_vector=resolve_result_as_vector(self._query_runner, result_as_vector),
             write_concurrency=write_concurrency,
         )
 
