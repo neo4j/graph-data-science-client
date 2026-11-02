@@ -37,6 +37,10 @@ class Neo4jQueryRunner(QueryRunner):
     _LOG_POLLING_INTERVAL = 0.5
     _NEO4J_DRIVER_VERSION = SemanticVersion.from_string(neo4j.__version__)
     _warnings_filters_configured = False
+    # a healthy endpoint answers verification in well under a second; a short
+    # window fails fast so the retry re-attempts the exchange instead of waiting
+    # out the driver-level acquisition timeout
+    _VERIFY_CONNECTION_ACQUISITION_TIMEOUT = 10.0
 
     @staticmethod
     def create_for_db(
@@ -430,11 +434,34 @@ class Neo4jQueryRunner(QueryRunner):
 
     @retry(retry=retry_if_exception(is_retryable_neo4j_exception), stop=stop_after_delay(60), wait=wait_fixed(2))
     def verify_connectivity(self) -> None:
-        self._driver.verify_connectivity()
+        self._suppress_verify_config_warnings()
+        self._driver.verify_connectivity(connection_acquisition_timeout=self._VERIFY_CONNECTION_ACQUISITION_TIMEOUT)
 
     @retry(retry=retry_if_exception(is_retryable_neo4j_exception), stop=stop_after_delay(60), wait=wait_fixed(2))
     def verify_authentication(self) -> None:
-        self._driver.verify_authentication()
+        self._suppress_verify_config_warnings()
+        self._driver.verify_authentication(connection_acquisition_timeout=self._VERIFY_CONNECTION_ACQUISITION_TIMEOUT)
+
+    def _suppress_verify_config_warnings(self) -> None:
+        # the per-call config kwargs are a driver preview feature
+        if self._NEO4J_DRIVER_VERSION < SemanticVersion(6, 0, 0):
+            warnings.filterwarnings(
+                "ignore",
+                category=neo4j.ExperimentalWarning,
+                message=(
+                    r"^All configuration key-word arguments (to verify_connectivity|but auth to "
+                    r"verify_authentication)\(\) are experimental\."
+                ),
+            )
+        else:
+            warnings.filterwarnings(
+                "ignore",
+                category=neo4j.warnings.PreviewWarning,  # type: ignore[attr-defined]
+                message=(
+                    r"^Passing key-word arguments( except 'auth')? to "
+                    r"(verify_connectivity|verify_authentication)\(\) is a preview feature\."
+                ),
+            )
 
     def _verify_connectivity(
         self, database: str | None, retry_config: Neo4jQueryRunner.ConnectivityRetriesConfig
@@ -447,21 +474,7 @@ class Neo4jQueryRunner(QueryRunner):
         retrys = 0
         while retrys < retry_config.max_retries:
             try:
-                if self._NEO4J_DRIVER_VERSION < SemanticVersion(6, 0, 0):
-                    warnings.filterwarnings(
-                        "ignore",
-                        category=neo4j.ExperimentalWarning,
-                        message=(
-                            r"^All configuration key-word arguments to verify_connectivity\(\) are experimental. "
-                            "They might be changed or removed in any future version without prior notice.$"
-                        ),
-                    )
-                else:
-                    warnings.filterwarnings(
-                        "ignore",
-                        category=neo4j.warnings.PreviewWarning,  # type: ignore[attr-defined]
-                        message=(r"^Passing key-word arguments to verify_connectivity\(\) is a preview feature.*"),
-                    )
+                self._suppress_verify_config_warnings()
 
                 self._driver.verify_connectivity(database=database)
                 break
