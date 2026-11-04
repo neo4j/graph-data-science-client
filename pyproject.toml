@@ -62,9 +62,9 @@ dev = [
 
 dev-base = [
     "ruff==0.17.3",
-    "mypy == 2.4.0",
-    "pandas-stubs == 3.0.5.260914",
-    "tox==4.67.2",
+    "mypy==2.4.1",
+    "pandas-stubs==3.1.0.261029",
+    "tox==4.67.5",
     "types-setuptools == 84.0.0.20261006",
     "types-requests",
     "types-tqdm",
@@ -73,7 +73,7 @@ dev-base = [
     "types-colorama",
 ]
 test = [
-    "pytest == 9.1.1",
+    "pytest==9.2.0",
     "pytest-timeout",
     "requests_mock == 1.12.1",
     "pytest_mock==3.17.0",
