@@ -10,6 +10,7 @@ from graphdatascience.embedding.config import (
     MLPClassifierConfig,
 )
 from graphdatascience.graph.graph_api import Graph
+from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import EmbeddingTrainResult
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_embedding.embedding_arrow_endpoints import EmbeddingArrowEndpoints
 from graphdatascience.query_runner import QueryRunner
@@ -69,6 +70,37 @@ def embedding_endpoints(
     yield EmbeddingArrowEndpoints(arrow_client_runtime)
 
 
+MODEL_NAME = "my_model"
+MLP_MODEL_NAME = "my_model_mlp"
+
+
+@pytest.fixture(scope="module")
+def training_graph(arrow_client_runtime: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+    """Graph the shared model is trained on; distinct name so it can coexist with `sample_graph`."""
+    with create_graph(arrow_client_runtime, "g-train", graph) as G:
+        yield G
+
+
+@pytest.fixture(scope="module")
+def trained_model(
+    arrow_client_runtime: AuthenticatedArrowClient, training_graph: Graph
+) -> Generator[EmbeddingTrainResult, None, None]:
+    # Trained once per module: training spawns a python-runtime container, and the create
+    # tests only reference the model by name, so they can share it.
+    endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
+    train_result = endpoints.train(
+        G=training_graph,
+        input_properties=["x"],
+        target_label="A",
+        target_property="y",
+        model_name=MODEL_NAME,
+    )
+    try:
+        yield train_result
+    finally:
+        ModelCatalogArrowEndpoints(arrow_client_runtime).delete(model_name=MODEL_NAME, fail_if_missing=True)
+
+
 @ignore_preview_warning
 def test_embedding_create_default(arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph) -> None:
     """Test create operation with FastRP"""
@@ -107,13 +139,30 @@ def test_embedding_create_fastrp(arrow_client_runtime: AuthenticatedArrowClient,
 
 
 @ignore_preview_warning
-def test_embedding_train_and_create_graphsage_mlp(
-    arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
+def test_embedding_train_default(trained_model: EmbeddingTrainResult) -> None:
+    """Test train operation with GraphSAGE defaults."""
+    assert trained_model.compute_millis > 0
+
+
+@ignore_preview_warning
+def test_embedding_create_from_model(
+    arrow_client_runtime: AuthenticatedArrowClient, trained_model: EmbeddingTrainResult, sample_graph: Graph
 ) -> None:
-    """Test train and create operation with GraphSAGE."""
+    """Test create operation with a previously trained GraphSAGE model."""
+    embedding_endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
+    create_result = embedding_endpoints.create(G=sample_graph, graph_encoder=MODEL_NAME, input_properties=["x"])
+
+    assert create_result.compute_millis >= 0
+    assert create_result.mutate_millis >= 0
+    assert create_result.node_properties_written > 0
+    assert create_result.configuration is not None
+
+
+@ignore_preview_warning
+def test_embedding_train_graphsage_mlp(arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph) -> None:
+    """Test train operation with a GraphSAGE encoder and MLP classifier decoder."""
     embedding_endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
 
-    model_name = "my_model"
     try:
         train_result = embedding_endpoints.train(
             G=sample_graph,
@@ -122,39 +171,8 @@ def test_embedding_train_and_create_graphsage_mlp(
             decoder=MLPClassifierConfig(),
             target_label="A",
             target_property="y",
-            model_name=model_name,
+            model_name=MLP_MODEL_NAME,
         )
         assert train_result.compute_millis > 0
-        create_result = embedding_endpoints.create(G=sample_graph, graph_encoder=model_name, input_properties=["x"])
-        assert create_result.compute_millis >= 0
-        assert create_result.mutate_millis >= 0
-        assert create_result.node_properties_written > 0
-        assert create_result.configuration is not None
     finally:
-        ModelCatalogArrowEndpoints(arrow_client_runtime).delete(model_name=model_name, fail_if_missing=True)
-
-
-@ignore_preview_warning
-def test_embedding_train_and_create_default(
-    arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
-) -> None:
-    """Test train and create operation with GraphSAGE."""
-    embedding_endpoints = EmbeddingArrowEndpoints(arrow_client_runtime)
-
-    model_name = "my_model"
-    try:
-        train_result = embedding_endpoints.train(
-            G=sample_graph,
-            input_properties=["x"],
-            target_label="A",
-            target_property="y",
-            model_name=model_name,
-        )
-        assert train_result.compute_millis > 0
-        create_result = embedding_endpoints.create(G=sample_graph, graph_encoder=model_name, input_properties=["x"])
-        assert create_result.compute_millis >= 0
-        assert create_result.mutate_millis >= 0
-        assert create_result.node_properties_written > 0
-        assert create_result.configuration is not None
-    finally:
-        ModelCatalogArrowEndpoints(arrow_client_runtime).delete(model_name=model_name, fail_if_missing=True)
+        ModelCatalogArrowEndpoints(arrow_client_runtime).delete(model_name=MLP_MODEL_NAME, fail_if_missing=True)

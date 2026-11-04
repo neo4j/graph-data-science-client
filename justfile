@@ -81,7 +81,7 @@ unit-tests extra_options="":
 
 # such as `just it wcc`
 it filter="" extra_options="":
-    uv run --group test pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run --group test pytest tests/integration --durations=0 --durations-min=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 # Same as `it`, but against the latest (master) session, plugin, and remote-ops images instead of
 # the released ones. Use for endpoints that are on master but not yet released
@@ -89,7 +89,7 @@ it-master filter="" extra_options="":
     GDS_SESSION_IMAGE="europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/gds-session:latest" \
     NEO4J_DATABASE_IMAGE="europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/neo4j-with-gds-plugin:latest" \
     NEO4J_AURA_DATABASE_IMAGE="europe-west1-docker.pkg.dev/gds-aura-artefacts/gds/neo4j-with-gds-remote-ops:latest" \
-    uv run --group test pytest tests/integration --durations=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
+    uv run --group test pytest tests/integration --durations=0 --durations-min=10 --basetemp=tmp/ {{extra_options}} {{ if filter != "" { "-k '" + filter + "'" } else { "" } }}
 
 test-session-notebooks:
     #!/usr/bin/env bash

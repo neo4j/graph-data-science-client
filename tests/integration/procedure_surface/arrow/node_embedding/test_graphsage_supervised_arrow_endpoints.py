@@ -60,16 +60,25 @@ def db_graph(arrow_client_runtime: AuthenticatedArrowClient, query_runner: Query
         yield g
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
+def training_graph(arrow_client_runtime: AuthenticatedArrowClient) -> Generator[Graph, None, None]:
+    """Graph the shared model is trained on; distinct name so it can coexist with `sample_graph`."""
+    with create_graph(arrow_client_runtime, "gs-sup-train-g", graph) as G:
+        yield G
+
+
+@pytest.fixture(scope="module")
 def gs_model(
-    arrow_client_runtime: AuthenticatedArrowClient, sample_graph: Graph
+    arrow_client_runtime: AuthenticatedArrowClient, training_graph: Graph
 ) -> Generator[GraphSageSupervisedModel, None, None]:
+    # Trained once per module: training spawns a python-runtime container, and prediction
+    # does not mutate the model, so every test can share it.
     model_name = "gs-sup-model"
     model_catalog = ModelCatalogArrowEndpoints(arrow_client_runtime)
     try:
         endpoints = GraphSageSupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
         model, _ = endpoints.train(
-            G=sample_graph,
+            G=training_graph,
             model_name=model_name,
             feature_properties=["feature"],
             target_label="Node",
@@ -81,7 +90,7 @@ def gs_model(
         yield model
     finally:
         # `drop` only unloads the model; `delete` removes the stored artifact so it cannot
-        # collide with the next test's training under the same name.
+        # collide with the next run's training under the same name.
         model_catalog.drop(model_name, fail_if_missing=False)
         model_catalog.delete(model_name, fail_if_missing=False)
 
@@ -103,7 +112,7 @@ def test_compute_stream(
 ) -> None:
     endpoints = GraphSageSupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
 
-    handle = endpoints.compute(G=sample_graph, model_name="gs-sup-model", feature_properties=["feature"])
+    handle = endpoints.compute(G=sample_graph, model_name=gs_model.name(), feature_properties=["feature"])
     handle.wait()
 
     result = handle.stream()
@@ -117,7 +126,7 @@ def test_compute_mutate(
 ) -> None:
     endpoints = GraphSageSupervisedArrowEndpoints(arrow_client_runtime, None, show_progress=False)
 
-    handle = endpoints.compute(G=sample_graph, model_name="gs-sup-model", feature_properties=["feature"])
+    handle = endpoints.compute(G=sample_graph, model_name=gs_model.name(), feature_properties=["feature"])
     handle.wait()
 
     result = handle.mutate(
@@ -145,42 +154,34 @@ def test_mutate(gs_model: GraphSageSupervisedModel, sample_graph: Graph) -> None
 
 
 @pytest.mark.db_integration
-def test_write(arrow_client_runtime: AuthenticatedArrowClient, query_runner: QueryRunner, db_graph: Graph) -> None:
+def test_write(
+    arrow_client_runtime: AuthenticatedArrowClient,
+    query_runner: QueryRunner,
+    db_graph: Graph,
+    gs_model: GraphSageSupervisedModel,
+) -> None:
+    # The shared model is trained without a write protocol, so bind one here to write to the db.
     endpoints = GraphSageSupervisedArrowEndpoints(
         arrow_client_runtime, WriteProtocol.select(arrow_client_runtime, query_runner), show_progress=False
     )
-    model_name = "gs-sup-model-write"
-    model_catalog = ModelCatalogArrowEndpoints(arrow_client_runtime)
-    try:
-        model, _ = endpoints.train(
-            G=db_graph,
-            model_name=model_name,
-            feature_properties=["feature"],
-            target_label="Node",
-            target_property="label",
-            embedding_dimension=1,
-            epochs=1,
-        )
 
-        result = model.predict_write(
-            db_graph,
-            feature_properties=["feature"],
-            write_property="predictedClass",
-            predicted_probability_property="predictedProbabilities",
-        )
+    result = endpoints.write(
+        G=db_graph,
+        model_name=gs_model.name(),
+        feature_properties=["feature"],
+        write_property="predictedClass",
+        predicted_probability_property="predictedProbabilities",
+    )
 
-        # two properties (predicted classes + probabilities) written for each of the 4 nodes
-        assert result.node_properties_written == 8
-        assert result.compute_millis >= 0
-        assert result.write_millis >= 0
+    # two properties (predicted classes + probabilities) written for each of the 4 nodes
+    assert result.node_properties_written == 8
+    assert result.compute_millis >= 0
+    assert result.write_millis >= 0
 
-        assert (
-            query_runner.run_cypher(
-                "MATCH (n) WHERE n.predictedClass IS NOT NULL RETURN COUNT(*) AS count",
-                query_type=QueryType.USER_ACTION,
-            ).iloc[0, 0]
-            == 4
-        )
-    finally:
-        model_catalog.drop(model_name, fail_if_missing=False)
-        model_catalog.delete(model_name, fail_if_missing=False)
+    assert (
+        query_runner.run_cypher(
+            "MATCH (n) WHERE n.predictedClass IS NOT NULL RETURN COUNT(*) AS count",
+            query_type=QueryType.USER_ACTION,
+        ).iloc[0, 0]
+        == 4
+    )
