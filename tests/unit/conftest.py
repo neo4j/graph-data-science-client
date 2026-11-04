@@ -276,3 +276,9 @@ def aura_gds(runner: CollectingQueryRunner, mocker: MockerFixture) -> Generator[
 @pytest.fixture(scope="package")
 def server_version() -> ServerVersion:
     return DEFAULT_SERVER_VERSION
+
+
+@pytest.fixture(autouse=True)
+def _skip_retry_sleeps(mocker: MockerFixture) -> None:
+    # tenacity's default sleep (tenacity.nap.sleep) calls time.sleep
+    mocker.patch("time.sleep")

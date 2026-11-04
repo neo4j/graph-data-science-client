@@ -41,7 +41,7 @@ def test_call_through_functions() -> None:
         progress_fetched_event.wait(5)
         return DataFrame([{"result": 42}])
 
-    qpl = QueryProgressLogger(fake_run_cypher)
+    qpl = QueryProgressLogger(fake_run_cypher, polling_interval=0.01)
     df = qpl.run_with_progress_logging(fake_query, "foo", "database")
 
     assert len(progress_called) > 0
