@@ -77,7 +77,7 @@ release:
     uv publish
 
 unit-tests extra_options="":
-    uv run --group test pytest tests/unit {{extra_options}}
+    uv run --group test pytest tests/unit {{extra_options}} --durations=10
 
 # such as `just it wcc`
 it filter="" extra_options="":
