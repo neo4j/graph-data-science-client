@@ -78,7 +78,7 @@ test = [
     "requests_mock == 1.12.1",
     "pytest_mock==3.17.0",
     "testcontainers == 4.15.0",
-    "python-dateutil >= 2.9",
+    "python-dateutil >= 2.9, < 5",
 ]
 
 docs-ci = [
