@@ -64,8 +64,7 @@ class MaxKCutSessionEndpoints(MaxKCutEndpoints):
         username
             As an administrator, impersonate a different user for accessing their graphs.
         vns_max_neighborhood_order
-            The maximum neighborhood order for the Variable Neighborhood Search. Higher values may
-            lead to better results but increase computation time.
+            The maximum neighborhood order for the Variable Neighborhood Search. Higher values may lead to better results but increase computation time.
 
         Returns
         -------

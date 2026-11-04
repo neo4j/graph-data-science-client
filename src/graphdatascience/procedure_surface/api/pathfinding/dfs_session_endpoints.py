@@ -42,7 +42,7 @@ class DFSSessionEndpoints(DFSEndpoints):
         source_node
             Node id to use as the starting point.
         target_nodes
-            A single target node or a list of target nodes for the DFS computation.
+            A single target node or a list of target nodes for the computation.
         max_depth
             The maximum depth of the search.
         relationship_types

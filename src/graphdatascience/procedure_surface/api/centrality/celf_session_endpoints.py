@@ -47,9 +47,9 @@ class CelfSessionEndpoints(CelfEndpoints):
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         monte_carlo_simulations
-            The number of Monte-Carlo simulations.
+            Number of Monte-Carlo simulations.
         propagation_probability
-            The probability that influence spreads from one node to another.
+            Probability of a node being activated by an active neighbour node.
         random_seed
             Seed for random number generation to ensure reproducible results.
         sudo

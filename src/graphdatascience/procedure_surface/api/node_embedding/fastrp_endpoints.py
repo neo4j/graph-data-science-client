@@ -54,7 +54,7 @@ class FastRPEndpoints(ABC):
         property_ratio
             The ratio of node properties to use in the embedding
         feature_properties
-            List of node properties to use as features in the embedding.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -122,7 +122,7 @@ class FastRPEndpoints(ABC):
         property_ratio
             The ratio of node properties to use in the embedding
         feature_properties
-            List of node properties to use as features in the embedding.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -188,7 +188,7 @@ class FastRPEndpoints(ABC):
         property_ratio
             The ratio of node properties to use in the embedding
         feature_properties
-            List of node properties to use as features in the embedding.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -261,7 +261,7 @@ class FastRPEndpoints(ABC):
         property_ratio
             The ratio of node properties to use in the embedding
         feature_properties
-            List of node properties to use as features in the embedding.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
@@ -325,7 +325,7 @@ class FastRPEndpoints(ABC):
         property_ratio
             The ratio of node properties to use in the embedding
         feature_properties
-            List of node properties to use as features in the embedding.
+            Names of the node properties to use as input features.
             Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.

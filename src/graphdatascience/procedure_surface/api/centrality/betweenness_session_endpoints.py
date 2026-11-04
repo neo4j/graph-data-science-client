@@ -40,9 +40,9 @@ class BetweennessSessionEndpoints(BetweennessEndpoints):
         G
             Graph object to use
         sampling_size
-            The number of nodes to use for sampling.
+            Number of source nodes to consider for computing centrality scores.
         sampling_seed
-            The seed value for sampling randomization
+            Seed value for the random number generator that selects source nodes.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

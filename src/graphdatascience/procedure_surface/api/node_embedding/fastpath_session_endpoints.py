@@ -60,11 +60,9 @@ class FastPathSessionEndpoints(FastPathEndpoints):
         lookback_horizon
             Maximum age of events (relative to the observation time) that are processed.
         num_time_anchors
-            Number of grid points used to discretize elapsed time.
-            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
+            Number of grid points used to discretize elapsed time. Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
         time_anchor_interval
-            Time interval between anchor embeddings in the grid.
-            Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
+            Time interval between anchor embeddings in the grid. Exactly one of `num_time_anchors` and `time_anchor_interval` must be specified.
         event_node_categorical_properties
             Event node properties holding categorical values.
         relationship_types

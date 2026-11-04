@@ -40,9 +40,6 @@ class DegreeSessionEndpoints(DegreeEndpoints):
             Graph object to use
         orientation
             The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.
-            'NATURAL' (default) respects the direction of relationships as they are stored in the graph.
-            'REVERSE' treats each relationship as if it were directed in the opposite direction.
-            'UNDIRECTED' treats all relationships as undirected, effectively counting both directions.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

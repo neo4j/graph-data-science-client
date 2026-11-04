@@ -309,7 +309,7 @@ class SteinerTreeEndpoints(ABC):
         relationship_weight_property
             Name of the property to be used as weights.
         delta
-            The delta parameter for the shortest path computation.
+            The delta parameter for the shortest path computation used internally.
         apply_rerouting
             Whether to apply rerouting optimization.
         relationship_types

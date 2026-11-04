@@ -41,27 +41,27 @@ class KSpanningTreeSessionEndpoints(KSpanningTreeEndpoints):
         G
             Graph object to use
         k
-
+            Number of spanning trees to compute.
         source_node
-
+            Node id to use as the starting point.
         relationship_weight_property
-
+            Name of the property to be used as weights.
         objective
-
+            The objective function to optimize. Either "minimum" or "maximum".
         relationship_types
-
+            Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
-
+            Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         sudo
-
+            Disable the memory guard.
         log_progress
-
+            Display progress logging.
         username
-
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
-
+            Number of concurrent threads to use.
         job_id
-
+            Identifier for the computation.
 
         Returns
         -------

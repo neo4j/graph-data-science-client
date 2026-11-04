@@ -54,8 +54,7 @@ class FastRPSessionEndpoints(FastRPEndpoints):
         property_ratio
             The ratio of node properties to use in the embedding
         feature_properties
-            List of node properties to use as features in the embedding.
-            Defaults to [] if not specified
+            Names of the node properties to use as input features. Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -75,8 +74,7 @@ class FastRPSessionEndpoints(FastRPEndpoints):
         random_seed
             Seed for random number generation to ensure reproducible results.
         result_as_vector
-            Whether to produce the embeddings as vector values instead of lists of floats.
-            Requires GDS 2026.11 or later.
+            Whether to produce the embeddings as vector values instead of lists of floats. Requires GDS 2026.11 or later.
 
         Returns
         -------

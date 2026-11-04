@@ -52,9 +52,9 @@ class HashGNNSessionEndpoints(HashGNNEndpoints):
         embedding_density
             The density of the generated embeddings (number of bits per embedding)
         output_dimension
-            The dimension of the output embeddings. If not specified, defaults to embedding_density / 64
+            The dimension of the output embeddings
         neighbor_influence
-            The influence of neighboring nodes (0.0 to 1.0)
+            The influence of neighboring nodes
         generate_features
             Configuration for generating synthetic features from existing node properties
         binarize_features
@@ -62,8 +62,7 @@ class HashGNNSessionEndpoints(HashGNNEndpoints):
         heterogeneous
             Whether to use heterogeneous node processing for different node types
         feature_properties
-            Names of the node properties to use as input features.
-            Defaults to [] if not specified
+            Names of the node properties to use as input features. Defaults to [] if not specified
         random_seed
             Seed for random number generation to ensure reproducible results.
         relationship_types
@@ -81,8 +80,7 @@ class HashGNNSessionEndpoints(HashGNNEndpoints):
         job_id
             Identifier for the computation.
         result_as_vector
-            Whether to produce the embeddings as vector values instead of lists of floats.
-            Requires GDS 2026.11 or later.
+            Whether to produce the embeddings as vector values instead of lists of floats. Requires GDS 2026.11 or later.
 
         Returns
         -------

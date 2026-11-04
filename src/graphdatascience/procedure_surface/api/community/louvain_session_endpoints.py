@@ -46,9 +46,9 @@ class LouvainSessionEndpoints(LouvainEndpoints):
         tolerance
             Minimum change in scores between iterations.
         max_levels
-            The maximum number of levels in the hierarchy
+            The maximum number of levels
         include_intermediate_communities
-            Whether to include intermediate community assignments
+            Whether to include intermediate communities
         max_iterations
             Maximum number of iterations to run per level.
         relationship_types

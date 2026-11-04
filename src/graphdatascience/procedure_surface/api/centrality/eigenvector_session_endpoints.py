@@ -47,14 +47,9 @@ class EigenvectorSessionEndpoints(EigenvectorEndpoints):
         tolerance
             Minimum change in scores between iterations.
         source_nodes
-            node ids to use as starting points. Can be:
-            - single node id (e.g., 42)
-            - list of node id (e.g., [42, 43, 44])
+            node ids to use as starting points. Can be: - single node id (e.g., 42) - list of node id (e.g., [42, 43, 44])
         scaler
-            The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
-            - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
+            The scaler to use. Can be: - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE') - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0}) - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types

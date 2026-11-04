@@ -182,7 +182,7 @@ class PageRankEndpoints(ABC):
         G
            Graph object to use
         damping_factor
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance
             Minimum change in scores between iterations.
         max_iterations
@@ -314,7 +314,7 @@ class PageRankEndpoints(ABC):
         G
            Graph object to use or a dictionary representing the graph dimensions.
         damping_factor
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance
             Minimum change in scores between iterations.
         max_iterations

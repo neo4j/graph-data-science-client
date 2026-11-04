@@ -43,13 +43,11 @@ class TriangleCountSessionEndpoints(TriangleCountEndpoints):
         job_id
             Identifier for the computation.
         label_filter
-            Filter triangles by node labels. Only triangles where all nodes have one of the specified
-            labels will be counted.
+            Filter triangles by node labels. Only triangles where all nodes have one of the specified labels will be counted.
         log_progress
             Display progress logging.
         max_degree
-            Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from
-            triangle counting to improve performance.
+            Maximum degree of nodes to consider. Nodes with higher degrees will be excluded from triangle counting to improve performance.
         node_labels
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         relationship_types

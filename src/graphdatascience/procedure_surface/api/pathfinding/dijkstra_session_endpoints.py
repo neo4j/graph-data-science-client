@@ -42,7 +42,7 @@ class DijkstraSessionEndpoints(DijkstraEndpoints):
         source_node
             Node id to use as the starting point.
         target_nodes
-            A single target node or a list of target nodes for the shortest path computation.
+            A single target node or a list of target nodes for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types

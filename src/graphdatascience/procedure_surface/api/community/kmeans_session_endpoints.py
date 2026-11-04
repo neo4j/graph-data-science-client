@@ -54,7 +54,7 @@ class KMeansSessionEndpoints(KMeansEndpoints):
         delta_threshold
             Minimum change between iterations.
         initial_sampler
-
+            Sampling method for initial centroids.
         job_id
             Identifier for the computation.
         k

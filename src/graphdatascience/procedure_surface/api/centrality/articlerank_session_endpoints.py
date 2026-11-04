@@ -42,16 +42,13 @@ class ArticleRankSessionEndpoints(ArticleRankEndpoints):
         G
             Graph object to use
         damping_factor
-            The damping factor controls the probability of a random jump to a random node
+            Probability of a jump to a random node.
         tolerance
             Minimum change in scores between iterations.
         max_iterations
             Maximum number of iterations to run.
         scaler
-            The scaler to use. Can be:
-            - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
-            - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
+            The scaler to use. Can be: - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE') - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0}) - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -69,10 +66,7 @@ class ArticleRankSessionEndpoints(ArticleRankEndpoints):
         relationship_weight_property
             Name of the property to be used as weights.
         source_nodes
-            node ids to use as starting points. Can be:
-            - single node id (e.g., 42)
-            - list of node id (e.g., [42, 43, 44])
-            - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
+            node ids to use as starting points. Can be: - single node id (e.g., 42) - list of node id (e.g., [42, 43, 44]) - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])
 
         Returns
         -------

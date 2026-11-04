@@ -100,8 +100,7 @@ class Node2VecSessionEndpoints(Node2VecEndpoints):
         random_seed
             Seed for random number generation to ensure reproducible results.
         result_as_vector
-            Whether to produce the embeddings as vector values instead of lists of floats.
-            Requires GDS 2026.11 or later.
+            Whether to produce the embeddings as vector values instead of lists of floats. Requires GDS 2026.11 or later.
 
         Returns
         -------

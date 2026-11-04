@@ -1,13 +1,17 @@
 {
-  "batch_size": "Number of nodes to process in each batch.",
-  "concurrency": "Number of concurrent threads to use.",
-  "consecutive_ids": "Use consecutive IDs for the components.",
-  "damping_factor": "Probability of a jump to a random node.",
-  "delta_threshold": "Minimum change between iterations.",
   "G": [
     "Graph object to use.",
     "Graph object to use or a dictionary representing the graph dimensions."
   ],
+  "batch_size": "Number of nodes to process in each batch.",
+  "concurrency": "Number of concurrent threads to use.",
+  "consecutive_ids": "Use consecutive IDs for the components.",
+  "damping_factor": "Probability of a jump to a random node.",
+  "delta": [
+    "The bucket width for grouping nodes by tentative distance.",
+    "The delta parameter for the shortest path computation used internally."
+  ],
+  "delta_threshold": "Minimum change between iterations.",
   "graph_name": [
     "Name of the graph to be created",
     "Name of the graph"
@@ -30,15 +34,17 @@
     "Maximum number of iterations to run per level."
   ],
   "min_community_size": "Minimum size for communities to be included in results.",
-  "monte_carlo_simulations": "Number of Monte-Carlo simulations.",
   "model_name": [
     "Name of the model.",
     "Name of the trained model.",
     "Name to save the trained graph encoder + decoder model under."
   ],
-  "mutate_property": ["Name of the node property to store the results in.",
-  "Name of the relationship property to store the predicted probability.",
-  "Postfix for the names of the node properties (auth and hub) to store the results in."],
+  "monte_carlo_simulations": "Number of Monte-Carlo simulations.",
+  "mutate_property": [
+    "Name of the node property to store the results in.",
+    "Name of the relationship property to store the predicted probability.",
+    "Postfix for the names of the node properties (auth and hub) to store the results in."
+  ],
   "mutate_relationship_type": "Name of the relationship type to store the results in.",
   "node_labels": "Filter the graph using the given node labels. Nodes with any of the given labels will be included.",
   "node_properties": [
@@ -50,6 +56,10 @@
     "The node property to stream"
   ],
   "orientation": "The orientation of relationships to consider. Can be 'NATURAL', 'REVERSE', or 'UNDIRECTED'.",
+  "partitioning": [
+    "The partitioning scheme used to divide the work between threads.",
+    "Partitioning configuration for the algorithm"
+  ],
   "propagation_probability": "Probability of a node being activated by an active neighbour node.",
   "relationship_types": "Filter the graph using the given relationship types. Relationships with any of the given types will be included.",
   "relationship_weight_property": "Name of the property to be used as weights.",
@@ -63,7 +73,12 @@
   "seed_property": "Name of the property to be used to for the initial value of a node.",
   "seed_set_size": "Number of nodes that maximize the expected spread in the network.",
   "source_node": "Node id to use as the starting point.",
-  "source_nodes": "List of node ids to use as starting points. Use a list of list pairs to associate each node with a bias > 0.",
+  "source_nodes": [
+    "node ids to use as starting points. Can be: - single node id (e.g., 42) - list of node id (e.g., [42, 43, 44]) - list of tuples to associate each node with a bias > 0 (e.g., [(42, 0.5), (43, 1.0)])",
+    "node ids to use as starting points. Can be: - single node id (e.g., 42) - list of node id (e.g., [42, 43, 44])",
+    "The source nodes for personalized PageRank",
+    "Nodes to start the random walks from. If not specified, walks start from every node."
+  ],
   "sudo": "Disable the memory guard.",
   "target_nodes": "List of target nodes.",
   "tolerance": [
@@ -74,6 +89,9 @@
   "use_wasserman_faust": "Use the improved Wasserman-Faust formula for closeness computation.",
   "username": "As an administrator, impersonate a different user for accessing their graphs.",
   "write_concurrency": "Number of concurrent threads to use for writing.",
-  "write_property": ["Name of the node property to store the results in.", "Postfix for the names of the node properties (auth and hub) to store the results in."],
+  "write_property": [
+    "Name of the node property to store the results in.",
+    "Postfix for the names of the node properties (auth and hub) to store the results in."
+  ],
   "write_relationship_type": "Name of the relationship type to store the results in."
 }
