@@ -6,12 +6,23 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import (
     ClosenessEndpoints,
 )
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_session_endpoints import (
+    ClosenessHarmonicSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 
 
 class ClosenessSessionEndpoints(ClosenessEndpoints):
     """Closeness endpoints as exposed by a GDS Session."""
+
+    @property
+    @abstractmethod
+    def harmonic(self) -> ClosenessHarmonicSessionEndpoints:
+        """
+        Return endpoints for the harmonic centrality algorithm, a variant of closeness centrality.
+        """
+        pass
 
     @abstractmethod
     def compute(
