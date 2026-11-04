@@ -6,11 +6,13 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from graphdatascience.procedure_surface.api.pathfinding.longest_path_endpoints import LongestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.longest_path_session_endpoints import (
+    LongestPathSessionEndpoints,
+)
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 
 
-class LongestPathArrowEndpoints(LongestPathEndpoints):
+class LongestPathArrowEndpoints(LongestPathSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

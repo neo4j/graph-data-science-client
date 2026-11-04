@@ -9,10 +9,14 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endpoints import SingleSourceDeltaEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_endpoints import (
-    SingleSourceDijkstraEndpoints,
+from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_session_endpoints import (
+    AllShortestPathSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_session_endpoints import (
+    DeltaSteppingSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_session_endpoints import (
+    SingleSourceDijkstraSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.single_source_bellman_ford_arrow_endpoints import (
     BellmanFordArrowEndpoints,
@@ -27,7 +31,7 @@ from graphdatascience.procedure_surface.arrow.table_endpoints_helper import Tabl
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
+class AllShortestPathArrowEndpoints(AllShortestPathSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
@@ -113,9 +117,9 @@ class AllShortestPathArrowEndpoints(AllShortestPathEndpoints):
         return self._endpoint_helper.estimate("v2/pathfinding.allShortestPaths.estimate", G, config)
 
     @property
-    def delta(self) -> SingleSourceDeltaEndpoints:
+    def delta(self) -> DeltaSteppingSessionEndpoints:
         return self._delta
 
     @property
-    def dijkstra(self) -> SingleSourceDijkstraEndpoints:
+    def dijkstra(self) -> SingleSourceDijkstraSessionEndpoints:
         return self._dijkstra

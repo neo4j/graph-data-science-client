@@ -8,15 +8,17 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import (
-    HashGNNEndpoints,
     HashGNNMutateResult,
     HashGNNWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.hashgnn_session_endpoints import (
+    HashGNNSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class HashGNNArrowEndpoints(HashGNNEndpoints):
+class HashGNNArrowEndpoints(HashGNNSessionEndpoints):
     """
     Implementation of the HashGNN algorithm endpoints using Arrow Flight backend.
     This class handles the actual execution by forwarding calls to the node property endpoints.

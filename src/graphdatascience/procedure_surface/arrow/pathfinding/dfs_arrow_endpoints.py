@@ -8,16 +8,18 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.dfs_endpoints import (
-    DFSEndpoints,
     DFSMutateResult,
     DFSStatsResult,
+)
+from graphdatascience.procedure_surface.api.pathfinding.dfs_session_endpoints import (
+    DFSSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import aggregate_traversal_rels
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class DFSArrowEndpoints(DFSEndpoints):
+class DFSArrowEndpoints(DFSSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

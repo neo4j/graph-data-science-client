@@ -3,10 +3,12 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
-    LocalClusteringCoefficientEndpoints,
     LocalClusteringCoefficientMutateResult,
     LocalClusteringCoefficientStatsResult,
     LocalClusteringCoefficientWriteResult,
+)
+from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_session_endpoints import (
+    LocalClusteringCoefficientSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -15,7 +17,7 @@ from graphdatascience.procedure_surface.arrow.node_property_endpoints import Nod
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientEndpoints):
+class LocalClusteringCoefficientArrowEndpoints(LocalClusteringCoefficientSessionEndpoints):
     def __init__(
         self,
         client: AuthenticatedArrowClient,

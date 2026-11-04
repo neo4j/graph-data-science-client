@@ -32,27 +32,26 @@ class ArticleRankSessionEndpoints(ArticleRankEndpoints):
         source_nodes: int | list[int] | list[tuple[int, float]] | None = None,
     ) -> JobHandle:
         """
-        Starts an Article Rank computation as a job and returns a handle to it.
+        Starts the computation as a job and returns a handle to it.
 
         The computation runs without materializing its result. Use the returned handle to
-        mutate, write or stream the scores afterwards.
+        mutate, write or stream the result afterwards.
 
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         damping_factor
-            Probability of a jump to a random node.
+            The damping factor controls the probability of a random jump to a random node
         tolerance
             Minimum change in scores between iterations.
         max_iterations
             Maximum number of iterations to run.
         scaler
             The scaler to use. Can be:
-
             - A string (e.g., 'MinMax', 'Mean', 'Max', 'Log', 'StdScore', 'Center', 'NONE')
             - A dictionary with scaler configuration (e.g., {'type': 'Log', 'offset': 1.0})
-            - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
+            - - A :class:`~graphdatascience.procedure_surface.api.catalog.scaler_config.ScalerConfig` instance
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

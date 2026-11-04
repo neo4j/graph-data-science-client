@@ -4,7 +4,9 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.centrality.bridges_endpoints import BridgesEndpoints
+from graphdatascience.procedure_surface.api.centrality.bridges_session_endpoints import (
+    BridgesSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
@@ -12,7 +14,7 @@ from graphdatascience.procedure_surface.arrow.node_property_endpoints import Nod
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class BridgesArrowEndpoints(BridgesEndpoints):
+class BridgesArrowEndpoints(BridgesSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

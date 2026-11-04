@@ -16,67 +16,145 @@ from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints i
 from graphdatascience.procedure_surface.api.centrality.articlerank_session_endpoints import (
     ArticleRankSessionEndpoints,
 )
-from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
-from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints import BetweennessEndpoints
-from graphdatascience.procedure_surface.api.centrality.bridges_endpoints import BridgesEndpoints
-from graphdatascience.procedure_surface.api.centrality.celf_endpoints import CelfEndpoints
-from graphdatascience.procedure_surface.api.centrality.closeness_endpoints import ClosenessEndpoints
-from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
-from graphdatascience.procedure_surface.api.centrality.degree_endpoints import DegreeEndpoints
-from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import EigenvectorEndpoints
-from graphdatascience.procedure_surface.api.centrality.hits_endpoints import HitsEndpoints
-from graphdatascience.procedure_surface.api.centrality.pagerank_endpoints import PageRankEndpoints
+from graphdatascience.procedure_surface.api.centrality.articulationpoints_session_endpoints import (
+    ArticulationPointsSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.betweenness_session_endpoints import (
+    BetweennessSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.bridges_session_endpoints import (
+    BridgesSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.celf_session_endpoints import (
+    CelfSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_session_endpoints import (
+    ClosenessHarmonicSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.closeness_session_endpoints import (
+    ClosenessSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.degree_session_endpoints import (
+    DegreeSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.eigenvector_session_endpoints import (
+    EigenvectorSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.hits_session_endpoints import (
+    HitsSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.centrality.pagerank_session_endpoints import (
+    PageRankSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.collapse_path_endpoints import CollapsePathEndpoints
-from graphdatascience.procedure_surface.api.community.clique_counting_endpoints import CliqueCountingEndpoints
-from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
-from graphdatascience.procedure_surface.api.community.hdbscan_endpoints import HdbscanEndpoints
-from graphdatascience.procedure_surface.api.community.k1coloring_endpoints import K1ColoringEndpoints
-from graphdatascience.procedure_surface.api.community.kcore_endpoints import KCoreEndpoints
-from graphdatascience.procedure_surface.api.community.kmeans_endpoints import KMeansEndpoints
-from graphdatascience.procedure_surface.api.community.labelpropagation_endpoints import LabelPropagationEndpoints
-from graphdatascience.procedure_surface.api.community.leiden_endpoints import LeidenEndpoints
-from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_endpoints import (
-    LocalClusteringCoefficientEndpoints,
+from graphdatascience.procedure_surface.api.community.clique_counting_session_endpoints import (
+    CliqueCountingSessionEndpoints,
 )
-from graphdatascience.procedure_surface.api.community.louvain_endpoints import LouvainEndpoints
-from graphdatascience.procedure_surface.api.community.maxkcut_endpoints import MaxKCutEndpoints
-from graphdatascience.procedure_surface.api.community.modularity_endpoints import ModularityEndpoints
-from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
-    ModularityOptimizationEndpoints,
+from graphdatascience.procedure_surface.api.community.conductance_session_endpoints import (
+    ConductanceSessionEndpoints,
 )
-from graphdatascience.procedure_surface.api.community.scc_endpoints import SccEndpoints
-from graphdatascience.procedure_surface.api.community.sllpa_endpoints import SllpaEndpoints
-from graphdatascience.procedure_surface.api.community.triangle_count_endpoints import TriangleCountEndpoints
+from graphdatascience.procedure_surface.api.community.hdbscan_session_endpoints import (
+    HdbscanSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.k1coloring_session_endpoints import (
+    K1ColoringSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.kcore_session_endpoints import (
+    KCoreSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.kmeans_session_endpoints import (
+    KMeansSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.labelpropagation_session_endpoints import (
+    LabelPropagationSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.leiden_session_endpoints import (
+    LeidenSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.local_clustering_coefficient_session_endpoints import (
+    LocalClusteringCoefficientSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.louvain_session_endpoints import (
+    LouvainSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.maxkcut_session_endpoints import (
+    MaxKCutSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.modularity_optimization_session_endpoints import (
+    ModularityOptimizationSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.modularity_session_endpoints import (
+    ModularitySessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.scc_session_endpoints import (
+    SccSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.sllpa_session_endpoints import (
+    SllpaSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.community.triangle_count_session_endpoints import (
+    TriangleCountSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.community.triangles_endpoints import TrianglesEndpoints
-from graphdatascience.procedure_surface.api.community.wcc_endpoints import WccEndpoints
+from graphdatascience.procedure_surface.api.community.wcc_session_endpoints import (
+    WccSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.list_progress_endpoint import ListProgressEndpoint
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import EmbeddingEndpoints
-from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.fastpath_session_endpoints import (
+    FastPathSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_session_endpoints import (
     FastRPSessionEndpoints,
 )
-from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
-from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.bfs_endpoints import BFSEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.hashgnn_session_endpoints import (
+    HashGNNSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.node_embedding.node2vec_session_endpoints import (
+    Node2VecSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_session_endpoints import (
+    AllShortestPathSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.bfs_session_endpoints import (
+    BFSSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.pathfinding.dag_endpoints import DagEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.dfs_endpoints import DFSEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import KSpanningTreeEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import RandomWalkEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.dfs_session_endpoints import (
+    DFSSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_session_endpoints import (
+    KSpanningTreeSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_session_endpoints import (
+    MaxFlowSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_session_endpoints import (
+    PrizeSteinerTreeSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.random_walk_session_endpoints import (
+    RandomWalkSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.pathfinding.shortest_path_session_endpoints import (
     ShortestPathSessionEndpoints,
 )
-from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
-    SingleSourceBellmanFordEndpoints,
+from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_session_endpoints import (
+    BellmanFordSessionEndpoints,
 )
-from graphdatascience.procedure_surface.api.pathfinding.spanning_tree_endpoints import SpanningTreeEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_endpoints import SteinerTreeEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.spanning_tree_session_endpoints import (
+    SpanningTreeSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.steiner_tree_session_endpoints import (
+    SteinerTreeSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.pipeline import PipelineEndpoints
-from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
-from graphdatascience.procedure_surface.api.similarity.node_similarity_endpoints import NodeSimilarityEndpoints
+from graphdatascience.procedure_surface.api.similarity.knn_session_endpoints import (
+    KnnSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.similarity.node_similarity_session_endpoints import (
+    NodeSimilaritySessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.similarity.similarity_functions import SimilarityFunctions
 from graphdatascience.procedure_surface.api.topological_link_prediction_endpoints import (
     TopologicalLinkPredictionEndpoints,
@@ -351,7 +429,7 @@ class AuraGraphDataScience:
     ## Algorithms
 
     @property
-    def all_shortest_paths(self) -> AllShortestPathEndpoints:
+    def all_shortest_paths(self) -> AllShortestPathSessionEndpoints:
         """
         Return endpoints for the all shortest paths algorithm.
         """
@@ -369,7 +447,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def bfs(self) -> BFSEndpoints:
+    def bfs(self) -> BFSSessionEndpoints:
         """
         Return endpoints for the Breadth First Search (BFS) algorithm.
         """
@@ -378,7 +456,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def dfs(self) -> DFSEndpoints:
+    def dfs(self) -> DFSSessionEndpoints:
         """
         Return endpoints for the Depth First Search (DFS) algorithm.
         """
@@ -387,7 +465,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def articulation_points(self) -> ArticulationPointsEndpoints:
+    def articulation_points(self) -> ArticulationPointsSessionEndpoints:
         """
         Return endpoints for the articulation points algorithm.
         """
@@ -396,7 +474,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def hits(self) -> HitsEndpoints:
+    def hits(self) -> HitsSessionEndpoints:
         """
         Return endpoints for the HITS algorithm.
         """
@@ -405,7 +483,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def betweenness_centrality(self) -> BetweennessEndpoints:
+    def betweenness_centrality(self) -> BetweennessSessionEndpoints:
         """
         Return endpoints for the betweenness centrality algorithm.
         """
@@ -414,14 +492,14 @@ class AuraGraphDataScience:
         )
 
     @property
-    def betweenness(self) -> BetweennessEndpoints:
+    def betweenness(self) -> BetweennessSessionEndpoints:
         """
         Return endpoints for the betweenness centrality algorithm.
         """
         return self.betweenness_centrality
 
     @property
-    def bridges(self) -> BridgesEndpoints:
+    def bridges(self) -> BridgesSessionEndpoints:
         """
         Return endpoints for the bridges algorithm.
         """
@@ -430,7 +508,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def bellman_ford(self) -> SingleSourceBellmanFordEndpoints:
+    def bellman_ford(self) -> BellmanFordSessionEndpoints:
         """
         Return endpoints for the single source Bellman-Ford algorithm.
         """
@@ -439,7 +517,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def clique_counting(self) -> CliqueCountingEndpoints:
+    def clique_counting(self) -> CliqueCountingSessionEndpoints:
         """
         Return endpoints for the clique counting algorithm.
         """
@@ -448,21 +526,21 @@ class AuraGraphDataScience:
         )
 
     @property
-    def conductance(self) -> ConductanceEndpoints:
+    def conductance(self) -> ConductanceSessionEndpoints:
         """
         Return endpoints for the conductance algorithm.
         """
         return ConductanceArrowEndpoints(self._authenticated_arrow_client, show_progress=self._show_progress)
 
     @property
-    def modularity(self) -> ModularityEndpoints:
+    def modularity(self) -> ModularitySessionEndpoints:
         """
         Return endpoints for the modularity algorithm.
         """
         return ModularityArrowEndpoints(self._authenticated_arrow_client, show_progress=self._show_progress)
 
     @property
-    def closeness_centrality(self) -> ClosenessEndpoints:
+    def closeness_centrality(self) -> ClosenessSessionEndpoints:
         """
         Return endpoints for the closeness centrality algorithm.
         """
@@ -471,7 +549,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def closeness(self) -> ClosenessEndpoints:
+    def closeness(self) -> ClosenessSessionEndpoints:
         """
         Return endpoints for the closeness centrality algorithm.
         """
@@ -485,7 +563,7 @@ class AuraGraphDataScience:
         return DagArrowEndpoints(self._authenticated_arrow_client, show_progress=self._show_progress)
 
     @property
-    def degree_centrality(self) -> DegreeEndpoints:
+    def degree_centrality(self) -> DegreeSessionEndpoints:
         """
         Return endpoints for the degree centrality algorithm.
         """
@@ -494,14 +572,14 @@ class AuraGraphDataScience:
         )
 
     @property
-    def degree(self) -> DegreeEndpoints:
+    def degree(self) -> DegreeSessionEndpoints:
         """
         Return endpoints for the degree centrality algorithm.
         """
         return self.degree_centrality
 
     @property
-    def eigenvector_centrality(self) -> EigenvectorEndpoints:
+    def eigenvector_centrality(self) -> EigenvectorSessionEndpoints:
         """
         Return endpoints for the eigenvector centrality algorithm.
         """
@@ -510,7 +588,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def eigenvector(self) -> EigenvectorEndpoints:
+    def eigenvector(self) -> EigenvectorSessionEndpoints:
         """
         Return endpoints for the eigenvector centrality algorithm.
         """
@@ -526,7 +604,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def fast_path(self) -> FastPathEndpoints:
+    def fast_path(self) -> FastPathSessionEndpoints:
         """
         Return endpoints for the FastPath algorithm.
         """
@@ -565,7 +643,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def harmonic_centrality(self) -> ClosenessHarmonicEndpoints:
+    def harmonic_centrality(self) -> ClosenessHarmonicSessionEndpoints:
         """
         Return endpoints for the harmonic centrality algorithm.
         """
@@ -574,14 +652,14 @@ class AuraGraphDataScience:
         )
 
     @property
-    def harmonic(self) -> ClosenessHarmonicEndpoints:
+    def harmonic(self) -> ClosenessHarmonicSessionEndpoints:
         """
         Return endpoints for the harmonic centrality algorithm.
         """
         return self.harmonic_centrality
 
     @property
-    def hash_gnn(self) -> HashGNNEndpoints:
+    def hash_gnn(self) -> HashGNNSessionEndpoints:
         """
         Return endpoints for the HashGNN algorithm.
         """
@@ -590,7 +668,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def hdbscan(self) -> HdbscanEndpoints:
+    def hdbscan(self) -> HdbscanSessionEndpoints:
         """
         Return endpoints for the HDBSCAN algorithm.
         """
@@ -599,7 +677,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def influence_maximization_celf(self) -> CelfEndpoints:
+    def influence_maximization_celf(self) -> CelfSessionEndpoints:
         """
         Return endpoints for the influence maximization CELF algorithm.
         """
@@ -608,7 +686,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def k1_coloring(self) -> K1ColoringEndpoints:
+    def k1_coloring(self) -> K1ColoringSessionEndpoints:
         """
         Return endpoints for the K1 coloring algorithm.
         """
@@ -617,7 +695,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def k_core_decomposition(self) -> KCoreEndpoints:
+    def k_core_decomposition(self) -> KCoreSessionEndpoints:
         """
         Return endpoints for the K-core decomposition algorithm.
         """
@@ -626,14 +704,14 @@ class AuraGraphDataScience:
         )
 
     @property
-    def kcore(self) -> KCoreEndpoints:
+    def kcore(self) -> KCoreSessionEndpoints:
         """
         Return endpoints for the K-core decomposition algorithm.
         """
         return self.k_core_decomposition
 
     @property
-    def kmeans(self) -> KMeansEndpoints:
+    def kmeans(self) -> KMeansSessionEndpoints:
         """
         Return endpoints for the K-means algorithm.
         """
@@ -642,7 +720,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def knn(self) -> KnnEndpoints:
+    def knn(self) -> KnnSessionEndpoints:
         """
         Return endpoints for the K-nearest neighbors algorithm.
         """
@@ -651,7 +729,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def k_spanning_tree(self) -> KSpanningTreeEndpoints:
+    def k_spanning_tree(self) -> KSpanningTreeSessionEndpoints:
         """
         Return endpoints for the K-spanning tree algorithm.
         """
@@ -660,7 +738,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def label_propagation(self) -> LabelPropagationEndpoints:
+    def label_propagation(self) -> LabelPropagationSessionEndpoints:
         """
         Return endpoints for the label propagation algorithm.
         """
@@ -669,7 +747,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def leiden(self) -> LeidenEndpoints:
+    def leiden(self) -> LeidenSessionEndpoints:
         """
         Return endpoints for the Leiden algorithm.
         """
@@ -678,7 +756,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def max_flow(self) -> MaxFlowEndpoints:
+    def max_flow(self) -> MaxFlowSessionEndpoints:
         """
         Return endpoints for the Max Flow algorithm.
         """
@@ -687,7 +765,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def local_clustering_coefficient(self) -> LocalClusteringCoefficientEndpoints:
+    def local_clustering_coefficient(self) -> LocalClusteringCoefficientSessionEndpoints:
         """
         Return endpoints for the local clustering coefficient algorithm.
         """
@@ -696,7 +774,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def louvain(self) -> LouvainEndpoints:
+    def louvain(self) -> LouvainSessionEndpoints:
         """
         Return endpoints for the Louvain algorithm.
         """
@@ -705,7 +783,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def max_k_cut(self) -> MaxKCutEndpoints:
+    def max_k_cut(self) -> MaxKCutSessionEndpoints:
         """
         Return endpoints for the Max K-cut algorithm.
         """
@@ -714,7 +792,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def modularity_optimization(self) -> ModularityOptimizationEndpoints:
+    def modularity_optimization(self) -> ModularityOptimizationSessionEndpoints:
         """
         Return endpoints for the modularity optimization algorithm.
         """
@@ -723,7 +801,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def node2vec(self) -> Node2VecEndpoints:
+    def node2vec(self) -> Node2VecSessionEndpoints:
         """
         Return endpoints for the Node2Vec algorithm.
         """
@@ -732,7 +810,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def node_similarity(self) -> NodeSimilarityEndpoints:
+    def node_similarity(self) -> NodeSimilaritySessionEndpoints:
         """
         Return endpoints for the node similarity algorithm.
         """
@@ -748,7 +826,7 @@ class AuraGraphDataScience:
         return SimilarityFunctions()
 
     @property
-    def page_rank(self) -> PageRankEndpoints:
+    def page_rank(self) -> PageRankSessionEndpoints:
         """
         Return endpoints for the PageRank algorithm.
         """
@@ -757,7 +835,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def prize_steiner_tree(self) -> PrizeSteinerTreeEndpoints:
+    def prize_steiner_tree(self) -> PrizeSteinerTreeSessionEndpoints:
         """
         Return endpoints for the prize-collecting Steiner tree algorithm.
         """
@@ -766,7 +844,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def random_walk(self) -> RandomWalkEndpoints:
+    def random_walk(self) -> RandomWalkSessionEndpoints:
         """
         Return endpoints for the Random Walk algorithm.
         """
@@ -775,7 +853,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def scc(self) -> SccEndpoints:
+    def scc(self) -> SccSessionEndpoints:
         """
         Return endpoints for the strongly connected components algorithm.
         """
@@ -802,7 +880,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def spanning_tree(self) -> SpanningTreeEndpoints:
+    def spanning_tree(self) -> SpanningTreeSessionEndpoints:
         """
         Return endpoints for the spanning tree algorithm.
         """
@@ -811,7 +889,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def steiner_tree(self) -> SteinerTreeEndpoints:
+    def steiner_tree(self) -> SteinerTreeSessionEndpoints:
         """
         Return endpoints for the Steiner tree algorithm.
         """
@@ -820,7 +898,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def sllpa(self) -> SllpaEndpoints:
+    def sllpa(self) -> SllpaSessionEndpoints:
         """
         Return endpoints for the speaker-listener label propagation algorithm.
         """
@@ -829,7 +907,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def triangle_count(self) -> TriangleCountEndpoints:
+    def triangle_count(self) -> TriangleCountSessionEndpoints:
         """
         Return endpoints for the triangle count algorithm.
         """
@@ -854,7 +932,7 @@ class AuraGraphDataScience:
         return TrianglesArrowEndpoints(self._authenticated_arrow_client, show_progress=self._show_progress)
 
     @property
-    def wcc(self) -> WccEndpoints:
+    def wcc(self) -> WccSessionEndpoints:
         """
         Return endpoints for the weakly connected components algorithm.
         """

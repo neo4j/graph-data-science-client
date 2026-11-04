@@ -32,24 +32,23 @@ class SourceTargetAStarSessionEndpoints(SourceTargetAStarEndpoints):
         job_id: str | None = None,
     ) -> JobHandle:
         """
-        Starts an A* shortest path computation from a source node to a target node as a job and
-        returns a handle to it.
+        Starts the computation as a job and returns a handle to it.
 
         The computation runs without materializing its result. Use the returned handle to
-        mutate, write or stream the paths afterwards.
+        mutate, write or stream the result afterwards.
 
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         source_node
             Node id to use as the starting point.
         target_node
-            Node id to use as the destination.
+            The target node for the shortest path computation.
         latitude_property
-            Name of the node property that stores the latitude value.
+            The node property that stores latitude values.
         longitude_property
-            Name of the node property that stores the longitude value.
+            The node property that stores longitude values.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types

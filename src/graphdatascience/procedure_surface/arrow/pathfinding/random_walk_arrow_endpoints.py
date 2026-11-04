@@ -8,15 +8,17 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import (
-    RandomWalkEndpoints,
     RandomWalkMutateResult,
     RandomWalkStatsResult,
+)
+from graphdatascience.procedure_surface.api.pathfinding.random_walk_session_endpoints import (
+    RandomWalkSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class RandomWalkArrowEndpoints(RandomWalkEndpoints):
+class RandomWalkArrowEndpoints(RandomWalkSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

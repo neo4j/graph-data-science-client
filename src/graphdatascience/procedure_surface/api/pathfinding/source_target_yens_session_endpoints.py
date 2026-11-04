@@ -31,22 +31,21 @@ class SourceTargetYensSessionEndpoints(SourceTargetYensEndpoints):
         job_id: str | None = None,
     ) -> JobHandle:
         """
-        Starts a Yen's K shortest paths computation from a source node to a target node as a job
-        and returns a handle to it.
+        Starts the computation as a job and returns a handle to it.
 
         The computation runs without materializing its result. Use the returned handle to
-        mutate, write or stream the paths afterwards.
+        mutate, write or stream the result afterwards.
 
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         source_node
             Node id to use as the starting point.
         target_node
-            Node id to use as the destination.
+            The target node for the shortest path computation.
         k
-            The number of shortest paths to compute.
+            Number of shortest paths to find.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types

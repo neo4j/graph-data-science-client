@@ -8,9 +8,11 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import (
-    FastPathEndpoints,
     FastPathMutateResult,
     FastPathWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.fastpath_session_endpoints import (
+    FastPathSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
@@ -18,7 +20,7 @@ from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 FAST_PATH_ENDPOINT = "v2/embeddings.fastPath"
 
 
-class FastPathArrowEndpoints(FastPathEndpoints):
+class FastPathArrowEndpoints(FastPathSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

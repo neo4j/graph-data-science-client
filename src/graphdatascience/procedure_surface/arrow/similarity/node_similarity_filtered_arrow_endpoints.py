@@ -9,8 +9,8 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from graphdatascience.procedure_surface.api.similarity.node_similarity_filtered_endpoints import (
-    NodeSimilarityFilteredEndpoints,
+from graphdatascience.procedure_surface.api.similarity.node_similarity_filtered_session_endpoints import (
+    NodeSimilarityFilteredSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.similarity.node_similarity_results import (
     NodeSimilarityMutateResult,
@@ -21,7 +21,7 @@ from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper impo
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class NodeSimilarityFilteredArrowEndpoints(NodeSimilarityFilteredEndpoints):
+class NodeSimilarityFilteredArrowEndpoints(NodeSimilarityFilteredSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

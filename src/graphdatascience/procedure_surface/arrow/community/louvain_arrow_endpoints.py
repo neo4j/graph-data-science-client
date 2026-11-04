@@ -5,10 +5,12 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.louvain_endpoints import (
-    LouvainEndpoints,
     LouvainMutateResult,
     LouvainStatsResult,
     LouvainWriteResult,
+)
+from graphdatascience.procedure_surface.api.community.louvain_session_endpoints import (
+    LouvainSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -17,7 +19,7 @@ from graphdatascience.procedure_surface.arrow.node_property_endpoints import Nod
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class LouvainArrowEndpoints(LouvainEndpoints):
+class LouvainArrowEndpoints(LouvainSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

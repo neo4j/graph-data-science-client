@@ -27,23 +27,23 @@ class GraphSageSupervisedSessionEndpoints(GraphSageSupervisedEndpoints):
         job_id: str | None = None,
     ) -> JobHandle:
         """
-        Starts a supervised GraphSage prediction as a job and returns a handle to it.
+        Starts the computation as a job and returns a handle to it.
 
         The computation runs without materializing its result. Use the returned handle to
-        mutate, write or stream the predicted classes and probabilities afterwards.
+        mutate, write or stream the result afterwards.
 
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         model_name
-            Name of the trained model to use for prediction.
+            Name of the model.
         feature_properties
-            Names of the node properties to use as input features.
+            Names of the node properties to use as input features
         batch_size
             Number of nodes to process in each batch.
         random_seed
-            Seed for reproducible results.
+            Seed for random number generation to ensure reproducible results.
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels

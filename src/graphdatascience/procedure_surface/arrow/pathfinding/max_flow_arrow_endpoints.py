@@ -7,12 +7,16 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from graphdatascience.procedure_surface.api.pathfinding import MaxFlowMinCostEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import (
-    MaxFlowEndpoints,
     MaxFlowMutateResult,
     MaxFlowStatsResult,
     MaxFlowWriteResult,
+)
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_min_cost_session_endpoints import (
+    MaxFlowMinCostSessionEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.max_flow_session_endpoints import (
+    MaxFlowSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.pathfinding.max_flow_min_cost_arrow_endpoints import (
     MaxFlowMinCostArrowEndpoints,
@@ -21,7 +25,7 @@ from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper impo
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class MaxFlowArrowEndpoints(MaxFlowEndpoints):
+class MaxFlowArrowEndpoints(MaxFlowSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
@@ -36,7 +40,7 @@ class MaxFlowArrowEndpoints(MaxFlowEndpoints):
         )
 
     @property
-    def min_cost(self) -> MaxFlowMinCostEndpoints:
+    def min_cost(self) -> MaxFlowMinCostSessionEndpoints:
         return self._min_cost_endpoints
 
     def compute(

@@ -13,13 +13,15 @@ from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_endp
     DeltaSteppingMutateResult,
     DeltaSteppingStatsResult,
     DeltaSteppingWriteResult,
-    SingleSourceDeltaEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.single_source_delta_session_endpoints import (
+    DeltaSteppingSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class DeltaSteppingArrowEndpoints(SingleSourceDeltaEndpoints):
+class DeltaSteppingArrowEndpoints(DeltaSteppingSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

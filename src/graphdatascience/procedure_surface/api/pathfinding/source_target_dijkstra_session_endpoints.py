@@ -30,16 +30,15 @@ class SourceTargetDijkstraSessionEndpoints(SourceTargetDijkstraEndpoints):
         job_id: str | None = None,
     ) -> JobHandle:
         """
-        Starts a Dijkstra shortest path computation from a source node to one or more target
-        nodes as a job and returns a handle to it.
+        Starts the computation as a job and returns a handle to it.
 
         The computation runs without materializing its result. Use the returned handle to
-        mutate, write or stream the paths afterwards.
+        mutate, write or stream the result afterwards.
 
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         source_node
             Node id to use as the starting point.
         target_nodes

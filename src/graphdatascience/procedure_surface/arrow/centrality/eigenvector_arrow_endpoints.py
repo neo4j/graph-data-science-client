@@ -7,10 +7,12 @@ from graphdatascience.arrow_client.authenticated_flight_client import Authentica
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.catalog.scaler_config import ScalerConfig
 from graphdatascience.procedure_surface.api.centrality.eigenvector_endpoints import (
-    EigenvectorEndpoints,
     EigenvectorMutateResult,
     EigenvectorStatsResult,
     EigenvectorWriteResult,
+)
+from graphdatascience.procedure_surface.api.centrality.eigenvector_session_endpoints import (
+    EigenvectorSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -19,7 +21,7 @@ from graphdatascience.procedure_surface.arrow.node_property_endpoints import Nod
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class EigenvectorArrowEndpoints(EigenvectorEndpoints):
+class EigenvectorArrowEndpoints(EigenvectorSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

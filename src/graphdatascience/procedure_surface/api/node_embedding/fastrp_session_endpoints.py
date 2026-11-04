@@ -34,30 +34,28 @@ class FastRPSessionEndpoints(FastRPEndpoints):
         result_as_vector: bool = False,
     ) -> JobHandle:
         """
-        Starts a FastRP computation as a job and returns a handle to it.
+        Starts the computation as a job and returns a handle to it.
 
         The computation runs without materializing its result. Use the returned handle to
-        mutate, write or stream the embeddings afterwards.
+        mutate, write or stream the result afterwards.
 
         Parameters
         ----------
         G
-           Graph object to use
+            Graph object to use
         embedding_dimension
-            The dimension of the computed node embeddings.
+            Output dimensionality of the embeddings
         iteration_weights
-            Contains a weight for each iteration. The weight controls how much the intermediate
-            embedding from the iteration contributes to the final embedding.
+            Weights for each iteration. Controls the influence of each iteration on the final embedding.
         normalization_strength
-            The initial random vector for each node is scaled by its degree to the power of
-            `normalization_strength`.
+            The normalization strength parameter controls how much the embedding is normalized
         node_self_influence
-            Controls for each node how much its initial random vector contributes to its final
-            embedding.
+            The influence of the node's own features on its embedding
         property_ratio
-            The desired ratio of the property embedding dimension to the total `embedding_dimension`.
+            The ratio of node properties to use in the embedding
         feature_properties
-            The names of the node properties that should be used as input features.
+            List of node properties to use as features in the embedding.
+            Defaults to [] if not specified
         relationship_types
             Filter the graph using the given relationship types. Relationships with any of the given types will be included.
         node_labels
@@ -75,10 +73,10 @@ class FastRPSessionEndpoints(FastRPEndpoints):
         relationship_weight_property
             Name of the property to be used as weights.
         random_seed
-            Seed for reproducible results.
+            Seed for random number generation to ensure reproducible results.
         result_as_vector
-            Whether the computed embeddings are produced as a vector of the embedding dimension
-            instead of a list of floats.
+            Whether to produce the embeddings as vector values instead of lists of floats.
+            Requires GDS 2026.11 or later.
 
         Returns
         -------
