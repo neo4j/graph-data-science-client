@@ -13,7 +13,9 @@ from graphdatascience.error.not_available_outside_aura import NotAvailableOutsid
 from graphdatascience.error.standalone_session_error import NotAvailableInStandaloneSessions
 from graphdatascience.procedure_surface.api import ConfigEndpoints
 from graphdatascience.procedure_surface.api.catalog.scale_properties_endpoints import ScalePropertiesEndpoints
-from graphdatascience.procedure_surface.api.centrality.articlerank_endpoints import ArticleRankEndpoints
+from graphdatascience.procedure_surface.api.centrality.articlerank_session_endpoints import (
+    ArticleRankSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.centrality.articulationpoints_endpoints import ArticulationPointsEndpoints
 from graphdatascience.procedure_surface.api.centrality.betweenness_endpoints import BetweennessEndpoints
 from graphdatascience.procedure_surface.api.centrality.bridges_endpoints import BridgesEndpoints
@@ -51,7 +53,9 @@ from graphdatascience.procedure_surface.api.list_progress_endpoint import ListPr
 from graphdatascience.procedure_surface.api.model.model_catalog_endpoints import ModelCatalogEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.embedding_endpoints import EmbeddingEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints import FastPathEndpoints
-from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import FastRPEndpoints
+from graphdatascience.procedure_surface.api.node_embedding.fastrp_session_endpoints import (
+    FastRPSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import HashGNNEndpoints
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import Node2VecEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.all_shortest_path_endpoints import AllShortestPathEndpoints
@@ -62,7 +66,9 @@ from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoint
 from graphdatascience.procedure_surface.api.pathfinding.max_flow_endpoints import MaxFlowEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import PrizeSteinerTreeEndpoints
 from graphdatascience.procedure_surface.api.pathfinding.random_walk_endpoints import RandomWalkEndpoints
-from graphdatascience.procedure_surface.api.pathfinding.shortest_path_endpoints import ShortestPathEndpoints
+from graphdatascience.procedure_surface.api.pathfinding.shortest_path_session_endpoints import (
+    ShortestPathSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.pathfinding.single_source_bellman_ford_endpoints import (
     SingleSourceBellmanFordEndpoints,
 )
@@ -354,7 +360,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def article_rank(self) -> ArticleRankEndpoints:
+    def article_rank(self) -> ArticleRankSessionEndpoints:
         """
         Return endpoints for the article rank algorithm.
         """
@@ -529,7 +535,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def fast_rp(self) -> FastRPEndpoints:
+    def fast_rp(self) -> FastRPSessionEndpoints:
         """
         Return endpoints for the fast RP algorithm.
         """
@@ -787,7 +793,7 @@ class AuraGraphDataScience:
         )
 
     @property
-    def shortest_path(self) -> ShortestPathEndpoints:
+    def shortest_path(self) -> ShortestPathSessionEndpoints:
         """
         Return endpoints for the shortest path algorithm.
         """
