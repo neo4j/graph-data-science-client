@@ -9,19 +9,23 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from graphdatascience.procedure_surface.api.similarity.knn_endpoints import KnnEndpoints
-from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
+from graphdatascience.procedure_surface.api.similarity.knn_filtered_session_endpoints import (
+    KnnFilteredSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.similarity.knn_results import (
     KnnMutateResult,
     KnnStatsResult,
     KnnWriteResult,
+)
+from graphdatascience.procedure_surface.api.similarity.knn_session_endpoints import (
+    KnnSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.similarity.knn_filtered_arrow_endpoints import KnnFilteredArrowEndpoints
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class KnnArrowEndpoints(KnnEndpoints):
+class KnnArrowEndpoints(KnnSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
@@ -33,7 +37,7 @@ class KnnArrowEndpoints(KnnEndpoints):
         )
 
     @property
-    def filtered(self) -> KnnFilteredEndpoints:
+    def filtered(self) -> KnnFilteredSessionEndpoints:
         return KnnFilteredArrowEndpoints(
             self._endpoints_helper._arrow_client,
             self._endpoints_helper._write_protocol,

@@ -12,18 +12,18 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_results imp
     GraphSageSupervisedTrainResult,
     GraphSageSupervisedWriteResult,
 )
-from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_endpoints import (
-    GraphSageSupervisedEndpoints,
-)
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
     GraphSageSupervisedModel,
+)
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_session_endpoints import (
+    GraphSageSupervisedSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedEndpoints):
+class GraphSageSupervisedArrowEndpoints(GraphSageSupervisedSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

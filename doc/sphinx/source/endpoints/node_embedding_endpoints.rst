@@ -4,10 +4,12 @@ Node Embedding Algorithms
 .. automodule:: graphdatascience.procedure_surface.api.node_embedding
     :members:
     :undoc-members:
+    :show-inheritance:
     :exclude-members: __init__
 
 .. autoclass:: graphdatascience.procedure_surface.arrow.node_embedding.graphsage_session_endpoints.GraphSageSessionEndpoints
     :members:
+    :show-inheritance:
     :exclude-members: __init__
 
 .. autoclass:: graphdatascience.procedure_surface.api.node_embedding.graphsage_model.GraphSageModel

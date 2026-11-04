@@ -15,6 +15,9 @@
 
 ## Improvements
 
+- The session algorithm endpoints now expose the compute-only endpoint (`gds.<algorithm>.compute`)
+  as part of their documented interface. It starts a computation as a job without materializing
+  its result, in addition to the algorithm modes.
 - Improve robustness of Neo4j DB connection verification.
 - `QueryType`, `AlgorithmCategory`, `ArrowEndpointVersion`, and `ProtocolVersion` are now
   `StrEnum`s: `str()` of a member returns the underlying value (for example,

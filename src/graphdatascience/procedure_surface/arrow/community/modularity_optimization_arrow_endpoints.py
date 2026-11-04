@@ -5,10 +5,12 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.community.modularity_optimization_endpoints import (
-    ModularityOptimizationEndpoints,
     ModularityOptimizationMutateResult,
     ModularityOptimizationStatsResult,
     ModularityOptimizationWriteResult,
+)
+from graphdatascience.procedure_surface.api.community.modularity_optimization_session_endpoints import (
+    ModularityOptimizationSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -17,7 +19,7 @@ from graphdatascience.procedure_surface.arrow.node_property_endpoints import Nod
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class ModularityOptimizationArrowEndpoints(ModularityOptimizationEndpoints):
+class ModularityOptimizationArrowEndpoints(ModularityOptimizationSessionEndpoints):
     """
     Arrow client implementation for the Modularity Optimization algorithm.
     """

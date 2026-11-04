@@ -2,13 +2,15 @@ from pandas import DataFrame
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
-from graphdatascience.procedure_surface.api.community.conductance_endpoints import ConductanceEndpoints
+from graphdatascience.procedure_surface.api.community.conductance_session_endpoints import (
+    ConductanceSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.arrow.table_endpoints_helper import TableEndpointsHelper
 
 
-class ConductanceArrowEndpoints(ConductanceEndpoints):
+class ConductanceArrowEndpoints(ConductanceSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

@@ -12,13 +12,15 @@ from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.source_target_dijkstra_endpoints import (
     DijkstraMutateResult,
     DijkstraWriteResult,
-    SourceTargetDijkstraEndpoints,
+)
+from graphdatascience.procedure_surface.api.pathfinding.source_target_dijkstra_session_endpoints import (
+    SourceTargetDijkstraSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class SourceTargetDijkstraArrowEndpoints(SourceTargetDijkstraEndpoints):
+class SourceTargetDijkstraArrowEndpoints(SourceTargetDijkstraSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

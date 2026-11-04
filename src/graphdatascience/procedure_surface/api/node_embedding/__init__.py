@@ -8,11 +8,17 @@ from graphdatascience.procedure_surface.api.node_embedding.fastpath_endpoints im
     FastPathMutateResult,
     FastPathWriteResult,
 )
+from graphdatascience.procedure_surface.api.node_embedding.fastpath_session_endpoints import (
+    FastPathSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import (
     FastRPEndpoints,
     FastRPMutateResult,
     FastRPStatsResult,
     FastRPWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.fastrp_session_endpoints import (
+    FastRPSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_endpoints import (
     GraphSageEndpoints,
@@ -36,6 +42,9 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_model import (
     GraphSageSupervisedModel,
 )
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_supervised_session_endpoints import (
+    GraphSageSupervisedSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_train_endpoints import (
     GraphSageTrainEndpoints,
     GraphSageTrainResult,
@@ -46,34 +55,46 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervise
 from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_model import (
     GraphSageUnsupervisedModel,
 )
+from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervised_session_endpoints import (
+    GraphSageUnsupervisedSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.node_embedding.hashgnn_endpoints import (
     HashGNNEndpoints,
     HashGNNMutateResult,
     HashGNNWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.hashgnn_session_endpoints import (
+    HashGNNSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import (
     Node2VecEndpoints,
     Node2VecMutateResult,
     Node2VecWriteResult,
 )
+from graphdatascience.procedure_surface.api.node_embedding.node2vec_session_endpoints import (
+    Node2VecSessionEndpoints,
+)
 
 __all__ = [
-    "EmbeddingEndpoints",
     "EmbeddingCreateResult",
+    "EmbeddingEndpoints",
     "EmbeddingTrainResult",
-    "FastRPEndpoints",
-    "FastRPMutateResult",
-    "FastRPStatsResult",
-    "FastRPWriteResult",
     "FastPathEndpoints",
     "FastPathMutateResult",
+    "FastPathSessionEndpoints",
     "FastPathWriteResult",
+    "FastRPEndpoints",
+    "FastRPMutateResult",
+    "FastRPSessionEndpoints",
+    "FastRPStatsResult",
+    "FastRPWriteResult",
     "GraphSageEndpoints",
     "GraphSageMutateResult",
     "GraphSagePredictEndpoints",
     "GraphSageSupervisedEndpoints",
     "GraphSageSupervisedModel",
     "GraphSageSupervisedMutateResult",
+    "GraphSageSupervisedSessionEndpoints",
     "GraphSageSupervisedTrainResult",
     "GraphSageSupervisedWriteResult",
     "GraphSageTrainEndpoints",
@@ -81,13 +102,16 @@ __all__ = [
     "GraphSageUnsupervisedEndpoints",
     "GraphSageUnsupervisedModel",
     "GraphSageUnsupervisedMutateResult",
+    "GraphSageUnsupervisedSessionEndpoints",
     "GraphSageUnsupervisedTrainResult",
     "GraphSageUnsupervisedWriteResult",
     "GraphSageWriteResult",
     "HashGNNEndpoints",
     "HashGNNMutateResult",
+    "HashGNNSessionEndpoints",
     "HashGNNWriteResult",
     "Node2VecEndpoints",
     "Node2VecMutateResult",
+    "Node2VecSessionEndpoints",
     "Node2VecWriteResult",
 ]

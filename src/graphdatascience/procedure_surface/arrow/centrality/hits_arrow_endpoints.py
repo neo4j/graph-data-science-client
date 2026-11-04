@@ -8,10 +8,12 @@ from pandas import DataFrame
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.centrality.hits_endpoints import (
-    HitsEndpoints,
     HitsMutateResult,
     HitsStatsResult,
     HitsWriteResult,
+)
+from graphdatascience.procedure_surface.api.centrality.hits_session_endpoints import (
+    HitsSessionEndpoints,
 )
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
@@ -23,7 +25,7 @@ HITS_ENDPOINT = "v2/centrality.hits"
 HITS_ESTIMATE_ENDPOINT = "v2/centrality.hits.estimate"
 
 
-class HitsArrowEndpoints(HitsEndpoints):
+class HitsArrowEndpoints(HitsSessionEndpoints):
     """Arrow-based implementation of the HITS algorithm endpoints."""
 
     def __init__(

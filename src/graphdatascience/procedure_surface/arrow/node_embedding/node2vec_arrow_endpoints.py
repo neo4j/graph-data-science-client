@@ -8,15 +8,17 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.node2vec_endpoints import (
-    Node2VecEndpoints,
     Node2VecMutateResult,
     Node2VecWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.node2vec_session_endpoints import (
+    Node2VecSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class Node2VecArrowEndpoints(Node2VecEndpoints):
+class Node2VecArrowEndpoints(Node2VecSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

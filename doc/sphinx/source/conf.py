@@ -100,10 +100,18 @@ html_additional_pages = {"gentree": "gentree.html"}
 
 
 # 01-nav.js is a copy of a js file of the same name that is included in the docs-ui bundle
+
+
+def _hide_generic_bases(app, name, obj, options, bases):  # type: ignore
+    # ABC/BaseModel/object are noise in a "Bases:" line.
+    bases[:] = [base for base in bases if base.__name__ not in {"ABC", "object", "BaseModel"}]
+
+
 def setup(app):  # type: ignore
     app.add_js_file("https://neo4j.com/docs/assets/js/site.js", loading_method="defer")
     app.add_js_file("js/12-fragment-jumper.js", loading_method="defer")
     app.add_js_file("js/deprecated.js", loading_method="defer")
+    app.connect("autodoc-process-bases", _hide_generic_bases)
 
 
 intersphinx_mapping = {

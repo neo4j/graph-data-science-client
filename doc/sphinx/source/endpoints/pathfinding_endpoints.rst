@@ -4,6 +4,7 @@ Pathfinding Algorithms
 .. automodule:: graphdatascience.procedure_surface.api.pathfinding
     :members:
     :undoc-members:
+    :show-inheritance:
     :exclude-members: __init__
 
 .. autoclass:: graphdatascience.procedure_surface.api.pathfinding.source_target_dijkstra_endpoints.DijkstraWriteResult

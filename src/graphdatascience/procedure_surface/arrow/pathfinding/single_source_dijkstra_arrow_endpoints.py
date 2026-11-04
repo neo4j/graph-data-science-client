@@ -10,15 +10,17 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_endpoints import (
-    SingleSourceDijkstraEndpoints,
     SingleSourceDijkstraMutateResult,
     SingleSourceDijkstraWriteResult,
+)
+from graphdatascience.procedure_surface.api.pathfinding.single_source_dijkstra_session_endpoints import (
+    SingleSourceDijkstraSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class SingleSourceDijkstraArrowEndpoints(SingleSourceDijkstraEndpoints):
+class SingleSourceDijkstraArrowEndpoints(SingleSourceDijkstraSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

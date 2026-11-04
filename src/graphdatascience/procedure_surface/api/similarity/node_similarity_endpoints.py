@@ -72,7 +72,7 @@ class NodeSimilarityEndpoints(ABC):
         upper_degree_cutoff
             The maximum degree a node can have to be considered.
         similarity_metric
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
@@ -142,7 +142,7 @@ class NodeSimilarityEndpoints(ABC):
         upper_degree_cutoff
             The maximum degree a node can have to be considered.
         similarity_metric
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
@@ -212,7 +212,7 @@ class NodeSimilarityEndpoints(ABC):
         upper_degree_cutoff
             The maximum degree a node can have to be considered.
         similarity_metric
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
@@ -289,7 +289,7 @@ class NodeSimilarityEndpoints(ABC):
         upper_degree_cutoff
             The maximum degree a node can have to be considered.
         similarity_metric
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property
@@ -357,7 +357,7 @@ class NodeSimilarityEndpoints(ABC):
         upper_degree_cutoff
             The maximum degree a node can have to be considered.
         similarity_metric
-            The similarity metric to use for computation.
+            The similarity metric to use for computation. JACCARD, OVERLAP or COSINE.
         use_components
             Whether to compute similarity within connected components. Given a string uses the node property stored in the graph
         relationship_weight_property

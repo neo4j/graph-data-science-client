@@ -7,7 +7,9 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from graphdatascience.procedure_surface.api.similarity.knn_filtered_endpoints import KnnFilteredEndpoints
+from graphdatascience.procedure_surface.api.similarity.knn_filtered_session_endpoints import (
+    KnnFilteredSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.similarity.knn_results import (
     KnnMutateResult,
     KnnStatsResult,
@@ -17,7 +19,7 @@ from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper impo
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class KnnFilteredArrowEndpoints(KnnFilteredEndpoints):
+class KnnFilteredArrowEndpoints(KnnFilteredSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

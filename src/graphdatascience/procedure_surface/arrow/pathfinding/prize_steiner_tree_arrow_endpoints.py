@@ -10,16 +10,18 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_endpoints import (
-    PrizeSteinerTreeEndpoints,
     PrizeSteinerTreeMutateResult,
     PrizeSteinerTreeStatsResult,
     PrizeSteinerTreeWriteResult,
+)
+from graphdatascience.procedure_surface.api.pathfinding.prize_steiner_tree_session_endpoints import (
+    PrizeSteinerTreeSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class PrizeSteinerTreeArrowEndpoints(PrizeSteinerTreeEndpoints):
+class PrizeSteinerTreeArrowEndpoints(PrizeSteinerTreeSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

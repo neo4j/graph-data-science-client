@@ -8,16 +8,18 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.node_embedding.fastrp_endpoints import (
-    FastRPEndpoints,
     FastRPMutateResult,
     FastRPStatsResult,
     FastRPWriteResult,
+)
+from graphdatascience.procedure_surface.api.node_embedding.fastrp_session_endpoints import (
+    FastRPSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class FastRPArrowEndpoints(FastRPEndpoints):
+class FastRPArrowEndpoints(FastRPSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

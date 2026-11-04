@@ -68,7 +68,7 @@ class DijkstraEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes
-            A single target node or a list of target nodes for the shortest path computation.
+            A single target node or a list of target nodes for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types
@@ -123,7 +123,7 @@ class DijkstraEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes
-            A single target node or a list of target nodes for the shortest path computation.
+            A single target node or a list of target nodes for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types
@@ -181,7 +181,7 @@ class DijkstraEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes
-            A single target node or a list of target nodes for the shortest path computation.
+            A single target node or a list of target nodes for the computation.
         write_node_ids
             Whether to write node IDs along the path.
         write_costs
@@ -235,7 +235,7 @@ class DijkstraEndpoints(ABC):
         source_node
             Node id to use as the starting point.
         target_nodes
-            A single target node or a list of target nodes for the shortest path computation.
+            A single target node or a list of target nodes for the computation.
         relationship_weight_property
             Name of the property to be used as weights.
         relationship_types

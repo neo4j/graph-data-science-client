@@ -5,14 +5,16 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_endpoints import (
-    KSpanningTreeEndpoints,
     KSpanningTreeWriteResult,
+)
+from graphdatascience.procedure_surface.api.pathfinding.k_spanning_tree_session_endpoints import (
+    KSpanningTreeSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class KSpanningTreeArrowEndpoints(KSpanningTreeEndpoints):
+class KSpanningTreeArrowEndpoints(KSpanningTreeSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,

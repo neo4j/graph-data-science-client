@@ -8,16 +8,18 @@ from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, AL
 from graphdatascience.procedure_surface.api.estimation_result import EstimationResult
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
 from graphdatascience.procedure_surface.api.pathfinding.bfs_endpoints import (
-    BFSEndpoints,
     BFSMutateResult,
     BFSStatsResult,
+)
+from graphdatascience.procedure_surface.api.pathfinding.bfs_session_endpoints import (
+    BFSSessionEndpoints,
 )
 from graphdatascience.procedure_surface.arrow.relationship_endpoints_helper import RelationshipEndpointsHelper
 from graphdatascience.procedure_surface.arrow.stream_result_mapper import aggregate_traversal_rels
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
-class BFSArrowEndpoints(BFSEndpoints):
+class BFSArrowEndpoints(BFSSessionEndpoints):
     def __init__(
         self,
         arrow_client: AuthenticatedArrowClient,
