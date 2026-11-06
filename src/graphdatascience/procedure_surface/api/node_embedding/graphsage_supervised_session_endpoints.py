@@ -25,6 +25,7 @@ class GraphSageSupervisedSessionEndpoints(GraphSageSupervisedEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> JobHandle:
         """
         Starts the computation as a job and returns a handle to it.
@@ -50,6 +51,9 @@ class GraphSageSupervisedSessionEndpoints(GraphSageSupervisedEndpoints):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run into GPU execution.
+            Experimental: only supported for GDS Sessions (Arrow), defaults to `False`, and subject to change.
 
         Returns
         -------

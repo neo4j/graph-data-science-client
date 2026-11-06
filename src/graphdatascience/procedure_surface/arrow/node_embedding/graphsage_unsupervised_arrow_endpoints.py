@@ -58,6 +58,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> tuple[GraphSageUnsupervisedModel, GraphSageUnsupervisedTrainResult]:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -79,6 +80,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **({"gpu": gpu} if gpu else {}),
         )
 
         result = self._node_property_endpoints.run_job_and_get_summary(
@@ -101,6 +103,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> JobHandle:
         """Start an unsupervised GraphSage prediction and return a
         :class:`~graphdatascience.procedure_surface.api.job_handle.JobHandle`.
@@ -118,6 +121,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **({"gpu": gpu} if gpu else {}),
         )
 
         with translate_feature_not_enabled("v2/embeddings.graphSage.unsupervised.predict", "Unsupervised GraphSage"):
@@ -134,6 +138,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -144,6 +149,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **({"gpu": gpu} if gpu else {}),
         )
         return self._node_property_endpoints.run_job_and_stream(
             "v2/embeddings.graphSage.unsupervised.predict", G, config
@@ -162,6 +168,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -172,6 +179,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **({"gpu": gpu} if gpu else {}),
         )
 
         raw_result = self._node_property_endpoints.run_job_and_write(
@@ -196,6 +204,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -206,6 +215,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **({"gpu": gpu} if gpu else {}),
         )
 
         raw_result = self._node_property_endpoints.run_job_and_mutate(

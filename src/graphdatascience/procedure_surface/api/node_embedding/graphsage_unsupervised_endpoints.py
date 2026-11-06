@@ -46,6 +46,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> tuple[GraphSageUnsupervisedModel, GraphSageUnsupervisedTrainResult]:
         """
         Trains an unsupervised GraphSage model on the given graph.
@@ -93,6 +94,9 @@ class GraphSageUnsupervisedEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run into GPU execution.
+            Experimental: only supported for GDS Sessions (Arrow), defaults to `False`, and subject to change.
 
         Returns
         -------
@@ -112,6 +116,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> DataFrame:
         """
         Uses a pre-trained unsupervised GraphSage model to predict embeddings for a graph and returns the results as a stream.
@@ -134,6 +139,9 @@ class GraphSageUnsupervisedEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run into GPU execution.
+            Experimental: only supported for GDS Sessions (Arrow), defaults to `False`, and subject to change.
 
         Returns
         -------
@@ -155,6 +163,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedWriteResult:
         """
         Uses a pre-trained unsupervised GraphSage model to predict embeddings for a graph and writes the results back to the database.
@@ -181,6 +190,9 @@ class GraphSageUnsupervisedEndpoints(ABC):
             Identifier for the computation.
         write_concurrency
             Number of concurrent threads to use for writing.
+        gpu
+            Whether to opt the algorithm run into GPU execution.
+            Experimental: only supported for GDS Sessions (Arrow), defaults to `False`, and subject to change.
 
         Returns
         -------
@@ -201,6 +213,7 @@ class GraphSageUnsupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedMutateResult:
         """
         Uses a pre-trained unsupervised GraphSage model to predict embeddings for a graph and writes the results back to the graph as a node property.
@@ -225,6 +238,9 @@ class GraphSageUnsupervisedEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run into GPU execution.
+            Experimental: only supported for GDS Sessions (Arrow), defaults to `False`, and subject to change.
 
         Returns
         -------
