@@ -9,7 +9,9 @@ from graphdatascience.procedure_surface.api.centrality.closeness_endpoints impor
     ClosenessStatsResult,
     ClosenessWriteResult,
 )
-from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_endpoints import ClosenessHarmonicEndpoints
+from graphdatascience.procedure_surface.api.centrality.closeness_harmonic_session_endpoints import (
+    ClosenessHarmonicSessionEndpoints,
+)
 from graphdatascience.procedure_surface.api.centrality.closeness_session_endpoints import (
     ClosenessSessionEndpoints,
 )
@@ -40,7 +42,7 @@ class ClosenessArrowEndpoints(ClosenessSessionEndpoints):
         )
 
     @property
-    def harmonic(self) -> ClosenessHarmonicEndpoints:
+    def harmonic(self) -> ClosenessHarmonicSessionEndpoints:
         return ClosenessHarmonicArrowEndpoints(self._arrow_client, self._write_protocol, self._show_progress)
 
     def compute(
