@@ -212,3 +212,5 @@ dataset/
 data_from_zip/
 # Dataset downloaded by the spark session notebook
 bike_trips_data/
+
+# CI smoke test (GDSA-1815): no functional change; isolates infra flake from PR content.
