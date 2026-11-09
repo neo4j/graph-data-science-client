@@ -22,7 +22,7 @@ class TriangleCountSessionEndpoints(TriangleCountEndpoints):
         job_id: str | None = None,
         label_filter: list[str] | None = None,
         log_progress: bool = True,
-        max_degree: int | None = None,
+        max_degree: int | None = 2**63 - 1,
         node_labels: list[str] = ALL_LABELS,
         relationship_types: list[str] = ALL_TYPES,
         sudo: bool = False,
