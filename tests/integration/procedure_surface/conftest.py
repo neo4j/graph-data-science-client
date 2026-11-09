@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+from http import HTTPStatus
 from pathlib import Path
 from typing import Generator
 
@@ -12,9 +13,18 @@ from tests.integration.procedure_surface.gds_api_spec import (
     EndpointWithModesSpec,
     resolve_spec_from_file,
 )
+from tests.integration.procedure_surface.session_api_spec import (
+    SessionApiSpec,
+)
+from tests.integration.procedure_surface.session_api_spec import (
+    resolve_spec_from_file as resolve_session_api_spec_from_file,
+)
 from tests.integration.services import create_db_query_runner
 
 LOGGER = logging.getLogger(__name__)
+
+SESSION_API_SPEC_GCS_URI = "gs://gds-aura-artifacts-schemas/endpoints/gds-session-api-spec.json"
+SESSION_API_SPEC_URL = "https://storage.googleapis.com/gds-aura-artifacts-schemas/endpoints/gds-session-api-spec.json"
 
 
 @pytest.fixture(scope="session")
@@ -40,6 +50,25 @@ def gds_api_spec(tmp_path_factory: pytest.TempPathFactory) -> Generator[list[End
     yield resolve_spec_from_file(spec_file)
 
 
+@pytest.fixture(scope="session")
+def session_api_spec(tmp_path_factory: pytest.TempPathFactory) -> Generator[SessionApiSpec, None, None]:
+    provided_spec_file = os.environ.get("GDS_SESSION_API_SPEC_FILE")
+
+    spec_file: Path | None = None
+    if provided_spec_file:
+        spec_file = Path(provided_spec_file)
+
+    if spec_file and not spec_file.exists():
+        raise FileNotFoundError(f"GDS_SESSION_API_SPEC_FILE is set to '{spec_file}', but the file does not exist.")
+
+    if not spec_file:
+        spec_dir = tmp_path_factory.mktemp("session_api_spec")
+        spec_file = spec_dir / "gds-session-api-spec.json"
+        download_session_api_spec(spec_file)
+
+    yield resolve_session_api_spec_from_file(spec_file)
+
+
 def download_gds_api_spec(destination: Path) -> None:
     import requests
 
@@ -58,6 +87,36 @@ def download_gds_api_spec(destination: Path) -> None:
 
     with open(destination, "wb") as f:
         f.write(response.content)
+
+
+def download_session_api_spec(destination: Path) -> None:
+    import requests
+
+    response = requests.get(SESSION_API_SPEC_URL, timeout=60)
+
+    if response.status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
+        # The artifact bucket is not publicly readable; fall back to an authenticated copy.
+        _download_session_api_spec_with_gcloud(destination)
+        return
+
+    response.raise_for_status()
+    destination.write_bytes(response.content)
+
+
+def _download_session_api_spec_with_gcloud(destination: Path) -> None:
+    try:
+        subprocess.run(
+            ["gcloud", "storage", "cp", SESSION_API_SPEC_GCS_URI, str(destination)],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        raise ValueError(
+            "Could not download the GDS Sessions API spec. The bucket is not publicly readable; either set "
+            "`GDS_SESSION_API_SPEC_FILE` to a local copy or authenticate `gcloud` with access to "
+            f"`{SESSION_API_SPEC_GCS_URI}`."
+        ) from e
 
 
 @pytest.fixture(scope="package")
