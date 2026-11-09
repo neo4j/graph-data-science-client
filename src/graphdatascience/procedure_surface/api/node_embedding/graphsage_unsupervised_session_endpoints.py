@@ -25,6 +25,7 @@ class GraphSageUnsupervisedSessionEndpoints(GraphSageUnsupervisedEndpoints):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> JobHandle:
         """
         Starts the computation as a job and returns a handle to it.
@@ -50,6 +51,9 @@ class GraphSageUnsupervisedSessionEndpoints(GraphSageUnsupervisedEndpoints):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------

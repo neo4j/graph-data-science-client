@@ -41,6 +41,7 @@ class GraphSageUnsupervisedModel(Model):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> DataFrame:
         """
         Generate embeddings for the given graph and stream the results.
@@ -62,6 +63,10 @@ class GraphSageUnsupervisedModel(Model):
         job_id
             Identifier for the computation.
 
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
+
         Returns
         -------
         pandas.DataFrame
@@ -76,6 +81,7 @@ class GraphSageUnsupervisedModel(Model):
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            gpu=gpu,
         )
 
     def predict_write(
@@ -90,6 +96,7 @@ class GraphSageUnsupervisedModel(Model):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedWriteResult:
         """
         Generate embeddings for the given graph and write the results to the database.
@@ -115,6 +122,10 @@ class GraphSageUnsupervisedModel(Model):
         write_concurrency
             Number of concurrent threads to use for writing.
 
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
+
         Returns
         -------
         GraphSageUnsupervisedWriteResult
@@ -131,6 +142,7 @@ class GraphSageUnsupervisedModel(Model):
             node_labels=node_labels,
             job_id=job_id,
             write_concurrency=write_concurrency,
+            gpu=gpu,
         )
 
     def predict_mutate(
@@ -144,6 +156,7 @@ class GraphSageUnsupervisedModel(Model):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedMutateResult:
         """
         Generate embeddings for the given graph and mutate the graph with the results.
@@ -167,6 +180,10 @@ class GraphSageUnsupervisedModel(Model):
         job_id
             Identifier for the computation.
 
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
+
         Returns
         -------
         GraphSageUnsupervisedMutateResult
@@ -182,4 +199,5 @@ class GraphSageUnsupervisedModel(Model):
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            gpu=gpu,
         )

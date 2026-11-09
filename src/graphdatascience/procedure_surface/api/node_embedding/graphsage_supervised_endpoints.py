@@ -46,6 +46,7 @@ class GraphSageSupervisedEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         split_ratios: dict[str, float] = {"TRAIN": 0.6, "TEST": 0.2, "VALID": 0.2},
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> tuple[GraphSageSupervisedModel, GraphSageSupervisedTrainResult]:
         """
         Trains a supervised (node classification) GraphSage model on the given graph.
@@ -96,6 +97,9 @@ class GraphSageSupervisedEndpoints(ABC):
             Ratios for splitting the nodes into training, validation and test sets
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------
@@ -115,6 +119,7 @@ class GraphSageSupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> DataFrame:
         """
         Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and returns the results as a stream.
@@ -137,6 +142,9 @@ class GraphSageSupervisedEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------
@@ -159,6 +167,7 @@ class GraphSageSupervisedEndpoints(ABC):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
+        gpu: bool = False,
     ) -> GraphSageSupervisedWriteResult:
         """
         Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and writes the results back to the database.
@@ -187,6 +196,9 @@ class GraphSageSupervisedEndpoints(ABC):
             Identifier for the computation.
         write_concurrency
             Number of concurrent threads to use for writing.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------
@@ -208,6 +220,7 @@ class GraphSageSupervisedEndpoints(ABC):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> GraphSageSupervisedMutateResult:
         """
         Uses a pre-trained supervised (node classification) GraphSage model to predict classes for a graph and writes the results back to the graph as a node property.
@@ -234,6 +247,9 @@ class GraphSageSupervisedEndpoints(ABC):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------

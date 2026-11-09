@@ -41,6 +41,7 @@ class GraphSageSupervisedModel(Model):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> DataFrame:
         """
         Predict classes for the given graph and stream the results.
@@ -61,6 +62,9 @@ class GraphSageSupervisedModel(Model):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------
@@ -76,6 +80,7 @@ class GraphSageSupervisedModel(Model):
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            gpu=gpu,
         )
 
     def predict_write(
@@ -91,6 +96,7 @@ class GraphSageSupervisedModel(Model):
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
+        gpu: bool = False,
     ) -> GraphSageSupervisedWriteResult:
         """
         Predict classes for the given graph and write the results to the database.
@@ -117,6 +123,9 @@ class GraphSageSupervisedModel(Model):
             Identifier for the computation.
         write_concurrency
             Number of concurrent threads to use for writing.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------
@@ -135,6 +144,7 @@ class GraphSageSupervisedModel(Model):
             node_labels=node_labels,
             job_id=job_id,
             write_concurrency=write_concurrency,
+            gpu=gpu,
         )
 
     def predict_mutate(
@@ -149,6 +159,7 @@ class GraphSageSupervisedModel(Model):
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> GraphSageSupervisedMutateResult:
         """
         Predict classes for the given graph and mutate the graph with the results.
@@ -173,6 +184,9 @@ class GraphSageSupervisedModel(Model):
             Filter the graph using the given node labels. Nodes with any of the given labels will be included.
         job_id
             Identifier for the computation.
+        gpu
+            Whether to opt the algorithm run using GPU
+            Experimental: To enable this feature for your project, contact your Neo4j account team or submit a request using the Feedback button in the Aura console.
 
         Returns
         -------
@@ -190,4 +204,5 @@ class GraphSageSupervisedModel(Model):
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            gpu=gpu,
         )
