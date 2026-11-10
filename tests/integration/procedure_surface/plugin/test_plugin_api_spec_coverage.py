@@ -29,6 +29,12 @@ PLUGIN_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
     "graph_sage.unsupervised.mutate",  # python-runtime backed, AGA only
 }
 
+# Graph catalog endpoints the plugin surface does not map onto their own path. Drop
+# entries one at a time as the client grows them.
+PLUGIN_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
+    "graph.relationship.write",  # served by the client's relationships endpoints
+}
+
 # the compute mode is session-surface only in the client; the plugin API spec lists it
 # for every algorithm. This shrinks as the client maps compute onto the plugin surface.
 PLUGIN_COMPUTE_UNMAPPED_ENDPOINTS = {
@@ -103,5 +109,5 @@ def test_plugin_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], plu
     assert_endpoint_spec_coverage(
         GraphDataScience,
         plugin_endpoints,
-        unmapped_endpoints=PLUGIN_COMPUTE_UNMAPPED_ENDPOINTS,
+        unmapped_endpoints=PLUGIN_COMPUTE_UNMAPPED_ENDPOINTS | PLUGIN_UNMAPPED_GRAPH_CATALOG_ENDPOINTS,
     )

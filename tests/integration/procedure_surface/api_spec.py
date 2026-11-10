@@ -33,6 +33,21 @@ class AlgorithmEntry(BaseModel, extra="ignore"):
     modes: dict[str, ModeEntry]
 
 
+class GraphCatalogEndpointEntry(BaseModel, extra="ignore"):
+    """A `gds.graph.*` endpoint.
+
+    The plugin declares some procedures with several modes and the session surface
+    publishes one endpoint per operation, so the mode is part of the callable path
+    (`gds.graph.nodeLabel.mutate`) rather than a mode of the entry.
+    """
+
+    description: str
+    endpointName: str
+    mode: str | None = None
+    config: SchemaRef | None = None
+    result: SchemaRef | None = None
+
+
 @dataclass(frozen=True)
 class EndpointSpec:
     """A single callable endpoint: one algorithm in one execution mode."""
@@ -54,6 +69,7 @@ class EndpointSpec:
 class ApiSpec(BaseModel, extra="ignore"):
     apiSpecVersion: int
     algorithms: dict[str, AlgorithmEntry]
+    graphCatalogEndpoints: dict[str, GraphCatalogEndpointEntry] = {}
     defs: dict[str, dict[str, Any]]
 
     def resolve(self, ref: SchemaRef) -> dict[str, Any]:
@@ -88,6 +104,25 @@ class ApiSpec(BaseModel, extra="ignore"):
                         result,
                     )
                 )
+
+        for catalog_entry in self.graphCatalogEndpoints.values():
+            # The mode is part of the callable path; the session surface already spells
+            # it out in the endpoint name, the plugin publishes the procedure name.
+            catalog_mode = catalog_entry.mode
+            endpoint_name = (
+                f"{catalog_entry.endpointName}.{catalog_mode}"
+                if catalog_mode and not catalog_entry.endpointName.endswith(f".{catalog_mode}")
+                else catalog_entry.endpointName
+            )
+            endpoints.append(
+                EndpointSpec(
+                    endpoint_name,
+                    None,
+                    self.resolve(catalog_entry.config) if catalog_entry.config else {},
+                    None,
+                    self.resolve(catalog_entry.result) if catalog_entry.result else None,
+                )
+            )
 
         return endpoints
 
