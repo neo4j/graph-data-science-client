@@ -8,18 +8,17 @@ from typing import Any
 from pandas import DataFrame
 from pydantic import BaseModel
 
+from tests.integration.procedure_surface.api_spec import (
+    EndpointSpec,
+)
 from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
     pythonic_endpoint_name,
     resolve_callable_object,
     to_snake,
 )
-from tests.integration.procedure_surface.session_api_spec import (
-    SessionApiSpec,
-    SessionEndpointSpec,
-)
 
-# Parameters the client's shared endpoint surface carries for the Cypher surface only.
-# The session API does not have them.
+# Parameters the client's endpoint methods carry that neither spec publishes: both the
+# session and the plugin API specs omit them.
 CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username"}
 
 # Parameters the spec exposes that the client does not map onto a method parameter. The
@@ -42,12 +41,22 @@ _TYPE_COMPATIBILITY: dict[str, set[str]] = {
 }
 
 
-def assert_session_api_spec_coverage(endpoints: type, session_api_spec: SessionApiSpec) -> None:
+def assert_endpoint_spec_coverage(
+    endpoints: type,
+    endpoint_specs: list[EndpointSpec],
+    unmapped_endpoints: set[str] | None = None,
+) -> None:
+    if unmapped_endpoints is None:
+        unmapped_endpoints = set()
+
     missing_endpoints: set[str] = set()
     available_endpoints: set[str] = set()
 
-    for endpoint in session_api_spec.endpoints():
+    for endpoint in endpoint_specs:
         client_path = _client_path(endpoint)
+        if client_path in unmapped_endpoints:
+            # endpoints the surface intentionally does not map
+            continue
         callable_object = resolve_callable_object(endpoints, client_path)
         if callable_object is None:
             missing_endpoints.add(client_path)
@@ -57,21 +66,21 @@ def assert_session_api_spec_coverage(endpoints: type, session_api_spec: SessionA
         verify_configuration_fields(callable_object, endpoint)
         verify_result_fields(callable_object, endpoint)
 
-    print("\nGDS Sessions API Spec Coverage Summary:")
-    print(f"Total endpoint specs found: {len(available_endpoints) + len(missing_endpoints)}")
+    print("\nAPI Spec Coverage Summary:")
+    print(f"Total endpoint specs found: {len(endpoint_specs)}")
     print(f"Available through the client: {len(available_endpoints)}")
 
     assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)} ({missing_endpoints})"
 
 
-def _client_path(endpoint: SessionEndpointSpec) -> str:
+def _client_path(endpoint: EndpointSpec) -> str:
     # The spec publishes the public endpoint name; the client maps it to its own path.
     return pythonic_endpoint_name(endpoint.name)
 
 
 def verify_configuration_fields(
     callable_object: Any,
-    endpoint: SessionEndpointSpec,
+    endpoint: EndpointSpec,
 ) -> None:
     client_path = _client_path(endpoint)
     expected = _expected_parameters(endpoint)
@@ -114,7 +123,7 @@ def verify_configuration_fields(
 
 def verify_result_fields(
     callable_object: Any,
-    endpoint: SessionEndpointSpec,
+    endpoint: EndpointSpec,
 ) -> None:
     if endpoint.result is None:
         # The compute-only mode returns a job handle, not modelled rows.
@@ -152,7 +161,7 @@ def verify_result_fields(
             )
 
 
-def _expected_parameters(endpoint: SessionEndpointSpec) -> dict[str, tuple[dict[str, Any], bool]]:
+def _expected_parameters(endpoint: EndpointSpec) -> dict[str, tuple[dict[str, Any], bool]]:
     expected: dict[str, tuple[dict[str, Any], bool]] = {}
 
     for schema in (endpoint.config, endpoint.mode_config):
