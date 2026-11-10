@@ -23,8 +23,8 @@ from tests.integration.procedure_surface.session_api_spec import (
 CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username"}
 
 # Parameters the spec exposes that the client does not map onto a method parameter. The
-# source-target dijkstra client endpoint only exposes the plural `target_nodes`, which
-# accepts a single id or a list.
+# spec still publishes the deprecated singular `targetNode`; the client exposes only the
+# plural `target_nodes` (which accepts a single id or a list), matching `targetNodes`.
 IGNORED_SPEC_PARAMETERS: dict[str, set[str]] = {
     "shortestPath.dijkstra": {"target_node"},
 }
@@ -169,7 +169,8 @@ def _expected_parameters(endpoint: SessionEndpointSpec) -> dict[str, tuple[dict[
 
 
 def _normalise_default(value: Any) -> Any:
-    if value is inspect.Parameter.empty or value == []:
+    # an empty map or list in the spec maps to None in python
+    if value is inspect.Parameter.empty or value == [] or value == {}:
         return None
     return value
 

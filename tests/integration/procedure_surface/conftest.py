@@ -1,7 +1,6 @@
 import logging
 import os
 import subprocess
-from http import HTTPStatus
 from pathlib import Path
 from typing import Generator
 
@@ -24,7 +23,6 @@ from tests.integration.services import create_db_query_runner
 LOGGER = logging.getLogger(__name__)
 
 SESSION_API_SPEC_GCS_URI = "gs://gds-aura-artifacts-schemas/endpoints/gds-session-api-spec.json"
-SESSION_API_SPEC_URL = "https://storage.googleapis.com/gds-aura-artifacts-schemas/endpoints/gds-session-api-spec.json"
 
 
 @pytest.fixture(scope="session")
@@ -90,20 +88,6 @@ def download_gds_api_spec(destination: Path) -> None:
 
 
 def download_session_api_spec(destination: Path) -> None:
-    import requests
-
-    response = requests.get(SESSION_API_SPEC_URL, timeout=60)
-
-    if response.status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
-        # The artifact bucket is not publicly readable; fall back to an authenticated copy.
-        _download_session_api_spec_with_gcloud(destination)
-        return
-
-    response.raise_for_status()
-    destination.write_bytes(response.content)
-
-
-def _download_session_api_spec_with_gcloud(destination: Path) -> None:
     try:
         subprocess.run(
             ["gcloud", "storage", "cp", SESSION_API_SPEC_GCS_URI, str(destination)],
@@ -111,9 +95,17 @@ def _download_session_api_spec_with_gcloud(destination: Path) -> None:
             text=True,
             check=True,
         )
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+    except FileNotFoundError as e:
         raise ValueError(
-            "Could not download the GDS Sessions API spec. The bucket is not publicly readable; either set "
+            "Could not download the GDS Sessions API spec: `gcloud` is not installed. Either set "
+            "`GDS_SESSION_API_SPEC_FILE` to a local copy or install `gcloud` with access to "
+            f"`{SESSION_API_SPEC_GCS_URI}`."
+        ) from e
+    except subprocess.CalledProcessError as e:
+        # Surface gcloud's stderr: it separates missing credentials from missing permissions.
+        detail = (e.stderr or "").strip() or str(e)
+        raise ValueError(
+            f"Could not download the GDS Sessions API spec: `gcloud storage cp` failed ({detail}). Either set "
             "`GDS_SESSION_API_SPEC_FILE` to a local copy or authenticate `gcloud` with access to "
             f"`{SESSION_API_SPEC_GCS_URI}`."
         ) from e

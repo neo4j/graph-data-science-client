@@ -126,20 +126,35 @@ IGNORED_ACTUAL_PARAMETERS = {
     r"graph.sample.*": ["overwrite"],
 }
 
-# Parameters whose spec default the client cannot be checked against: the reflection
-# emits a placeholder (e.g. "random id", "value of concurrency", "NodeFilter[NoOp]"), a
-# sentinel (e.g. an empty map), or a value the client deliberately overrides (e.g.
-# concurrency). These defaults are not compared; every use is reported so the gap in the
-# spec stays visible instead of being patched away.
+# Spec defaults that cannot be compared against the client's; each use is
+# reported (UnverifiedDefault) rather than asserted.
 UNVERIFIED_DEFAULT_VALUES: dict[str, set[str]] = {
-    ".*": {"concurrency", "job_id", "write_concurrency", "read_concurrency"},
+    ".*": {
+        # spec pins the server default (4); the client's None defers to the server
+        "concurrency",
+        # spec placeholder "random id": the server generates it per run
+        "job_id",
+        # spec placeholder "value of concurrency": computed from concurrency
+        "write_concurrency",
+        # spec placeholder "value of concurrency": computed from concurrency
+        "read_concurrency",
+    },
+    # spec placeholder "NodeFilter[NoOp]" (sentinel toString); the client takes the
+    # filters as required, so it has no default to compare against
     ".*(knn|node_similarity).filtered.*": {"source_node_filter", "target_node_filter"},
-    ".*kge.predict.*": {"source_node_filter", "target_node_filter", "relationship_types"},
+    ".*kge.predict.*": {
+        # spec placeholder "NodeFilter[NoOp]" (sentinel toString)
+        "source_node_filter",
+        # spec placeholder "NodeFilter[NoOp]" (sentinel toString)
+        "target_node_filter",
+        # spec [] vs client ["*"]: both mean "no filtering", spelled differently
+        "relationship_types",
+    },
+    # spec default "__NO_VALUE" is the unset sentinel, not a real value
     ".*pipeline.list": {"pipeline_name"},
+    # deliberate divergence: spec/server default True, client False
     "pipeline.drop": {"fail_if_missing"},
-    r".*graph.filter": {"parameters"},
-    r".*graph.export": {"additional_node_properties"},
-    r".*graph.generate": {"relationship_property"},
+    # spec default is a fresh UUID, different on every spec generation
     r".*graph.list": {"G"},
 }
 
@@ -452,7 +467,8 @@ def verify_configuration_fields(
         actual_default = actual_parameters[name].default
         if actual_default is inspect.Parameter.empty:
             actual_default = None
-        if actual_default == []:
+        # an empty map or list in the spec maps to None in python
+        if actual_default == [] or actual_default == {}:
             actual_default = None
 
         spec_declares_default = expected_param.has_default
@@ -469,7 +485,8 @@ def verify_configuration_fields(
             continue
 
         expected_default = expected_param.defaultValue
-        if expected_default == []:
+        # an empty map or list in the spec maps to None in python
+        if expected_default == [] or expected_default == {}:
             expected_default = None
 
         assert actual_default == expected_default, (

@@ -5,32 +5,27 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 #: The document version this loader understands. The session API is versionless in
 #: practice: the published object is overwritten in place, and additions such as the
-#: compute mode and the optional result stay within version 1.
+#: compute mode and the optional result stay within version 1. Unknown keys are ignored
+#: for the same reason: additive changes within a version must not break loading.
 SUPPORTED_API_SPEC_VERSION = 1
 
 _REF_PREFIX = "#/$defs/"
 
 
-class SchemaRef(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
+class SchemaRef(BaseModel, extra="ignore", populate_by_name=True):
     ref: str = Field(alias="$ref")
 
 
-class ModeEntry(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
+class ModeEntry(BaseModel, extra="ignore"):
     modeConfig: SchemaRef | None = None
     result: SchemaRef | None = None
 
 
-class AlgorithmEntry(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
+class AlgorithmEntry(BaseModel, extra="ignore"):
     category: str
     description: str
     endpointName: str
@@ -56,9 +51,7 @@ class SessionEndpointSpec:
         return f"{self.endpoint_name}.{self.mode}" if self.mode else self.endpoint_name
 
 
-class SessionApiSpec(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
+class SessionApiSpec(BaseModel, extra="ignore"):
     apiSpecVersion: int
     algorithms: dict[str, AlgorithmEntry]
     defs: dict[str, dict[str, Any]]

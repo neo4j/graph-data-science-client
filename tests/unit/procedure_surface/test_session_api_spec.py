@@ -95,9 +95,22 @@ def test_resolve_spec_from_file_rejects_unknown_version(tmp_path: Path) -> None:
         resolve_spec_from_file(spec_file)
 
 
+def test_resolve_spec_from_file_ignores_unknown_keys(tmp_path: Path) -> None:
+    # The published object is overwritten in place, so additive keys within a version
+    # must not break loading.
+    extended = json.loads(json.dumps(SPEC))
+    extended["unexpectedTopLevel"] = True
+    extended["algorithms"]["centrality.foo"]["unexpected"] = True
+    extended["algorithms"]["centrality.foo"]["modes"]["compute"]["unexpected"] = True
+
+    spec = resolve_spec_from_file(_write_spec(tmp_path, extended))
+
+    assert isinstance(spec, SessionApiSpec)
+
+
 def test_resolve_spec_from_file_rejects_malformed_envelope(tmp_path: Path) -> None:
     malformed = json.loads(json.dumps(SPEC))
-    malformed["algorithms"]["centrality.foo"]["unexpected"] = True
+    malformed["apiSpecVersion"] = "one"
 
     with pytest.raises(ValueError, match="not a valid GDS Sessions API spec"):
         resolve_spec_from_file(_write_spec(tmp_path, malformed))
@@ -214,6 +227,27 @@ def test_verify_rejects_required_parameter_with_default() -> None:
 
     with pytest.raises(ValueError, match="required in the spec but has a default value"):
         verify_configuration_fields(mutate, _endpoint("foo.mutate"))
+
+
+def test_verify_accepts_empty_map_default() -> None:
+    # The spec's empty-map default maps to None in python.
+    endpoint = SessionEndpointSpec(
+        endpoint_name="foo",
+        mode="mutate",
+        config={
+            "properties": {
+                "maxIterations": {"type": "integer", "default": 20},
+                "parameters": {"type": "object", "default": {}},
+            }
+        },
+        mode_config=None,
+        result=None,
+    )
+
+    def mutate(G: Graph, parameters: dict[str, Any] | None = None, max_iterations: int = 20) -> FooMutateResult:
+        return FooMutateResult(node_properties_written=0)
+
+    verify_configuration_fields(mutate, endpoint)
 
 
 def test_verify_rejects_wrong_parameter_type() -> None:

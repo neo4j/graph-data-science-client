@@ -2,6 +2,7 @@ from graphdatascience.session import AuraGraphDataScience
 from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
     UNMAPPED_ENDPOINTS,
     assert_api_spec_coverage,
+    pythonic_endpoint_name,
 )
 from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSpec
 from tests.integration.procedure_surface.session_api_spec import SessionApiSpec
@@ -24,10 +25,9 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
 
 
 def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], session_api_spec: SessionApiSpec) -> None:
-    # Algorithms the GDS Sessions API spec describes are validated against it (including
-    # parameter types and defaults). Everything else the session surface exposes (graph and
-    # model catalog, pipelines, ...) is still validated against the plugin API spec.
-    job_spec_endpoints = {endpoint.name for endpoint in session_api_spec.endpoints()}
+    # Algorithms the GDS Sessions API spec describes are validated against it.
+    # Everything else the session surface exposes is still validated against the plugin API spec.
+    job_spec_endpoints = {pythonic_endpoint_name(endpoint.name) for endpoint in session_api_spec.endpoints()}
 
     assert_api_spec_coverage(
         AuraGraphDataScience,
