@@ -1,7 +1,8 @@
 import inspect
 import re
 import typing
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
+from dataclasses import dataclass
 from types import FunctionType, MethodType, UnionType
 from typing import Any
 
@@ -125,46 +126,53 @@ IGNORED_ACTUAL_PARAMETERS = {
     r"graph.sample.*": ["overwrite"],
 }
 
-ADJUSTED_PARAM_DEFAULT_VALUES: dict[str, dict[str, Any]] = {
+# Spec defaults that cannot be compared against the client's; each use is
+# reported (UnverifiedDefault) rather than asserted.
+UNVERIFIED_DEFAULT_VALUES: dict[str, set[str]] = {
     ".*": {
-        "concurrency": None,
-        "job_id": None,
-        "write_concurrency": None,
-        "read_concurrency": None,
+        # spec pins the server default (4); the client's None defers to the server
+        "concurrency",
+        # spec placeholder "random id": the server generates it per run
+        "job_id",
+        # spec placeholder "value of concurrency": computed from concurrency
+        "write_concurrency",
+        # spec placeholder "value of concurrency": computed from concurrency
+        "read_concurrency",
     },
-    ".*(knn|node_similarity).filtered.*": {
-        "source_node_filter": None,
-        "target_node_filter": None,
-    },
+    # spec placeholder "NodeFilter[NoOp]" (sentinel toString); the client takes the
+    # filters as required, so it has no default to compare against
+    ".*(knn|node_similarity).filtered.*": {"source_node_filter", "target_node_filter"},
     ".*kge.predict.*": {
-        "source_node_filter": None,
-        "target_node_filter": None,
-        "relationship_types": ["*"],
+        # spec placeholder "NodeFilter[NoOp]" (sentinel toString)
+        "source_node_filter",
+        # spec placeholder "NodeFilter[NoOp]" (sentinel toString)
+        "target_node_filter",
+        # spec [] vs client ["*"]: both mean "no filtering", spelled differently
+        "relationship_types",
     },
-    ".*pipeline.list": {
-        "pipeline_name": None,
-    },
-    ".*sllpa.mutate": {
-        "mutate_property": None,
-    },
-    ".*sllpa.(write)": {
-        "write_property": None,
-    },
-    ".*triangle_count.*": {
-        "max_degree": None,
-    },
-    ".*triangles$": {
-        "max_degree": None,
-    },
-    "pipeline.drop": {
-        "fail_if_missing": False,
-    },
-    r".*graph.filter": {"parameters": None},
-    # spec default is an empty map, mapped to None in python
-    r".*graph.export": {"additional_node_properties": None},
-    r".*graph.generate": {"relationship_property": None},
-    r".*graph.list": {"G": None},
+    # spec default "__NO_VALUE" is the unset sentinel, not a real value
+    ".*pipeline.list": {"pipeline_name"},
+    # deliberate divergence: spec/server default True, client False
+    "pipeline.drop": {"fail_if_missing"},
+    # spec default is a fresh UUID, different on every spec generation
+    r".*graph.list": {"G"},
 }
+
+
+@dataclass(frozen=True)
+class UnverifiedDefault:
+    """A parameter default the API spec cannot vouch for.
+
+    The spec either declares no default or emits a placeholder/sentinel instead of the
+    value the client exposes. Collected and reported rather than asserted, so the gap
+    stays visible.
+    """
+
+    endpoint: str
+    parameter: str
+    spec_default: Any
+    spec_declares_default: bool
+    client_default: Any
 
 
 RETURN_CLASS_OVERRIDES = {
@@ -391,7 +399,7 @@ def verify_configuration_fields(
     callable_object: MethodType | FunctionType,
     endpoint_spec: EndpointSpec,
     endpoint_mappings: OrderedDict[str, str] | None = None,
-) -> None:
+) -> list[UnverifiedDefault]:
     expected_configuration: dict[str, Parameter] = {to_snake(param.name): param for param in endpoint_spec.parameters}
     py_endpoint = pythonic_endpoint_name(endpoint_spec.name, endpoint_mappings=endpoint_mappings)
 
@@ -452,26 +460,49 @@ def verify_configuration_fields(
             f"has required parameters with default values: {required_params_with_default}"
         )
 
-    default_adjustments: dict[str, str | None] = {}
-    for endpoint_pattern, adjustments in ADJUSTED_PARAM_DEFAULT_VALUES.items():
-        if re.match(endpoint_pattern, py_endpoint):
-            default_adjustments.update(adjustments)
+    unverified_defaults: list[UnverifiedDefault] = []
+    unverifiable = _unverifiable_default_params(py_endpoint)
 
     for name, expected_param in expected_configuration.items():
-        expected_default = default_adjustments.get(name, expected_param.defaultValue)
-        if expected_default == []:
-            expected_default = None
-
         actual_default = actual_parameters[name].default
         if actual_default is inspect.Parameter.empty:
             actual_default = None
-        if actual_default == []:
+        # an empty map or list in the spec maps to None in python
+        if actual_default == [] or actual_default == {}:
             actual_default = None
+
+        spec_declares_default = expected_param.has_default
+        if name in unverifiable or (not spec_declares_default and actual_default is not None):
+            unverified_defaults.append(
+                UnverifiedDefault(
+                    endpoint=py_endpoint,
+                    parameter=name,
+                    spec_default=expected_param.defaultValue,
+                    spec_declares_default=spec_declares_default,
+                    client_default=actual_default,
+                )
+            )
+            continue
+
+        expected_default = expected_param.defaultValue
+        # an empty map or list in the spec maps to None in python
+        if expected_default == [] or expected_default == {}:
+            expected_default = None
 
         assert actual_default == expected_default, (
             f"Mismatching default value for parameter `{name}` (got: {actual_default}, spec: {expected_default}) at endpoint "
-            f"`{pythonic_endpoint_name(endpoint_spec.name, endpoint_mappings=endpoint_mappings)}`"
+            f"`{py_endpoint}`"
         )
+
+    return unverified_defaults
+
+
+def _unverifiable_default_params(py_endpoint: str) -> set[str]:
+    params: set[str] = set()
+    for endpoint_pattern, names in UNVERIFIED_DEFAULT_VALUES.items():
+        if re.match(endpoint_pattern, py_endpoint):
+            params |= names
+    return params
 
 
 def assert_api_spec_coverage(
@@ -480,12 +511,14 @@ def assert_api_spec_coverage(
     endpoint_mappings: OrderedDict[str, str] | None = None,
     unmapped_endpoints: set[str] | None = None,
     include_arrow_only: bool = False,
+    exclude_endpoints: set[str] | None = None,
 ) -> None:
     if unmapped_endpoints is None:
         unmapped_endpoints = UNMAPPED_ENDPOINTS
 
     missing_endpoints: set[str] = set()
     available_endpoints: set[str] = set()
+    unverified_defaults: list[UnverifiedDefault] = []
 
     for endpoint_with_modes_spec in gds_api_spec:
         # Arrow-only endpoints are not part of the Cypher surface.
@@ -496,24 +529,52 @@ def assert_api_spec_coverage(
                 endpoint_spec.name,
                 endpoint_mappings=endpoint_mappings,
             )
+            # Endpoints covered by a newer spec are not validated against this one.
+            if exclude_endpoints and endpoint_name in exclude_endpoints:
+                continue
             callable_object = resolve_callable_object(endpoints, endpoint_name)
             if not callable_object and endpoint_name not in unmapped_endpoints:
                 missing_endpoints.add(endpoint_name)
             elif callable_object:
                 available_endpoints.add(endpoint_name)
                 verify_return_fields(callable_object, expected_return_fields=endpoint_spec.returnFields)
-                verify_configuration_fields(
-                    callable_object,
-                    endpoint_spec=endpoint_spec,
-                    endpoint_mappings=endpoint_mappings,
+                unverified_defaults.extend(
+                    verify_configuration_fields(
+                        callable_object,
+                        endpoint_spec=endpoint_spec,
+                        endpoint_mappings=endpoint_mappings,
+                    )
                 )
 
     print("\nGDS API Spec Coverage Summary:")
     print(f"Total endpoint specs found: {len(available_endpoints) + len(missing_endpoints)}")
     print(f"Available through gds.v2: {len(available_endpoints)}")
+    _report_unverified_defaults(unverified_defaults)
 
     newly_available_endpoints = available_endpoints.intersection(unmapped_endpoints)
     assert not newly_available_endpoints, (
         f"Endpoints {newly_available_endpoints} now available, please remove from MISSING_ENDPOINTS"
     )
     assert not missing_endpoints, f"Unexpectedly missing endpoints {len(missing_endpoints)} ({missing_endpoints})"
+
+
+def _report_unverified_defaults(unverified_defaults: list[UnverifiedDefault]) -> None:
+    """Print the defaults the spec cannot confirm, grouped so the gap is actionable."""
+    if not unverified_defaults:
+        return
+
+    groups: dict[tuple[str, bool, str, str], list[str]] = defaultdict(list)
+    for entry in unverified_defaults:
+        key = (
+            entry.parameter,
+            entry.spec_declares_default,
+            repr(entry.spec_default),
+            repr(entry.client_default),
+        )
+        groups[key].append(entry.endpoint)
+
+    print(f"\nSpec defaults not verified against the client ({len(groups)} distinct):")
+    for (parameter, declares_default, spec_default, client_default), endpoints in sorted(groups.items()):
+        spec_description = f"spec default {spec_default}" if declares_default else "spec declares no default"
+        endpoint_count = f"{len(endpoints)} endpoint" + ("" if len(endpoints) == 1 else "s")
+        print(f"  {parameter}: {spec_description}, client default {client_default} ({endpoint_count})")

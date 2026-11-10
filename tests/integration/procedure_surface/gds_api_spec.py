@@ -33,6 +33,15 @@ class Parameter(BaseModel, extra="forbid", populate_by_name=True):
     positionIndex: int | None = None
     defaultValue: Optional[Any] = None
 
+    @property
+    def has_default(self) -> bool:
+        """Whether the spec declares a default at all.
+
+        The generator omits the key when it cannot reflect a default, so an absent
+        default is not the same as a default of ``None``.
+        """
+        return "defaultValue" in self.model_fields_set
+
 
 class ReturnField(BaseModel, extra="forbid", populate_by_name=True):
     """Represents a return field from a procedure mode."""

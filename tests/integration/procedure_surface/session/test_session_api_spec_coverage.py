@@ -2,8 +2,13 @@ from graphdatascience.session import AuraGraphDataScience
 from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
     UNMAPPED_ENDPOINTS,
     assert_api_spec_coverage,
+    pythonic_endpoint_name,
 )
 from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSpec
+from tests.integration.procedure_surface.session_api_spec import SessionApiSpec
+from tests.integration.procedure_surface.session_api_spec_coverage_test_helper import (
+    assert_session_api_spec_coverage,
+)
 
 # KGE predict is only mapped for the Cypher (plugin) surface; Arrow is not mapped yet.
 SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
@@ -19,10 +24,16 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
 }
 
 
-def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec]) -> None:
+def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], session_api_spec: SessionApiSpec) -> None:
+    # Algorithms the GDS Sessions API spec describes are validated against it.
+    # Everything else the session surface exposes is still validated against the plugin API spec.
+    job_spec_endpoints = {pythonic_endpoint_name(endpoint.name) for endpoint in session_api_spec.endpoints()}
+
     assert_api_spec_coverage(
         AuraGraphDataScience,
         gds_api_spec,
         unmapped_endpoints=SESSION_UNMAPPED_ENDPOINTS,
         include_arrow_only=True,
+        exclude_endpoints=job_spec_endpoints,
     )
+    assert_session_api_spec_coverage(AuraGraphDataScience, session_api_spec)
