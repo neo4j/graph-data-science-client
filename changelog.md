@@ -25,3 +25,6 @@
   and members compare equal to their string values.
 
 ## Other changes
+
+* The supported `pyarrow` range is now `>= 26.0.1, < 27.0`.
+* The `pyarrow` minimum is raised so that installations no longer resolve a version with the bundled Brotli vulnerability CVE-2026-111497.
