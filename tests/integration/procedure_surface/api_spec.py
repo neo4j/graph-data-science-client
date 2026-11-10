@@ -7,10 +7,10 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
-#: The document version this loader understands. The session API is versionless in
-#: practice: the published object is overwritten in place, and additions such as the
-#: compute mode and the optional result stay within version 1. Unknown keys are ignored
-#: for the same reason: additive changes within a version must not break loading.
+#: The document version this loader understands. Both published specs — the GDS
+#: Sessions API spec and the GDS plugin API spec — use this envelope: additions such as
+#: the compute mode and the optional result stay within version 1. Unknown keys are
+#: ignored for the same reason: additive changes within a version must not break loading.
 SUPPORTED_API_SPEC_VERSION = 1
 
 _REF_PREFIX = "#/$defs/"
@@ -34,10 +34,10 @@ class AlgorithmEntry(BaseModel, extra="ignore"):
 
 
 @dataclass(frozen=True)
-class SessionEndpointSpec:
+class EndpointSpec:
     """A single callable endpoint: one algorithm in one execution mode."""
 
-    #: Public endpoint name as published, e.g. `influenceMaximization.celf`.
+    #: Public endpoint name as published, e.g. `influenceMaximization.celf` or `gds.articleRank`.
     endpoint_name: str
     #: Execution mode, or `None` for algorithms without modes (e.g. model training).
     mode: str | None
@@ -47,11 +47,11 @@ class SessionEndpointSpec:
 
     @property
     def name(self) -> str:
-        """The public path, e.g. `influenceMaximization.celf.mutate`."""
+        """The public path, e.g. `influenceMaximization.celf.mutate` or `gds.articleRank.mutate`."""
         return f"{self.endpoint_name}.{self.mode}" if self.mode else self.endpoint_name
 
 
-class SessionApiSpec(BaseModel, extra="ignore"):
+class ApiSpec(BaseModel, extra="ignore"):
     apiSpecVersion: int
     algorithms: dict[str, AlgorithmEntry]
     defs: dict[str, dict[str, Any]]
@@ -66,21 +66,21 @@ class SessionApiSpec(BaseModel, extra="ignore"):
 
         return self.defs[name]
 
-    def endpoints(self) -> list[SessionEndpointSpec]:
+    def endpoints(self) -> list[EndpointSpec]:
         """Every endpoint the spec describes, one per algorithm and execution mode."""
-        endpoints: list[SessionEndpointSpec] = []
+        endpoints: list[EndpointSpec] = []
 
         for entry in self.algorithms.values():
             config = self.resolve(entry.config)
             if not entry.modes:
-                endpoints.append(SessionEndpointSpec(entry.endpointName, None, config, None, None))
+                endpoints.append(EndpointSpec(entry.endpointName, None, config, None, None))
                 continue
 
             for mode, mode_entry in entry.modes.items():
                 mode_config = self.resolve(mode_entry.modeConfig) if mode_entry.modeConfig else None
                 result = self.resolve(mode_entry.result) if mode_entry.result else None
                 endpoints.append(
-                    SessionEndpointSpec(
+                    EndpointSpec(
                         entry.endpointName,
                         mode,
                         config,
@@ -92,18 +92,18 @@ class SessionApiSpec(BaseModel, extra="ignore"):
         return endpoints
 
 
-def resolve_spec_from_file(file_path: Path) -> SessionApiSpec:
+def resolve_spec_from_file(file_path: Path) -> ApiSpec:
     with open(file_path) as f:
         data = json.load(f)
 
     try:
-        spec = SessionApiSpec(**data)
+        spec = ApiSpec(**data)
     except ValidationError as e:
-        raise ValueError(f"`{file_path}` is not a valid GDS Sessions API spec:\n{e}") from e
+        raise ValueError(f"`{file_path}` is not a valid GDS API spec:\n{e}") from e
 
     if spec.apiSpecVersion != SUPPORTED_API_SPEC_VERSION:
         raise ValueError(
-            f"Unsupported GDS Sessions API spec version `{spec.apiSpecVersion}` "
+            f"Unsupported GDS API spec version `{spec.apiSpecVersion}` "
             f"(this client understands version `{SUPPORTED_API_SPEC_VERSION}`). "
             "Update the graphdatascience client."
         )

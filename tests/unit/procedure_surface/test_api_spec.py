@@ -10,14 +10,14 @@ from pydantic import BaseModel
 
 from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.job_handle import JobHandle
-from tests.integration.procedure_surface.session_api_spec import (
+from tests.integration.procedure_surface.api_spec import (
     SUPPORTED_API_SPEC_VERSION,
-    SessionApiSpec,
-    SessionEndpointSpec,
+    ApiSpec,
+    EndpointSpec,
     resolve_spec_from_file,
 )
-from tests.integration.procedure_surface.session_api_spec_coverage_test_helper import (
-    assert_session_api_spec_coverage,
+from tests.integration.procedure_surface.endpoint_spec_coverage_test_helper import (
+    assert_endpoint_spec_coverage,
     verify_configuration_fields,
     verify_result_fields,
 )
@@ -84,14 +84,14 @@ def _write_spec(tmp_path: Path, spec: dict[str, Any]) -> Path:
 def test_resolve_spec_from_file(tmp_path: Path) -> None:
     spec = resolve_spec_from_file(_write_spec(tmp_path, SPEC))
 
-    assert isinstance(spec, SessionApiSpec)
+    assert isinstance(spec, ApiSpec)
     assert spec.apiSpecVersion == SUPPORTED_API_SPEC_VERSION
 
 
 def test_resolve_spec_from_file_rejects_unknown_version(tmp_path: Path) -> None:
     spec_file = _write_spec(tmp_path, {**SPEC, "apiSpecVersion": SUPPORTED_API_SPEC_VERSION + 1})
 
-    with pytest.raises(ValueError, match="Unsupported GDS Sessions API spec version"):
+    with pytest.raises(ValueError, match="Unsupported GDS API spec version"):
         resolve_spec_from_file(spec_file)
 
 
@@ -105,19 +105,34 @@ def test_resolve_spec_from_file_ignores_unknown_keys(tmp_path: Path) -> None:
 
     spec = resolve_spec_from_file(_write_spec(tmp_path, extended))
 
-    assert isinstance(spec, SessionApiSpec)
+    assert isinstance(spec, ApiSpec)
 
 
 def test_resolve_spec_from_file_rejects_malformed_envelope(tmp_path: Path) -> None:
     malformed = json.loads(json.dumps(SPEC))
     malformed["apiSpecVersion"] = "one"
 
-    with pytest.raises(ValueError, match="not a valid GDS Sessions API spec"):
+    with pytest.raises(ValueError, match="not a valid GDS API spec"):
         resolve_spec_from_file(_write_spec(tmp_path, malformed))
 
 
+def test_plugin_spec_envelope_is_supported(tmp_path: Path) -> None:
+    # The plugin spec publishes procedure names, e.g. `gds.articleRank`.
+    raw = json.loads(json.dumps(SPEC))
+    raw["algorithms"]["centrality.foo"]["endpointName"] = "gds.foo"
+
+    spec = resolve_spec_from_file(_write_spec(tmp_path, raw))
+
+    assert {endpoint.name for endpoint in spec.endpoints()} == {
+        "gds.foo.compute",
+        "gds.foo.mutate",
+        "gds.foo.stream",
+        "train",
+    }
+
+
 def test_resolve_rejects_unresolvable_ref() -> None:
-    spec = SessionApiSpec.model_validate(SPEC)
+    spec = ApiSpec.model_validate(SPEC)
     config = spec.algorithms["centrality.foo"].config
 
     config.ref = "#/$defs/DoesNotExist"
@@ -130,7 +145,7 @@ def test_resolve_rejects_unresolvable_ref() -> None:
 
 
 def test_endpoints_are_listed_per_mode() -> None:
-    spec = SessionApiSpec.model_validate(SPEC)
+    spec = ApiSpec.model_validate(SPEC)
     endpoints = {endpoint.name: endpoint for endpoint in spec.endpoints()}
 
     assert set(endpoints) == {"foo.compute", "foo.mutate", "foo.stream", "train"}
@@ -171,16 +186,16 @@ class FooEndpoints:
         return None
 
 
-def _spec() -> SessionApiSpec:
-    return SessionApiSpec.model_validate(SPEC)
+def _spec() -> ApiSpec:
+    return ApiSpec.model_validate(SPEC)
 
 
-def _endpoint(name: str) -> SessionEndpointSpec:
+def _endpoint(name: str) -> EndpointSpec:
     return {endpoint.name: endpoint for endpoint in _spec().endpoints()}[name]
 
 
 def test_coverage_accepts_a_matching_surface() -> None:
-    assert_session_api_spec_coverage(FooEndpoints, _spec())
+    assert_endpoint_spec_coverage(FooEndpoints, _spec().endpoints())
 
 
 def test_coverage_rejects_missing_endpoint() -> None:
@@ -194,7 +209,21 @@ def test_coverage_rejects_missing_endpoint() -> None:
     }
 
     with pytest.raises(AssertionError, match="Unexpectedly missing endpoints"):
-        assert_session_api_spec_coverage(FooEndpoints, SessionApiSpec.model_validate(raw))
+        assert_endpoint_spec_coverage(FooEndpoints, ApiSpec.model_validate(raw).endpoints())
+
+
+def test_coverage_skips_unmapped_endpoints() -> None:
+    raw = json.loads(json.dumps(SPEC))
+    raw["algorithms"]["centrality.bar"] = {
+        "category": "centrality",
+        "description": "Bar algorithm.",
+        "endpointName": "bar",
+        "config": {"$ref": "#/$defs/FooConfig"},
+        "modes": {},
+    }
+
+    # `bar` is intentionally not mapped onto the surface
+    assert_endpoint_spec_coverage(FooEndpoints, ApiSpec.model_validate(raw).endpoints(), unmapped_endpoints={"bar"})
 
 
 def test_verify_rejects_extra_parameter() -> None:
@@ -231,7 +260,7 @@ def test_verify_rejects_required_parameter_with_default() -> None:
 
 def test_verify_accepts_empty_map_default() -> None:
     # The spec's empty-map default maps to None in python.
-    endpoint = SessionEndpointSpec(
+    endpoint = EndpointSpec(
         endpoint_name="foo",
         mode="mutate",
         config={
