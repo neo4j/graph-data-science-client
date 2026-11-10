@@ -160,6 +160,73 @@ class FooMutateResult(BaseModel):
     node_properties_written: int
 
 
+# --- graph catalog endpoints -------------------------------------------------------
+
+CATALOG_SPEC: dict[str, Any] = {
+    "apiSpecVersion": 1,
+    "algorithms": {},
+    "graphCatalogEndpoints": {
+        "graph.list": {
+            "description": "Lists graphs.",
+            "endpointName": "graph.list",
+            "config": {"$ref": "#/$defs/FooConfig"},
+            "result": {"$ref": "#/$defs/FooStreamRow"},
+        },
+        "graph.nodeLabel.mutate": {
+            "description": "Mutates a label.",
+            "endpointName": "graph.nodeLabel.mutate",
+            "mode": "mutate",
+            "config": {"$ref": "#/$defs/FooConfig"},
+        },
+        "graph.nodeLabel.write": {
+            "description": "Writes a label.",
+            "endpointName": "gds.graph.nodeLabel",
+            "mode": "write",
+            "config": {"$ref": "#/$defs/FooConfig"},
+            "result": {"$ref": "#/$defs/FooStreamRow"},
+        },
+    },
+    "defs": {
+        "FooConfig": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {"graphName": {"type": "string"}},
+            "required": ["graphName"],
+        },
+        "FooStreamRow": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {"nodeId": {"type": "integer"}},
+            "required": ["nodeId"],
+        },
+    },
+}
+
+
+def test_graph_catalog_endpoints_are_listed_per_operation() -> None:
+    spec = ApiSpec.model_validate(CATALOG_SPEC)
+    endpoints = {endpoint.name: endpoint for endpoint in spec.endpoints()}
+
+    # The plugin publishes the procedure and the mode separately; the session endpoint
+    # name already spells the operation out.
+    assert set(endpoints) == {
+        "graph.list",
+        "graph.nodeLabel.mutate",
+        "gds.graph.nodeLabel.write",
+    }
+    assert endpoints["graph.nodeLabel.mutate"].mode is None
+    assert endpoints["graph.nodeLabel.mutate"].config is not None
+    assert endpoints["graph.nodeLabel.mutate"].result is None
+    assert endpoints["graph.list"].result == CATALOG_SPEC["defs"]["FooStreamRow"]
+
+
+def test_graph_catalog_endpoints_default_to_none(tmp_path: Path) -> None:
+    # A spec without the section still loads; the plugin spec of older releases has none.
+    spec = ApiSpec.model_validate(SPEC)
+
+    assert spec.graphCatalogEndpoints == {}
+
+
 class WrongFieldsResult(BaseModel):
     wrong_field: int
 
