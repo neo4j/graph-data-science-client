@@ -21,8 +21,11 @@ do
   #    (for Asciidoc code cells)
   # --ASCIIDocExporter.file_extension=.adoc
   #   If not set, the extension is .asciidoc
+  #
+  # Runs nbconvert through container_pandoc.py, which executes pandoc from the
+  # pinned image instead of requiring a local install (see doc/README.md).
 
-  spawn uv run jupyter nbconvert \
+  spawn uv run python scripts/nb2doc/container_pandoc.py \
     --to asciidoc \
     --template=scripts/nb2doc/asciidoc-template \
     --output-dir ${DOC_DIR} \
