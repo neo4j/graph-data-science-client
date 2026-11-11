@@ -19,7 +19,7 @@ from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
 
 # Parameters the client's endpoint methods carry that neither spec publishes: both the
 # session and the plugin API specs omit them.
-CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username"}
+CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username", "gpu"}
 
 # Parameters the spec exposes that the client does not map onto a method parameter. The
 # spec still publishes the deprecated singular `targetNode`; the client exposes only the
