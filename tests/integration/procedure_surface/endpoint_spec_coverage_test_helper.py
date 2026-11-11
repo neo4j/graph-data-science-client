@@ -19,14 +19,7 @@ from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
 
 # Parameters the client's endpoint methods carry that neither spec publishes: both the
 # session and the plugin API specs omit them.
-CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username"}
-
-# Experimental GraphSAGE GPU opt-in is not yet published in the spec.
-ENDPOINT_CLIENT_ONLY_PARAMETERS = {
-    f"graph_sage.{kind}.{mode}": {"gpu"}
-    for kind in ("supervised", "unsupervised")
-    for mode in ("train", "compute", "stream", "write", "mutate")
-}
+CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username", "gpu"}
 
 # Parameters the spec exposes that the client does not map onto a method parameter. The
 # spec still publishes the deprecated singular `targetNode`; the client exposes only the
@@ -91,12 +84,11 @@ def verify_configuration_fields(
 ) -> None:
     client_path = _client_path(endpoint)
     expected = _expected_parameters(endpoint)
-    ignored_parameters = CLIENT_ONLY_PARAMETERS | ENDPOINT_CLIENT_ONLY_PARAMETERS.get(client_path, set())
 
     actual = {
         name: parameter
         for name, parameter in inspect.signature(callable_object).parameters.items()
-        if name not in ("self", "G") and name not in ignored_parameters
+        if name not in ("self", "G") and name not in CLIENT_ONLY_PARAMETERS
     }
 
     missing = expected.keys() - actual.keys()
