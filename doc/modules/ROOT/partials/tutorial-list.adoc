@@ -13,3 +13,7 @@
 * xref:tutorials/graph-analytics-serverless-standalone.adoc[]
 * xref:tutorials/graph-analytics-serverless-spark.adoc[]
 * xref:tutorials/graph-analytics-serverless-standalone-fastpath.adoc[]
+* xref:tutorials/graph-analytics-serverless-standalone-graphsage-supervised.adoc[]
+* xref:tutorials/graph-analytics-serverless-standalone-graphsage-unsupervised.adoc[]
+* xref:tutorials/graph-analytics-serverless-standalone-graphsage-supervised.adoc[]
+* xref:tutorials/graph-analytics-serverless-standalone-graphsage-unsupervised.adoc[]

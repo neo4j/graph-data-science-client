@@ -5,6 +5,11 @@
 
 ## New features
 
+- Added an experimental `gpu` parameter to the GraphSage `train` and `predict` endpoints (supervised
+  and unsupervised). It opts the algorithm run into GPU execution and is only supported on Aura
+  Graph Analytics. Defaults to `False`. To enable this feature for your project, contact your Neo4j
+  account team or submit a request using the Feedback button in the Aura console.
+
 - Added a `result_as_vector` parameter to the `stream`, `write`, and `mutate` endpoints of the
   embedding algorithms (`fast_rp`, `node2vec`, `hash_gnn`, and `graph_sage`), as well as their
   session `compute` endpoints. When enabled, the embeddings are produced as Neo4j `VECTOR`

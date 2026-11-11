@@ -18,6 +18,7 @@ from graphdatascience.procedure_surface.api.node_embedding.graphsage_unsupervise
 )
 from graphdatascience.procedure_surface.arrow.model.model_catalog_arrow_endpoints import ModelCatalogArrowEndpoints
 from graphdatascience.procedure_surface.arrow.node_property_endpoints import NodePropertyEndpointsHelper
+from graphdatascience.procedure_surface.utils.gpu_config import gpu_config_payload
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
 
 
@@ -58,6 +59,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> tuple[GraphSageUnsupervisedModel, GraphSageUnsupervisedTrainResult]:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -79,6 +81,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **gpu_config_payload(gpu),
         )
 
         result = self._node_property_endpoints.run_job_and_get_summary(
@@ -101,6 +104,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> JobHandle:
         """Start an unsupervised GraphSage prediction and return a
         :class:`~graphdatascience.procedure_surface.api.job_handle.JobHandle`.
@@ -118,6 +122,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **gpu_config_payload(gpu),
         )
 
         with translate_feature_not_enabled("v2/embeddings.graphSage.unsupervised.predict", "Unsupervised GraphSage"):
@@ -134,6 +139,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> DataFrame:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -144,6 +150,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **gpu_config_payload(gpu),
         )
         return self._node_property_endpoints.run_job_and_stream(
             "v2/embeddings.graphSage.unsupervised.predict", G, config
@@ -162,6 +169,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
         write_concurrency: int | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedWriteResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -172,6 +180,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **gpu_config_payload(gpu),
         )
 
         raw_result = self._node_property_endpoints.run_job_and_write(
@@ -196,6 +205,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
         relationship_types: list[str] = ALL_TYPES,
         node_labels: list[str] = ALL_LABELS,
         job_id: str | None = None,
+        gpu: bool = False,
     ) -> GraphSageUnsupervisedMutateResult:
         config = self._node_property_endpoints.create_base_config(
             G,
@@ -206,6 +216,7 @@ class GraphSageUnsupervisedArrowEndpoints(GraphSageUnsupervisedSessionEndpoints)
             relationship_types=relationship_types,
             node_labels=node_labels,
             job_id=job_id,
+            **gpu_config_payload(gpu),
         )
 
         raw_result = self._node_property_endpoints.run_job_and_mutate(

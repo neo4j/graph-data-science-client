@@ -124,6 +124,8 @@ IGNORED_ACTUAL_PARAMETERS = {
     r".*graph.relationships.drop": ["fail_if_missing"],
     r"graph.[filter|generate]": ["overwrite"],
     r"graph.sample.*": ["overwrite"],
+    # experimental client-only opt-in, not (yet) part of the spec
+    r"graph_sage\.(un)?supervised\.(train|stream|write|mutate|compute)": ["gpu"],
 }
 
 # Spec defaults that cannot be compared against the client's; each use is
