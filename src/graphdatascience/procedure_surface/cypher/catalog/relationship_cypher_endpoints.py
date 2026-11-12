@@ -112,6 +112,7 @@ class RelationshipCypherEndpoints(RelationshipsEndpoints):
     ) -> RelationshipsWriteResult:
         config = ConfigConverter.convert_to_gds_config(
             concurrency=concurrency,
+            write_concurrency=write_concurrency,
             sudo=sudo,
             log_progress=log_progress,
             username=username,
