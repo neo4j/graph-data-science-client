@@ -61,11 +61,11 @@ dev = [
 ]
 
 dev-base = [
-    "ruff==0.17.3",
+    "ruff==0.17.4",
     "mypy==2.4.1",
     "pandas-stubs==3.1.0.261029",
-    "tox==4.67.5",
-    "types-setuptools == 84.0.0.20261006",
+    "tox==4.67.13",
+    "types-setuptools==84.2.0.20261104",
     "types-requests",
     "types-tqdm",
     "types-python-dateutil",
