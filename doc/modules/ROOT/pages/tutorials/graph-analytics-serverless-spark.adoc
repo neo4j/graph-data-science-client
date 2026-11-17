@@ -129,26 +129,30 @@ will use the New York Bike trips dataset
 trips form a graph where nodes represent bike renting stations and
 relationships represent start and end points for a bike rental trip.
 
+A trimmed copy of the dataset, with only the start and end station ids,
+ships in `examples/datasets/new-york-citibike-trips`.
+
 [source, python, role=no-test]
 ----
-import io
 import os
-import zipfile
 
 import requests
 
-download_path = "bike_trips_data"
-if not os.path.exists(download_path):
-    url = "https://www.kaggle.com/api/v1/datasets/download/gabrielramos87/bike-trips"
+# The dataset ships with the repository; download it only when there is no checkout, e.g. in Colab
+data_path = "examples/datasets/new-york-citibike-trips/triplets.csv.gz"
+if not os.path.exists(data_path):
+    data_path = "bike_trips_triplets.csv.gz"
+
+if not os.path.exists(data_path):
+    url = "https://raw.githubusercontent.com/neo4j/graph-data-science-client/main/examples/datasets/new-york-citibike-trips/triplets.csv.gz"
 
     response = requests.get(url)
     response.raise_for_status()
 
-    # Unzip the content
-    with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-        z.extractall(download_path)
+    with open(data_path, "wb") as f:
+        f.write(response.content)
 
-df = spark.read.csv(download_path, header=True, inferSchema=True)
+df = spark.read.csv(data_path, header=True, inferSchema=True)
 df.createOrReplaceTempView("bike_trips")
 df.limit(10).show()
 ----
