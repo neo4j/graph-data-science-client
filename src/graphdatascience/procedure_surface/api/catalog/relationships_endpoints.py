@@ -10,6 +10,7 @@ from graphdatascience.graph.graph_api import Graph
 from graphdatascience.procedure_surface.api.base_result import BaseResult
 from graphdatascience.procedure_surface.api.catalog.relationships_data_frame import RelationshipsDataFrame
 from graphdatascience.procedure_surface.api.default_values import ALL_LABELS, ALL_TYPES
+from graphdatascience.utils import as_list
 
 
 class RelationshipsEndpoints(ABC):
@@ -276,12 +277,8 @@ class RelationshipsWriteResult(BaseResult):
     @field_validator("relationship_properties", mode="before")
     @classmethod
     def coerce_relationship_properties(cls, v: Any) -> list[str]:
-        if v is None:
-            return []
-        elif isinstance(v, str):
-            return [v]
-        else:
-            return v  # type: ignore
+        coerced = as_list(v)
+        return [] if coerced is None else coerced
 
 
 class RelationshipsDropResult(BaseResult):

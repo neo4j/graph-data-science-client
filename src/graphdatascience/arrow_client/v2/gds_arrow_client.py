@@ -13,6 +13,7 @@ from graphdatascience.arrow_client.arrow_endpoint_version import ArrowEndpointVe
 from graphdatascience.arrow_client.arrow_table_utils import table_from_pandas
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient, ConnectionInfo
 from graphdatascience.query_runner.termination_flag import TerminationFlag
+from graphdatascience.utils import as_list
 
 from ...procedure_surface.api.default_values import ALL_TYPES
 from ...procedure_surface.utils.config_converter import ConfigConverter
@@ -71,7 +72,7 @@ class GdsArrowClient:
         str
             The JobId identifying the export process
         """
-        normalized_properties = node_properties if isinstance(node_properties, list) else [node_properties]
+        normalized_properties = as_list(node_properties)
 
         config = ConfigConverter.convert_to_gds_config(
             graph_name=graph_name,

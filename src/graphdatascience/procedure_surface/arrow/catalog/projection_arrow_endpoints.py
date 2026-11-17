@@ -19,6 +19,7 @@ from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResol
 from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.remote_ops.project_protocols import ProjectProtocol
 from graphdatascience.session.remote_ops.projection_runner import ProjectionRunner
+from graphdatascience.utils import as_list
 
 
 class ProjectArrowEndpoints:
@@ -167,11 +168,11 @@ class ProjectArrowEndpoints:
     def native(
         self,
         graph_name: str,
-        node_label_filter: typing.List[str],
-        relationship_type_filter: typing.List[str],
+        node_label_filter: str | typing.List[str],
+        relationship_type_filter: str | typing.List[str],
         *,
-        node_properties: typing.List[str] | None = None,
-        relationship_properties: typing.List[str] | None = None,
+        node_properties: str | typing.List[str] | None = None,
+        relationship_properties: str | typing.List[str] | None = None,
         job_id: str | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: typing.List[str] | None = None,
@@ -188,13 +189,13 @@ class ProjectArrowEndpoints:
         graph_name
             Name of the graph to be created
         node_label_filter
-            List of node labels to include in the graph projection.
+            A single node label or a list of node labels to include in the graph projection.
         relationship_type_filter
-            List of relationship types to include in the graph projection.
+            A single relationship type or a list of relationship types to include in the graph projection.
         node_properties
-            List of node properties to include in the graph projection.
+            A single node property or a list of node properties to include in the graph projection.
         relationship_properties
-            List of relationship properties to include in the graph projection.
+            A single relationship property or a list of relationship properties to include in the graph projection.
         job_id
             Identifier for the computation.
         concurrency
@@ -227,6 +228,11 @@ class ProjectArrowEndpoints:
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
 
+        node_label_filter = as_list(node_label_filter)
+        relationship_type_filter = as_list(relationship_type_filter)
+        node_properties = as_list(node_properties)
+        relationship_properties = as_list(relationship_properties)
+
         ProjectionRunner(self._project_protocol, self._arrow_client, TerminationFlag.create()).run_store_projection(
             graph_name,
             node_label_filter,
@@ -253,11 +259,11 @@ class ProjectArrowEndpoints:
     def native_async(
         self,
         graph_name: str,
-        node_label_filter: typing.List[str],
-        relationship_type_filter: typing.List[str],
+        node_label_filter: str | typing.List[str],
+        relationship_type_filter: str | typing.List[str],
         *,
-        node_properties: typing.List[str] | None = None,
-        relationship_properties: typing.List[str] | None = None,
+        node_properties: str | typing.List[str] | None = None,
+        relationship_properties: str | typing.List[str] | None = None,
         job_id: str | None = None,
         concurrency: int | None = None,
         undirected_relationship_types: typing.List[str] | None = None,
@@ -266,6 +272,9 @@ class ProjectArrowEndpoints:
         overwrite: bool = False,
     ) -> ProjectionJobHandle:
         """Kick off a native graph projection and return a :class:`~graphdatascience.procedure_surface.api.projection_job_handle.ProjectionJobHandle`.
+
+        Like :meth:`native`, a single node label, relationship type or property can be
+        given as a string, or a list of them.
 
         Unlike :meth:`native`, this method does not block on completion.
         The returned handle can be used to await completion and retrieve the
@@ -278,6 +287,11 @@ class ProjectArrowEndpoints:
             self._graph_ops.drop(graph_name, fail_if_missing=False)
 
         job_id = job_id or str(uuid.uuid4())
+
+        node_label_filter = as_list(node_label_filter)
+        relationship_type_filter = as_list(relationship_type_filter)
+        node_properties = as_list(node_properties)
+        relationship_properties = as_list(relationship_properties)
 
         actual_job_id, projection_query_runner = self._project_protocol.start_store_projection(
             graph_name,

@@ -6,6 +6,7 @@ from pandas import DataFrame
 
 from graphdatascience.datasets.graph_constructor_func import GraphConstructorFunc
 from graphdatascience.graph import Graph
+from graphdatascience.utils import as_list
 
 
 class NXLoader:
@@ -41,10 +42,8 @@ class NXLoader:
         node_labels: list[str]
         if no_node_labels:
             node_labels = ["N"]
-        elif isinstance(labels_attr, str):
-            node_labels = [labels_attr]
-        elif isinstance(labels_attr, list):
-            node_labels = labels_attr
+        elif isinstance(labels_attr, (str, list)):
+            node_labels = as_list(labels_attr)
         else:
             raise ValueError(
                 "`labels` node attributes must be of type `str` or `list[str]`. "

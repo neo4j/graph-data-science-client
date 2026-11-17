@@ -19,6 +19,7 @@ from graphdatascience.procedure_surface.utils.result_utils import join_db_node_p
 from graphdatascience.query_runner.query_runner import QueryRunner
 from graphdatascience.query_runner.termination_flag import TerminationFlag
 from graphdatascience.session.remote_ops.write_protocols import WriteProtocol
+from graphdatascience.utils import as_list
 
 
 class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
@@ -57,7 +58,7 @@ class NodePropertiesArrowEndpoints(NodePropertiesEndpoints):
         if has_db_properties and self._query_runner is None:
             raise ValueError("The option `db_node_properties` is only available if a database connection is provided.")
 
-        normalized_properties = node_properties if isinstance(node_properties, list) else [node_properties]
+        normalized_properties = as_list(node_properties)
 
         config = ConfigConverter.convert_to_gds_config(
             graph_name=G.name(),
