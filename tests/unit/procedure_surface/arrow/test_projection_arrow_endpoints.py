@@ -106,6 +106,29 @@ def test_native_does_not_drop_by_default(mocker: MockerFixture) -> None:
     drop_spy.assert_not_called()
 
 
+def test_native_wraps_single_string_filters_and_properties(mocker: MockerFixture) -> None:
+    endpoints, runner = _endpoints_with_mocked_projection(mocker, show_progress=False)
+
+    endpoints.native("g", "Page", "LINKS", node_properties="p", relationship_properties="w")
+
+    runner_args = runner.run_store_projection.call_args.args
+    assert runner_args[1:5] == (["Page"], ["LINKS"], ["p"], ["w"])
+
+
+def test_native_async_wraps_single_string_filters_and_properties(mocker: MockerFixture) -> None:
+    endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
+    start_store_projection = mocker.patch.object(
+        endpoints._project_protocol,
+        "start_store_projection",
+        return_value=("job-1", mocker.Mock()),
+    )
+
+    endpoints.native_async("g", "Page", "LINKS", node_properties="p", relationship_properties="w")
+
+    protocol_args = start_store_projection.call_args.args
+    assert protocol_args[1:5] == (["Page"], ["LINKS"], ["p"], ["w"])
+
+
 def test_native_async_overwrite_drops_existing_graph(mocker: MockerFixture) -> None:
     endpoints, _ = _endpoints_with_mocked_projection(mocker, show_progress=False)
     drop_spy = mocker.patch.object(endpoints._graph_ops, "drop")

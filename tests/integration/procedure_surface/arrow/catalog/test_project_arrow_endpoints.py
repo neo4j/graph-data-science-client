@@ -166,6 +166,37 @@ def test_store_projection(
 
 
 @pytest.mark.db_integration
+def test_store_projection_with_single_string_filters(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
+) -> None:
+    try:
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x "
+            "CREATE (p:Person {name: 'Person ' + toString(x), age: x})"
+            "-[:KNOWS {weight: x}]->(:Person {name: 'Person ' + toString(x + 5), age: x + 5})",
+            QueryType.USER_ACTION,
+        )
+
+        G, result = endpoints.project.native(
+            graph_name="g",
+            node_label_filter="Person",
+            relationship_type_filter="KNOWS",
+            node_properties="age",
+            relationship_properties="weight",
+        )
+
+        assert G.name() == "g"
+        assert result.graph_name == "g"
+        assert result.node_count == 10
+        assert result.relationship_count == 5
+
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
+
+
+@pytest.mark.db_integration
 def test_projection_async(
     arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
 ) -> None:
@@ -207,6 +238,41 @@ def test_store_projection_async(
             graph_name="g",
             node_label_filter=["Person"],
             relationship_type_filter=["KNOWS"],
+        )
+
+        assert handle.job_id()
+
+        G, result = handle.result()
+
+        assert G.name() == "g"
+        assert result["graphName"] == "g"
+        assert result["nodeCount"] == 10
+        assert result["relationshipCount"] == 5
+
+        assert len(endpoints.list("g")) == 1
+    finally:
+        endpoints.drop("g", fail_if_missing=False)
+        query_runner.run_cypher("MATCH (n) DETACH DELETE n", QueryType.USER_ACTION)
+
+
+@pytest.mark.db_integration
+def test_store_projection_async_with_single_string_filters(
+    arrow_client: AuthenticatedArrowClient, query_runner: QueryRunner, endpoints: CatalogArrowEndpoints
+) -> None:
+    try:
+        query_runner.run_cypher(
+            "UNWIND range(1, 5) AS x "
+            "CREATE (p:Person {name: 'Person ' + toString(x), age: x})"
+            "-[:KNOWS {weight: x}]->(:Person {name: 'Person ' + toString(x + 5), age: x + 5})",
+            QueryType.USER_ACTION,
+        )
+
+        handle = endpoints.project.native_async(
+            graph_name="g",
+            node_label_filter="Person",
+            relationship_type_filter="KNOWS",
+            node_properties="age",
+            relationship_properties="weight",
         )
 
         assert handle.job_id()

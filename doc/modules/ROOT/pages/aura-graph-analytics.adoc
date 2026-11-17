@@ -369,10 +369,10 @@ Native projections allow you to efficiently project graphs directly from your un
 ----
 gds.graph.project.native(
     graph_name: str,
-    node_label_filter: list[str],
-    relationship_type_filter: list[str],
-    node_properties: Optional[list[str]] = None,
-    relationship_properties: Optional[list[str]] = None,
+    node_label_filter: str | list[str],
+    relationship_type_filter: str | list[str],
+    node_properties: Optional[str | list[str]] = None,
+    relationship_properties: Optional[str | list[str]] = None,
     job_id: Optional[str] = None,
     concurrency: Optional[int] = None,
     undirected_relationship_types: Optional[list[str]] = None,
