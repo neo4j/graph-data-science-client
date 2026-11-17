@@ -20,8 +20,8 @@
 
 ## Improvements
 
-- The session (Arrow) native projection endpoints now accept a single string as well as a list
-  for node labels, relationship types and node/relationship properties, matching the Cypher surface.
+- The session (AGA) native projection endpoints now accept a single string as well as a list
+  for node labels, relationship types and node/relationship properties, matching the plugin surface.
 - The session algorithm endpoints now expose the compute-only endpoint (`gds.<algorithm>.compute`)
   as part of their documented interface. It starts a computation as a job without materializing
   its result, in addition to the algorithm modes.
