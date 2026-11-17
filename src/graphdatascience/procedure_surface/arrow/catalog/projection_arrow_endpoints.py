@@ -19,25 +19,7 @@ from graphdatascience.session.dbms.protocol_resolver import ProtocolVersionResol
 from graphdatascience.session.graph_mapping_context import GraphMappingContext
 from graphdatascience.session.remote_ops.project_protocols import ProjectProtocol
 from graphdatascience.session.remote_ops.projection_runner import ProjectionRunner
-
-
-@typing.overload
-def _as_list(value: str) -> typing.List[str]: ...
-
-
-@typing.overload
-def _as_list(value: typing.List[str]) -> typing.List[str]: ...
-
-
-@typing.overload
-def _as_list(value: None) -> None: ...
-
-
-def _as_list(value: str | typing.List[str] | None) -> typing.List[str] | None:
-    # the Cypher surface accepts a single str; normalize so the Arrow pipeline always sees a list
-    if isinstance(value, str):
-        return [value]
-    return value
+from graphdatascience.utils import as_list
 
 
 class ProjectArrowEndpoints:
@@ -246,10 +228,10 @@ class ProjectArrowEndpoints:
         job_id = job_id or str(uuid.uuid4())
         logging = self._show_progress and logging
 
-        node_label_filter = _as_list(node_label_filter)
-        relationship_type_filter = _as_list(relationship_type_filter)
-        node_properties = _as_list(node_properties)
-        relationship_properties = _as_list(relationship_properties)
+        node_label_filter = as_list(node_label_filter)
+        relationship_type_filter = as_list(relationship_type_filter)
+        node_properties = as_list(node_properties)
+        relationship_properties = as_list(relationship_properties)
 
         ProjectionRunner(self._project_protocol, self._arrow_client, TerminationFlag.create()).run_store_projection(
             graph_name,
@@ -306,10 +288,10 @@ class ProjectArrowEndpoints:
 
         job_id = job_id or str(uuid.uuid4())
 
-        node_label_filter = _as_list(node_label_filter)
-        relationship_type_filter = _as_list(relationship_type_filter)
-        node_properties = _as_list(node_properties)
-        relationship_properties = _as_list(relationship_properties)
+        node_label_filter = as_list(node_label_filter)
+        relationship_type_filter = as_list(relationship_type_filter)
+        node_properties = as_list(node_properties)
+        relationship_properties = as_list(relationship_properties)
 
         actual_job_id, projection_query_runner = self._project_protocol.start_store_projection(
             graph_name,
