@@ -111,7 +111,9 @@ class JobClient:
         ):
             with attempt:
                 try:
-                    res = client.do_action_with_retry(endpoint, config)
+                    # a submission is not retried here: a timed-out call may still have landed on
+                    # the server, so only the status check below decides whether to send it again
+                    res = list(client.do_action(endpoint, config))
                     return JobIdConfig(**deserialize_single(res)).job_id
                 except FLIGHT_TRANSIENT_EXCEPTIONS as e:
                     try:

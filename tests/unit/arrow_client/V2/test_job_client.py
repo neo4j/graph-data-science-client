@@ -14,11 +14,21 @@ from tests.unit.arrow_client.arrow_test_utils import ArrowTestResult
 
 
 def stub_action_responses(mocker: MockerFixture, mock_client: Mock, responses: list[Any]) -> None:
-    """Queue one response per ``do_action_with_retry`` call.
+    """Queue one response per polling call, which uses ``do_action_with_retry``.
 
     Each entry is either a ``JobStatus``/dict poll result or an exception instance to raise.
     """
     mock_client.do_action_with_retry = mocker.Mock(
+        side_effect=[r if isinstance(r, BaseException) else iter([ArrowTestResult(_dump(r))]) for r in responses]
+    )
+
+
+def stub_submission_responses(mock_client: Mock, responses: list[Any]) -> None:
+    """Queue one response per job submission, which uses ``do_action``.
+
+    Each entry is either a job id dict or an exception instance to raise.
+    """
+    mock_client.do_action = Mock(
         side_effect=[r if isinstance(r, BaseException) else iter([ArrowTestResult(_dump(r))]) for r in responses]
     )
 
@@ -33,11 +43,11 @@ def test_run_job(mocker: MockerFixture) -> None:
     endpoint = "v2/test.endpoint"
     config = {"param1": "value1", "param2": 42}
 
-    stub_action_responses(mocker, mock_client, [{"jobId": job_id}])
+    stub_submission_responses(mock_client, [{"jobId": job_id}])
 
     result = JobClient.run_job(mock_client, endpoint, config)
 
-    mock_client.do_action_with_retry.assert_called_once_with(endpoint, config)
+    mock_client.do_action.assert_called_once_with(endpoint, config)
     assert result == job_id
 
 
@@ -50,7 +60,8 @@ def test_run_job_and_wait(mocker: MockerFixture) -> None:
     job_id_config = JobIdConfig(jobId=job_id)
     status = JobStatus(jobId=job_id, progress=1.0, status="Done", description="")
 
-    stub_action_responses(mocker, mock_client, [job_id_config.dump_camel(), status])
+    stub_submission_responses(mock_client, [job_id_config.dump_camel()])
+    stub_action_responses(mocker, mock_client, [status])
 
     result = JobClient().run_job_and_wait(mock_client, endpoint, config, show_progress=False)
 
@@ -356,12 +367,15 @@ def test_run_job_recovers_when_job_already_started(mocker: MockerFixture) -> Non
 
     status = JobStatus(jobId=job_id, progress=0.5, status="RUNNING", description="")
 
-    stub_action_responses(mocker, mock_client, [FlightTimedOutError("connection lost"), status])
+    # the submission landed but its response was lost, so it must not be sent a second time
+    stub_submission_responses(mock_client, [FlightTimedOutError("connection lost")])
+    stub_action_responses(mocker, mock_client, [status])
 
     result = JobClient.run_job(mock_client, endpoint, config)
 
     assert result == job_id
-    assert mock_client.do_action_with_retry.call_count == 2
+    assert mock_client.do_action.call_count == 1
+    assert mock_client.do_action_with_retry.call_count == 1
 
 
 def test_run_job_retries_when_job_not_started(mocker: MockerFixture) -> None:
@@ -370,17 +384,14 @@ def test_run_job_retries_when_job_not_started(mocker: MockerFixture) -> None:
     endpoint = "v2/test.endpoint"
     config = {"jobId": job_id, "param": "value"}
 
-    stub_action_responses(
-        mocker, mock_client, [FlightTimedOutError("connection lost"), ArrowKeyError("job not found"), {"jobId": job_id}]
-    )
+    stub_submission_responses(mock_client, [FlightTimedOutError("connection lost"), {"jobId": job_id}])
+    stub_action_responses(mocker, mock_client, [ArrowKeyError("job not found")])
 
     result = JobClient.run_job(mock_client, endpoint, config)
 
     assert result == job_id
-    run_calls = [c for c in mock_client.do_action_with_retry.call_args_list if c.args[0] == endpoint]
-    status_calls = [c for c in mock_client.do_action_with_retry.call_args_list if c.args[0] == "v2/jobs.status"]
-    assert len(run_calls) == 2
-    assert len(status_calls) == 1
+    assert mock_client.do_action.call_count == 2
+    assert mock_client.do_action_with_retry.call_count == 1
 
 
 def test_run_job_raises_after_max_attempts(mocker: MockerFixture) -> None:
@@ -389,26 +400,21 @@ def test_run_job_raises_after_max_attempts(mocker: MockerFixture) -> None:
     endpoint = "v2/test.endpoint"
     config = {"jobId": job_id, "param": "value"}
 
+    stub_submission_responses(
+        mock_client,
+        [FlightTimedOutError("timeout 1"), FlightTimedOutError("timeout 2"), FlightTimedOutError("timeout 3")],
+    )
     stub_action_responses(
         mocker,
         mock_client,
-        [
-            FlightTimedOutError("timeout 1"),
-            ArrowKeyError("job not found 1"),
-            FlightTimedOutError("timeout 2"),
-            ArrowKeyError("job not found 2"),
-            FlightTimedOutError("timeout 3"),
-            ArrowKeyError("job not found 3"),
-        ],
+        [ArrowKeyError("job not found 1"), ArrowKeyError("job not found 2"), ArrowKeyError("job not found 3")],
     )
 
     with pytest.raises(FlightTimedOutError):
         JobClient.run_job(mock_client, endpoint, config)
 
-    run_calls = [c for c in mock_client.do_action_with_retry.call_args_list if c.args[0] == endpoint]
-    status_calls = [c for c in mock_client.do_action_with_retry.call_args_list if c.args[0] == "v2/jobs.status"]
-    assert len(run_calls) == 3
-    assert len(status_calls) == 3
+    assert mock_client.do_action.call_count == 3
+    assert mock_client.do_action_with_retry.call_count == 3
 
 
 def test_run_job_generates_job_id_and_retries(mocker: MockerFixture) -> None:
@@ -416,15 +422,12 @@ def test_run_job_generates_job_id_and_retries(mocker: MockerFixture) -> None:
     endpoint = "v2/test.endpoint"
     config = {"param": "value"}
 
-    stub_action_responses(
-        mocker, mock_client, [FlightTimedOutError("timeout 1"), ArrowKeyError("job not found"), {"jobId": "server-job"}]
-    )
+    stub_submission_responses(mock_client, [FlightTimedOutError("timeout 1"), {"jobId": "server-job"}])
+    stub_action_responses(mocker, mock_client, [ArrowKeyError("job not found")])
 
     result = JobClient.run_job(mock_client, endpoint, config)
 
     assert result == "server-job"
     assert "jobId" in config
-    run_calls = [c for c in mock_client.do_action_with_retry.call_args_list if c.args[0] == endpoint]
-    status_calls = [c for c in mock_client.do_action_with_retry.call_args_list if c.args[0] == "v2/jobs.status"]
-    assert len(run_calls) == 2
-    assert len(status_calls) == 1
+    assert mock_client.do_action.call_count == 2
+    assert mock_client.do_action_with_retry.call_count == 1
