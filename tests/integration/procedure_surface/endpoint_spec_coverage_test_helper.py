@@ -117,7 +117,10 @@ def verify_configuration_fields(
                 raise ValueError(
                     f"Parameter `{name}` is required in the spec but has a default value at `{client_path}`."
                 )
-        elif _normalise_default(parameter.default) != _normalise_default(schema.get("default")):
+        elif parameter.default is not None and _normalise_default(parameter.default) != _normalise_default(
+            schema.get("default")
+        ):
+            # a None client default defers to the server default
             raise ValueError(
                 f"Mismatching default value for parameter `{name}` "
                 f"(client: {_normalise_default(parameter.default)!r}, spec: {schema.get('default')!r}) "
