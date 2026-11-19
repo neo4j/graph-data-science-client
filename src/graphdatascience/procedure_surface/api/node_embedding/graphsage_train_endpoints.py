@@ -22,6 +22,7 @@ class GraphSageTrainEndpoints(ABC):
         negative_sample_weight: int = 20,
         embedding_dimension: int = 64,
         tolerance: float = 0.0001,
+        patience: int = 1,
         learning_rate: float = 0.1,
         max_iterations: int = 10,
         sample_sizes: list[int] = [25, 10],
@@ -55,6 +56,7 @@ class GraphSageTrainEndpoints(ABC):
         negative_sample_weight: int = 20,
         embedding_dimension: int = 64,
         tolerance: float = 0.0001,
+        patience: int = 1,
         learning_rate: float = 0.1,
         max_iterations: int = 10,
         sample_sizes: list[int] | None = None,
@@ -99,6 +101,8 @@ class GraphSageTrainEndpoints(ABC):
             Output dimensionality of the embeddings
         tolerance
             Minimum change in loss between iterations for early stopping an epoch.
+        patience
+            Number of consecutive iterations with a loss change below `tolerance` required to stop an epoch early.
         learning_rate
             Learning rate for the training optimization
         max_iterations

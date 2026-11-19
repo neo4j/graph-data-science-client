@@ -15,6 +15,10 @@
   session `compute` endpoints. When enabled, the embeddings are produced as Neo4j `VECTOR`
   values instead of lists of floats. The parameter requires GDS 2026.11 or later.
 
+- Added a `patience` parameter to the `train` and `train.estimate` endpoints of the classic `graph_sage`
+  endpoints. An epoch is only stopped early after `patience` consecutive iterations with a loss change
+  below `tolerance`. Defaults to `1`, which keeps the previous behavior.
+
 ## Bug fixes
 
 

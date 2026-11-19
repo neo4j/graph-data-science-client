@@ -51,6 +51,7 @@ def test_graphsage_train(graphsage_endpoints: GraphSageTrainCypherEndpoints, sam
         embedding_dimension=1,
         epochs=1,  # Use minimal epochs for faster testing
         max_iterations=1,  # Use minimal iterations for faster testing
+        patience=2,
     )
 
     assert train_result.train_millis >= 0
