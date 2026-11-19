@@ -14,6 +14,28 @@ from graphdatascience.procedure_surface.cypher.node_embedding.graphsage_predict_
 )
 from graphdatascience.procedure_surface.utils.config_converter import ConfigConverter
 from graphdatascience.query_runner.query_runner import QueryRunner
+from graphdatascience.versions import ServerVersion
+
+# The `patience` config key only exists on GDS 2026.11 and later.
+MIN_PATIENCE_VERSION = ServerVersion(2026, 11, 0)
+
+
+def resolve_patience(query_runner: QueryRunner, patience: int | None) -> int | None:
+    """Resolve the `patience` config value for the connected server.
+
+    The key is unknown to older servers, so it is omitted there to keep existing calls working.
+    Requesting it on an older server raises instead of failing server-side with an unknown key.
+    """
+    if query_runner.server_version() >= MIN_PATIENCE_VERSION:
+        return patience
+
+    if patience is not None:
+        raise ValueError(
+            f"patience requires GDS {MIN_PATIENCE_VERSION} or later, "
+            f"but the connected server is {query_runner.server_version()}."
+        )
+
+    return None
 
 
 class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
@@ -37,6 +59,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
         penalty_l2: float = 0.0,
         search_depth: int = 5,
         epochs: int = 1,
+        patience: int | None = None,
         projected_feature_dimension: int | None = None,
         batch_sampling_ratio: float | None = None,
         store_model_to_disk: bool = False,
@@ -65,6 +88,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
             penalty_l2=penalty_l2,
             search_depth=search_depth,
             epochs=epochs,
+            patience=resolve_patience(self._query_runner, patience),
             projected_feature_dimension=projected_feature_dimension,
             batch_sampling_ratio=batch_sampling_ratio,
             store_model_to_disk=store_model_to_disk,
@@ -110,6 +134,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
         penalty_l2: float = 0.0,
         search_depth: int = 5,
         epochs: int = 1,
+        patience: int | None = None,
         projected_feature_dimension: int | None = None,
         batch_sampling_ratio: float | None = None,
         store_model_to_disk: bool = False,
@@ -138,6 +163,7 @@ class GraphSageTrainCypherEndpoints(GraphSageTrainEndpoints):
             penalty_l2=penalty_l2,
             search_depth=search_depth,
             epochs=epochs,
+            patience=resolve_patience(self._query_runner, patience),
             projected_feature_dimension=projected_feature_dimension,
             batch_sampling_ratio=batch_sampling_ratio,
             store_model_to_disk=store_model_to_disk,

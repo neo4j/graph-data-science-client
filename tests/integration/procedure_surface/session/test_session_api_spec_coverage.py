@@ -6,6 +6,7 @@ from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
     pythonic_endpoint_name,
 )
 from tests.integration.procedure_surface.endpoint_spec_coverage_test_helper import (
+    SESSION_CLIENT_ONLY_PARAMETERS,
     assert_endpoint_spec_coverage,
 )
 from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSpec
@@ -36,4 +37,8 @@ def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], se
         include_arrow_only=True,
         exclude_endpoints=job_spec_endpoints,
     )
-    assert_endpoint_spec_coverage(AuraGraphDataScience, session_api_spec.endpoints())
+    assert_endpoint_spec_coverage(
+        AuraGraphDataScience,
+        session_api_spec.endpoints(),
+        client_only_parameters=SESSION_CLIENT_ONLY_PARAMETERS,
+    )

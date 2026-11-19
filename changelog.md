@@ -15,6 +15,11 @@
   session `compute` endpoints. When enabled, the embeddings are produced as Neo4j `VECTOR`
   values instead of lists of floats. The parameter requires GDS 2026.11 or later.
 
+- Added a `patience` parameter to the `train` and `train.estimate` endpoints of the classic
+  `graph_sage` endpoints. An epoch is only stopped early after `patience` consecutive iterations
+  with a loss change below `tolerance`. Defaults to `1`, which keeps the previous behavior. The
+  parameter requires GDS 2026.11 or later.
+
 ## Bug fixes
 
 
@@ -26,6 +31,8 @@
   as part of their documented interface. It starts a computation as a job without materializing
   its result, in addition to the algorithm modes.
 - Improve robustness of Neo4j DB connection verification.
+- The session `page_rank.compute` endpoint now accepts `username`, which the other session
+  endpoints already take.
 - `QueryType`, `AlgorithmCategory`, `ArrowEndpointVersion`, and `ProtocolVersion` are now
   `StrEnum`s: `str()` of a member returns the underlying value (for example,
   `str(QueryType.USER_ACTION)` is `"user-action"` instead of `"QueryType.USER_ACTION"`),

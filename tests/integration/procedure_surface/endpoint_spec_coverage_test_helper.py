@@ -17,9 +17,14 @@ from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
     to_snake,
 )
 
-# Parameters the client's endpoint methods carry that neither spec publishes: both the
-# session and the plugin API specs omit them.
-CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username", "gpu"}
+# Parameters the client's endpoint methods carry that the session spec does not publish:
+# `gpu`, which no spec publishes yet. The specs take `sudo`, `username`, and `logProgress`
+# as configuration, so those are compared.
+SESSION_CLIENT_ONLY_PARAMETERS = {"gpu"}
+
+# Parameters the session spec publishes that the client resolves from the `G` argument
+# rather than a method parameter: the graph a call runs on is `payload["graphName"]`.
+RESOLVED_FROM_GRAPH = {"graph_name"}
 
 # Parameters the spec exposes that the client does not map onto a method parameter. The
 # spec still publishes the deprecated singular `targetNode`; the client exposes only the
@@ -45,9 +50,12 @@ def assert_endpoint_spec_coverage(
     endpoints: type,
     endpoint_specs: list[EndpointSpec],
     unmapped_endpoints: set[str] | None = None,
+    client_only_parameters: set[str] | None = None,
 ) -> None:
     if unmapped_endpoints is None:
         unmapped_endpoints = set()
+    if client_only_parameters is None:
+        client_only_parameters = set()
 
     missing_endpoints: set[str] = set()
     available_endpoints: set[str] = set()
@@ -63,7 +71,7 @@ def assert_endpoint_spec_coverage(
             continue
 
         available_endpoints.add(client_path)
-        verify_configuration_fields(callable_object, endpoint)
+        verify_configuration_fields(callable_object, endpoint, client_only_parameters)
         verify_result_fields(callable_object, endpoint)
 
     print("\nAPI Spec Coverage Summary:")
@@ -81,14 +89,16 @@ def _client_path(endpoint: EndpointSpec) -> str:
 def verify_configuration_fields(
     callable_object: Any,
     endpoint: EndpointSpec,
+    client_only_parameters: set[str] | None = None,
 ) -> None:
     client_path = _client_path(endpoint)
     expected = _expected_parameters(endpoint)
+    excluded = client_only_parameters or set()
 
     actual = {
         name: parameter
         for name, parameter in inspect.signature(callable_object).parameters.items()
-        if name not in ("self", "G") and name not in CLIENT_ONLY_PARAMETERS
+        if name not in ("self", "G") and name not in excluded
     }
 
     missing = expected.keys() - actual.keys()
@@ -107,7 +117,10 @@ def verify_configuration_fields(
                 raise ValueError(
                     f"Parameter `{name}` is required in the spec but has a default value at `{client_path}`."
                 )
-        elif _normalise_default(parameter.default) != _normalise_default(schema.get("default")):
+        elif parameter.default is not None and _normalise_default(parameter.default) != _normalise_default(
+            schema.get("default")
+        ):
+            # a None client default defers to the server default
             raise ValueError(
                 f"Mismatching default value for parameter `{name}` "
                 f"(client: {_normalise_default(parameter.default)!r}, spec: {schema.get('default')!r}) "
@@ -173,6 +186,9 @@ def _expected_parameters(endpoint: EndpointSpec) -> dict[str, tuple[dict[str, An
 
     for ignored in IGNORED_SPEC_PARAMETERS.get(endpoint.endpoint_name, set()):
         expected.pop(ignored, None)
+
+    for name in RESOLVED_FROM_GRAPH:
+        expected.pop(name, None)
 
     return expected
 
