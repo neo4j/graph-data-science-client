@@ -18,9 +18,9 @@ from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
 )
 
 # Parameters the client's endpoint methods carry that the session spec does not publish:
-# the plugin-only ones, plus `gpu`, which no spec publishes yet. The plugin spec takes
-# `sudo`, `username`, and `logProgress` as configuration, so it excludes none of them.
-SESSION_CLIENT_ONLY_PARAMETERS = {"sudo", "username", "gpu"}
+# `gpu`, which no spec publishes yet. The specs take `sudo`, `username`, and `logProgress`
+# as configuration, so those are compared.
+SESSION_CLIENT_ONLY_PARAMETERS = {"gpu"}
 
 # Parameters the session spec publishes that the client resolves from the `G` argument
 # rather than a method parameter: the graph a call runs on is `payload["graphName"]`.
