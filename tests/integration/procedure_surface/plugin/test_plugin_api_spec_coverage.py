@@ -33,6 +33,9 @@ PLUGIN_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
 # entries one at a time as the client grows them.
 PLUGIN_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
     "graph.relationship.write",  # served by the client's relationships endpoints
+    # The deprecated legacy projection: the client's own `project.cypher` runs the modern
+    # Cypher projection, which the server publishes as an aggregation function.
+    "graph.project.cypher",
 }
 
 # the compute mode is session-surface only in the client; the plugin API spec lists it

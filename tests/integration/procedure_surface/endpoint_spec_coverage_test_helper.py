@@ -35,6 +35,7 @@ CLIENT_ONLY_PARAMETERS = {"log_progress", "sudo", "username", "gpu"}
 # Endpoints whose client path differs from the published endpoint name. The session
 # surface publishes the Arrow action names; the client exposes its own, nicer names.
 CLIENT_PATH_ALIASES: dict[str, str] = {
+    "graph.project": "graph.project.native",
     "graph.project.filter": "graph.filter",
     "graph.sample.cnarw.estimate": "graph.sample.estimate",
 }
@@ -78,6 +79,9 @@ IGNORED_CLIENT_PARAMETERS: dict[str, set[str]] = {
     "graph.node_property.stream": {"db_node_properties"},
     "graph.relationships.stream": {"relationship_properties"},
     "graph.relationships.drop": {"fail_if_missing"},
+    # The client's native projection takes the properties alongside the projections, and
+    # drops an existing graph on request.
+    "graph.project.native": {"node_properties", "relationship_properties", "overwrite"},
 }
 
 # Return fields the client names differently than the spec.
@@ -106,6 +110,9 @@ IGNORED_SPEC_PARAMETERS: dict[str, set[str]] = {
     # The client's stream endpoints do not expose the server's stream knobs yet.
     "graph.node_properties.stream": {"consecutive_ids", "batch_size"},
     "graph.relationships.stream": {"consecutive_ids", "batch_size"},
+    "graph.relationship_properties.stream": {"consecutive_ids", "batch_size"},
+    # The client's native projection does not expose the sizing and validation knobs.
+    "graph.project.native": {"node_count", "relationship_count", "validate_relationships"},
     # The client's sampling estimate takes no job id and no random seed.
     "graph.sample.estimate": {"job_id", "random_seed"},
 }
@@ -266,6 +273,13 @@ def _expected_parameters(endpoint: EndpointSpec) -> dict[str, tuple[dict[str, An
                 # verified as the positional `G` argument instead
                 continue
             expected[to_snake(name)] = (property_schema, name in required)
+
+    # A procedure parameter is mandatory on the surface that publishes it; the trailing
+    # configuration map is left out of the spec's parameters already.
+    for name, property_schema in endpoint.parameters.items():
+        if to_snake(name) in input_graph_parameters:
+            continue
+        expected[to_snake(name)] = (property_schema, True)
 
     for ignored in _ignored_spec_parameters(endpoint):
         expected.pop(ignored, None)

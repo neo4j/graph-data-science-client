@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -43,6 +43,7 @@ class GraphCatalogEndpointEntry(BaseModel, extra="ignore"):
 
     description: str
     endpointName: str
+    parameters: list[dict[str, Any]] = Field(default_factory=list)
     mode: str | None = None
     config: SchemaRef | None = None
     result: SchemaRef | None = None
@@ -59,6 +60,8 @@ class EndpointSpec:
     config: dict[str, Any]
     mode_config: dict[str, Any] | None
     result: dict[str, Any] | None
+    #: Parameters the procedure takes ahead of its configuration map, as schemas.
+    parameters: dict[str, Any] = field(default_factory=dict)
 
     @property
     def name(self) -> str:
@@ -121,10 +124,27 @@ class ApiSpec(BaseModel, extra="ignore"):
                     self.resolve(catalog_entry.config) if catalog_entry.config else {},
                     None,
                     self.resolve(catalog_entry.result) if catalog_entry.result else None,
+                    _parameters(catalog_entry.parameters),
                 )
             )
 
         return endpoints
+
+
+def _parameters(parameters: list[dict[str, Any]]) -> dict[str, Any]:
+    """The procedure parameters as schemas, keyed by name.
+
+    The trailing configuration map is left out: the client passes the configuration as
+    keyword arguments rather than as one argument of its own.
+    """
+    return {
+        parameter["name"]: {
+            "type": parameter["type"],
+            "description": parameter["description"],
+        }
+        for parameter in parameters
+        if parameter["name"] != "configuration"
+    }
 
 
 def resolve_spec_from_file(file_path: Path) -> ApiSpec:

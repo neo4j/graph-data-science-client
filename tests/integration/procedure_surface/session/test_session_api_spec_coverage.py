@@ -20,6 +20,15 @@ SESSION_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
     "graph.relationship_properties.stream",  # served by relationships.stream(relationship_properties=...)
     "graph.relationships.index_inverse.estimate",  # the relationship endpoints have no estimate
     "graph.relationships.to_undirected.estimate",
+    # The projection protocol: the client drives it from `gds.graph.construct`, so the
+    # individual channels it calls are not paths of their own.
+    "graph.project.from_tables",
+    "graph.project.from_tables.nodes",
+    "graph.project.from_tables.relationships",
+    "graph.project.from_tables.nodes_done",
+    "graph.project.from_tables.relationships_done",
+    "graph.project.from_triplets",
+    "graph.project.from_triplets.done",
 }
 
 # KGE predict is only mapped for the Cypher (plugin) surface; Arrow is not mapped yet.
