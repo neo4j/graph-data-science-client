@@ -1,44 +1,15 @@
-# Changes in 2.4
+# Changes in 2.5
 
 ## Breaking changes
 
 
 ## New features
 
-- Added an experimental `gpu` parameter to the GraphSage `train` and `predict` endpoints (supervised
-  and unsupervised). It opts the algorithm run into GPU execution and is only supported on Aura
-  Graph Analytics. Defaults to `False`. To enable this feature for your project, contact your Neo4j
-  account team or submit a request using the Feedback button in the Aura console.
-
-- Added a `result_as_vector` parameter to the `stream`, `write`, and `mutate` endpoints of the
-  embedding algorithms (`fast_rp`, `node2vec`, `hash_gnn`, and `graph_sage`), as well as their
-  session `compute` endpoints. When enabled, the embeddings are produced as Neo4j `VECTOR`
-  values instead of lists of floats. The parameter requires GDS 2026.11 or later.
-
-- Added a `patience` parameter to the `train` and `train.estimate` endpoints of the classic
-  `graph_sage` endpoints. An epoch is only stopped early after `patience` consecutive iterations
-  with a loss change below `tolerance`. Defaults to `1`, which keeps the previous behavior. The
-  parameter requires GDS 2026.11 or later.
 
 ## Bug fixes
 
 
 ## Improvements
 
-- The session (AGA) native projection endpoints now accept a single string as well as a list
-  for node labels, relationship types and node/relationship properties, matching the plugin surface.
-- The session algorithm endpoints now expose the compute-only endpoint (`gds.<algorithm>.compute`)
-  as part of their documented interface. It starts a computation as a job without materializing
-  its result, in addition to the algorithm modes.
-- Improve robustness of Neo4j DB connection verification.
-- The session `page_rank.compute` endpoint now accepts `username`, which the other session
-  endpoints already take.
-- `QueryType`, `AlgorithmCategory`, `ArrowEndpointVersion`, and `ProtocolVersion` are now
-  `StrEnum`s: `str()` of a member returns the underlying value (for example,
-  `str(QueryType.USER_ACTION)` is `"user-action"` instead of `"QueryType.USER_ACTION"`),
-  and members compare equal to their string values.
 
 ## Other changes
-
-* The supported `pyarrow` range is now `>= 26.0.1, < 27.0`.
-* The `pyarrow` minimum is raised so that installations no longer resolve a version with the bundled Brotli vulnerability CVE-2026-111497.
