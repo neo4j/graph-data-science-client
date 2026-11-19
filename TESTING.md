@@ -71,6 +71,19 @@ Note however that this also requires you to have specified a valid path for the 
 
 If the database you are targeting is an AuraDS instance, you should use the option `--target-aura` which makes sure that tests of operations not supported on AuraDS are skipped.
 
+### Running against locally rendered API specs
+
+The procedure surface tests validate the client against the published GDS API specs, which they download from GCS. To validate against specs rendered from a local `graph-analytics` checkout instead, point them at the files:
+
+```bash
+# in a graph-analytics checkout: just session-api-spec && just plugin-api-spec
+GDS_SESSION_API_SPEC_FILE=path/to/gds-session-api-spec.json \
+GDS_PLUGIN_API_SPEC_FILE=path/to/gds-plugin-api-spec.json \
+uv run pytest tests/integration/procedure_surface
+```
+
+That is also how a spec change is developed: render the spec from the branch that changes it, and run the coverage tests against it.
+
 ### Running tests that require encrypted connections
 
 In order to run integration tests that test encryption features, you must setup the Neo4j server accordingly:
