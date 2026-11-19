@@ -42,6 +42,7 @@ def test_graphsage_train(graphsage_endpoints: GraphSageTrainArrowEndpoints, samp
         embedding_dimension=1,
         epochs=1,  # Use minimal epochs for faster testing
         max_iterations=1,  # Use minimal iterations for faster testing
+        patience=2,
     )
 
     # Check the result
