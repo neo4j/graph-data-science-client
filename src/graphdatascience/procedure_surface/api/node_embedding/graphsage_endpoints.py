@@ -70,6 +70,8 @@ class GraphSageEndpoints(GraphSagePredictEndpoints):
             Maximum search depth for neighbor sampling
         epochs
             Number of training epochs
+        patience
+            Epochs without improvement in the training loss before training stops early.
         projected_feature_dimension
             Dimension to project input features to before training
         batch_sampling_ratio

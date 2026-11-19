@@ -43,6 +43,7 @@ class PageRankArrowEndpoints(PageRankSessionEndpoints):
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
+        username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
@@ -78,6 +79,8 @@ class PageRankArrowEndpoints(PageRankSessionEndpoints):
             Disable the memory guard.
         log_progress
             Display progress logging.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
@@ -112,6 +115,7 @@ class PageRankArrowEndpoints(PageRankSessionEndpoints):
             source_nodes=source_nodes,
             sudo=sudo,
             tolerance=tolerance,
+            username=username,
         )
 
         return self._node_property_endpoints.run_job(G, "v2/centrality.pageRank", config)

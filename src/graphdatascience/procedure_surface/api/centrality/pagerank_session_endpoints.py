@@ -26,6 +26,7 @@ class PageRankSessionEndpoints(PageRankEndpoints):
         node_labels: list[str] = ALL_LABELS,
         sudo: bool = False,
         log_progress: bool = True,
+        username: str | None = None,
         concurrency: int | None = None,
         job_id: str | None = None,
         relationship_weight_property: str | None = None,
@@ -57,6 +58,8 @@ class PageRankSessionEndpoints(PageRankEndpoints):
             Disable the memory guard.
         log_progress
             Display progress logging.
+        username
+            As an administrator, impersonate a different user for accessing their graphs.
         concurrency
             Number of concurrent threads to use.
         job_id
