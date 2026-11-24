@@ -116,7 +116,7 @@ class GraphSageTrainEndpoints(ABC):
         epochs
             Number of training epochs
         patience
-            Epochs without improvement in the training loss before training stops early.
+            Iterations without a loss within tolerance from the best found, before stopping early.
         projected_feature_dimension
             Dimension to project input features to before training
         batch_sampling_ratio
