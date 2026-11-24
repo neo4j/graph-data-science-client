@@ -25,15 +25,22 @@ class ModeEntry(BaseModel, extra="ignore"):
     result: SchemaRef | None = None
 
 
-class AlgorithmEntry(BaseModel, extra="ignore"):
-    category: str
+class EndpointEntry(BaseModel, extra="ignore"):
+    """What the document publishes for one endpoint, whichever kind it is."""
+
     description: str
     endpointName: str
+    config: SchemaRef | None = None
+    result: SchemaRef | None = None
+
+
+class AlgorithmEntry(EndpointEntry):
+    category: str
     config: SchemaRef
     modes: dict[str, ModeEntry]
 
 
-class GraphCatalogEndpointEntry(BaseModel, extra="ignore"):
+class GraphCatalogEndpointEntry(EndpointEntry):
     """A `gds.graph.*` endpoint.
 
     The plugin declares some procedures with several modes and the session surface
@@ -41,12 +48,8 @@ class GraphCatalogEndpointEntry(BaseModel, extra="ignore"):
     (`gds.graph.nodeLabel.mutate`) rather than a mode of the entry.
     """
 
-    description: str
-    endpointName: str
     parameters: list[dict[str, Any]] = Field(default_factory=list)
     mode: str | None = None
-    config: SchemaRef | None = None
-    result: SchemaRef | None = None
 
 
 @dataclass(frozen=True)
