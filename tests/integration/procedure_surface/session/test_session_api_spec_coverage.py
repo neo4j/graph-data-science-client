@@ -11,6 +11,27 @@ from tests.integration.procedure_surface.endpoint_spec_coverage_test_helper impo
 )
 from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSpec
 
+# Graph catalog endpoints the session surface does not map yet. Drop entries one at a
+# time as the client grows them.
+SESSION_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
+    "graph.size_of",  # the client exposes only the plugin-internal size_of
+    "graph.from_gdl",  # graphs are constructed from tables or triplets
+    "graph.stream",  # the client's session export raises NotImplementedError
+    "graph.node_labels.stream",  # node_labels maps mutate and write only
+    "graph.relationship_properties.stream",  # served by relationships.stream(relationship_properties=...)
+    "graph.relationships.index_inverse.estimate",  # the relationship endpoints have no estimate
+    "graph.relationships.to_undirected.estimate",
+    # The projection protocol: the client drives it from `gds.graph.construct`, so the
+    # individual channels it calls are not paths of their own.
+    "graph.project.from_tables",
+    "graph.project.from_tables.nodes",
+    "graph.project.from_tables.relationships",
+    "graph.project.from_tables.nodes_done",
+    "graph.project.from_tables.relationships_done",
+    "graph.project.from_triplets",
+    "graph.project.from_triplets.done",
+}
+
 # KGE predict is only mapped for the Cypher (plugin) surface; Arrow is not mapped yet.
 SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
     "kge.predict.mutate",  # not mapped on the Server yet
@@ -40,5 +61,6 @@ def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], se
     assert_endpoint_spec_coverage(
         AuraGraphDataScience,
         session_api_spec.endpoints(),
+        unmapped_endpoints=SESSION_UNMAPPED_GRAPH_CATALOG_ENDPOINTS,
         client_only_parameters=SESSION_CLIENT_ONLY_PARAMETERS,
     )
