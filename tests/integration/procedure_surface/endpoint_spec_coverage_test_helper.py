@@ -42,8 +42,9 @@ RESOLVED_FROM_GRAPH = {"graph_name"}
 # Endpoints whose client path differs from the published endpoint name. The session
 # surface publishes the Arrow action names; the client exposes its own, nicer names.
 CLIENT_PATH_ALIASES: dict[str, str] = {
-    # A session projects through the store projection, which runs in the database the
-    # session is attached to; the client calls it from `graph.project.native`.
+    # A session projects through the remote-ops procedures, which run in the database the
+    # session is attached to; the client calls them from its own projection methods.
+    "arrow.project.cypher.v4": "graph.project.cypher",
     "arrow.project.store.v4": "graph.project.native",
     "graph.project": "graph.project.native",
     "graph.project.filter": "graph.filter",
@@ -59,6 +60,7 @@ INPUT_GRAPH_PARAMETERS: dict[str, set[str]] = {
     "graph.exists": set(),
     "graph.from_gdl": set(),
     "graph.generate": set(),
+    "graph.project.cypher": set(),
     "graph.project.from_tables": set(),
     "graph.project.from_triplets": set(),
     "graph.project.native": set(),
@@ -106,6 +108,8 @@ IGNORED_CLIENT_PARAMETERS: dict[str, set[str]] = {
     # The client's native projection takes the properties alongside the projections, and
     # drops an existing graph on request.
     "graph.project.native": {"node_properties", "relationship_properties", "overwrite"},
+    # The session's Cypher projection streams through the session's own transport.
+    "gds.arrow.project.cypher.v4": {"batch_size", "logging", "overwrite"},
     # The session's store projection is driven with label and type filters instead of the
     # projections the procedure takes, and streams through the session's own transport.
     "gds.arrow.project.store.v4": {
