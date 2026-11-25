@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import datetime
 import json
-import re
-from typing import Any
 
 from graphdatascience.arrow_client.authenticated_flight_client import AuthenticatedArrowClient
 from graphdatascience.arrow_client.v2.data_mapper_utils import deserialize
@@ -24,7 +21,7 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
     def list(self) -> list[ModelDetails]:
         raw = self._arrow_client.do_action_with_retry("v2/model.list", payload=json.dumps({}).encode("utf-8"))
         items = deserialize(raw)
-        return [self._to_model_details(it) for it in items]
+        return [ModelDetails(**it) for it in items]
 
     def exists(self, model_name: str) -> ModelExistsResult | None:
         raw = self._arrow_client.do_action_with_retry(
@@ -43,7 +40,7 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
         items = deserialize(raw)
         if not items:
             raise ValueError(f"Model with name `{model_name}` does not exist")
-        return self._to_model_details(items[0])
+        return ModelDetails(**items[0])
 
     def drop(self, model_name: str, *, fail_if_missing: bool = True) -> ModelDetails | None:
         raw = self._arrow_client.do_action_with_retry(
@@ -55,7 +52,7 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
             raise ValueError(f"Model with name `{model_name}` does not exist")
         if not items:
             return None
-        return self._to_model_details(items[0])
+        return ModelDetails(**items[0])
 
     def delete(self, model_name: str, fail_if_missing: bool = False) -> ModelDeleteResult | None:
         raw = self._arrow_client.do_action_with_retry(
@@ -95,12 +92,4 @@ class ModelCatalogArrowEndpoints(ModelCatalogEndpoints):
         items = deserialize(raw)
         if not items:
             raise ValueError(f"Model with name `{model_name}` does not exist")
-        return self._to_model_details(items[0])
-
-    def _to_model_details(self, item: dict[str, Any]) -> ModelDetails:
-        # Normalize creationTime from ISO-8601 string with 9-digit micros to Python datetime
-        creation_time = item.get("creationTime")
-        if creation_time and isinstance(creation_time, str):
-            trimmed = re.sub(r"\.(\d{6})\d+", r".\1", creation_time)
-            item["creationTime"] = datetime.datetime.strptime(trimmed, "%Y-%m-%dT%H:%M:%S.%fZ[%Z]")
-        return ModelDetails(**item)
+        return ModelDetails(**items[0])
