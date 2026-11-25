@@ -19,8 +19,6 @@ SESSION_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
     "graph.stream",  # the client's session export raises NotImplementedError
     "graph.node_labels.stream",  # node_labels maps mutate and write only
     "graph.relationship_properties.stream",  # served by relationships.stream(relationship_properties=...)
-    "graph.relationships.index_inverse.estimate",  # the relationship endpoints have no estimate
-    "graph.relationships.to_undirected.estimate",
     # The projection protocol: the client drives it from `gds.graph.construct`, so the
     # individual channels it calls are not paths of their own.
     "graph.project.from_tables",
@@ -31,6 +29,10 @@ SESSION_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
     "graph.project.from_triplets",
     "graph.project.from_triplets.done",
 }
+
+# The client's sampling estimate calls the flight server's `v2/graph.sample.cnarw.estimate`,
+# which the published spec does not describe: no surface publishes an estimate, so the
+# endpoint is not verified against one.
 
 # KGE predict is only mapped for the Cypher (plugin) surface; Arrow is not mapped yet.
 SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {

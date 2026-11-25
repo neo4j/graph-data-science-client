@@ -48,7 +48,6 @@ CLIENT_PATH_ALIASES: dict[str, str] = {
     "arrow.project.store.v4": "graph.project.native",
     "graph.project": "graph.project.native",
     "graph.project.filter": "graph.filter",
-    "graph.sample.cnarw.estimate": "graph.sample.estimate",
 }
 
 # Parameters naming the graph an endpoint operates on. The python client takes that
@@ -83,7 +82,6 @@ INPUT_GRAPH_PARAMETERS: dict[str, set[str]] = {
     "graph.relationships.stream": {"graph_name"},
     "graph.relationships.to_undirected": {"graph_name"},
     "graph.sample.cnarw": {"from_graph_name"},
-    "graph.sample.estimate": {"graph_name"},
     "graph.sample.rwr": {"from_graph_name"},
 }
 
@@ -154,8 +152,6 @@ IGNORED_SPEC_PARAMETERS: dict[str, set[str]] = {
         "relationship_count",
         "validate_relationships",
     },
-    # The client's sampling estimate takes the sampling parameters only.
-    "graph.sample.estimate": {"job_id", "random_seed", "log_progress", "sudo", "username"},
     # The client's node-property drop takes `username` but not the other two.
     "graph.node_properties.drop": {"log_progress", "sudo"},
     # The store projection is driven with label and type filters instead of the
