@@ -10,6 +10,10 @@
   session `compute` endpoints. When enabled, the embeddings are produced as Neo4j `VECTOR`
   values instead of lists of floats. The parameter requires GDS 2026.11 or later.
 
+- `DbmsConnectionInfo` accepts an already connected `neo4j.Driver` via the new `driver` parameter,
+  which can be passed to `GdsSessions.get_or_create`. The driver is not closed by the session.
+  `uri` and `aura_instance_id` are optional in this case.
+
 ## Bug fixes
 
 

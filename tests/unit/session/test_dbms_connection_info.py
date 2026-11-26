@@ -59,8 +59,16 @@ def test_dbms_connection_info_fail_on_auth_and_username() -> None:
 
 
 def test_dbms_connection_info_fail_on_missing_instance_uri() -> None:
-    with pytest.raises(ValueError, match="Either 'uri' or 'aura_instance_id' must be provided."):
+    with pytest.raises(ValueError, match="Either 'uri', 'aura_instance_id' or 'driver' must be provided."):
         DbmsConnectionInfo(
             username="neo4j",
             password="password",
         )
+
+
+def test_dbms_connection_info_driver_rejects_auth() -> None:
+    driver = neo4j.GraphDatabase.driver("bolt://localhost:7687")
+
+    with pytest.raises(ValueError, match="Cannot provide authentication together with a driver"):
+        DbmsConnectionInfo(driver=driver, username="neo4j", password="password")
+    driver.close()

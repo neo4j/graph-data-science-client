@@ -90,6 +90,28 @@ class Neo4jQueryRunner(QueryRunner):
         return query_runner
 
     @staticmethod
+    def uri_from_driver(driver: neo4j.Driver) -> str:
+        """
+        Best-effort reconstruction of the URI a driver was created with.
+
+        The driver has no public accessor for it. Host and port are taken from its initial address,
+        the scheme from its type and TLS setting. Certificate trust (`+s` vs `+ssc`) cannot be recovered.
+        """
+        if isinstance(driver, neo4j.Neo4jDriver):
+            scheme = "neo4j"
+            address = driver.initial_addresses[0]
+        else:
+            scheme = "bolt"
+            # direct drivers have no public accessor for their address
+            address = driver._pool.address  # type: ignore[attr-defined]
+        host, port = address[:2]
+        if driver.encrypted:
+            scheme += "+s"
+        if ":" in host:
+            host = f"[{host}]"
+        return f"{scheme}://{host}:{port}"
+
+    @staticmethod
     def create_for_session(
         endpoint: str,
         auth: tuple[str, str] | neo4j.Auth | None = None,
