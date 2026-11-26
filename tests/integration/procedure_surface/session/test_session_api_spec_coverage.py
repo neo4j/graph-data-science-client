@@ -52,6 +52,9 @@ def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], se
     # Algorithms the GDS Sessions API spec describes are validated against it.
     # Everything else the session surface exposes is still validated against the plugin API spec.
     job_spec_endpoints = {pythonic_endpoint_name(endpoint.name) for endpoint in session_api_spec.endpoints()}
+    # The plugin's projection procedure: the session surface drives projections through
+    # the protocol, whose channels the catalog entries cover.
+    job_spec_endpoints.add("graph.project")
 
     assert_api_spec_coverage(
         AuraGraphDataScience,
