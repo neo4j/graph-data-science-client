@@ -2,12 +2,25 @@ from __future__ import annotations
 
 import inspect
 import typing
+from datetime import datetime
 from types import UnionType
 from typing import Any
 
 from pandas import DataFrame
 from pydantic import BaseModel
 
+from graphdatascience.procedure_surface.api.catalog import (
+    GraphFilterResult,
+    GraphGenerationStats,
+    GraphSamplingResult,
+    GraphWithFilterResult,
+    GraphWithGenerationStats,
+    GraphWithSamplingResult,
+)
+from graphdatascience.procedure_surface.cypher.catalog.projection_cypher_endpoints import (
+    GraphProjectResult,
+    GraphWithProjectResult,
+)
 from tests.integration.procedure_surface.api_spec import (
     EndpointSpec,
 )
@@ -22,15 +35,132 @@ from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
 # as configuration, so those are compared.
 SESSION_CLIENT_ONLY_PARAMETERS = {"gpu"}
 
-# Parameters the session spec publishes that the client resolves from the `G` argument
-# rather than a method parameter: the graph a call runs on is `payload["graphName"]`.
+# Parameters the spec publishes that the client resolves from the `G` argument rather than
+# a method parameter: the graph a call runs on is `payload["graphName"]`.
 RESOLVED_FROM_GRAPH = {"graph_name"}
 
-# Parameters the spec exposes that the client does not map onto a method parameter. The
-# spec still publishes the deprecated singular `targetNode`; the client exposes only the
-# plural `target_nodes` (which accepts a single id or a list), matching `targetNodes`.
+# Endpoints whose client path differs from the published endpoint name. The session
+# surface publishes the Arrow action names; the client exposes its own, nicer names.
+CLIENT_PATH_ALIASES: dict[str, str] = {
+    # A session projects through the remote-ops procedures, which run in the database the
+    # session is attached to; the client calls them from its own projection methods.
+    "arrow.project.cypher.v4": "graph.project.cypher",
+    "arrow.project.store.v4": "graph.project.native",
+    "graph.project": "graph.project.native",
+    "graph.project.filter": "graph.filter",
+}
+
+# Parameters naming the graph an endpoint operates on. The python client takes that
+# graph as its positional `G` argument; a parameter naming a *new* graph keeps its
+# published name (`graph.generate`, the output name of `graph.filter` and the samplers).
+# The alias is python-specific: the spec keeps the name the server uses.
+INPUT_GRAPH_PARAMETERS: dict[str, set[str]] = {
+    # These take no graph to run on: they name the graph they create, or only look one up.
+    "graph.exists": set(),
+    "graph.from_gdl": set(),
+    "graph.generate": set(),
+    "graph.project.cypher": set(),
+    "graph.project.from_tables": set(),
+    "graph.project.from_triplets": set(),
+    "graph.project.native": set(),
+    "graph.drop": {"graph_name", "graph_name_or_list_of_graph_names"},
+    "graph.export": {"graph_name"},
+    "graph.export.csv": {"graph_name"},
+    "graph.filter": {"from_graph_name"},
+    "graph.list": {"graph_name"},
+    "graph.node_labels.mutate": {"graph_name"},
+    "graph.node_labels.write": {"graph_name"},
+    "graph.node_properties.drop": {"graph_name"},
+    "graph.node_properties.stream": {"graph_name"},
+    "graph.node_properties.write": {"graph_name"},
+    "graph.node_property.stream": {"graph_name"},
+    "graph.relationship_properties.stream": {"graph_name"},
+    "graph.relationship_properties.write": {"graph_name"},
+    "graph.relationship_property.stream": {"graph_name"},
+    "graph.relationships.drop": {"graph_name"},
+    "graph.relationships.index_inverse": {"graph_name"},
+    "graph.relationships.stream": {"graph_name"},
+    "graph.relationships.to_undirected": {"graph_name"},
+    "graph.sample.cnarw": {"from_graph_name"},
+    "graph.sample.rwr": {"from_graph_name"},
+}
+
+# Client parameters the spec does not publish: convenience arguments the client adds on
+# top of the contract. Each is a candidate for the spec or for removal.
+IGNORED_CLIENT_PARAMETERS: dict[str, set[str]] = {
+    "graph.filter": {"overwrite"},
+    "graph.generate": {"overwrite", "read_concurrency"},
+    "graph.sample.cnarw": {"overwrite"},
+    "graph.sample.rwr": {"overwrite"},
+    # The property operations read neither of these server-side, so the published
+    # surface leaves them out while the client keeps offering them.
+    "graph.node_properties.drop": {"log_progress", "sudo"},
+    "graph.node_properties.stream": {"db_node_properties", "log_progress", "sudo"},
+    "graph.node_properties.write": {"log_progress", "sudo"},
+    "graph.node_property.stream": {"db_node_properties", "log_progress", "sudo"},
+    "graph.relationship_properties.stream": {"log_progress", "sudo"},
+    "graph.relationship_properties.write": {"log_progress", "sudo"},
+    "graph.relationship_property.stream": {"log_progress", "sudo"},
+    "graph.relationships.stream": {"relationship_properties"},
+    "graph.relationships.drop": {"fail_if_missing"},
+    # The client's native projection takes the properties alongside the projections, and
+    # drops an existing graph on request.
+    "graph.project.native": {"node_properties", "relationship_properties", "overwrite"},
+    # The session's Cypher projection streams through the session's own transport.
+    "gds.arrow.project.cypher.v4": {"batch_size", "logging", "overwrite"},
+    # The session's store projection is driven with label and type filters instead of the
+    # projections the procedure takes, and streams through the session's own transport.
+    "gds.arrow.project.store.v4": {
+        "node_label_filter",
+        "relationship_type_filter",
+        "logging",
+        "overwrite",
+    },
+}
+
+# Return fields the client names differently than the spec.
+RETURN_FIELD_ALIASES = {"schema_with_orientation": "graph_schema"}
+
+# Return fields the spec publishes that the client's result models deliberately leave out.
+# `schema` is deprecated in the API and superseded by `schemaWithOrientation`.
+IGNORED_RETURN_FIELDS = {"schema"}
+
+# Return types the spec cannot be verified against field by field: the client returns a
+# scalar where the spec models a row (e.g. `graph.exists` returns a bool).
+RETURN_VERIFICATION_SKIPPED_TYPES: set[type] = {bool, type(None)}
+
+# The client wraps some results in the graph they created; the spec models the rows.
+RETURN_CLASS_OVERRIDES: dict[type, type] = {
+    GraphWithFilterResult: GraphFilterResult,
+    GraphWithGenerationStats: GraphGenerationStats,
+    GraphWithProjectResult: GraphProjectResult,
+    GraphWithSamplingResult: GraphSamplingResult,
+}
+
+# Parameters the spec exposes that the client does not map onto a method parameter.
 IGNORED_SPEC_PARAMETERS: dict[str, set[str]] = {
-    "shortestPath.dijkstra": {"target_node"},
+    # The spec still publishes the deprecated singular `targetNode`; the client exposes
+    # only the plural `target_nodes` (which accepts a single id or a list).
+    "shortest_path.dijkstra": {"target_node"},
+    # The client's stream endpoints do not expose the server's stream knobs yet.
+    "graph.node_properties.stream": {"consecutive_ids", "batch_size"},
+    "graph.relationships.stream": {"consecutive_ids", "batch_size"},
+    "graph.relationship_properties.stream": {"consecutive_ids", "batch_size"},
+    # The client's native projection does not expose the sizing and validation knobs.
+    "graph.project.native": {
+        "node_count",
+        "relationship_count",
+        "validate_relationships",
+    },
+    # The client's node-property drop takes `username` but not the other two.
+    "graph.node_properties.drop": {"log_progress", "sudo"},
+    # The store projection is driven with label and type filters instead of the
+    # projections the procedure takes, and reads with the session's own concurrency.
+    "gds.arrow.project.store.v4": {
+        "node_projection",
+        "relationship_projection",
+        "read_concurrency",
+    },
 }
 
 # Maps a JSON Schema type to the Python type kinds an annotation may use for it. `number`
@@ -83,7 +213,17 @@ def assert_endpoint_spec_coverage(
 
 def _client_path(endpoint: EndpointSpec) -> str:
     # The spec publishes the public endpoint name; the client maps it to its own path.
-    return pythonic_endpoint_name(endpoint.name)
+    path = pythonic_endpoint_name(endpoint.name)
+    return CLIENT_PATH_ALIASES.get(path, path)
+
+
+def _table_keys(endpoint: EndpointSpec) -> list[str]:
+    """The keys a per-endpoint table may be keyed by.
+
+    The published name first - the two surfaces publish some endpoints under different
+    names, so the client path alone would not tell them apart - then the client path.
+    """
+    return [endpoint.endpoint_name, _client_path(endpoint)]
 
 
 def verify_configuration_fields(
@@ -95,11 +235,19 @@ def verify_configuration_fields(
     expected = _expected_parameters(endpoint)
     excluded = client_only_parameters or set()
 
+    signature = inspect.signature(callable_object)
     actual = {
         name: parameter
-        for name, parameter in inspect.signature(callable_object).parameters.items()
-        if name not in ("self", "G") and name not in excluded
+        for name, parameter in signature.parameters.items()
+        if name not in ("self", "G")
+        # A surface's client-only parameter is dropped where the spec leaves it out;
+        # where the spec publishes it (the catalog publishes `username` on the plugin
+        # endpoints), the client's parameter is verified like any other.
+        and not (name in excluded and name not in expected)
+        and not (name in _ignored_client_parameters(endpoint) and name not in expected)
     }
+
+    _verify_positional_graph(callable_object, endpoint, expected)
 
     missing = expected.keys() - actual.keys()
     extra = actual.keys() - expected.keys()
@@ -117,10 +265,14 @@ def verify_configuration_fields(
                 raise ValueError(
                     f"Parameter `{name}` is required in the spec but has a default value at `{client_path}`."
                 )
-        elif parameter.default is not None and _normalise_default(parameter.default) != _normalise_default(
-            schema.get("default")
-        ):
+        elif (
+            # The spec declares a default for its configuration fields; the procedure
+            # parameters it publishes by position carry none, so those are not compared.
+            "default" in schema
             # a None client default defers to the server default
+            and parameter.default is not None
+            and _normalise_default(parameter.default) != _normalise_default(schema.get("default"))
+        ):
             raise ValueError(
                 f"Mismatching default value for parameter `{name}` "
                 f"(client: {_normalise_default(parameter.default)!r}, spec: {schema.get('default')!r}) "
@@ -144,7 +296,7 @@ def verify_result_fields(
 
     client_path = _client_path(endpoint)
     return_annotation = typing.get_type_hints(callable_object).get("return")
-    if _is_dataframe(return_annotation):
+    if _is_dataframe(return_annotation) or return_annotation in RETURN_VERIFICATION_SKIPPED_TYPES:
         # Stream modes return a DataFrame, which is not modelled field by field.
         return
 
@@ -154,7 +306,11 @@ def verify_result_fields(
             f"Could not determine a result model for `{client_path}` from return annotation `{return_annotation}`."
         )
 
-    expected = {to_snake(name): schema for name, schema in endpoint.result.get("properties", {}).items()}
+    expected = {
+        RETURN_FIELD_ALIASES.get(to_snake(name), to_snake(name)): schema
+        for name, schema in endpoint.result.get("properties", {}).items()
+        if to_snake(name) not in IGNORED_RETURN_FIELDS
+    }
     actual = set(result_type.model_fields)
 
     missing = expected.keys() - actual
@@ -176,21 +332,89 @@ def verify_result_fields(
 
 def _expected_parameters(endpoint: EndpointSpec) -> dict[str, tuple[dict[str, Any], bool]]:
     expected: dict[str, tuple[dict[str, Any], bool]] = {}
+    input_graph_parameters = _input_graph_parameters(endpoint)
 
     for schema in (endpoint.config, endpoint.mode_config):
         if schema is None:
             continue
         required = set(schema.get("required", []))
         for name, property_schema in schema.get("properties", {}).items():
+            if to_snake(name) in input_graph_parameters:
+                # verified as the positional `G` argument instead
+                continue
             expected[to_snake(name)] = (property_schema, name in required)
 
-    for ignored in IGNORED_SPEC_PARAMETERS.get(endpoint.endpoint_name, set()):
+    # The spec publishes the procedure's parameters by position with one coarse type - a
+    # `String | List<String>` parameter renders as `string` - and without saying which the
+    # server requires. Only the name is verified; the configuration carries the typed schema.
+    for name, property_schema in endpoint.parameters.items():
+        if to_snake(name) in input_graph_parameters:
+            continue
+        expected[to_snake(name)] = (
+            {"description": property_schema.get("description", "")},
+            False,
+        )
+
+    for ignored in _ignored_spec_parameters(endpoint):
         expected.pop(ignored, None)
 
-    for name in RESOLVED_FROM_GRAPH:
-        expected.pop(name, None)
-
     return expected
+
+
+def _input_graph_parameters(endpoint: EndpointSpec) -> set[str]:
+    """The spec parameters naming the graph the call runs on: the client's `G`.
+
+    An algorithm always runs on the graph it is called with, so `graphName` is resolved
+    from `G` unless the endpoint is listed: a catalog endpoint may name a *new* graph
+    instead (`graph.project.native`, the samplers), and one may take no graph at all.
+    """
+    client_path = _client_path(endpoint)
+    if client_path in INPUT_GRAPH_PARAMETERS:
+        return INPUT_GRAPH_PARAMETERS[client_path]
+
+    return RESOLVED_FROM_GRAPH
+
+
+def _ignored_client_parameters(endpoint: EndpointSpec) -> set[str]:
+    """Client parameters this endpoint's spec deliberately leaves out."""
+    ignored: set[str] = set()
+    for key in _table_keys(endpoint):
+        ignored |= IGNORED_CLIENT_PARAMETERS.get(key, set())
+
+    return ignored
+
+
+def _ignored_spec_parameters(endpoint: EndpointSpec) -> set[str]:
+    """Spec parameters to skip, looked up by client path.
+
+    A table entry may name an endpoint without its mode, which then covers every mode
+    of that endpoint.
+    """
+    client_path = _client_path(endpoint)
+    ignored: set[str] = set()
+    for key in _table_keys(endpoint):
+        ignored |= IGNORED_SPEC_PARAMETERS.get(key, set())
+
+    if endpoint.mode:
+        mode_suffix = f".{to_snake(endpoint.mode)}"
+        ignored |= IGNORED_SPEC_PARAMETERS.get(client_path.removesuffix(mode_suffix), set())
+
+    return ignored
+
+
+def _verify_positional_graph(
+    callable_object: Any, endpoint: EndpointSpec, expected: dict[str, tuple[dict[str, Any], bool]]
+) -> None:
+    """The graph the spec names is the client's positional `G` argument."""
+    input_graph_parameters = INPUT_GRAPH_PARAMETERS.get(_client_path(endpoint), set())
+    if not input_graph_parameters:
+        return
+
+    if "G" not in inspect.signature(callable_object).parameters:
+        raise ValueError(
+            f"`{_client_path(endpoint)}` names the graph as {sorted(input_graph_parameters)} "
+            f"in the spec, but has no positional `G` parameter to map it onto."
+        )
 
 
 def _normalise_default(value: Any) -> Any:
@@ -249,7 +473,8 @@ def _annotation_kinds(annotation: Any) -> set[str]:
         return {"integer"}
     if annotation is float:
         return {"number"}
-    if annotation is str:
+    if annotation is str or annotation is datetime:
+        # the spec renders datetimes as RFC 3339 strings (`format: date-time`)
         return {"string"}
     if annotation is Any:
         return {"any"}
@@ -263,10 +488,14 @@ def _is_dataframe(annotation: Any) -> bool:
 
 
 def _result_model(annotation: Any) -> type[BaseModel] | None:
+    annotation = RETURN_CLASS_OVERRIDES.get(annotation, annotation)
+
     if inspect.isclass(annotation) and issubclass(annotation, BaseModel):
         return annotation
 
-    if typing.get_origin(annotation) is tuple:
+    # The client wraps the spec's rows in a list or tuple where it returns several of
+    # them (e.g. dropping a list of graphs); the rows themselves are what the spec models.
+    if typing.get_origin(annotation) in (list, tuple):
         models = [arg for arg in typing.get_args(annotation) if inspect.isclass(arg) and issubclass(arg, BaseModel)]
         if len(models) == 1:
             return models[0]

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -25,12 +25,31 @@ class ModeEntry(BaseModel, extra="ignore"):
     result: SchemaRef | None = None
 
 
-class AlgorithmEntry(BaseModel, extra="ignore"):
-    category: str
+class EndpointEntry(BaseModel, extra="ignore"):
+    """What the document publishes for one endpoint, whichever kind it is."""
+
     description: str
     endpointName: str
+    config: SchemaRef | None = None
+    result: SchemaRef | None = None
+
+
+class AlgorithmEntry(EndpointEntry):
+    category: str
     config: SchemaRef
     modes: dict[str, ModeEntry]
+
+
+class GraphCatalogEndpointEntry(EndpointEntry):
+    """A `gds.graph.*` endpoint.
+
+    The plugin declares some procedures with several modes and the session surface
+    publishes one endpoint per operation, so the mode is part of the callable path
+    (`gds.graph.nodeLabel.mutate`) rather than a mode of the entry.
+    """
+
+    parameters: list[dict[str, Any]] = Field(default_factory=list)
+    mode: str | None = None
 
 
 @dataclass(frozen=True)
@@ -44,6 +63,8 @@ class EndpointSpec:
     config: dict[str, Any]
     mode_config: dict[str, Any] | None
     result: dict[str, Any] | None
+    #: Parameters the procedure takes ahead of its configuration map, as schemas.
+    parameters: dict[str, Any] = field(default_factory=dict)
 
     @property
     def name(self) -> str:
@@ -54,6 +75,7 @@ class EndpointSpec:
 class ApiSpec(BaseModel, extra="ignore"):
     apiSpecVersion: int
     algorithms: dict[str, AlgorithmEntry]
+    graphCatalogEndpoints: dict[str, GraphCatalogEndpointEntry] = {}
     defs: dict[str, dict[str, Any]]
 
     def resolve(self, ref: SchemaRef) -> dict[str, Any]:
@@ -89,7 +111,43 @@ class ApiSpec(BaseModel, extra="ignore"):
                     )
                 )
 
+        for catalog_entry in self.graphCatalogEndpoints.values():
+            # The mode is part of the callable path; the session surface already spells
+            # it out in the endpoint name, the plugin publishes the procedure name.
+            catalog_mode = catalog_entry.mode
+            endpoint_name = (
+                f"{catalog_entry.endpointName}.{catalog_mode}"
+                if catalog_mode and not catalog_entry.endpointName.endswith(f".{catalog_mode}")
+                else catalog_entry.endpointName
+            )
+            endpoints.append(
+                EndpointSpec(
+                    endpoint_name,
+                    None,
+                    self.resolve(catalog_entry.config) if catalog_entry.config else {},
+                    None,
+                    self.resolve(catalog_entry.result) if catalog_entry.result else None,
+                    _parameters(catalog_entry.parameters),
+                )
+            )
+
         return endpoints
+
+
+def _parameters(parameters: list[dict[str, Any]]) -> dict[str, Any]:
+    """The procedure parameters as schemas, keyed by name.
+
+    The trailing configuration map is left out: the client passes the configuration as
+    keyword arguments rather than as one argument of its own.
+    """
+    return {
+        parameter["name"]: {
+            "type": parameter["type"],
+            "description": parameter["description"],
+        }
+        for parameter in parameters
+        if parameter["name"] != "configuration"
+    }
 
 
 def resolve_spec_from_file(file_path: Path) -> ApiSpec:
