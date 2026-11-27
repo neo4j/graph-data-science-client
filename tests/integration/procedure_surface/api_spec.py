@@ -38,6 +38,9 @@ class AlgorithmEntry(EndpointEntry):
     category: str
     config: SchemaRef
     modes: dict[str, ModeEntry]
+    #: The parameter naming the graph the algorithm runs on, absent when it only names a
+    #: graph it creates.
+    inputGraphParameter: str | None = None
 
 
 class GraphCatalogEndpointEntry(EndpointEntry):
@@ -50,6 +53,12 @@ class GraphCatalogEndpointEntry(EndpointEntry):
 
     parameters: list[dict[str, Any]] = Field(default_factory=list)
     mode: str | None = None
+    #: The parameter naming the graph the endpoint runs on, absent when it only names a
+    #: graph it creates.
+    inputGraphParameter: str | None = None
+    #: Whether a client can call the endpoint on its own; false for a step of a larger
+    #: operation, such as a projection protocol channel.
+    standalone: bool = True
 
 
 @dataclass(frozen=True)
@@ -65,6 +74,11 @@ class EndpointSpec:
     result: dict[str, Any] | None
     #: Parameters the procedure takes ahead of its configuration map, as schemas.
     parameters: dict[str, Any] = field(default_factory=dict)
+    #: The parameter naming the graph the call runs on, which the client takes as `G`.
+    input_graph_parameter: str | None = None
+    #: Whether a client can call the endpoint on its own, rather than as a step of a
+    #: larger operation (a projection protocol channel, say).
+    standalone: bool = True
 
     @property
     def name(self) -> str:
@@ -95,7 +109,16 @@ class ApiSpec(BaseModel, extra="ignore"):
         for entry in self.algorithms.values():
             config = self.resolve(entry.config)
             if not entry.modes:
-                endpoints.append(EndpointSpec(entry.endpointName, None, config, None, None))
+                endpoints.append(
+                    EndpointSpec(
+                        entry.endpointName,
+                        None,
+                        config,
+                        None,
+                        None,
+                        input_graph_parameter=entry.inputGraphParameter,
+                    )
+                )
                 continue
 
             for mode, mode_entry in entry.modes.items():
@@ -108,6 +131,7 @@ class ApiSpec(BaseModel, extra="ignore"):
                         config,
                         mode_config,
                         result,
+                        input_graph_parameter=entry.inputGraphParameter,
                     )
                 )
 
@@ -128,6 +152,8 @@ class ApiSpec(BaseModel, extra="ignore"):
                     None,
                     self.resolve(catalog_entry.result) if catalog_entry.result else None,
                     _parameters(catalog_entry.parameters),
+                    input_graph_parameter=catalog_entry.inputGraphParameter,
+                    standalone=catalog_entry.standalone,
                 )
             )
 

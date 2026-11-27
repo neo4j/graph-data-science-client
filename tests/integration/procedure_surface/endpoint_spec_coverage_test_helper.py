@@ -35,10 +35,6 @@ from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
 # as configuration, so those are compared.
 SESSION_CLIENT_ONLY_PARAMETERS = {"gpu"}
 
-# Parameters the spec publishes that the client resolves from the `G` argument rather than
-# a method parameter: the graph a call runs on is `payload["graphName"]`.
-RESOLVED_FROM_GRAPH = {"graph_name"}
-
 # Endpoints whose client path differs from the published endpoint name. The session
 # surface publishes the Arrow action names; the client exposes its own, nicer names.
 CLIENT_PATH_ALIASES: dict[str, str] = {
@@ -48,41 +44,6 @@ CLIENT_PATH_ALIASES: dict[str, str] = {
     "arrow.project.store.v4": "graph.project.native",
     "graph.project": "graph.project.native",
     "graph.project.filter": "graph.filter",
-}
-
-# Parameters naming the graph an endpoint operates on. The python client takes that
-# graph as its positional `G` argument; a parameter naming a *new* graph keeps its
-# published name (`graph.generate`, the output name of `graph.filter` and the samplers).
-# The alias is python-specific: the spec keeps the name the server uses.
-INPUT_GRAPH_PARAMETERS: dict[str, set[str]] = {
-    # These take no graph to run on: they name the graph they create, or only look one up.
-    "graph.exists": set(),
-    "graph.from_gdl": set(),
-    "graph.generate": set(),
-    "graph.project.cypher": set(),
-    "graph.project.from_tables": set(),
-    "graph.project.from_triplets": set(),
-    "graph.project.native": set(),
-    "graph.drop": {"graph_name", "graph_name_or_list_of_graph_names"},
-    "graph.export": {"graph_name"},
-    "graph.export.csv": {"graph_name"},
-    "graph.filter": {"from_graph_name"},
-    "graph.list": {"graph_name"},
-    "graph.node_labels.mutate": {"graph_name"},
-    "graph.node_labels.write": {"graph_name"},
-    "graph.node_properties.drop": {"graph_name"},
-    "graph.node_properties.stream": {"graph_name"},
-    "graph.node_properties.write": {"graph_name"},
-    "graph.node_property.stream": {"graph_name"},
-    "graph.relationship_properties.stream": {"graph_name"},
-    "graph.relationship_properties.write": {"graph_name"},
-    "graph.relationship_property.stream": {"graph_name"},
-    "graph.relationships.drop": {"graph_name"},
-    "graph.relationships.index_inverse": {"graph_name"},
-    "graph.relationships.stream": {"graph_name"},
-    "graph.relationships.to_undirected": {"graph_name"},
-    "graph.sample.cnarw": {"from_graph_name"},
-    "graph.sample.rwr": {"from_graph_name"},
 }
 
 # Client parameters the spec does not publish: convenience arguments the client adds on
@@ -191,6 +152,10 @@ def assert_endpoint_spec_coverage(
     available_endpoints: set[str] = set()
 
     for endpoint in endpoint_specs:
+        if not endpoint.standalone:
+            # A step of a larger operation: a client drives it through the operation that
+            # starts it, so it is not a path of its own.
+            continue
         client_path = _client_path(endpoint)
         if client_path in unmapped_endpoints:
             # endpoints the surface intentionally does not map
@@ -362,17 +327,15 @@ def _expected_parameters(endpoint: EndpointSpec) -> dict[str, tuple[dict[str, An
 
 
 def _input_graph_parameters(endpoint: EndpointSpec) -> set[str]:
-    """The spec parameters naming the graph the call runs on: the client's `G`.
+    """The spec parameter naming the graph the call runs on: the client's `G`.
 
-    An algorithm always runs on the graph it is called with, so `graphName` is resolved
-    from `G` unless the endpoint is listed: a catalog endpoint may name a *new* graph
-    instead (`graph.project.native`, the samplers), and one may take no graph at all.
+    The spec publishes which parameter that is; endpoints that only name a graph they
+    create (`graph.generate`, the samplers' output name) publish none.
     """
-    client_path = _client_path(endpoint)
-    if client_path in INPUT_GRAPH_PARAMETERS:
-        return INPUT_GRAPH_PARAMETERS[client_path]
+    if endpoint.input_graph_parameter is None:
+        return set()
 
-    return RESOLVED_FROM_GRAPH
+    return {to_snake(endpoint.input_graph_parameter)}
 
 
 def _ignored_client_parameters(endpoint: EndpointSpec) -> set[str]:
@@ -406,7 +369,7 @@ def _verify_positional_graph(
     callable_object: Any, endpoint: EndpointSpec, expected: dict[str, tuple[dict[str, Any], bool]]
 ) -> None:
     """The graph the spec names is the client's positional `G` argument."""
-    input_graph_parameters = INPUT_GRAPH_PARAMETERS.get(_client_path(endpoint), set())
+    input_graph_parameters = _input_graph_parameters(endpoint)
     if not input_graph_parameters:
         return
 

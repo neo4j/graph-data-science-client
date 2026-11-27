@@ -10,15 +10,6 @@ from neo4j.graph import Node
 from pandas import DataFrame
 from pydantic import BaseModel
 
-from graphdatascience.graph.graph_info import GraphInfo, GraphInfoWithDegrees
-from graphdatascience.procedure_surface.api.catalog import (
-    GraphFilterResult,
-    GraphGenerationStats,
-    GraphSamplingResult,
-    GraphWithFilterResult,
-    GraphWithGenerationStats,
-    GraphWithSamplingResult,
-)
 from graphdatascience.procedure_surface.api.debug_endpoints import DebugSysInfoResult
 from graphdatascience.session.endpoint_mappings import PROCEDURE_NAME_TO_PYTHON_ENDPOINT_MAPPINGS
 from graphdatascience.versions import ServerVersion
@@ -37,7 +28,6 @@ UNMAPPED_ENDPOINTS: set[str] = {
     "list",  # listing only available endpoints, doesnt make sense as we mapout the important endpoints
     "user_log",  # no relevant usage of this feature inside GDS
     "internal.graph.size_of",  # not a user-facing endpoint
-    "graph.relationship.write",  # mapped via gds.relationships
     "util.infinity",  # built-in in python
     "util.is_finite",  # built-in in python
     "util.is_infinite",  # built-in in python
@@ -81,18 +71,6 @@ IGNORED_PARAMETERS = {
     r".*scale_properties.*": ["relationship_types"],
     # ignore relationship-types as it was wrongly exposed
     r".*collapse_path.*": ["relationship_types"],
-    # TODO
-    r".*graph.drop": ["username", "db_name"],
-    # named parameter differently (positional G)
-    r".*graph.filter": ["graph_name"],
-    # named parameter differently (positional G)
-    r".*cnarw": ["graph_name"],
-    # named parameter differently (positional G)
-    r".*rwr": ["graph_name"],
-    # ignore wrongly exposed params
-    r".*graph.generate": ["validate_relationships", "relationship_count", "graph_name"],
-    # ignore irrelevant params
-    r".*node_properties.drop": ["sudo", "log_progress"],
     # single list through gds.model.get instead
     r".*model.list": ["model_name"],
     # HITS is unweighted (per the GDS docs) but the spec wrongly exposes relationshipWeightProperty,
@@ -112,21 +90,10 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property$": {
         "procedure_name": "task_name",
     },
-    r".*graph.drop": {"graph_name_or_list_of_graph_names": "G"},
-    r".*graph.filter": {"from_graph_name": "G"},
-    r".*cnarw": {"from_graph_name": "G"},
-    r".*rwr": {"from_graph_name": "G"},
 }
 
 IGNORED_ACTUAL_PARAMETERS = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property": ["config"],
-    r".*graph.node_properties.stream": ["db_node_properties"],
-    # client-only convenience parameter
-    r".*graph\.node_property\.stream$": ["db_node_properties"],
-    r".*graph.relationships.stream": ["relationship_properties"],
-    r".*graph.relationships.drop": ["fail_if_missing"],
-    r"graph.[filter|generate]": ["overwrite"],
-    r"graph.sample.*": ["overwrite"],
     # experimental client-only opt-in, not (yet) part of the spec
     r"graph_sage\.(un)?supervised\.(train|stream|write|mutate|compute)": ["gpu"],
 }
@@ -159,8 +126,6 @@ UNVERIFIED_DEFAULT_VALUES: dict[str, set[str]] = {
     ".*pipeline.list": {"pipeline_name"},
     # deliberate divergence: spec/server default True, client False
     "pipeline.drop": {"fail_if_missing"},
-    # spec default is a fresh UUID, different on every spec generation
-    r".*graph.list": {"G"},
 }
 
 
@@ -179,21 +144,6 @@ class UnverifiedDefault:
     spec_declares_default: bool
     client_default: Any
 
-
-RETURN_CLASS_OVERRIDES = {
-    GraphWithFilterResult: GraphFilterResult,
-    GraphWithGenerationStats: GraphGenerationStats,
-    GraphWithSamplingResult: GraphSamplingResult,
-}
-
-EXPECTED_RETURN_FIELD_ALIASES = {
-    "schema_with_orientation": "graph_schema",
-}
-
-EXPECTED_IGNORED_RETURN_FIELDS = {
-    GraphInfo: ["schema"],
-    GraphInfoWithDegrees: ["schema"],
-}
 
 # Return types whose fields intentionally don't map field-by-field to the spec's return fields
 # (opaque value objects, or pivoted key/value results), so they can't be verified against the spec.
@@ -245,6 +195,21 @@ def pythonic_endpoint_name(
     return ".".join(to_snake(part) for part in endpoint.split("."))
 
 
+def graph_catalog_endpoints(gds_api_spec: list[EndpointWithModesSpec]) -> set[str]:
+    """The graph catalog endpoints, which the published spec validates instead.
+
+    The client checks the catalog against the endpoint specs, never against this
+    reflection document: the two disagree on parameters the server accepts but does not
+    document, and the published spec is the contract.
+    """
+    return {
+        pythonic_endpoint_name(endpoint_spec.name)
+        for entry in gds_api_spec
+        for endpoint_spec in entry.callable_modes()
+        if endpoint_spec.name.startswith("gds.graph.")
+    }
+
+
 def resolve_callable_object(endpoints: type, endpoint: str) -> MethodType | FunctionType | None:
     resolved_object: Any = endpoints
 
@@ -292,10 +257,6 @@ def resolve_callable_object(endpoints: type, endpoint: str) -> MethodType | Func
 def verify_return_fields(callable_object: MethodType | FunctionType, expected_return_fields: list[ReturnField]) -> None:
     return_annotation: Any | None = typing.get_type_hints(callable_object).get("return")
 
-    for expected, override in RETURN_CLASS_OVERRIDES.items():
-        if return_annotation is expected:
-            return_annotation = override
-
     if isinstance(return_annotation, type):
         return_annotation = SCALAR_RETURN_CLASS_OVERRIDES.get(return_annotation, return_annotation)
 
@@ -341,15 +302,6 @@ def verify_return_fields(callable_object: MethodType | FunctionType, expected_re
 
     actual_return_fields = set(result_type.model_fields.keys())
     expected_return_field_keys = set({to_snake(field.name) for field in expected_return_fields})
-
-    for aliased_field, alias in EXPECTED_RETURN_FIELD_ALIASES.items():
-        if aliased_field in expected_return_field_keys:
-            expected_return_field_keys.add(alias)
-            expected_return_field_keys.remove(aliased_field)
-
-    for klass, ignored_fields in EXPECTED_IGNORED_RETURN_FIELDS.items():
-        if result_type == klass:
-            expected_return_field_keys -= set(ignored_fields)
 
     missing_fields = expected_return_field_keys - actual_return_fields
     extra_fields = actual_return_fields - expected_return_field_keys
@@ -413,7 +365,7 @@ def verify_configuration_fields(
             for param in ignored_params:
                 expected_configuration.pop(param, None)
 
-    if "graph_name" in expected_configuration and endpoint_spec.name != "gds.graph.exists":
+    if "graph_name" in expected_configuration:
         expected_configuration["G"] = expected_configuration.pop("graph_name")
 
     method_signature = inspect.signature(callable_object)

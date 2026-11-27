@@ -83,8 +83,8 @@ class CatalogArrowEndpoints(CatalogEndpoints):
             raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
         return get_graph(graph_name, self._arrow_client)
 
-    def exists(self, graph_name: str) -> bool:
-        return len(self.list(graph_name)) > 0
+    def exists(self, G: Graph | str) -> bool:
+        return len(self.list(G)) > 0
 
     def construct(
         self,
