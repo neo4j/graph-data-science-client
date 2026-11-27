@@ -211,6 +211,8 @@ class GdsSessions:
             session_name (str): The name of the session.
             memory (SessionMemory | SessionMemoryValue | str): The size of the session specified by memory.
             db_connection (DbmsConnectionInfo | None): The database connection information.
+                An already connected Neo4j driver can be passed via `DbmsConnectionInfo(driver=...)`.
+                The driver is not closed by the session.
                 The instance type is detected from the connected database, which also supports virtual graph and composite instances.
             ttl (datetime.timedelta | None): The session's time to live after inactivity.
             cloud_location (CloudLocation | None): The cloud location where the GDS Session will run.
@@ -219,7 +221,7 @@ class GdsSessions:
                 Required for the Standalone session type; must not be provided for Attached sessions.
                 Use `available_cloud_locations()` to list all valid provider/region combinations.
             timeout (int | None): Optional timeout (in seconds) when waiting for session to become ready. If unset the method will wait forever. If set and session does not become ready an exception will be raised. It is user responsibility to ensure resource gets cleaned up in this situation.
-            neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified..
+            neo4j_driver_config (dict[str, Any] | None): Optional configuration for the Neo4j driver to the Neo4j DBMS. Only relevant if `db_connection` is specified and does not contain a `driver`.
             arrow_client_options (dict[str, Any] | None): Optional configuration for the Arrow Flight client. The key ``call_timeout`` sets the per-call RPC timeout in seconds (default 30s).
             show_progress (bool): Whether the returned client should print its own job-progress bars (projection, algorithm execution, ...). Defaults to True.
         Returns
@@ -332,14 +334,21 @@ class GdsSessions:
     def _create_db_runner(
         self, db_connection: DbmsConnectionInfo, config: dict[str, Any] | None = None
     ) -> Neo4jQueryRunner:
-        db_runner = Neo4jQueryRunner.create_for_db(
-            endpoint=db_connection.get_uri(),
-            auth=db_connection.get_auth(),
-            aura_ds=True,
-            show_progress=False,
-            database=db_connection.database,
-            config=config,
-        )
+        if db_connection.driver is not None:
+            db_runner = Neo4jQueryRunner.create_for_db(
+                endpoint=db_connection.driver,
+                show_progress=False,
+                database=db_connection.database,
+            )
+        else:
+            db_runner = Neo4jQueryRunner.create_for_db(
+                endpoint=db_connection.get_uri(),
+                auth=db_connection.get_auth(),
+                aura_ds=True,
+                show_progress=False,
+                database=db_connection.database,
+                config=config,
+            )
         self._validate_db_connection(db_runner)
         return db_runner
 

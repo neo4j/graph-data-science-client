@@ -1067,8 +1067,8 @@ class AuraGraphDataScience:
         This is mainly useful when the `run_cypher()` API is too simple for a use case,
         as the driver allows full control over sessions and transactions.
 
-        The driver is always created and managed by this client, and closed by `close()`,
-        after which it is unusable.
+        If the driver was created by this client, it is closed by `close()`, after which it is unusable.
+        A driver passed in by the user via `DbmsConnectionInfo(driver=...)` is never closed by this client.
 
         Returns
         -------

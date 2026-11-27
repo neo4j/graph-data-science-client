@@ -65,6 +65,14 @@ class SessionTargetResolver:
         instance_id = db_connection.aura_instance_id
         database_id = db_connection.aura_database_id
 
+        if db_connection.driver is not None:
+            if driver_config is not None:
+                raise ValueError(
+                    "`neo4j_driver_config` cannot be used together with a `driver`, as the driver is already configured."
+                )
+            if not db_connection.uri:
+                db_connection.set_uri(Neo4jQueryRunner.uri_from_driver(db_connection.driver))
+
         if db_connection.uri:
             # With a uri we can connect right away, so detect the type before involving the Aura API.
             db_runner = self._create_db_runner(db_connection, driver_config)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
-from neo4j import Auth, basic_auth
+from neo4j import Auth, Driver, basic_auth
 
 
 @dataclass
@@ -13,7 +13,7 @@ class DbmsConnectionInfo:
     Supports both username/password as well as the authentication options provided by the Neo4j Python driver.
     """
 
-    # 'uri' or 'aura_instance_id' must be provided.
+    # 'uri', 'aura_instance_id' or 'driver' must be provided.
     uri: str | None = None
 
     username: str | None = None
@@ -25,6 +25,11 @@ class DbmsConnectionInfo:
     aura_instance_id: str | None = None
     aura_database_id: str | None = None  # Required if the aura_instance is a multi-db instance
 
+    # Optional: an already connected driver, used instead of creating one from the uri and credentials.
+    # The driver is owned by the caller and is never closed by the session.
+    # `uri` and `aura_instance_id` are optional in this case. The uri is derived from the driver if not given.
+    driver: Driver | None = None
+
     def __post_init__(self) -> None:
         # Validate auth fields
         if (self.username or self.password) and self.auth:
@@ -33,8 +38,13 @@ class DbmsConnectionInfo:
                 "Please provide either a username/password or a token."
             )
 
-        if (self.aura_instance_id is None) and (self.uri is None):
-            raise ValueError("Either 'uri' or 'aura_instance_id' must be provided.")
+        if self.driver is not None and (self.username or self.password or self.auth):
+            raise ValueError(
+                "Cannot provide authentication together with a driver. The driver is already authenticated."
+            )
+
+        if (self.aura_instance_id is None) and (self.uri is None) and (self.driver is None):
+            raise ValueError("Either 'uri', 'aura_instance_id' or 'driver' must be provided.")
 
     def get_auth(self) -> Auth | None:
         """

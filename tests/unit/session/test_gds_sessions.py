@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, cast
 from unittest import mock
 
+import neo4j
 import pytest
 from pandas import DataFrame
 from pytest_mock import MockerFixture
@@ -765,6 +766,39 @@ def test_create_standalone_session(aura_api: AuraApi) -> None:
     assert actual_session.name == "my-session"
     assert actual_session.user_id == "user-1"
     assert actual_session.ttl == ttl
+
+
+def test_create_standalone_session_with_driver(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=False)
+    driver = neo4j.GraphDatabase.driver("neo4j+s://foo.bar:7687", auth=("dbuser", "db_pw"))
+
+    sessions.get_or_create(
+        "my-session",
+        "8GB",
+        DbmsConnectionInfo(driver=driver, database="mydb"),
+        cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+    )
+
+    db_conn = sessions.create_db_runner_calls[0]["db_connection"]
+    assert db_conn.driver is driver
+    assert db_conn.get_uri() == "neo4j+s://foo.bar:7687"
+    assert db_conn.database == "mydb"
+    driver.close()
+
+
+def test_create_session_with_driver_and_driver_config_fails(aura_api: AuraApi) -> None:
+    sessions = FakeGdsSessions(aura_api, hosted_in_aura=False)
+    driver = neo4j.GraphDatabase.driver("neo4j+s://foo.bar:7687", auth=("dbuser", "db_pw"))
+
+    with pytest.raises(ValueError, match="`neo4j_driver_config` cannot be used together with a `driver`"):
+        sessions.get_or_create(
+            "my-session",
+            "8GB",
+            DbmsConnectionInfo(driver=driver),
+            cloud_location=CloudLocation(region="leipzig-1", provider="aws"),
+            neo4j_driver_config={"max_connection_pool_size": 5},
+        )
+    driver.close()
 
 
 def test_get_or_create_existing_session(aura_api: AuraApi) -> None:
