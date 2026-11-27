@@ -33,6 +33,9 @@ PLUGIN_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
 # entries one at a time as the client grows them.
 PLUGIN_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
     "graph.relationship.write",  # served by the client's relationships endpoints
+    # The deprecated singular procedure; the client's own `node_property.stream` is a
+    # convenience that runs the plural `nodeProperties` procedure.
+    "graph.node_property.stream",
     # The deprecated legacy projection: the client's own `project.cypher` runs the modern
     # Cypher projection, which the server publishes as an aggregation function.
     "graph.project.cypher",

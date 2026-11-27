@@ -55,6 +55,10 @@ def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], se
     # The plugin's projection procedure: the session surface drives projections through
     # the protocol, whose channels the catalog entries cover.
     job_spec_endpoints.add("graph.project")
+    # The deprecated singular procedure: the client's `node_property.stream` is a
+    # convenience that runs the plural `nodeProperties` procedure, which the session spec
+    # covers.
+    job_spec_endpoints.add("graph.node_property.stream")
 
     assert_api_spec_coverage(
         AuraGraphDataScience,
