@@ -3,6 +3,7 @@ from tests.integration.procedure_surface.api_spec import ApiSpec
 from tests.integration.procedure_surface.api_spec_coverage_test_helper import (
     UNMAPPED_ENDPOINTS,
     assert_api_spec_coverage,
+    graph_catalog_endpoints,
     pythonic_endpoint_name,
 )
 from tests.integration.procedure_surface.endpoint_spec_coverage_test_helper import (
@@ -12,22 +13,14 @@ from tests.integration.procedure_surface.endpoint_spec_coverage_test_helper impo
 from tests.integration.procedure_surface.gds_api_spec import EndpointWithModesSpec
 
 # Graph catalog endpoints the session surface does not map yet. Drop entries one at a
-# time as the client grows them.
+# time as the client grows them. The projection protocol is not listed: the spec marks
+# its steps as not standalone, so the client drives them from `gds.graph.construct`.
 SESSION_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
     "graph.size_of",  # the client exposes only the plugin-internal size_of
     "graph.from_gdl",  # graphs are constructed from tables or triplets
     "graph.stream",  # the client's session export raises NotImplementedError
     "graph.node_labels.stream",  # node_labels maps mutate and write only
     "graph.relationship_properties.stream",  # served by relationships.stream(relationship_properties=...)
-    # The projection protocol: the client drives it from `gds.graph.construct`, so the
-    # individual channels it calls are not paths of their own.
-    "graph.project.from_tables",
-    "graph.project.from_tables.nodes",
-    "graph.project.from_tables.relationships",
-    "graph.project.from_tables.nodes_done",
-    "graph.project.from_tables.relationships_done",
-    "graph.project.from_triplets",
-    "graph.project.from_triplets.done",
 }
 
 # The client's sampling estimate calls the flight server's `v2/graph.sample.cnarw.estimate`,
@@ -49,23 +42,18 @@ SESSION_UNMAPPED_ENDPOINTS = UNMAPPED_ENDPOINTS | {
 
 
 def test_session_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], session_api_spec: ApiSpec) -> None:
-    # Algorithms the GDS Sessions API spec describes are validated against it.
-    # Everything else the session surface exposes is still validated against the plugin API spec.
+    # Algorithms the GDS Sessions API spec describes are validated against it. The graph
+    # catalog is validated against the published specs alone, never against the reflection
+    # document. Everything else the session surface exposes is validated against the plugin
+    # API spec.
     job_spec_endpoints = {pythonic_endpoint_name(endpoint.name) for endpoint in session_api_spec.endpoints()}
-    # The plugin's projection procedure: the session surface drives projections through
-    # the protocol, whose channels the catalog entries cover.
-    job_spec_endpoints.add("graph.project")
-    # The deprecated singular procedure: the client's `node_property.stream` is a
-    # convenience that runs the plural `nodeProperties` procedure, which the session spec
-    # covers.
-    job_spec_endpoints.add("graph.node_property.stream")
 
     assert_api_spec_coverage(
         AuraGraphDataScience,
         gds_api_spec,
         unmapped_endpoints=SESSION_UNMAPPED_ENDPOINTS,
         include_arrow_only=True,
-        exclude_endpoints=job_spec_endpoints,
+        exclude_endpoints=job_spec_endpoints | graph_catalog_endpoints(gds_api_spec),
     )
     assert_endpoint_spec_coverage(
         AuraGraphDataScience,

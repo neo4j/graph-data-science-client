@@ -63,10 +63,11 @@ class CatalogCypherEndpoints(CatalogEndpoints):
             raise ValueError(f"A graph with name '{graph_name}' does not exist in the catalog.")
         return get_graph(graph_name, self._cypher_runner)
 
-    def exists(self, graph_name: str) -> bool:
+    def exists(self, graph_name: Graph | str) -> bool:
+        name = graph_name if isinstance(graph_name, str) else graph_name.name()
         return cast(
             bool,
-            self._cypher_runner.call_function(endpoint="gds.graph.exists", params=CallParameters(graphName=graph_name)),
+            self._cypher_runner.call_function(endpoint="gds.graph.exists", params=CallParameters(graphName=name)),
         )
 
     def construct(
