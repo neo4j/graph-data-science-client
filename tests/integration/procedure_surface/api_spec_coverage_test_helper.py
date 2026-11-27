@@ -109,6 +109,9 @@ EXPECTED_PARAMETER_NAME_ALIASES = {
     r"pipeline\.(node_classification|node_regression|link_prediction)\.train$": {
         "pipeline": "pipeline_name",
     },
+    r"pipeline\.(node_classification|node_regression|link_prediction)\.add_node_property$": {
+        "procedure_name": "task_name",
+    },
     r".*graph.drop": {"graph_name_or_list_of_graph_names": "G"},
     r".*graph.filter": {"from_graph_name": "G"},
     r".*cnarw": {"from_graph_name": "G"},
