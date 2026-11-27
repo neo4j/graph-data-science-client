@@ -38,55 +38,6 @@ PLUGIN_UNMAPPED_GRAPH_CATALOG_ENDPOINTS = {
     "graph.project.cypher",
 }
 
-# the compute mode is session-surface only in the client; the plugin API spec lists it
-# for every algorithm. This shrinks as the client maps compute onto the plugin surface.
-PLUGIN_COMPUTE_UNMAPPED_ENDPOINTS = {
-    "all_shortest_paths.delta.compute",
-    "all_shortest_paths.dijkstra.compute",
-    "article_rank.compute",
-    "articulation_points.compute",
-    "bellman_ford.compute",
-    "betweenness.compute",
-    "bfs.compute",
-    "closeness.compute",
-    "closeness.harmonic.compute",
-    "degree.compute",
-    "dfs.compute",
-    "eigenvector.compute",
-    "fast_rp.compute",
-    "graph_sage.compute",
-    "hash_gnn.compute",
-    "influence_maximization_celf.compute",
-    "k1_coloring.compute",
-    "k_spanning_tree.compute",
-    "kcore.compute",
-    "kmeans.compute",
-    "knn.compute",
-    "knn.filtered.compute",
-    "label_propagation.compute",
-    "leiden.compute",
-    "local_clustering_coefficient.compute",
-    "louvain.compute",
-    "max_flow.compute",
-    "max_flow.min_cost.compute",
-    "max_k_cut.compute",
-    "modularity_optimization.compute",
-    "node2vec.compute",
-    "node_similarity.compute",
-    "node_similarity.filtered.compute",
-    "page_rank.compute",
-    "prize_steiner_tree.compute",
-    "scc.compute",
-    "shortest_path.a_star.compute",
-    "shortest_path.dijkstra.compute",
-    "shortest_path.yens.compute",
-    "sllpa.compute",
-    "spanning_tree.compute",
-    "steiner_tree.compute",
-    "triangle_count.compute",
-    "wcc.compute",
-}
-
 
 def _plugin_endpoints(spec: ApiSpec) -> list[EndpointSpec]:
     # the plugin spec publishes procedure names (`gds.articleRank`); the client path drops the procedure prefix
@@ -112,5 +63,5 @@ def test_plugin_api_spec_coverage(gds_api_spec: list[EndpointWithModesSpec], plu
     assert_endpoint_spec_coverage(
         GraphDataScience,
         plugin_endpoints,
-        unmapped_endpoints=PLUGIN_COMPUTE_UNMAPPED_ENDPOINTS | PLUGIN_UNMAPPED_GRAPH_CATALOG_ENDPOINTS,
+        unmapped_endpoints=PLUGIN_UNMAPPED_GRAPH_CATALOG_ENDPOINTS,
     )
