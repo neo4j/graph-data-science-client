@@ -43,13 +43,13 @@ class CatalogEndpoints(ABC):
         pass
 
     @abstractmethod
-    def exists(self, graph_name: str) -> bool:
+    def exists(self, graph_name: Graph | str) -> bool:
         """Check if a graph exists in the catalog.
 
         Parameters
         ----------
         graph_name
-            Name of the graph
+            The graph, or the name of the graph
 
         Returns
         -------
